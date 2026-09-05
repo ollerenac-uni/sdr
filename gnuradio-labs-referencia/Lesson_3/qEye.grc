@@ -1,0 +1,487 @@
+options:
+  parameters:
+    author: Qasim Chaudhari
+    category: '[qBlocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: hb_qt_gui
+    hier_block_src_path: '.:'
+    id: qEye
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Eye Diagram
+    window_size: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 10]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: blocks_delay_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 0*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [520, 136.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 1*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [512, 192.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 2*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [512, 248.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 3*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [512, 304.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_0_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 7*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 528.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_0_0_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 6*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 472.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_0_0_0_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 4*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 360.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_0_0_0_0_0_0
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 5*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 416.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_0_1
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 10*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 640.0]
+    rotation: 0
+    state: enabled
+- name: blocks_delay_0_1
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: 9*samp_per_sym
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 584.0]
+    rotation: 0
+    state: enabled
+- name: blocks_skiphead_0
+  id: blocks_skiphead
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_items: int(20*samp_per_sym+samp_per_sym/2)
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [272, 376]
+    rotation: 0
+    state: true
+- name: eye_string
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Eye Label
+    short_id: ''
+    type: str
+    value: '''Eye Diagram'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [616, 12.0]
+    rotation: 0
+    state: true
+- name: nEyes
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Number of Eyes
+    short_id: ''
+    type: intx
+    value: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 12.0]
+    rotation: 0
+    state: true
+- name: pad_source_0
+  id: pad_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    label: in
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_streams: '1'
+    optional: 'False'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [112, 376.0]
+    rotation: 0
+    state: true
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: black
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: red
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: ''
+    label1: Trace 0
+    label10: Signal 10
+    label2: Trace 1
+    label3: Trace 2
+    label4: Trace 3
+    label5: Trace 4
+    label6: Trace 5
+    label7: Trace 6
+    label8: Trace 7
+    label9: Signal 9
+    legend: 'False'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: eye_string
+    nconnections: '10'
+    size: nEyes*samp_per_sym
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: ymax
+    ymin: ymin
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [696, 264.0]
+    rotation: 0
+    state: true
+- name: samp_per_sym
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Samples/Symbol
+    short_id: ''
+    type: intx
+    value: '32'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [224, 12.0]
+    rotation: 0
+    state: true
+- name: samp_rate
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Sample Rate
+    short_id: ''
+    type: eng_float
+    value: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 12.0]
+    rotation: 0
+    state: true
+- name: ymax
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Y Max
+    short_id: ''
+    type: eng_float
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [736, 12.0]
+    rotation: 0
+    state: true
+- name: ymin
+  id: parameter
+  parameters:
+    alias: ''
+    comment: ''
+    hide: none
+    label: Y Min
+    short_id: ''
+    type: eng_float
+    value: '-1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [824, 12.0]
+    rotation: 0
+    state: true
+
+connections:
+- [blocks_delay_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_delay_0_0, '0', qtgui_time_sink_x_0, '1']
+- [blocks_delay_0_0_0, '0', qtgui_time_sink_x_0, '2']
+- [blocks_delay_0_0_0_0, '0', qtgui_time_sink_x_0, '3']
+- [blocks_delay_0_0_0_0_0, '0', qtgui_time_sink_x_0, '7']
+- [blocks_delay_0_0_0_0_0_0, '0', qtgui_time_sink_x_0, '6']
+- [blocks_delay_0_0_0_0_0_0_0, '0', qtgui_time_sink_x_0, '4']
+- [blocks_delay_0_0_0_0_0_0_0_0, '0', qtgui_time_sink_x_0, '5']
+- [blocks_delay_0_0_1, '0', qtgui_time_sink_x_0, '9']
+- [blocks_delay_0_1, '0', qtgui_time_sink_x_0, '8']
+- [blocks_skiphead_0, '0', blocks_delay_0, '0']
+- [blocks_skiphead_0, '0', blocks_delay_0_0, '0']
+- [blocks_skiphead_0, '0', blocks_delay_0_0_0, '0']
+- [blocks_skiphead_0, '0', blocks_delay_0_0_0_0, '0']
+- [blocks_skiphead_0, '0', blocks_delay_0_0_0_0_0, '0']
+- [blocks_skiphead_0, '0', blocks_delay_0_0_0_0_0_0, '0']
+- [blocks_skiphead_0, '0', blocks_delay_0_0_0_0_0_0_0, '0']
+- [blocks_skiphead_0, '0', blocks_delay_0_0_0_0_0_0_0_0, '0']
+- [blocks_skiphead_0, '0', blocks_delay_0_0_1, '0']
+- [blocks_skiphead_0, '0', blocks_delay_0_1, '0']
+- [pad_source_0, '0', blocks_skiphead_0, '0']
+
+metadata:
+  file_format: 1

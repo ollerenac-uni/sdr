@@ -72,7 +72,10 @@ nav:
   - Inicio: index.md
   - Sesiones:
       - sessions/index.md
-      # Añadir sesiones aquí, p. ej.:
-      # - "01 — Introducción a SDR": sessions/01-introduccion-sdr/index.md
+      - "01 — Introducción a SDR": sessions/01-introduccion-sdr/index.md
+  - Guías:
+      - setup/index.md
+      - "Instalar GNU Radio": setup/instalacion.md
+      - "Configurar el RTL-SDR": setup/rtl-sdr.md
   - Exámenes:
       - exams/index.md

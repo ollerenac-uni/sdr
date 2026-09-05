@@ -5,6 +5,7 @@
 Un curso práctico de radio definida por software (SDR): desde las señales IQ y el procesamiento digital en banda base hasta la recepción y transmisión de sistemas de comunicación reales con GNU Radio y hardware de bajo costo. Cada sesión combina teoría con un laboratorio ejecutable en Google Colab o en GNU Radio Companion.
 
 [Ver sesiones](sessions/index.md){ .md-button .md-button--primary }
+[Guías de instalación](setup/index.md){ .md-button }
 [Exámenes](exams/index.md){ .md-button }
 [Repositorio GitHub](https://github.com/ollerenac-uni/sdr){ .md-button }
 
@@ -14,29 +15,29 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 
 <div class="grid cards" markdown>
 
--   :material-sine-wave:{ .lg .middle } **Fundamentos de SDR y Señales IQ**
+-   :material-sine-wave:{ .lg .middle } **Fundamentos y hardware real**
 
     ---
 
     Sesiones 1–4
 
-    Arquitectura de un SDR, hardware (RTL-SDR, ADALM-Pluto, HackRF, USRP), señales en banda base compleja, muestreo y aliasing, filtros FIR, decimación e interpolación, GNU Radio Companion.
+    Arquitectura de un receptor SDR y el RTL-SDR por dentro, señales IQ, ganancia y saturación a 8 bits, filtros y decimación, GNU Radio Companion a fondo.
 
--   :material-radio-tower:{ .lg .middle } **Recepción y Transmisión de Señales**
-
-    ---
-
-    Sesiones 5–9
-
-    Demodulación AM/FM, modulación digital (ASK, FSK, PSK, QAM), filtro conformador, sincronización de símbolo y portadora, ecualización y canal multipath.
-
--   :material-access-point-network:{ .lg .middle } **Sistemas y Protocolos Reales**
+-   :material-radio-tower:{ .lg .middle } **Señales reales: analógicas y digitales**
 
     ---
 
-    Sesiones 10–14
+    Sesiones 5–10
 
-    OFDM en SDR, decodificación de protocolos reales (ADS-B, AIS, RDS), sensado de espectro y radio cognitiva, LoRa e IoT, proyecto final de transceptor completo.
+    Receptor FM estéreo, presupuesto de enlace, modulación digital y sincronización, decodificación de RDS y ADS-B desde muestras reales.
+
+-   :material-access-point-network:{ .lg .middle } **Espectro, sistemas y proyecto**
+
+    ---
+
+    Sesiones 11–16
+
+    Sensado de espectro con el PNAF, OFDM e ISDB-Tb, IoT y LoRa en 915 MHz, satélites Meteor, proyecto final por hitos.
 
 </div>
 
@@ -46,22 +47,23 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 
 | # | Título | Estado |
 |---|--------|:------:|
-| 01 | Introducción a SDR: arquitectura, hardware y ecosistema GNU Radio | Próximamente |
-| 02 | Señales IQ: banda base compleja, mezcla y conversión de frecuencia | Próximamente |
-| 03 | DSP para SDR: muestreo, filtros FIR, decimación e interpolación | Próximamente |
-| 04 | GNU Radio Companion: flowgraphs, bloques y visualización | Próximamente |
-| 05 | Modulación analógica: recepción de AM y FM broadcast | Próximamente |
-| 06 | Modulación digital I: ASK, FSK, PSK y filtro conformador | Próximamente |
-| 07 | Modulación digital II: QAM, constelaciones y BER en AWGN | Próximamente |
-| 08 | Examen Parcial | — |
-| 09 | Sincronización: reloj de símbolo, portadora y trama | Próximamente |
-| 10 | Ecualización y canal multipath | Próximamente |
-| 11 | OFDM en SDR | Próximamente |
-| 12 | Decodificación de protocolos reales: ADS-B, AIS y RDS | Próximamente |
-| 13 | Sensado de espectro y radio cognitiva | Próximamente |
-| 14 | LoRa e IoT con SDR | Próximamente |
-| 15 | Proyecto final: transceptor completo | Próximamente |
-| 16 | Examen Final | — |
+| 00 | [Pre-lab: instalar el entorno](setup/index.md) | Disponible |
+| 01 | [Introducción a la Radio Definida por Software](sessions/01-introduccion-sdr/index.md) | En desarrollo |
+| 02 | Señales IQ y hardware real: ganancia, saturación, DC, ppm | Próximamente |
+| 03 | DSP para SDR: filtros FIR, decimación, PSD y SNR | Próximamente |
+| 04 | GNU Radio Companion a fondo | Próximamente |
+| 05 | Modulación analógica: AM/FM, presupuesto de enlace, figura de ruido | Próximamente |
+| 06 | Modulación digital I: símbolos, RRC, ISI, diagrama de ojo | Próximamente |
+| 07 | Sincronización: reloj de símbolo, portadora, RDS real | Próximamente |
+| 08 | Examen parcial | — |
+| 09 | Modulación digital II: QAM, Eb/N0, BER | Próximamente |
+| 10 | Trama y paquetes: RDS completo, ADS-B | Próximamente |
+| 11 | Sensado de espectro, PNAF y RNF | Próximamente |
+| 12 | OFDM en SDR e ISDB-Tb | Próximamente |
+| 13 | IoT en banda ICM 915 MHz: sensores y LoRa | Próximamente |
+| 14 | Satélites Meteor LRPT y panorama de SDR con transmisión | Próximamente |
+| 15 | Integración y ensayo de demo | Próximamente |
+| 16 | Presentaciones de proyecto | — |
 
 ---
 
@@ -70,8 +72,8 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 | Área | Contenidos clave |
 |------|-----------------|
 | Señales y Sistemas | Transformada de Fourier, convolución, muestreo, filtrado |
-| Comunicaciones | Modulación analógica y digital básica, SNR |
 | Programación | Python básico (NumPy, Matplotlib), cuadernos Jupyter |
+| Comunicaciones Digitales (recomendado) | Modulación básica, SNR; puede cursarse en paralelo |
 
 ---
 
@@ -79,10 +81,10 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 
 | Herramienta | Uso en el curso |
 |-------------|-----------------|
-| GNU Radio Companion | Diseño de flowgraphs de recepción y transmisión |
-| RTL-SDR | Receptor de bajo costo para laboratorios de recepción |
-| ADALM-Pluto / HackRF / USRP | Transmisión y laboratorios de transceptor |
-| Python (NumPy, SciPy, Matplotlib) | Laboratorios en Google Colab |
+| radioconda 2025.03.14 (GNU Radio 3.10.12) | Flowgraphs de recepción en GNU Radio Companion; misma versión para todos |
+| RTL-SDR Blog V4 o V3 (opcional) | Receptor de bajo costo; todo lab funciona también con archivos IQ oficiales |
+| Python (NumPy, SciPy, Matplotlib) | Análisis y prototipos en Google Colab |
+| rtl_433, SatDump | Herramientas externas para sensores ICM y satélites |
 
 ---
 
@@ -103,7 +105,7 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 
 === "GNU Radio"
 
-    Los laboratorios con hardware usan GNU Radio Companion. Instálalo desde [gnuradio.org](https://wiki.gnuradio.org/index.php/InstallingGR) o usa una imagen preconfigurada como [DragonOS](https://sourceforge.net/projects/dragonos-focal/).
+    Los laboratorios usan GNU Radio Companion instalado con radioconda. Sigue las [guías de instalación](setup/index.md) antes de la primera sesión.
 
 ---
 
