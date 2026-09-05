@@ -1,0 +1,25 @@
+# MkDocs build output
+site/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editores
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# Claude Code
+.claude/
+
+# Entregas de alumnos, soluciones y notas — PII, nunca al repo
+exams/**/entregas/
+exams/**/soluciones/
+exams/**/notas*
