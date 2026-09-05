@@ -1,0 +1,214 @@
+"""Figuras esquemáticas de la cadena de recepción del RTL-SDR (Sesión 01, §2).
+
+Genera seis PNG a 300 DPI con fondo blanco, una por punto de observación ①–⑥.
+Ejecutar desde cualquier directorio: python gen_cadena_rx.py
+"""
+
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+
+OUT = Path(__file__).parent
+plt.rcParams.update(
+    {
+        "font.size": 9,
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "figure.dpi": 300,
+        "savefig.dpi": 300,
+        "savefig.facecolor": "white",
+    }
+)
+
+BLUE, GRAY, RED, GREEN, DARK = "#1e40af", "#9ca3af", "#dc2626", "#047857", "#111827"
+
+FC = 99.1  # emisora objetivo, MHz
+FIF = 3.57  # IF del tuner, MHz
+FLO = FC - FIF  # oscilador local del tuner, MHz
+FS_ADC = 28.8  # MS/s
+FS_OUT = 2.4  # MS/s pedidos por el usuario
+IF_BW = 5.0  # filtro IF por defecto, MHz
+ST_BW = 0.2  # ancho de una emisora FM, MHz
+
+STATIONS = np.arange(96.1, 102.0, 0.4)  # emisoras cada 400 kHz
+rng = np.random.default_rng(3)
+AMP = {round(s, 1): (1.0 if abs(s - FC) < 1e-6 else rng.uniform(0.35, 0.8)) for s in STATIONS}
+
+
+def lobe(f, center, bw=ST_BW):
+    """Lóbulo de tope plano (super-gaussiana) centrado en `center`."""
+    return np.exp(-(((f - center) / (bw / 2.4)) ** 8))
+
+
+def if_mask(f):
+    """Filtro IF del tuner: 5 MHz centrado en ±3.57 MHz (respuesta simétrica)."""
+    return 1.0 / (1.0 + ((np.abs(f) - FIF) / (IF_BW / 2)) ** 12)
+
+
+def lpf_mask(f, cutoff=FS_OUT / 2):
+    """Filtro paso bajo digital del RTL2832U para la tasa de salida pedida."""
+    return 1.0 / (1.0 + (f / cutoff) ** 16)
+
+
+def rf_spectrum(f):
+    """Espectro en la antena: solo frecuencias positivas, en MHz de RF."""
+    return sum(a * lobe(f, s) for s, a in AMP.items())
+
+
+def if_spectrum(f, filtered=True):
+    """Espectro real en la IF: lóbulos en +(3.57 + Δ) y espejos en −(3.57 + Δ)."""
+    y = np.zeros_like(f)
+    for s, a in AMP.items():
+        d = s - FC
+        y += a * lobe(f, FIF + d) + a * lobe(f, -(FIF + d))
+    return y * if_mask(f) if filtered else y
+
+
+def if_target_only(f, mirror=False):
+    c = -FIF if mirror else FIF
+    return lobe(f, c) * if_mask(f)
+
+
+def sampled(spec_fn, f, fs=FS_ADC, k=(-1, 0, 1)):
+    return sum(spec_fn(f - i * fs) for i in k)
+
+
+def ddc_spectrum(f):
+    """Tras la mezcla digital: espectro muestreado desplazado −3.57 MHz."""
+    return sampled(if_spectrum, f + FIF)
+
+
+def ddc_target(f, mirror=False):
+    return sampled(lambda g: if_target_only(g, mirror), f + FIF)
+
+
+def new_fig(w=7.2, h=2.6):
+    fig, ax = plt.subplots(figsize=(w, h))
+    ax.set_ylim(0, 1.25)
+    ax.set_yticks([])
+    ax.set_ylabel("|X(f)|  (esquemático)")
+    ax.set_xlabel("Frecuencia (MHz)")
+    ax.axhline(0, color=DARK, lw=0.8)
+    return fig, ax
+
+
+def save(fig, name):
+    fig.tight_layout()
+    fig.savefig(OUT / name)
+    plt.close(fig)
+    print("ok", name)
+
+
+# ---------------------------------------------------------------- ① antena
+f = np.linspace(94, 104, 6000)
+fig, ax = new_fig()
+ax.fill_between(f, 0, rf_spectrum(f) - lobe(f, FC), color=GRAY, alpha=0.8, lw=0)
+ax.fill_between(f, 0, lobe(f, FC), color=BLUE, lw=0)
+ax.axvline(FLO, color=GREEN, ls="--", lw=1.2)
+ax.text(FLO + 0.12, 1.02, f"LO del tuner\n$f_{{LO}} = f_c - 3.57 = {FLO:.2f}$ MHz", ha="left", color=GREEN)
+ax.annotate(
+    f"emisora objetivo\n$f_c = {FC}$ MHz",
+    xy=(FC, 1.02),
+    xytext=(FC + 1.2, 1.08),
+    color=BLUE,
+    arrowprops=dict(arrowstyle="->", color=BLUE),
+)
+ax.text(100.5, 0.86, "emisoras vecinas\n(200 kHz cada una)", color=GRAY, fontsize=8)
+ax.set_title("① En la antena: banda de FM alrededor de $f_c$")
+save(fig, "cadena-rx-1-antena.png")
+
+# ---------------------------------------------------------------- ② IF real
+f = np.linspace(-8, 8, 8000)
+fig, ax = new_fig()
+ax.fill_between(f, 0, if_spectrum(f) - if_target_only(f) - if_target_only(f, True), color=GRAY, alpha=0.8, lw=0)
+ax.fill_between(f, 0, if_spectrum(f, filtered=False) * (1 - if_mask(f)), color=GRAY, alpha=0.25, lw=0)
+ax.fill_between(f, 0, if_target_only(f), color=BLUE, lw=0)
+ax.fill_between(f, 0, if_target_only(f, True), facecolor="none", edgecolor=RED, hatch="////", lw=0.8)
+ax.plot(f, 1.15 * if_mask(f), color=DARK, ls="--", lw=1)
+ax.text(FIF, 1.17, "filtro IF, 5 MHz", ha="center", color=DARK)
+ax.text(-FIF, 1.17, "filtro IF (espejo)", ha="center", color=DARK)
+ax.annotate("señal: $f_c \\to +3.57$ MHz", xy=(FIF, 1.0), xytext=(5.3, 0.75), color=BLUE, arrowprops=dict(arrowstyle="->", color=BLUE))
+ax.annotate("espejo: la señal es real,\nsu espectro es simétrico", xy=(-FIF, 1.0), xytext=(-7.9, 0.7), color=RED, arrowprops=dict(arrowstyle="->", color=RED))
+ax.text(0.0, 0.62, "0 Hz: offset DC, fuga del LO\ny ruido 1/f quedan aquí,\nlejos de la señal", ha="center", fontsize=7.5, color=DARK, bbox=dict(facecolor="white", edgecolor="none", alpha=0.85, pad=1.5))
+ax.set_title("② Tras el tuner: señal real en la IF de 3.57 MHz")
+save(fig, "cadena-rx-2-if.png")
+
+# ---------------------------------------------------------------- ③ ADC
+f = np.linspace(-44, 44, 12000)
+fig, ax = new_fig()
+ax.axvspan(-FS_ADC / 2, FS_ADC / 2, color="#dbeafe", alpha=0.6, lw=0)
+# A esta escala una emisora de 200 kHz es una línea: se dibuja la banda de 5 MHz
+# que dejó pasar el filtro IF como bloque gris, y la emisora objetivo como línea.
+for k in (-1, 0, 1):
+    a = 1.0 if k == 0 else 0.35
+    for sign in (1, -1):
+        ax.fill_between(f, 0, 0.8 * lobe(f, sign * FIF + k * FS_ADC, bw=IF_BW), color=GRAY, alpha=0.5 * a, lw=0)
+    ax.vlines(FIF + k * FS_ADC, 0, 1.0, color=BLUE, lw=2.5, alpha=a)
+    ax.vlines(-FIF + k * FS_ADC, 0, 1.0, color=RED, lw=2.5, alpha=a, linestyles=(0, (2, 1)))
+for x, lab in ((-FS_ADC, "$-f_s$"), (FS_ADC, "$+f_s$")):
+    ax.axvline(x, color=DARK, ls=":", lw=0.8)
+    ax.text(x, 1.12, lab, ha="center")
+ax.text(0, 1.12, "zona de Nyquist: $\\pm f_s/2 = \\pm 14.4$ MHz", ha="center", color=BLUE)
+ax.text(-FS_ADC, 0.9, "copia (k = −1)", ha="center", color=GRAY, fontsize=8)
+ax.text(FS_ADC, 0.9, "copia (k = +1)", ha="center", color=GRAY, fontsize=8)
+ax.annotate("señal, +3.57 MHz", xy=(FIF, 1.0), xytext=(7.5, 1.0), color=BLUE, fontsize=8, arrowprops=dict(arrowstyle="->", color=BLUE))
+ax.annotate("espejo, −3.57 MHz", xy=(-FIF, 1.0), xytext=(-13.8, 1.0), color=RED, fontsize=8, arrowprops=dict(arrowstyle="->", color=RED))
+ax.text(FIF, 0.3, "banda IF\n5 MHz", ha="center", fontsize=7, color=DARK)
+ax.text(-FIF, 0.3, "espejo de\nla banda", ha="center", fontsize=7, color=DARK)
+ax.set_title("③ Tras el ADC (28.8 MS/s, 8 bits): el espectro se repite cada $f_s$")
+save(fig, "cadena-rx-3-adc.png")
+
+# ---------------------------------------------------------------- ④ DDC
+f = np.linspace(-16, 16, 12000)
+fig, ax = new_fig()
+ax.fill_between(f, 0, ddc_spectrum(f) - ddc_target(f) - ddc_target(f, True), color=GRAY, alpha=0.8, lw=0)
+ax.fill_between(f, 0, ddc_target(f), color=BLUE, lw=0)
+ax.fill_between(f, 0, ddc_target(f, True), facecolor="none", edgecolor=RED, hatch="////", lw=0.8)
+ax.plot(f, 1.15 * lpf_mask(f), color=GREEN, ls="--", lw=1.2)
+ax.text(0, 1.18, f"filtro paso bajo digital, $\\pm {FS_OUT/2}$ MHz", ha="center", color=GREEN)
+ax.annotate("señal → 0 Hz\n(ya compleja: I y Q)", xy=(0, 1.0), xytext=(3.5, 0.8), color=BLUE, arrowprops=dict(arrowstyle="->", color=BLUE))
+ax.annotate("imagen → $-2 \\times 3.57 = -7.14$ MHz\n(el filtro la elimina)", xy=(-2 * FIF, 1.0), xytext=(-15.8, 1.0), va="bottom", color=RED, arrowprops=dict(arrowstyle="->", color=RED))
+ax.annotate("", xy=(-4.6, 0.86), xytext=(-2.6, 0.86), arrowprops=dict(arrowstyle="->", color=DARK, lw=1.2))
+ax.text(-3.6, 0.9, "todo se desplaza\n−3.57 MHz", ha="center", va="bottom", fontsize=7.5, color=DARK)
+ax.set_title("④ Tras la mezcla digital por $e^{-j2\\pi\\,3.57\\,\\mathrm{MHz}\\,t}$")
+save(fig, "cadena-rx-4-ddc.png")
+
+# ---------------------------------------------------------------- ⑤ LPF + decimación
+f = np.linspace(-1.3, 1.3, 6000)
+fig, ax = new_fig()
+ax.axvspan(-FS_OUT / 2, FS_OUT / 2, color="#dcfce7", alpha=0.6, lw=0)
+y_all = ddc_spectrum(f) * lpf_mask(f)
+y_t = ddc_target(f) * lpf_mask(f)
+ax.fill_between(f, 0, y_all - y_t, color=GRAY, alpha=0.8, lw=0)
+ax.fill_between(f, 0, y_t, color=BLUE, lw=0)
+for x in (-FS_OUT / 2, FS_OUT / 2):
+    ax.axvline(x, color=GREEN, ls="--", lw=1.2)
+ax.annotate("", xy=(-FS_OUT / 2, 1.12), xytext=(FS_OUT / 2, 1.12), arrowprops=dict(arrowstyle="<->", color=GREEN))
+ax.text(0, 1.15, f"ancho observable = $f_s$ = {FS_OUT} MHz (no $f_s/2$: la señal es compleja)", ha="center", color=GREEN)
+ax.text(0, 0.5, "$f_c$", ha="center", color="white", fontweight="bold")
+ax.set_xlabel("Frecuencia respecto a $f_c$ (MHz)")
+ax.set_title(f"⑤ Tras filtrar y decimar (28.8 → {FS_OUT} MS/s, ÷12): la ventana que pediste")
+save(fig, "cadena-rx-5-decimacion.png")
+
+# ---------------------------------------------------------------- ⑥ USB
+n = np.arange(40)
+tone = np.exp(1j * 2 * np.pi * 0.05 * n) * 0.8
+I = np.clip(np.round(127.5 + 127.5 * tone.real), 0, 255).astype(int)
+Q = np.clip(np.round(127.5 + 127.5 * tone.imag), 0, 255).astype(int)
+fig, ax = plt.subplots(figsize=(7.2, 2.6))
+ax.axhline(127.5, color=DARK, ls="--", lw=0.8)
+ax.text(39.5, 131, "127.5 = cero", ha="right", fontsize=8)
+ax.stem(n - 0.15, I, linefmt=BLUE, markerfmt="o", basefmt=" ", label="I (byte par)")
+ax.stem(n + 0.15, Q, linefmt=RED, markerfmt="s", basefmt=" ", label="Q (byte impar)")
+ax.set_ylim(0, 300)
+ax.set_yticks([0, 64, 127.5, 191, 255])
+ax.set_xlabel("índice de muestra n")
+ax.set_ylabel("valor del byte (uint8)")
+ax.legend(loc="upper right", ncol=2, frameon=False)
+bytes_txt = " ".join(f"{i} {q}" for i, q in zip(I[:6], Q[:6]))
+ax.set_title(f"⑥ Salida USB: I, Q, I, Q… un byte cada uno; a {FS_OUT} MS/s son 4.8 MB/s\nprimeros bytes en el cable: {bytes_txt} …", fontsize=9)
+save(fig, "cadena-rx-6-usb.png")

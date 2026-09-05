@@ -73,26 +73,84 @@ El RTL-SDR es *low-IF*: el tuner deja la señal en una IF de unos pocos MHz y el
 
 ### 2. Cadena de recepción del RTL-SDR
 
-El dongle tiene dos chips. El **tuner** (Rafael Micro R820T2 en el V3, R828D en el V4) es el front-end analógico. El **RTL2832U** es el demodulador de TV reconvertido en digitalizador.
+El dongle tiene dos chips. El **tuner** es el front-end analógico: Rafael Micro R820T2 en el V3 y R828D en el V4. Son de la misma familia y usan el mismo driver; el R828D existe porque el R820T2 dejó de fabricarse, y añade tres entradas de RF que el V4 aprovecha para sus filtros de banda y su *upconverter* de HF. El **RTL2832U** es un demodulador de televisión reconvertido en digitalizador: contiene el ADC, el conversor descendente digital y el controlador USB.
 
 ```mermaid
 flowchart LR
-    A[Antena] --> B[Tuner R828D / R820T2<br/>LNA · mezclador · filtro · VGA<br/>RF → IF 3.57 MHz]
-    B --> C[RTL2832U<br/>ADC 8 bits @ 28.8 MS/s]
-    C --> D[DDC digital<br/>mezcla a 0 Hz · filtro · decimación<br/>→ I/Q a f_s]
-    D --> E[USB 2.0<br/>bytes I,Q,I,Q…]
-    E --> F[PC: librtlsdr<br/>→ GNU Radio / Python]
+    ANT[Antena] -->|①| TUN[Tuner R828D / R820T2<br/>LNA · mezclador · filtro IF 5 MHz · VGA]
+    TUN -->|② IF real<br/>3.57 MHz| ADC[ADC 8 bits<br/>28.8 MS/s]
+    ADC -->|③| DDC[Mezcla digital<br/>× cos, × −sin a 3.57 MHz]
+    DDC -->|④ I/Q| LPF[Filtro paso bajo<br/>+ decimación → f_s]
+    LPF -->|⑤| USB[Control USB<br/>bytes I,Q,I,Q…]
+    USB -->|⑥ USB 2.0| PC[PC: librtlsdr<br/>→ GNU Radio / Python]
+    XTAL[Cristal 28.8 MHz<br/>TCXO 1 ppm] -.-> TUN
+    XTAL -.-> ADC
 ```
 
-Lectura del diagrama, bloque a bloque:
+Todo lo que hay entre ② y ⑤ ocurre dentro del RTL2832U. La lectura siguiente sigue a la señal punto por punto y dibuja su espectro en cada uno. El ejemplo es el de la sección 7: emisora objetivo en $f_c = 99.1$ MHz, tasa pedida $f_s = 2.4$ MS/s. Las figuras son esquemáticas: lóbulos de 200 kHz para cada emisora de FM, sin escala de potencia.
 
-1. **Tuner.** Un amplificador de bajo ruido (LNA) eleva la señal débil de la antena; un mezclador con LO sintonizable la traslada a una IF fija de 3.57 MHz; un filtro paso banda de unos 6 MHz recorta lo que no interesa; un amplificador de ganancia variable (VGA) ajusta el nivel. La ganancia total es de 0 a 49.6 dB en 29 pasos. **El tuner fija $f_c$**, la frecuencia central que quieres ver.
-2. **ADC.** El RTL2832U muestrea la IF con 8 bits a 28.8 MS/s, la frecuencia de su cristal. Aquí la señal se vuelve números.
-3. **DDC** (*digital downconverter*, conversor descendente digital). Dentro del mismo chip, la señal muestreada se multiplica por una exponencial compleja a 3.57 MHz (eso la lleva a 0 Hz y crea I y Q), se filtra y se decima hasta la tasa $f_s$ que pediste. **El RTL2832U fija $f_s$.**
-4. **USB.** Cada muestra sale como dos bytes sin signo, I y Q, con el cero en 127.5.
-5. **PC.** `librtlsdr` recibe los bytes; GNU Radio o NumPy los convierten a números complejos entre $-1$ y $+1$.
+#### ① En la antena: la banda de RF
 
-El punto clave: el tuner y el ADC son la única parte analógica. Todo lo que hagamos en el curso (filtrar, demodular FM, sincronizar BPSK, decodificar ADS-B) ocurre sobre esa secuencia de bytes I/Q. Y esa secuencia tiene límites que vienen de los cuatro parámetros siguientes.
+![Espectro en la antena: emisoras de FM cada 400 kHz alrededor de la emisora objetivo en 99.1 MHz y el oscilador local del tuner en 95.53 MHz](figures/cadena-rx-1-antena.png)
+
+Lectura: cada lóbulo gris es una emisora de FM; la azul es la que queremos, en $f_c = 99.1$ MHz. La línea verde punteada es el *local oscillator* del tuner, que el driver coloca en $f_{LO} = f_c - 3.57$ MHz. **Sintonizar es elegir $f_{LO}$**: la emisora que quede exactamente 3.57 MHz por encima del LO será la que caiga en el centro de la IF. Aquí actúa también el LNA: sube el nivel de toda la banda por igual, con la ganancia que tú fijas.
+
+#### ② Tras el tuner: una señal real en la IF de 3.57 MHz
+
+El mezclador multiplica la banda entera por el LO, y por la identidad de la sección 1 produce suma y diferencia. La diferencia traslada la banda en bloque: la emisora en $f_c$ cae en 3.57 MHz, y cada vecina en $3.57 + (f - f_c)$ MHz, conservando sus separaciones. La suma cae cerca de 194 MHz y el filtro IF la elimina. Ese filtro tiene 5 MHz de ancho por defecto (ajustable por el driver), centrado en 3.57 MHz: deja pasar de 1.07 a 6.07 MHz, es decir, unos ±2.5 MHz alrededor de $f_c$. El VGA ajusta el nivel antes del ADC.
+
+Hay un hecho que el diagrama no dice y que decide todo lo que viene después: **la señal en la IF es real**, un solo voltaje en un cable. Y el espectro de una señal real es simétrico:
+
+$$
+x(t) = \mathrm{Re}\{m(t)\,e^{j2\pi f_{IF} t}\}
+\quad\Longrightarrow\quad
+X(f) = \tfrac{1}{2}M(f - f_{IF}) + \tfrac{1}{2}M^*(-f - f_{IF}).
+$$
+
+Un lóbulo en $+3.57$ MHz y su espejo conjugado en $-3.57$ MHz. No son dos señales: son las dos mitades de una sola señal real, igual que el coseno de la sección 1 es la suma de dos exponenciales. Es lo mismo que viste en el primer flowgraph de la guía: con salida *Complex* hay un pico en $+1$ kHz; con *Float* (real), dos picos en $\pm 1$ kHz.
+
+![Espectro real en la IF: lóbulo de la señal en +3.57 MHz, su espejo en −3.57 MHz, vecinas trasladadas y la máscara del filtro IF de 5 MHz](figures/cadena-rx-2-if.png)
+
+Lectura: la señal azul está en $+3.57$ MHz con sus vecinas grises a los lados; el lóbulo rayado en rojo es su espejo en $-3.57$ MHz. La línea negra punteada es la respuesta del filtro IF, y también es simétrica: las emisoras fuera de ±2.5 MHz de la objetivo salen atenuadas (gris claro). Observa qué hay en 0 Hz: nada nuestro. Ahí quedan el *DC offset* del amplificador, la fuga del LO y el ruido 1/f, los tres defectos clásicos de un receptor de conversión directa. En la arquitectura *low-IF* esos defectos caen 3.57 MHz fuera de la señal, y por eso se eligió: el precio es un ADC más rápido, que a 8 bits cuesta centavos.
+
+#### ③ ADC: 28.8 millones de muestras reales por segundo
+
+La frecuencia más alta que entra al ADC es $3.57 + 2.5 = 6.07$ MHz. Nyquist exige muestrear a más de $2 \times 6.07 = 12.1$ MS/s; el RTL2832U lo hace a 28.8 MS/s, la frecuencia de su cristal, con margen de sobra. Su zona de Nyquist va de $-14.4$ a $+14.4$ MHz. El filtro IF del tuner es, además, el filtro *anti-aliasing*: cualquier cosa que dejara pasar por encima de 14.4 MHz reaparecería plegada dentro de la zona.
+
+Muestrear tiene una consecuencia sobre el espectro: lo hace **periódico**. El espectro entero se copia cada $f_s = 28.8$ MHz. Basta mirar un período.
+
+![Espectro tras el ADC: los dos lóbulos de la IF intactos dentro de la zona de Nyquist de ±14.4 MHz y sus copias periódicas en ±28.8 MHz](figures/cadena-rx-3-adc.png)
+
+Lectura: la franja azul claro es la zona de Nyquist. Dentro de ella está lo mismo que en el punto ②, ahora a otra escala: los bloques grises son la banda de 5 MHz que dejó pasar el filtro IF y su espejo, la línea azul es la emisora objetivo en $+3.57$ MHz y la línea roja punteada su espejo en $-3.57$ MHz, sin cambio. A los lados, en $\pm 28.8$ MHz, aparecen sus copias (dibujadas más claras); son consecuencia del muestreo y no contienen información nueva. Nada se solapa porque la señal termina en 6.07 MHz, muy por debajo de 14.4 MHz. Este es todo el paso: la señal es la misma, ahora son números de 8 bits.
+
+#### ④ Mezcla digital: de real a compleja (I/Q)
+
+Dentro del RTL2832U dos multiplicadores digitales multiplican las muestras por $\cos(2\pi \cdot 3.57\,\text{MHz}\cdot t)$ y por $-\sin(2\pi \cdot 3.57\,\text{MHz}\cdot t)$. Juntas, las dos salidas son la multiplicación por $e^{-j2\pi \cdot 3.57\,\text{MHz}\cdot t}$, y multiplicar por una exponencial compleja **desplaza todo el espectro** en $-3.57$ MHz. El lóbulo de la señal, que estaba en $+3.57$ MHz, cae en 0 Hz. El espejo, que estaba en $-3.57$ MHz, cae en $-7.14$ MHz.
+
+![Espectro tras la mezcla digital: la señal centrada en 0 Hz, la imagen en −7.14 MHz y la máscara del filtro paso bajo digital de ±1.2 MHz](figures/cadena-rx-4-ddc.png)
+
+Lectura: la flecha negra indica el desplazamiento de $-3.57$ MHz. La señal azul queda en 0 Hz, y ahora es compleja: la salida del multiplicador por coseno es I y la del multiplicador por seno es Q. El lóbulo rayado en $-7.14$ MHz es la *imagen*: el espejo de la señal real, que ya no sirve para nada. Si uno cree que la señal real "solo estaba en $+3.57$ MHz" no entiende de dónde sale esa imagen ni para qué está el filtro siguiente. Un detalle importante: el coseno y el seno digitales están a 90° exactos y tienen amplitudes idénticas, así que esta cuadratura no sufre el desbalance I/Q de los mezcladores analógicos. Es la segunda razón de la arquitectura *low-IF*.
+
+#### ⑤ Filtro paso bajo y decimación: la ventana que pediste
+
+Un filtro paso bajo digital conserva $|f| < f_s^{\text{out}}/2$, ±1.2 MHz para los 2.4 MS/s que pediste (línea verde punteada en la figura anterior). Se lleva la imagen de $-7.14$ MHz y todas las emisoras que no caben en la ventana. Después, un *downsampler* reduce la tasa de 28.8 MS/s a 2.4 MS/s conservando una de cada 12 muestras. En general la razón no es entera: el chip usa un *resampler* fraccional gobernado por un registro de razón $28.8\,\text{MHz} \cdot 2^{22} / f_s$, y por eso acepta tasas como 1.024 MS/s que no dividen 28.8, con la tasa real ligeramente cuantizada.
+
+![Espectro tras filtrar y decimar: la emisora objetivo en 0 Hz y sus vecinas dentro de la ventana de ±1.2 MHz; el ancho observable es fs = 2.4 MHz](figures/cadena-rx-5-decimacion.png)
+
+Lectura: el eje ahora mide frecuencia respecto a $f_c$. Solo quedan la emisora objetivo, en el centro, y las vecinas que caen dentro de ±1.2 MHz. No hay espejo: la señal es compleja y no gasta la mitad del espectro en una copia redundante. Por eso **el ancho de banda observable es $f_s$ entero**, 2.4 MHz, y no $f_s/2$; la Sesión 02 vuelve sobre esto. Y por eso **este filtro digital, no el filtro IF de 5 MHz del tuner, fija el ancho de banda que ves en GNU Radio**: el filtro del tuner solo tiene que proteger al ADC. Dos costos ocultos: las muestras I y Q se vuelven a recortar a 8 bits para el USB, así que parte de la ganancia de procesamiento de decimar por 12 se pierde; y el filtro no es perfecto en los bordes, así que solo el 80 % central de la ventana es limpio.
+
+#### ⑥ USB: bytes I, Q, I, Q…
+
+![Salida USB: muestras I y Q como bytes sin signo de 0 a 255, con el cero en 127.5, intercalados](figures/cadena-rx-6-usb.png)
+
+Lectura: cada muestra compleja sale como dos bytes sin signo, primero I y luego Q, con el cero en 127.5. A 2.4 MS/s son 4.8 MB/s. `librtlsdr` recibe la secuencia y GNU Radio o NumPy la convierten a números complejos entre $-1$ y $+1$ con $(x - 127.5)/127.5$, exactamente la fórmula de la [guía del RTL-SDR](../../setup/rtl-sdr.md#grabar-muestras-iq). El mismo enlace USB lleva de vuelta las órdenes: frecuencia, ganancia y tasa se escriben en registros del RTL2832U, que a su vez programa el tuner por I²C.
+
+Un último detalle del diagrama: el cristal de 28.8 MHz (línea discontinua) es a la vez la referencia del PLL del oscilador local del tuner y el reloj del ADC. Un error de $p$ ppm desplaza $f_c$ y $f_s$ en la misma proporción, y por eso una sola corrección de ppm arregla ambos.
+
+??? note "Muestreo directo en el V3, y por qué el V4 lo cambió"
+    El V3 tiene un modo *direct sampling* para HF: un puente lleva la antena, a través de un filtro paso bajo, directamente a la entrada Q del ADC, saltándose el tuner. Aquí sí manda la zona de Nyquist del ADC, 0–14.4 MHz: cualquier señal de HF por encima de 14.4 MHz se pliega dentro de la zona y aparece como imagen. Es exactamente el razonamiento del punto ③, pero sin el filtro IF que lo protegía. El V4 eliminó ese modo y puso en su lugar un *upconverter* que traslada 0–24 MHz a una frecuencia que el tuner sí puede recibir, con lo que HF vuelve a pasar por toda la cadena normal.
+
+El punto clave de la sección: el tuner y el ADC son la única parte analógica. Todo lo que hagamos en el curso (filtrar, demodular FM, sincronizar BPSK, decodificar ADS-B) ocurre sobre la secuencia de bytes I/Q del punto ⑥. Y esa secuencia tiene límites que vienen de los cuatro parámetros siguientes.
 
 ### 3. Los cuatro parámetros y sus límites
 
