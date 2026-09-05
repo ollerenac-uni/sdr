@@ -88,7 +88,7 @@ El valor impreso debe coincidir con el contenido del archivo `.sha256`.
 Desde radioconda Prompt (Windows) o una terminal con `(base)` activo (Linux/macOS):
 
 ```bash
-python -c "import gnuradio; print(gnuradio.__version__)"
+python -c "from gnuradio import gr; print(gr.version())"
 ```
 
 Salida esperada:
@@ -96,6 +96,11 @@ Salida esperada:
 ```
 3.10.12.0
 ```
+
+El paquete `gnuradio` no tiene atributo `__version__`; la versión se lee con `gr.version()`. Equivalente desde la línea de comandos: `gnuradio-config-info --version`. No existe un comando llamado `gnuradio`; los ejecutables son `gnuradio-companion` y `gnuradio-config-info`.
+
+!!! warning "Si ya tenías GNU Radio instalado con apt"
+    Comprueba cuál se ejecuta: `which gnuradio-companion` debe devolver `~/radioconda/bin/gnuradio-companion` cuando `(base)` está activo. Si devuelve `/usr/bin/gnuradio-companion`, el entorno no está activado y estás usando la versión de apt (distinta a la del curso). Lo mismo con `which rtl_test`.
 
 Confirma que el driver del RTL-SDR quedó instalado (no hace falta tener el dongle):
 

@@ -252,7 +252,7 @@ El laboratorio de esta sesión valida tu entorno. Debes llegar con todo instalad
 
 | # | Paso | Evidencia para el Reporte 0 | Sin dongle |
 |---|---|---|:---:|
-| 1 | `python -c "import gnuradio; print(gnuradio.__version__)"` imprime `3.10.12.0` | Texto de la salida | ✓ |
+| 1 | `python -c "from gnuradio import gr; print(gr.version())"` imprime `3.10.12.0` | Texto de la salida | ✓ |
 | 2 | `prueba.grc` (Signal Source → Throttle → Frequency Sink) muestra un pico en +1 kHz | Captura de pantalla del flowgraph y de la ventana | ✓ |
 | 3 | Cambia `Output Type` de Signal Source a *Float* y explica en dos líneas qué cambió en el espectro | Captura y explicación | ✓ |
 | 4 | `rtl_test -t` detecta el dongle y muestra el tuner | Texto completo de la salida | — |
