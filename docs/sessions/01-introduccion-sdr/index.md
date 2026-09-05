@@ -35,9 +35,31 @@ Este curso usa ese dongle, o grabaciones hechas con él, para construir receptor
 
 ### 1. Del superheterodino al SDR
 
-El receptor superheterodino (Armstrong, 1918) sigue dominando la radio: la señal de radiofrecuencia (RF) se mezcla con un oscilador local (LO) para trasladarla a una *intermediate frequency* (IF, frecuencia intermedia) fija, donde un filtro selectivo y un demodulador diseñados para esa IF hacen el trabajo. Cada etapa es hardware específico.
+El receptor que domina la radio desde hace un siglo se llama *superheterodino*, y el nombre describe su truco. *Heterodino* viene del griego *héteros* (otro) y *dýnamis* (fuerza): "otra frecuencia". Fessenden lo acuñó en 1901 para un método sencillo: **multiplicar** la señal recibida, de frecuencia $f_{RF}$, por una senoide generada en el propio receptor, el *local oscillator* (LO, oscilador local) de frecuencia $f_{LO}$. El producto de dos senoides contiene solo dos frecuencias nuevas, la suma y la diferencia:
 
-El SDR ideal elimina todo eso: antena → convertidor analógico-digital (ADC) → software. El problema es el ADC. Digitalizar directamente a 1 GHz con buena resolución exige un conversor de varios gigamuestras por segundo, caro y hambriento de energía. Por eso los SDR reales conservan un *front-end* analógico mínimo cuyo único trabajo es trasladar la señal a una frecuencia donde un ADC modesto pueda muestrearla.
+$$
+\cos(2\pi f_{RF} t)\cos(2\pi f_{LO} t) = \tfrac{1}{2}\cos\!\big(2\pi (f_{RF}-f_{LO})\,t\big) + \tfrac{1}{2}\cos\!\big(2\pi (f_{RF}+f_{LO})\,t\big).
+$$
+
+Es el mismo fenómeno del *batido* que se oye al afinar dos cuerdas de guitarra: dos tonos cercanos producen una oscilación lenta a la frecuencia diferencia. Un filtro se queda con la diferencia y la señal aparece trasladada a una frecuencia nueva que elegimos nosotros. *Super*-heterodino (Armstrong, 1918) significa "heterodino supersónico": la diferencia se coloca por encima del rango audible, en una *intermediate frequency* (IF, frecuencia intermedia) **fija**, típicamente 455 kHz en AM y 10.7 MHz en FM. Ahí un único filtro estrecho y un amplificador hacen todo el trabajo sin importar qué emisora se sintonice: cambiar de emisora es solo cambiar $f_{LO}$.
+
+```mermaid
+flowchart LR
+    ANT[Antena] -->|①| PRE[Filtro RF<br/>preselector]
+    PRE -->|②| LNA[Amplificador<br/>de bajo ruido]
+    LNA -->|③| MIX((×))
+    LO[Oscilador local<br/>f_LO] --> MIX
+    MIX -->|④| IFF[Filtro IF<br/>paso banda]
+    IFF -->|⑤| IFA[Amplificador IF]
+    IFA -->|⑥| DEM[Demodulador]
+    DEM -->|⑦| AF[Amplificador<br/>de audio]
+```
+
+Puntos de observación del espectro: ① en la antena, ② tras el preselector, ③ tras el LNA, ④ a la salida del mezclador (suma y diferencia), ⑤ tras el filtro IF, ⑥ tras el amplificador IF, ⑦ banda base tras el demodulador.
+
+<!-- TODO (profesor): explicar aquí las transformaciones del espectro de la señal en los puntos ① a ⑦. -->
+
+Cada bloque de la figura es un circuito diseñado para una IF y un tipo de modulación concretos. El SDR ideal elimina todo eso: antena → convertidor analógico-digital (ADC) → software. El problema es el ADC. Digitalizar directamente a 1 GHz con buena resolución exige un conversor de varios gigamuestras por segundo, caro y hambriento de energía. Por eso los SDR reales conservan un *front-end* analógico mínimo cuyo único trabajo es trasladar la señal a una frecuencia donde un ADC modesto pueda muestrearla.
 
 Según dónde queda la señal antes del ADC hay tres familias:
 
