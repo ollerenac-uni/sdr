@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-09-05T14:36:26.561Z",
+  "phase": "default",
+  "phase_name": "Curso SDR — Sesión 01 en revisión",
+  "phase_dir": ".planning",
+  "plan": "docs/plans/2026-09-05-curso-sdr.md",
+  "task": 5,
+  "total_tasks": 10,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "Fijar mkdocs-material 9.7.x", "status": "done", "commit": "124c67d"},
+    {"id": 2, "name": "Pestaña Guías e índice de setup (docs/setup/index.md)", "status": "done", "commit": "124c67d"},
+    {"id": 3, "name": "Guía radioconda (docs/setup/instalacion.md)", "status": "done", "commit": "2e5f8e2"},
+    {"id": 4, "name": "Guía RTL-SDR (docs/setup/rtl-sdr.md)", "status": "done", "commit": "124c67d"},
+    {"id": 5, "name": "Syllabus, portada, índice de sesiones, evaluación", "status": "in_progress", "progress": "Portada (docs/index.md) e índice (docs/sessions/index.md) alineados con el syllabus aprobado. Faltan docs/syllabus.md con pestaña Programa y la página de evaluación docs/exams/index.md con parcial + proyecto por hitos."},
+    {"id": "S01", "name": "Sesión 01 — Introducción a SDR (fuera del plan, pedida por el profesor)", "status": "in_progress", "progress": "Página completa con status: draft. §1 con heterodino y diagrama superheterodino; §2 reescrita punto a punto con 6 figuras. Publicada en el sitio. Pendiente: el profesor escribe la explicación espectral en el TODO de §1 y aprueba."}
+  ],
+  "remaining_tasks": [
+    {"id": 6, "name": "Repo plantilla sdr-reportes-template (crea repo en GitHub, requiere confirmación del profesor)", "status": "not_started"},
+    {"id": 7, "name": "Tutorial docs/setup/sitio-reportes.md (depende de la tarea 6)", "status": "not_started"},
+    {"id": 8, "name": "Issue template .github/ISSUE_TEMPLATE/instalacion.yml", "status": "not_started"},
+    {"id": 9, "name": "Repo sdr-datasets con lista de grabaciones (crea repo en GitHub)", "status": "not_started"},
+    {"id": "S02", "name": "Sesión 02 — bloqueada hasta que S01 pierda status: draft", "status": "blocked"}
+  ],
+  "blockers": [
+    {"description": "S01 conserva status: draft; el profesor está revisando sección por sección", "type": "human_action", "workaround": "No iniciar S02. Aplicar cambios a S01 en ciclos edición → mkdocs build --strict → commit."},
+    {"description": "Reporte 0 (vence S02) exige que cada alumno tenga sitio de reportes; tareas 6 y 7 no hechas", "type": "human_action", "workaround": "Ejecutar tareas 6 y 7 antes de la semana 2; la tarea 6 crea un repo público en GitHub y requiere confirmación."},
+    {"description": "Labs sin dongle dependen de archivos IQ oficiales que aún no existen", "type": "human_action", "workaround": "Grabar fm_99p1MHz_2p4Msps_g30.cu8 (y variantes a 3 ganancias) con el dongle V3 del profesor; publicar como release en sdr-datasets (tarea 9)."}
+  ],
+  "async_jobs": [],
+  "human_actions_pending": [
+    {"action": "Escribir la explicación de las transformaciones espectrales en §1 de S01 (marcador <!-- TODO (profesor) --> bajo el diagrama del superheterodino) y revisar §2", "context": "El profesor pidió el diagrama para explicar él mismo el espectro en los puntos ①–⑦", "blocking": false},
+    {"action": "Aprobar S01 quitando la línea status: draft del frontmatter", "context": "Regla de puerta: S02 no se inicia mientras S01 esté en draft", "blocking": true},
+    {"action": "Ejecutar en su Linux, con (base) activo, los comandos de blacklist y udev de docs/setup/rtl-sdr.md y correr rtl_test -s 2400000 60 s", "context": "El dongle V3 ya funciona sin blacklist (librtlsdr 2.0 desacopla el driver), pero el kernel puede reclamarlo al reconectar", "blocking": false},
+    {"action": "Decidir si borra el repo huérfano público https://github.com/ollerenac/sdr (creado por error con la cuenta ollerenac)", "context": "Contiene el primer commit con referencias a ollerenac; tiene su propio sitio en ollerenac.github.io/sdr. Irreversible; comandos en el historial de la sesión", "blocking": false},
+    {"action": "Decidir si elimina el GNU Radio 3.10.7 de apt (gnuradio, gnuradio-dev, librtlsdr0)", "context": "Convive con radioconda 3.10.12; con (base) activo gana radioconda. Solo confusión, no conflicto", "blocking": false},
+    {"action": "Validar la guía Windows (Zadig, rtl_test) en una VM Windows 11 de evaluación y planificar la clínica de drivers de S01 con 2–3 voluntarios", "context": "El profesor no tiene laptop Windows 11", "blocking": false}
+  ],
+  "decisions": [
+    {"decision": "Ruta principal de entorno: radioconda 2025.03.14 nativo (GNU Radio 3.10.12) en Windows/Linux/macOS; VM Ubuntu secundaria diferida; sin OVA", "rationale": "Versiones idénticas para todos; VirtualBox pierde muestras en passthrough USB según reportes; el Extension Pack ya no es necesario para USB 2.0/3.0 (VirtualBox ≥ 7.0)", "phase": "design"},
+    {"decision": "Todo laboratorio se califica desde archivo IQ oficial (.cu8 uint8 de rtl_sdr, clips 10–30 s, GitHub Releases en repo sdr-datasets); el dongle es opcional", "rationale": "Equidad para alumnos sin dongle; quita presión a drivers y compra", "phase": "design"},
+    {"decision": "Reportes del alumno como páginas simples en docs/reportes/ de un repo plantilla sdr-reportes-template; sin plugin blog", "rationale": "El plugin blog rompe el build si falta date en el frontmatter", "phase": "design"},
+    {"decision": "Evaluación: Parcial 30 / Proyecto 40 (propuesta 5 + hito1 10 + hito2 10 + final 15) / Reportes 30 (R0–R5 × 5). 4 h académicas/semana (2T+2L)", "rationale": "Elección del profesor", "phase": "design"},
+    {"decision": "Syllabus de 16 semanas: sync antes del parcial (S07), sensado adelantado a S11, ecualización absorbida en OFDM (S12), NOAA APT fuera (satélites desactivados 2025), 433 MHz no es ICM en Perú (usar 915–928, AU915), voz aeronáutica solo ATIS/VOLMET", "rationale": "Correcciones de la revisión adversaria con fuentes; ver docs/plans/2026-09-05-curso-sdr-design.md", "phase": "design"},
+    {"decision": "Regla de puerta: cada sesión nace con status: draft; no se inicia la N+1 mientras la N esté en draft", "rationale": "El profesor revisa sesión por sesión; sin tarea bloqueante adicional", "phase": "execution"},
+    {"decision": "docs/plans/ y gen_*.py excluidos del sitio con exclude_docs en mkdocs.yml", "rationale": "docs/ es la fuente del sitio; los planes y generadores no se publican", "phase": "execution"},
+    {"decision": "Figuras de espectro en matplotlib (300 DPI, esquemáticas) generadas por figures/gen_cadena_rx.py versionado; diagramas de bloques en Mermaid", "rationale": "Reproducible; Mermaid ya está configurado en mkdocs.yml", "phase": "execution"},
+    {"decision": "No copiar al repo las imágenes de rtl-sdr.com que mostró el profesor", "rationale": "Sin licencia CC; se redibujan", "phase": "execution"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "Preguntar al profesor qué sección de S01 sigue (o si ya escribió su texto en el TODO de §1). Si aprueba S01: quitar status: draft, commit, push, y recién entonces abrir S02 con status: draft. En paralelo, antes de la semana 2: tareas 6–7 (repo plantilla + tutorial), pidiendo confirmación antes de crear el repo en GitHub.",
+  "context_notes": "Sitio publicado en https://ollerenac-uni.github.io/sdr/ (Action 'Publicar sitio del curso' en cada push a main). El profesor revisa en su mkdocs serve local (pid 1358930, puerto 9000): las URLs llevan prefijo /sdr/ por site_url. Estilo pactado: términos técnicos en inglés con glosa, ecuaciones con $...$, cada figura seguida de lectura guiada, ejercicios con ??? example 'Solución'. Los cambios a S01 se hacen en ciclos cortos edición → mkdocs build --strict desde la raíz → commit; push solo cuando el profesor lo pide."
+}
