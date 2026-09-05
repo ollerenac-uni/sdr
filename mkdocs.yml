@@ -1,9 +1,9 @@
 site_name: Radio Definida por Software
-site_url: https://ollerenac.github.io/sdr/
+site_url: https://ollerenac-uni.github.io/sdr/
 site_description: Curso de pregrado en radio definida por software (SDR) — señales IQ, GNU Radio, modulación y sistemas reales
-site_author: ollerenac
-repo_url: https://github.com/ollerenac/sdr
-repo_name: ollerenac/sdr
+site_author: ollerenac-uni
+repo_url: https://github.com/ollerenac-uni/sdr
+repo_name: ollerenac-uni/sdr
 
 theme:
   name: material

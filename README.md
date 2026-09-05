@@ -2,7 +2,7 @@
 
 Curso de pregrado de acceso abierto sobre radio definida por software (SDR) — de las señales IQ y GNU Radio a la recepción y transmisión de sistemas reales.
 
-**Sitio web**: [ollerenac.github.io/sdr](https://ollerenac.github.io/sdr/)
+**Sitio web**: [ollerenac-uni.github.io/sdr](https://ollerenac-uni.github.io/sdr/)
 **Licencia**: [![CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 
 ---
@@ -29,7 +29,7 @@ Cada sesión nueva se añade al `nav` de `mkdocs.yml` bajo `Sesiones`.
 ## Uso local
 
 ```bash
-git clone https://github.com/ollerenac/sdr.git
+git clone https://github.com/ollerenac-uni/sdr.git
 cd sdr
 pip install -r requirements.txt
 mkdocs serve    # vista previa en http://127.0.0.1:8000
@@ -43,6 +43,6 @@ El sitio se publica automáticamente en GitHub Pages con cada push a `main` (ver
 
 Todo el contenido se publica bajo [Creative Commons Atribución 4.0 Internacional (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
-> *Radio Definida por Software* por ollerenac
-> https://github.com/ollerenac/sdr
+> *Radio Definida por Software* por ollerenac-uni
+> https://github.com/ollerenac-uni/sdr
 > Licencia CC BY 4.0

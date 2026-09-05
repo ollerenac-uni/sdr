@@ -6,7 +6,7 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 
 [Ver sesiones](sessions/index.md){ .md-button .md-button--primary }
 [Exámenes](exams/index.md){ .md-button }
-[Repositorio GitHub](https://github.com/ollerenac/sdr){ .md-button }
+[Repositorio GitHub](https://github.com/ollerenac-uni/sdr){ .md-button }
 
 ---
 
@@ -95,7 +95,7 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 === "Clonar el repositorio"
 
     ```bash
-    git clone https://github.com/ollerenac/sdr.git
+    git clone https://github.com/ollerenac-uni/sdr.git
     cd sdr
     pip install -r requirements.txt
     mkdocs serve    # vista previa en http://127.0.0.1:8000
@@ -112,4 +112,4 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 Todo el contenido se publica bajo [Creative Commons Atribución 4.0 Internacional (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 Eres libre de compartir, adaptar y redistribuir este material, incluso con fines comerciales, siempre que se otorgue la atribución correspondiente.
 
-> *Radio Definida por Software* por ollerenac — [github.com/ollerenac/sdr](https://github.com/ollerenac/sdr)
+> *Radio Definida por Software* por ollerenac-uni — [github.com/ollerenac-uni/sdr](https://github.com/ollerenac-uni/sdr)
