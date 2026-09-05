@@ -30,6 +30,9 @@ theme:
         icon: material/brightness-4
         name: Cambiar a modo claro
 
+exclude_docs: |
+  plans/
+
 extra:
   status:
     draft: En desarrollo
