@@ -6,7 +6,7 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: ''
+    description: 'Reproduce una muestra I/Q sin hardware y conserva Soapy como fuente opcional.'
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -22,7 +22,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: Not titled yet
+    title: Sesión 01 - Espectro de una muestra FM
     window_size: (1000,1000)
   states:
     bus_sink: false

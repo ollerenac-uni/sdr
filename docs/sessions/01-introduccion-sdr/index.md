@@ -14,7 +14,7 @@ Al finalizar esta sesión, el estudiante será capaz de:
 1. Explicar qué es un *software-defined radio* (radio definida por software) y qué funciones del receptor pasan del hardware al software
 2. Describir la cadena de recepción del RTL-SDR (tuner → ADC → DDC → USB) y el papel de cada bloque
 3. Relacionar los parámetros $f_c$, $f_s$, ganancia y resolución en bits con el ancho de banda observable y el rango dinámico
-4. Verificar una instalación de GNU Radio y un dongle con `rtl_test`, interpretando su salida
+4. Verificar GNU Radio y reproducir una grabación I/Q en un *flowgraph*; opcionalmente, comprobar un dongle con `rtl_test`
 5. Identificar qué señales del espectro peruano se pueden recibir y publicar dentro del marco legal del curso
 
 ---
@@ -84,8 +84,6 @@ Puntos de observación del espectro:
 - ⑤ tras el filtro IF,
 - ⑥ tras el amplificador IF,
 - ⑦ banda base tras el demodulador.
-
-<!-- TODO (profesor): explicar aquí las transformaciones del espectro de la señal en los puntos ① a ⑦. -->
 
 Cada bloque es un circuito diseñado para una IF y una modulación concretas. El **SDR ideal** reduce la cadena a antena, ADC y software.
 
@@ -498,9 +496,9 @@ El ejemplo plantea la grabación de 10 s de una emisora en 99.1 MHz para las Ses
 
    Un piso de ruido elevado o picos repetidos indican saturación y exigen reducir la ganancia.
 3. **Exactitud.** 1 ppm a 99.1 MHz son 99 Hz. Frente a un canal de 200 kHz, despreciable.
-4. **Tamaño.** $10\ \text{s} \times 2.4 \times 10^6\ \text{muestras/s} \times 2\ \text{bytes} = 48$ MB. El archivo no debe almacenarse en el repositorio Git, porque cada versión aumenta el historial.
+4. **Tamaño.** $10\ \text{s} \times 2.4 \times 10^6\ \text{muestras/s} \times 2\ \text{bytes} = 48$ MB. El archivo no debe almacenarse en Git, porque cada versión aumenta el historial.
 
-   Por ello, los archivos del curso se distribuyen como *releases* independientes.
+   Las grabaciones se distribuyen mediante la carpeta de Google Drive del curso. El enlace y los metadatos de cada muestra se publican en el laboratorio correspondiente.
 5. **Legalidad.** Radiodifusión FM: servicio destinado al público. Sin restricción.
 
 El comando resultante es el de la [guía del RTL-SDR](../../setup/rtl-sdr.md#grabar-muestras-iq):
@@ -522,6 +520,8 @@ rtl_sdr -f 99.1e6 -s 2400000 -g 30 -n 24000000 fm_99p1MHz_2p4Msps_g30.cu8
     [SigMF](https://sigmf.org/sigmf-spec.pdf) formaliza el nombre de tipo `cu8` y permite acompañar los datos con metadatos.
 
     El [código de `rtl_sdr`](https://github.com/osmocom/rtl-sdr/blob/master/src/rtl_sdr.c) confirma que la utilidad graba un búfer `uint8_t` y utiliza dos bytes por muestra compleja.
+
+    Para el laboratorio, el profesor proporciona una copia `complex64` llamada `fm_muestra.cfile`. Este formato puede conectarse directamente a un bloque **File Source** de tipo *Complex*.
 
 ---
 
@@ -619,32 +619,44 @@ Se debe planificar una grabación de 30 s: seleccionar $f_s$, ganancia y nombre 
 
 ## Laboratorio
 
-El laboratorio valida el entorno de trabajo. Cada estudiante debe asistir con las herramientas instaladas según las guías:
+El laboratorio valida el entorno sin exigir hardware. Cada estudiante trabaja con una grabación I/Q; quien tenga un RTL-SDR puede repetir la observación con señales en vivo.
+
+Antes de la clase, instala las herramientas según las guías:
 
 - [Instalar GNU Radio con radioconda](../../setup/instalacion.md)
 - [Configurar el RTL-SDR](../../setup/rtl-sdr.md) (solo para quien disponga del dongle)
 
+Descarga también el [`test.grc` preparado](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test.grc). El grafo contiene dos rutas de entrada:
+
+- **File Source → Throttle**, activa de forma predeterminada.
+- **Soapy RTL-SDR Source**, visible pero desactivada (`D`).
+
+!!! warning "Pendiente del profesor: muestra I/Q"
+    Antes de publicar la sesión se añadirá aquí la URL de Google Drive, junto con la frecuencia central, tasa de muestreo, ganancia, duración y suma SHA-256 de `fm_muestra.cfile`.
+
+Guarda `test.grc` y `fm_muestra.cfile` en una misma carpeta. Al abrir el grafo, entra a **File Source** y selecciona el archivo descargado para evitar problemas con rutas relativas.
+
 ### En clase (2 h)
 
-| # | Paso | Evidencia para el Reporte 0 | Sin dongle |
+| # | Paso | Evidencia para el Reporte 0 | Obligatorio |
 |---|---|---|:---:|
-| 1 | `python -c "from gnuradio import gr; print(gr.version())"` imprime `3.10.12.0` | Texto de la salida | ✓ |
-| 2 | `prueba.grc` (Signal Source → Throttle → Frequency Sink) muestra un pico en +1 kHz | Captura de pantalla del flowgraph y de la ventana | ✓ |
-| 3 | Cambiar `Output Type` de Signal Source a *Float* y explicar en dos líneas el cambio del espectro | Captura y explicación | ✓ |
-| 4 | `rtl_test -t` detecta el dongle y muestra el tuner | Texto completo de la salida | — |
-| 5 | `rtl_test -s 2400000` corre 60 s | Texto completo; cuenta de líneas `lost at least` | — |
-| 6 | Obtener el primer espectro FM con **RTL-SDR Source** a 2.4 MS/s y 30 dB de ganancia | Captura que identifique al menos tres emisoras por su frecuencia | — |
-| 7 | Repetir el paso 6 con ganancias de 0 dB y 49.6 dB; comparar el piso de ruido y los picos | Dos capturas y tres líneas de análisis | — |
+| 1 | Ejecutar `python -c "from gnuradio import gr; print(gr.version())"`; debe imprimir `3.10.12.0` | Texto de la salida | ✓ |
+| 2 | Crear `prueba.grc` (Signal Source → Throttle → Frequency Sink) y observar un pico en +1 kHz | Capturas del grafo y del espectro | ✓ |
+| 3 | Cambiar `Output Type` de Signal Source a *Float* y explicar el cambio del espectro | Captura y explicación breve | ✓ |
+| 4 | Abrir `test.grc`, elegir `fm_muestra.cfile` en File Source y confirmar que Soapy permanece desactivado | Captura del grafo completo | ✓ |
+| 5 | Ejecutar el grafo y observar la grabación en tiempo y frecuencia | Dos capturas y descripción de lo observado | ✓ |
+| 6 | Relacionar el eje del espectro con la frecuencia central y $f_s$ indicadas en los metadatos | Cálculo del intervalo visible | ✓ |
+| 7 | Con dongle: desactivar File Source y Throttle, activar Soapy, ejecutar `rtl_test` y observar una señal en vivo | Evidencia adicional | No |
 
-Los alumnos sin dongle completan los pasos 1–3 y, para los pasos 6–7, analizan las capturas que el profesor proyecta en clase.
+Los pasos 1–6 constituyen la ruta común y no requieren dongle. El paso 7 es una extensión opcional y no modifica la calificación.
 
 La clínica de instalación se desarrolla en paralelo. Quien encuentre problemas con Zadig, el módulo DVB de Linux o `rtl_test` puede resolverlos con el profesor y los voluntarios. El Reporte 0 debe registrar el problema y su solución.
 
 ### Reporte 0: instalación y prueba del entorno
 
 - **Vence:** al inicio de la Sesión 02; debe publicarse en el sitio de reportes del estudiante.
-- **Contenido:** sistema operativo y versión; evidencias de la tabla anterior; problemas encontrados y solución; salida de `rtl_test` o la frase "sin dongle".
-- **Rúbrica (5 puntos):** evidencias completas y legibles (2), explicación del paso 3 correcta (1), análisis del paso 7 o, sin dongle, del espectro proyectado (1), reporte publicado a tiempo y con la estructura de la plantilla (1).
+- **Contenido:** sistema operativo y versión; evidencias obligatorias de la tabla; interpretación de la grabación; problemas encontrados y solución. La evidencia de `rtl_test` es opcional.
+- **Rúbrica (5 puntos):** evidencias completas y legibles (2), explicación del paso 3 (1), interpretación de la grabación y su intervalo de frecuencias (1), publicación puntual con la plantilla (1).
 
 ---
 
