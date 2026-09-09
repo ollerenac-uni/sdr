@@ -1,63 +1,59 @@
 {
   "version": "1.0",
-  "timestamp": "2026-09-09T00:07:45.468Z",
+  "timestamp": "2026-09-09T14:54:48.264Z",
   "phase": "default",
-  "phase_name": "Curso SDR — Sesión 01 en revisión y flowgraph experimental",
+  "phase_name": "Curso SDR — Sesión 01 pendiente de muestra y aprobación",
   "phase_dir": ".planning",
   "plan": "docs/plans/2026-09-05-curso-sdr.md",
   "task": 5,
   "total_tasks": 10,
   "status": "paused",
   "completed_tasks": [
-    {"id": 1, "name": "Fijar mkdocs-material 9.7.x", "status": "done", "commit": "124c67d"},
-    {"id": 2, "name": "Pestaña Guías e índice de setup", "status": "done", "commit": "124c67d"},
-    {"id": 3, "name": "Guía radioconda", "status": "done", "commit": "2e5f8e2"},
-    {"id": 4, "name": "Guía RTL-SDR", "status": "done", "commit": "124c67d"},
-    {"id": 5, "name": "Syllabus, portada, índice de sesiones y evaluación", "status": "in_progress", "progress": "Portada e índice alineados con el syllabus aprobado. Faltan docs/syllabus.md y una página de evaluación coherente con el proyecto final."},
-    {"id": "S01", "name": "Sesión 01 — Introducción a SDR", "status": "in_progress", "progress": "Página completa en draft. El profesor está reestructurando la introducción y la sección 1, y dejó solicitudes explícitas de imágenes para comparar arquitecturas y mostrar el dongle abierto. Sigue pendiente el TODO de transformaciones espectrales ①–⑦."},
-    {"id": "AUDIT-2026-09-08", "name": "Análisis técnico de solo lectura del repositorio", "status": "done", "progress": "Se mapeó estructura, stack, estado y riesgos. mkdocs build --strict pasó; los tres Python parsean correctamente. Se detectó una incompatibilidad .cu8/complex y desincronización entre test.grc y test.py."}
+    {"id": 1, "name": "Fijar MkDocs/Material y dependencias", "status": "done", "commit": "124c67d"},
+    {"id": 2, "name": "Crear pestaña Guías e índice de setup", "status": "done", "commit": "124c67d"},
+    {"id": 3, "name": "Publicar guía de radioconda", "status": "done", "commit": "2e5f8e2"},
+    {"id": 4, "name": "Publicar guía RTL-SDR", "status": "done", "commit": "124c67d"},
+    {"id": 5, "name": "Syllabus, portada, sesiones y evaluación", "status": "in_progress", "progress": "Portada e índice avanzados; faltan docs/syllabus.md y sustituir Examen Final por el proyecto final aprobado."},
+    {"id": "S01-VISUALS", "name": "Figuras didácticas de arquitecturas, cadena RTL-SDR e I/Q", "status": "done", "commit": "996645d"},
+    {"id": "S01-FLOWGRAPH", "name": "Flowgraph con archivo por defecto y Soapy opcional", "status": "done", "commit": "f7bce21"},
+    {"id": "S01-NO-DONGLE", "name": "Laboratorio y Reporte 0 sin dongle obligatorio", "status": "done", "commit": "8b13101"}
   ],
   "remaining_tasks": [
+    {"id": "S01-DRIVE", "name": "Añadir URL y metadatos de fm_muestra.cfile", "status": "human_action"},
+    {"id": "S01-APPROVAL", "name": "Revisión final y retiro de status: draft", "status": "human_action"},
     {"id": 5, "name": "Completar syllabus y página de evaluación", "status": "in_progress"},
     {"id": 6, "name": "Crear repo público sdr-reportes-template", "status": "not_started"},
     {"id": 7, "name": "Crear tutorial docs/setup/sitio-reportes.md", "status": "not_started"},
-    {"id": 8, "name": "Crear issue template de instalación", "status": "not_started"},
-    {"id": 9, "name": "Crear repo público sdr-datasets y grabaciones IQ", "status": "not_started"},
-    {"id": "S01-VISUALS", "name": "Resolver solicitudes visuales y bibliográficas de la introducción y sección 1", "status": "in_progress"},
-    {"id": "FLOWGRAPH", "name": "Corregir test.grc para reproducir .cu8 y regenerar test.py", "status": "in_progress"},
-    {"id": "S02", "name": "Sesión 02", "status": "blocked"}
+    {"id": 8, "name": "Crear plantilla de issue de instalación", "status": "not_started"},
+    {"id": 9, "name": "Actualizar el plan de datasets para Google Drive y publicar grabaciones", "status": "not_started"},
+    {"id": 10, "name": "Publicación y verificación final del arranque del curso", "status": "not_started"}
   ],
   "blockers": [
-    {"description": "S01 conserva status: draft y está en revisión del profesor", "type": "human_action", "workaround": "No iniciar S02; aplicar cambios y validar S01 en ciclos cortos."},
-    {"description": "Las solicitudes de imágenes de S01 requieren fuentes reutilizables o diagramas propios", "type": "human_action", "workaround": "No copiar imágenes encontradas en Google sin licencia; buscar fuentes primarias con licencia compatible o redibujar con atribución."},
-    {"description": "test.grc abre /home/researcher/fm_muestra.cu8 como tipo complex, aunque .cu8 contiene bytes uint8 I/Q; test.py además no incluye el Throttle presente en el GRC", "type": "technical", "workaround": "Usar RTL-SDR Source con file=...,rate=2.4e6 o convertir .cu8 a complex64/.cfile; luego regenerar test.py desde el GRC."},
-    {"description": "El Reporte 0 requiere un sitio de reportes del alumno, pero las tareas 6–7 no están hechas", "type": "human_action", "workaround": "Crear el repo plantilla y tutorial antes de S02; pedir confirmación antes de crear el repo público."},
-    {"description": "Los laboratorios sin dongle dependen de archivos IQ oficiales que aún no existen", "type": "human_action", "workaround": "Grabar las muestras con el dongle V3 y publicarlas en sdr-datasets."},
-    {"description": "El runtime GSD de ~/.agents falla con MODULE_NOT_FOUND de ../../../package.json", "type": "technical", "workaround": "Usar /home/researcher/.codex/gsd-core/bin/gsd-tools.cjs o reparar/reinstalar la copia de ~/.agents antes de ejecutar flujos desde ella."}
+    {"description": "S01 necesita la muestra fm_muestra.cfile en Google Drive y sus metadatos antes de publicarse como definitiva.", "type": "human_action", "workaround": "El sitio conserva un aviso visible con todos los campos pendientes."},
+    {"description": "S01 conserva status: draft y bloquea S02 por la regla de puerta.", "type": "human_action", "workaround": "Continuar tareas de infraestructura sin iniciar la Sesión 02."},
+    {"description": "El Reporte 0 exige un sitio del estudiante, pero el repo plantilla y el tutorial aún no existen.", "type": "external", "workaround": "Completar tareas 6 y 7 antes del vencimiento de R0; pedir autorización antes de crear el repo público."},
+    {"description": "La tarea 9 del plan todavía prescribe GitHub Releases/sdr-datasets, mientras la decisión vigente es distribuir las grabaciones por Google Drive.", "type": "technical", "workaround": "Actualizar el plan antes de ejecutar la tarea 9."}
   ],
   "async_jobs": [],
   "human_actions_pending": [
-    {"action": "Revisar las anotaciones entre corchetes añadidas por el profesor en S01 y decidir qué visuales producir primero", "context": "Se piden comparación gráfica de arquitecturas SDR, referencias bibliográficas y una foto/diagrama del dongle abierto", "blocking": false},
-    {"action": "Escribir o aprobar la explicación espectral ①–⑦ y retirar status: draft cuando S01 esté lista", "context": "La regla de puerta impide iniciar S02 mientras S01 siga en draft", "blocking": true},
-    {"action": "Elegir el método correcto para reproducir fm_muestra.cu8 y regenerar test.py", "context": "El File Source complex actual interpreta incorrectamente el formato cu8 y usa una ruta absoluta local", "blocking": false},
-    {"action": "Autorizar antes de crear los repos públicos sdr-reportes-template y sdr-datasets", "context": "Son cambios externos visibles y las tareas 6 y 9 dependen de ellos", "blocking": true},
-    {"action": "Grabar y publicar las muestras IQ oficiales", "context": "Sin datasets no existe la variante equitativa de los laboratorios para estudiantes sin dongle", "blocking": true},
-    {"action": "Validar Zadig y rtl_test en Windows 11", "context": "La guía Windows todavía no fue probada en hardware representativo", "blocking": false}
+    {"action": "Subir fm_muestra.cfile a Google Drive", "context": "Ruta obligatoria del laboratorio para alumnos sin dongle.", "blocking": true},
+    {"action": "Proporcionar URL, frecuencia central, tasa, ganancia, duración y SHA-256", "context": "Campos enumerados en el aviso visible de S01.", "blocking": true},
+    {"action": "Aprobar S01 y autorizar retirar status: draft", "context": "La regla de puerta mantiene S02 bloqueada.", "blocking": true},
+    {"action": "Autorizar la creación del repo público sdr-reportes-template", "context": "Cambio externo visible requerido para el Reporte 0.", "blocking": true},
+    {"action": "Validar Zadig y rtl_test en Windows 11 si hay voluntarios con dongle", "context": "Actividad opcional de la clínica de instalación.", "blocking": false}
   ],
   "decisions": [
-    {"decision": "Usar radioconda 2025.03.14 nativo con GNU Radio 3.10.12 como entorno principal", "rationale": "Mantener versiones idénticas en Windows, Linux y macOS", "phase": "design"},
-    {"decision": "Calificar todos los laboratorios desde archivos IQ oficiales y mantener el dongle opcional", "rationale": "Equidad para estudiantes sin hardware", "phase": "design"},
-    {"decision": "Publicar reportes como páginas MkDocs simples, sin plugin blog", "rationale": "Evitar frontmatter obligatorio que rompe builds", "phase": "design"},
-    {"decision": "Evaluación: parcial 30 %, reportes 30 %, proyecto por hitos 40 %", "rationale": "Elección del profesor", "phase": "design"},
-    {"decision": "No iniciar una sesión nueva mientras la anterior conserve status: draft", "rationale": "Permitir revisión secuencial del profesor", "phase": "execution"},
-    {"decision": "Generar diagramas y figuras propias reproducibles; no copiar imágenes sin licencia", "rationale": "Compatibilidad con CC BY 4.0 y trazabilidad", "phase": "execution"},
-    {"decision": "Tratar los archivos .grc como fuente y los .py de GNU Radio como artefactos regenerables", "rationale": "Evitar divergencia entre el grafo visual y el ejecutable generado", "phase": "execution"}
+    {"decision": "Asumir que los alumnos no tienen dongle.", "rationale": "La ruta calificable debe funcionar para todo el grupo.", "phase": "S01"},
+    {"decision": "Usar File Source complex + Throttle como ruta activa y Soapy RTL-SDR Source desactivado como alternativa.", "rationale": "Permite reproducir una muestra sin hardware y conserva la opción de recepción en vivo.", "phase": "S01"},
+    {"decision": "Distribuir fm_muestra.cfile por Google Drive y no almacenarla en Git.", "rationale": "Evitar binarios grandes en el historial del repositorio.", "phase": "S01"},
+    {"decision": "Cancelar los diagramas espectrales del receptor superheterodino.", "rationale": "Orden explícito del profesor; se eliminó el TODO correspondiente sin crear figuras nuevas.", "phase": "S01"},
+    {"decision": "Mantener test.grc como fuente y regenerar test.py con GNU Radio 3.10.12.", "rationale": "Evitar divergencia entre el grafo visual y el ejecutable generado.", "phase": "S01"},
+    {"decision": "Mantener S01 en draft hasta aprobación explícita.", "rationale": "Cumplir la regla de revisión secuencial de sesiones.", "phase": "execution"}
   ],
   "uncommitted_files": [
-    {"path": "docs/sessions/01-introduccion-sdr/index.md", "state": "modified", "detail": "Reestructuración del profesor en introducción y sección 1; contiene tres solicitudes visuales entre corchetes. 37 inserciones, 9 eliminaciones frente a HEAD."},
-    {"path": "gnuradio-flowgraphs/test.grc", "state": "modified", "detail": "Prueba migrada de fuente Soapy a archivo, con Throttle, 2.4 MS/s y fuente de hardware deshabilitada. 54 inserciones, 7 eliminaciones."},
-    {"path": "gnuradio-flowgraphs/test.py", "state": "modified", "detail": "Python generado de GNU Radio 3.10.12; no coincide con el GRC actual y abre .cu8 como gr_complex. 21 inserciones, 59 eliminaciones."}
+    {"path": "referencia/Network_GPRS_Prototype_based_on_SDR_and_OpenBTS_as_an_IoT-lab_Testbed.pdf", "state": "untracked", "detail": "PDF local deliberadamente excluido de commits."},
+    {"path": "referencia/SDR4Engineers.pdf", "state": "untracked", "detail": "PDF local deliberadamente excluido de commits."}
   ],
-  "next_action": "Leer primero el diff no confirmado de S01 y preservar las notas del profesor. Resolver las solicitudes visuales con fuentes licenciadas o diagramas propios. Antes de ejecutar el flowgraph experimental, corregir la lectura .cu8 y regenerar test.py desde test.grc. Mantener S02 bloqueada hasta aprobar S01.",
-  "context_notes": "Repositorio docente MkDocs, no aplicación. HEAD 67282e7 en main está un commit por delante de origin/main. El análisis del 2026-09-08 fue solo lectura: mkdocs 1.6.1 construyó en modo --strict correctamente y los tres scripts Python pasaron ast.parse. No hay tests automatizados ni notebooks. No se detectaron servidores MkDocs/GNU Radio ni jobs externos activos. El working tree contiene cambios del profesor que no deben descartarse ni mezclarse accidentalmente con el handoff. La página pública de exámenes aún contradice el diseño: dice examen final, mientras el syllabus aprobado define proyecto/presentación final. El README promete lab.ipynb por sesión, pero todavía no existen notebooks. La licencia raíz es CC BY 4.0 y los Python generados declaran GPL-3.0; conviene documentar el alcance de cada licencia."
+  "next_action": "Al reanudar, verificar primero este handoff. Si el profesor ya tiene la URL de Drive, completar el aviso y los metadatos de S01, ejecutar pruebas/build y solicitar aprobación para retirar draft. Si no, continuar la tarea 5 sin abrir S02.",
+  "context_notes": "Repositorio docente MkDocs. main está sincronizada con origin/main en 8b13101 y GitHub Pages publicó correctamente la ruta sin dongle. S01 tiene 13 figuras y ningún TODO sobre espectros del superheterodino. El único aviso visible pendiente en la sesión es la muestra I/Q de Drive. Última verificación: 7 pruebas aprobadas, mkdocs build --strict correcto, test.grc compiló con GNU Radio 3.10.12 y el smoke test del flowgraph pasó con una muestra temporal convertida. No hay servidores ni trabajos externos activos. La estructura .planning es un handoff ad hoc: no existen PROJECT.md, ROADMAP.md ni STATE.md formales."
 }
