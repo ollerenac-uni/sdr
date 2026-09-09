@@ -74,6 +74,7 @@ nav:
   - Sesiones:
       - sessions/index.md
       - "01 — Introducción a SDR": sessions/01-introduccion-sdr/index.md
+      - "02 — Del tiempo al espectro": sessions/02-tiempo-frecuencia-iq/index.md
   - Guías:
       - setup/index.md
       - "Instalar GNU Radio": setup/instalacion.md

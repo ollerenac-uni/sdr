@@ -49,7 +49,7 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 |---|--------|:------:|
 | 00 | [Pre-lab: instalar el entorno](setup/index.md) | Disponible |
 | 01 | [Introducción a la Radio Definida por Software](sessions/01-introduccion-sdr/index.md) | En desarrollo |
-| 02 | Señales IQ y hardware real: ganancia, saturación, DC, ppm | Próximamente |
+| 02 | [Del tiempo al espectro: señales, IQ y hardware real](sessions/02-tiempo-frecuencia-iq/index.md) | En desarrollo |
 | 03 | DSP para SDR: filtros FIR, decimación, PSD y SNR | Próximamente |
 | 04 | GNU Radio Companion a fondo | Próximamente |
 | 05 | Modulación analógica: AM/FM, presupuesto de enlace, figura de ruido | Próximamente |

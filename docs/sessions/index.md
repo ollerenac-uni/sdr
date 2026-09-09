@@ -6,7 +6,7 @@ Cada sesión tiene 2 h de teoría y 2 h de laboratorio. Todo laboratorio se cali
 |---|--------|---------|:------:|
 | 00 | [Pre-lab: instalar el entorno](../setup/index.md) | — | Disponible |
 | 01 | [Introducción a la Radio Definida por Software](01-introduccion-sdr/index.md) | R0 | En desarrollo |
-| 02 | Señales IQ y hardware real: ganancia, saturación, DC, ppm | R1 | Próximamente |
+| 02 | [Del tiempo al espectro: señales, IQ y hardware real](02-tiempo-frecuencia-iq/index.md) | R1 | En desarrollo |
 | 03 | DSP para SDR: filtros FIR, decimación, PSD y SNR | — | Próximamente |
 | 04 | GNU Radio Companion a fondo | R2 | Próximamente |
 | 05 | Modulación analógica: AM/FM, presupuesto de enlace, figura de ruido | — | Próximamente |
