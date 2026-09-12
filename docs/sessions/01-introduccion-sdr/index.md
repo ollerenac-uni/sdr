@@ -332,50 +332,48 @@ La Figura 10 mostró la cancelación con una sinusoide aislada. Conviene repetir
 
 El montaje es el siguiente. Se sintetiza una señal de paso banda real con tres emisoras situadas **solo por encima** de la frecuencia central, en $+0.2$, $+0.5$ y $+0.9$ MHz. Por debajo no hay ninguna. Luego se multiplica por $\cos$ y por $-\sin$, exactamente como hace el RTL2832U, y se comparan los tres espectros.
 
-![Cinco filas: la entrada real en la IF, la rama I sola, la rama Q sola, la combinación I+jQ, y el desfase entre ramas, con ampliaciones de la banda base](figures/cadena-rx-4b-ramas-iq.png)
+Las cuatro filas están dibujadas en **amplitud lineal con signo**, no en decibelios. El logaritmo destruye el signo, y aquí el signo es toda la historia.
 
-**Figura 12.** Las dos ramas del DDC por separado, su combinación y el desfase que la explica, sobre una escena con emisoras únicamente en offsets positivos.
+![Cuatro filas en amplitud con signo: la entrada real en la IF, la rama I con todo positivo, la rama Q con los espejos negativos, y la suma directa donde los espejos se anulan](figures/cadena-rx-4b-ramas-iq.png)
+
+**Figura 12.** Las dos ramas del DDC dibujadas con signo, de modo que la fila (d) es la suma directa de las filas (b) y (c).
 
 Lo que ocurre en cada fila:
 
 - **(a)** La entrada es real, de modo que su espectro es simétrico: los mismos tres lóbulos aparecen alrededor de $+3.57$ y de $-3.57$ MHz. En banda base todavía no hay nada.
-- **(b)** La rama I traslada ambos grupos. Alrededor de 0 Hz aparecen **seis** emisoras: las tres verdaderas en $+0.2$, $+0.5$ y $+0.9$ MHz, y tres espejos en las posiciones negativas correspondientes. Nada en el espectro distingue unas de otras. Las réplicas en $\pm 2f_{IF}$ son el producto de alta frecuencia que el filtro paso bajo eliminará después.
-- **(c)** La rama Q produce una magnitud **idéntica** a la de I, hasta el último decimal. Si I y Q se diferenciaran en amplitud, bastaría una de las dos.
-- **(d)** Al formar $I+jQ$ los seis lóbulos de banda base se reducen a tres, y son los tres correctos. Los espejos desaparecen; las emisoras reales duplican su amplitud.
-- **(e)** La fase de cada rama, que es el dato que (b) y (c) no dibujan. Hay dos series de puntos, una por panel: círculos azules para la fase de $\mathcal{F}\{I\}$ y aspas rojas para la de $j\,\mathcal{F}\{Q\}$. Donde las emisoras son reales, los dos símbolos caen encima uno del otro. En los espejos quedan separados $180^\circ$.
+- **(b)** La rama I traslada ambos grupos. Alrededor de 0 Hz aparecen **seis** emisoras: las tres verdaderas en $+0.2$, $+0.5$ y $+0.9$ MHz, y tres espejos en las posiciones negativas correspondientes. Todas con el mismo signo, así que nada en esta fila distingue unas de otras.
+- **(c)** La rama Q produce **las mismas alturas**, pero con los espejos hacia abajo. Ese cambio de signo es la única diferencia entre las dos ramas, y es lo que las hace complementarias en lugar de redundantes.
+- **(d)** La suma directa, columna a columna. Donde los dos signos coinciden, las alturas se suman y la emisora se duplica. Donde se oponen, se restan y el espejo desaparece. La aritmética de la ampliación es literal: $1 + 1 = 2$ en las reales, $1 + (-1) = 0$ en los espejos.
+
+Lo mismo pasa con las réplicas de $\pm 2f_{IF}$: la de $-7.14$ MHz sobrevive y la de $+7.14$ se anula, por el mismo mecanismo de signos. La que queda es la imagen que el filtro paso bajo eliminará en el punto ⑤.
 
 Medido sobre la simulación:
 
-| Frecuencia | I sola | Q sola | $I+jQ$ | Qué es |
+| Frecuencia | Rama I | Rama Q | Suma | Qué es |
 |---:|---:|---:|---:|---|
-| $-0.9$ MHz | 0.056 | 0.056 | 0.000 | espejo, no existe |
-| $-0.5$ MHz | 0.081 | 0.081 | 0.000 | espejo, no existe |
-| $-0.2$ MHz | 0.110 | 0.110 | 0.000 | espejo, no existe |
-| $+0.2$ MHz | 0.110 | 0.110 | 0.220 | emisora real |
-| $+0.5$ MHz | 0.081 | 0.081 | 0.161 | emisora real |
-| $+0.9$ MHz | 0.056 | 0.056 | 0.113 | emisora real |
+| $-0.9$ MHz | $+0.056$ | $-0.056$ | 0.000 | espejo, no existe |
+| $-0.5$ MHz | $+0.081$ | $-0.081$ | 0.000 | espejo, no existe |
+| $-0.2$ MHz | $+0.110$ | $-0.110$ | 0.000 | espejo, no existe |
+| $+0.2$ MHz | $+0.110$ | $+0.110$ | 0.220 | emisora real |
+| $+0.5$ MHz | $+0.081$ | $+0.081$ | 0.161 | emisora real |
+| $+0.9$ MHz | $+0.056$ | $+0.056$ | 0.113 | emisora real |
 
 La supresión de los espejos supera los 170 dB, es decir, es exacta salvo por el redondeo de la aritmética.
 
-!!! danger "El panel (d) no se obtiene sumando lo que se ve en (b) y (c)"
-    La transformada es lineal, así que la igualdad
+!!! info "Por qué el signo solo puede ser $+1$ o $-1$"
+    En la figura, la rama Q nunca vale un 70 % ni un 130 % de la rama I: vale exactamente lo mismo, con el mismo signo o con el contrario. Eso no es casualidad del ejemplo elegido, y conviene ver de dónde sale.
+
+    Llamemos $A$ y $B$ a las dos copias que produce cada multiplicación. Con las identidades del coseno y del seno,
 
     $$
-    \mathcal{F}\{I + jQ\} = \mathcal{F}\{I\} + j\,\mathcal{F}\{Q\}
+    \mathcal{F}\{I\} = \tfrac{1}{2}(A + B),
+    \qquad
+    j\,\mathcal{F}\{Q\} = \tfrac{1}{2}(B - A).
     $$
 
-    se cumple de forma exacta: comprobada sobre esta simulación, el error relativo es de $2\times 10^{-16}$, el redondeo de la máquina. El panel (d) **sí** es el (b) más $j$ veces el (c).
+    En cada frecuencia de banda base solo una de las dos copias es distinta de cero: $B$ en las emisoras reales y $A$ en los espejos. Sustituyendo, en las reales ambas ramas valen $\tfrac{1}{2}B$, y en los espejos valen $\tfrac{1}{2}A$ y $-\tfrac{1}{2}A$. De ahí el $+1$ y el $-1$, sin valores intermedios. Sumando, queda $\mathcal{F}\{I\} + j\,\mathcal{F}\{Q\} = B$, que es el espectro original desplazado, justamente lo que buscábamos.
 
-    Lo que no se puede hacer es sumar las curvas dibujadas, porque (b) y (c) muestran **magnitudes** y esa suma es compleja. La prueba está en la tabla anterior: en $-0.5$ y en $+0.5$ MHz las dos ramas valen exactamente lo mismo, 0.081 cada una. Sin embargo una pareja suma 0.161 y la otra suma 0.
-
-    | Frecuencia | $\lvert I\rvert$ | $\lvert Q\rvert$ | Desfase | $\lvert I+jQ\rvert$ |
-    |---:|---:|---:|---:|---:|
-    | $+0.5$ MHz | 2641 | 2641 | $0^\circ$ | 5282 |
-    | $-0.5$ MHz | 2641 | 2641 | $180^\circ$ | 0 |
-
-    Mismas magnitudes, resultados opuestos. La diferencia está entera en la fase, y por eso la figura incluye la fila (e): sin ella, el paso de (c) a (d) parecería arbitrario.
-
-Queda una última pregunta razonable: la fila (e) da dos ángulos, pero ¿cómo se convierten dos ángulos en una suma que vale el doble o vale cero? La respuesta se ve mejor dibujando esos dos valores como flechas en el plano complejo y encadenándolas punta con cola.
+El signo de la fila (c) es una forma compacta de decir algo sobre la **fase**. Las dos ramas tienen la misma magnitud en todas las frecuencias, y lo que las diferencia es la dirección de sus valores complejos: coinciden en las emisoras reales y se oponen en los espejos. Verlo como flechas lo deja explícito.
 
 ![Dos diagramas de fasores en el plano complejo: en la emisora real las flechas se encadenan y el extremo queda al doble de distancia; en el espejo la cadena regresa al origen](figures/cadena-rx-4c-fasores.png)
 
@@ -385,9 +383,9 @@ En cada panel, la flecha azul es el valor complejo de $\mathcal{F}\{I\}$ a esa f
 
 A la izquierda las dos flechas apuntan en la misma dirección, así que la cadena se estira y el extremo queda al doble de distancia del origen. A la derecha apuntan en direcciones opuestas y la cadena regresa exactamente al punto de partida, de modo que el panel (d) dibuja un cero.
 
-Las cuatro flechas de la figura miden lo mismo. Lo único que cambia entre los dos casos es hacia dónde apuntan, y esa dirección es la fase que muestra la fila (e) de la figura anterior.
+Las cuatro flechas de la figura miden lo mismo. Lo único que cambia entre los dos casos es hacia dónde apuntan, y esa dirección es el signo de la fila (c) de la figura anterior.
 
-Las dos columnas centrales son la clave de toda la arquitectura. Como I y Q tienen **la misma magnitud**, la información que distingue una frecuencia positiva de una negativa no está en cuánto vale cada rama, sino en **la fase relativa entre ellas**. El factor $j$ de la suma $I+jQ$ es lo que convierte esa diferencia de fase en una cancelación: donde las dos ramas están en oposición, el resultado se anula; donde coinciden, se refuerza.
+Ahí está la clave de toda la arquitectura. Como las dos ramas tienen **la misma magnitud** en todas las frecuencias, la información que distingue una frecuencia positiva de una negativa no está en cuánto vale cada una, sino en **si se acompañan o se oponen**. Una sola rama no puede llevar esa información, y por eso hacen falta dos.
 
 De ahí se sigue por qué el desbalance I/Q importa tanto en los receptores de conversión directa. Si una rama tiene un poco más de ganancia que la otra, o el desfase no es de $90^\circ$ exactos, la cancelación deja de ser perfecta y reaparece un espejo atenuado. Una emisora fuerte puede entonces fabricar un fantasma en el lado opuesto del espectro, donde no hay nada. En el RTL2832U ese riesgo no existe, porque el coseno y el seno se generan digitalmente con amplitudes idénticas y desfase exacto.
 

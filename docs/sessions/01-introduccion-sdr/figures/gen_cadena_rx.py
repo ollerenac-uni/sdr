@@ -245,77 +245,81 @@ def _escena_iq(n_muestras=32768, fs_adc=28.8e6, f_if=FIF * 1e6, semilla=11):
 
 
 def fig_ramas_iq():
+    """Las dos ramas con SIGNO, de modo que (b) + (c) = (d) se pueda sumar a ojo.
+
+    En dB no se puede: el logaritmo destruye el signo. En amplitud lineal sí, y
+    resulta que j·F{Q} es siempre +1 o -1 veces F{I}, nunca otra cosa. Ese signo
+    es toda la historia: +1 en las emisoras reales, -1 en los espejos.
+    """
     f, offsets, S, E = _escena_iq()
-    tope = max(v.max() for v in S.values())
+    fi = E["I"]
+    fqj = 1j * E["Q"]
+    hay = np.abs(fi) > 1e-6
+    # Cada rama proyectada sobre la dirección común: (b) es la referencia y sale
+    # siempre positiva; (c) hereda el signo de si acompaña o se opone.
+    b = np.abs(fi)
+    c = np.where(hay, np.real(fqj * np.conj(fi)) / np.maximum(np.abs(fi), 1e-30), 0.0)
+    escala = b.max()
     filas = [
-        ("x[n]", "x", GRAY, "(a) Entrada real en la IF: dos lóbulos simétricos en $\\pm 3.57$ MHz"),
-        ("I", "I", BLUE, "(b) Rama I = x·cos: seis emisoras aparentes, pero solo tres existen"),
-        ("Q", "Q", RED, "(c) Rama Q = −x·sen: magnitud idéntica a la de I. Lo que cambia es la fase"),
-        ("z = I+jQ", "z", GREEN, "(d) Al combinar: los espejos se cancelan; quedan las tres reales"),
+        (np.abs(E["x"]) / escala, GRAY,
+         "(a) Entrada real en la IF: dos grupos simétricos en $\\pm 3.57$ MHz"),
+        (b / escala, BLUE,
+         "(b) Rama I: seis emisoras aparentes, todas con el mismo signo"),
+        (c / escala, RED,
+         "(c) Rama Q: las mismas alturas, pero los espejos salen NEGATIVOS"),
+        ((b + c) / escala, GREEN,
+         "(d) Suma directa de (b) y (c): los espejos se anulan, las reales se duplican"),
     ]
-    fig, ax = plt.subplots(5, 2, figsize=(8.4, 10.4),
+    fig, ax = plt.subplots(4, 2, figsize=(8.4, 8.8),
                            gridspec_kw={"width_ratios": [1.9, 1]})
-    for r, (nombre, clave, color, titulo) in enumerate(filas):
-        y = 20 * np.log10(S[clave] / tope + 1e-12)
-        for c, (lim, paso) in enumerate(((14.4, None), (1.5, 0.5))):
-            a = ax[r, c]
-            a.plot(f, y, color=color, lw=0.8)
-            a.set_xlim(-lim, lim); a.set_ylim(-70, 5)
-            a.axvline(0, color="#bbb", lw=0.6, zorder=0)
-            if c == 1:
+    for r, (y, color, titulo) in enumerate(filas):
+        for col, lim in enumerate((14.4, 1.5)):
+            a = ax[r, col]
+            a.axhline(0, color=DARK, lw=0.9)
+            a.axvline(0, color="#ddd", lw=0.6, zorder=0)
+            a.plot(f, y, color=color, lw=0.9)
+            a.set_xlim(-lim, lim)
+            a.set_ylim(-1.25, 2.35)
+            a.set_yticks([-1, 0, 1, 2])
+            if col == 0:
+                a.set_ylabel("amplitud")
+            else:
+                a.set_yticklabels([])
                 for o in offsets:
                     a.axvline(+o, color=GREEN, ls=":", lw=0.9)
-                    if clave in ("I", "Q"):
-                        a.axvline(-o, color=RED, ls=":", lw=0.9)
-                a.set_yticklabels([])
-            else:
-                a.set_ylabel("dB")
+                    a.axvline(-o, color=RED, ls=":", lw=0.9)
         ax[r, 0].set_title(titulo, fontsize=9, loc="left")
         ax[r, 1].set_title("ampliación de la banda base", fontsize=8, loc="left", color="#666")
-    # (a) todavía no hay nada en banda base: la señal sigue en la IF
-    ax[0, 1].text(0, -32, "todavía nada aquí:\nla señal está en $\\pm 3.57$ MHz",
+
+    ax[0, 1].text(0, 1.5, "todavía nada aquí:\nla señal está en $\\pm 3.57$ MHz",
                   ha="center", fontsize=8, color=GRAY)
-    ax[1, 1].text(-0.95, -6, "espejo", color=RED, fontsize=8, ha="center")
-    ax[1, 1].text(+0.95, -6, "real", color=GREEN, fontsize=8, ha="center")
-    ax[3, 1].text(-0.75, -30, "nada:\nse cancelaron", color=GREEN, fontsize=8, ha="center")
-    # las réplicas en ±2·f_IF, que el filtro paso bajo eliminará después
-    for fila in (1, 2, 3):
-        for signo in (-1, 1):
-            if fila == 3 and signo > 0:
-                continue
-            ax[fila, 0].annotate("", xy=(signo * 7.7, -14), xytext=(signo * 7.7, -4),
-                                 arrowprops=dict(arrowstyle="->", color=DARK, lw=0.8))
-    ax[1, 0].text(0, -4, "réplicas en $\\pm 2f_{IF}$", ha="center", fontsize=7.5, color=DARK)
-    ax[3, 0].text(-7.7, -2, "solo queda la de $-7.14$", ha="center", fontsize=7.5, color=DARK)
-    # (e) las DOS fases por separado, una por rama: donde coinciden se suman,
-    # donde difieren 180 grados se anulan. No es una resta: son dos cantidades,
-    # cada una perteneciente a uno de los paneles de arriba.
-    fase_I = np.degrees(np.angle(E["I"]))
-    fase_jQ = np.degrees(np.angle(1j * E["Q"]))
-    visible = S["I"] > 0.02 * S["I"].max()
-    for c, lim in enumerate((14.4, 1.5)):
-        a = ax[4, c]
-        a.plot(f[visible], fase_I[visible], "o", color=BLUE, ms=4.5, label="fase de I, panel (b)")
-        a.plot(f[visible], fase_jQ[visible], "x", color=RED, ms=5, mew=1.4, label="fase de jQ, panel (c)")
-        a.set_xlim(-lim, lim); a.set_ylim(-260, 260)
-        a.set_yticks([-180, -90, 0, 90, 180])
-        a.axvline(0, color="#bbb", lw=0.6, zorder=0)
-        if c == 0:
-            a.set_ylabel("grados")
-            a.legend(fontsize=7.5, frameon=False, loc="lower left", ncol=2)
-        else:
-            a.set_yticklabels([])
-            for o in offsets:
-                a.axvline(+o, color=GREEN, ls=":", lw=0.9)
-                a.axvline(-o, color=RED, ls=":", lw=0.9)
-            a.text(+0.55, 215, "coinciden\n→ se suman", color=GREEN, fontsize=7, ha="center")
-            a.text(-0.55, 215, "opuestas\n→ se anulan", color=RED, fontsize=7, ha="center")
-    ax[4, 0].set_title("(e) La fase de cada rama: el dato que (b) y (c) no dibujan",
-                       fontsize=9, loc="left")
-    ax[4, 1].set_title("ampliación de la banda base", fontsize=8, loc="left", color="#666")
-    for c in range(2):
-        ax[4, c].set_xlabel("Frecuencia (MHz)")
-    fig.tight_layout(h_pad=1.1)
+    ax[1, 1].text(-0.95, 1.5, "espejo", color=RED, fontsize=8, ha="center")
+    ax[1, 1].text(+0.95, 1.5, "real", color=GREEN, fontsize=8, ha="center")
+    ax[2, 1].annotate("mismo signo\nque en (b)", xy=(0.2, 1.0), xytext=(0.75, 1.55),
+                      fontsize=7.5, color=GREEN, ha="center",
+                      arrowprops=dict(arrowstyle="->", color=GREEN, lw=0.8))
+    ax[2, 1].annotate("signo opuesto", xy=(-0.2, -1.0), xytext=(-0.8, -0.55),
+                      fontsize=7.5, color=RED, ha="center",
+                      arrowprops=dict(arrowstyle="->", color=RED, lw=0.8))
+    ax[3, 1].text(-0.75, 0.75, "1 + (−1) = 0", color=RED, fontsize=8.5, ha="center")
+    ax[3, 1].text(+0.95, 1.75, "1 + 1 = 2", color=GREEN, fontsize=8.5, ha="center")
+    ax[2, 0].annotate("aquí el signo es +", xy=(-7.6, 0.6), xytext=(-11.5, 1.7),
+                      fontsize=7.5, color=DARK, ha="center",
+                      arrowprops=dict(arrowstyle="->", color=DARK, lw=0.8))
+    ax[2, 0].annotate("y aquí es −", xy=(7.6, -0.6), xytext=(11.0, -1.05),
+                      fontsize=7.5, color=DARK, ha="center",
+                      arrowprops=dict(arrowstyle="->", color=DARK, lw=0.8))
+    ax[3, 0].annotate("sobrevive", xy=(-7.6, 1.3), xytext=(-11.5, 1.9),
+                      fontsize=7.5, color=GREEN, ha="center",
+                      arrowprops=dict(arrowstyle="->", color=GREEN, lw=0.8))
+    ax[3, 0].annotate("se anuló", xy=(7.6, 0.05), xytext=(11.0, 1.1),
+                      fontsize=7.5, color=RED, ha="center",
+                      arrowprops=dict(arrowstyle="->", color=RED, lw=0.8))
+    for col in range(2):
+        ax[3, col].set_xlabel("Frecuencia (MHz)")
+    fig.suptitle("Con signo, la suma se hace a ojo: fila (b) más fila (c) es fila (d)",
+                 fontsize=10)
+    fig.tight_layout(rect=(0, 0, 1, 0.97))
     save(fig, "cadena-rx-4b-ramas-iq.png")
 
 
