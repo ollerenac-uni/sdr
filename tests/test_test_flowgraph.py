@@ -15,7 +15,7 @@ import yaml
 
 
 ROOT = Path(__file__).parents[1]
-MUESTRA = "fm_99p1MHz_2p4Msps_g30.cu8"
+MUESTRA = "../samples/fm_99p1MHz_2p4Msps_g30.cu8"
 
 
 def cargar(nombre):
@@ -115,7 +115,7 @@ class TestContratoComun(unittest.TestCase):
                     self.assertIn(("soapy_rtlsdr_source_0", "0", sumidero, "0"), conexiones)
 
     def test_la_ruta_del_archivo_es_relativa(self):
-        """Una ruta absoluta del profesor no existe en la máquina del alumno."""
+        """Ruta relativa al .grc: GRC ejecuta el grafo desde la carpeta del .grc."""
         for nombre in ("test.grc", "test2.grc"):
             with self.subTest(grafo=nombre):
                 _, bloques, _ = cargar(nombre)

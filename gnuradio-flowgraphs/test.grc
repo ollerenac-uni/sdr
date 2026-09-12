@@ -108,7 +108,7 @@ blocks:
     begin_tag: pmt.PMT_NIL
     comment: Fuente predeterminada sin hardware. Usa una muestra convertida de CU8
       a complex64.
-    file: fm_99p1MHz_2p4Msps_g30.cu8
+    file: ../samples/fm_99p1MHz_2p4Msps_g30.cu8
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'

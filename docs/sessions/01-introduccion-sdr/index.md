@@ -630,7 +630,7 @@ Antes de la clase, instala las herramientas según las guías:
 
 | Archivo | Qué es |
 |---|---|
-| `fm_99p1MHz_2p4Msps_g30.cu8` | Grabación oficial de la sesión |
+| `fm_99p1MHz_2p4Msps_g30.cu8` | Grabación oficial de la sesión. Se descarga de Drive |
 | [`test.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test.grc) | Grafo con un error deliberado. Parte B |
 | [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc) | Solución de referencia. Consúltala solo al terminar la Parte C |
 
@@ -646,10 +646,53 @@ Metadatos de la grabación:
 | Tamaño | 48 000 000 bytes |
 | SHA-256 | `3944638586f418d7fd271ae03bcaa1b622d6bcc08ecc700e9cb5df0dc2d94579` |
 
-!!! warning "Pendiente del profesor: enlace de descarga"
-    Antes de publicar la sesión se añadirá aquí la URL de Google Drive de `fm_99p1MHz_2p4Msps_g30.cu8`. Los metadatos de la tabla ya son los definitivos; verifica tu descarga con `sha256sum` antes de empezar.
+### Descargar la grabación
 
-Guarda el `.cu8` y los dos grafos en una misma carpeta y trabaja desde ahí. Los grafos referencian el archivo por nombre relativo, así que se abren sin tocar nada si la carpeta es la misma.
+Las muestras del curso están en una carpeta compartida de Google Drive:
+
+**[Carpeta `samples` del curso](https://drive.google.com/drive/folders/1tP8u1tQZDnvi_-ZAxZ3J8tehdKwi92an?usp=drive_link)**
+
+![Carpeta samples en Google Drive, con el archivo fm_99p1MHz_2p4Msps_g30.cu8](figures/drive-carpeta-samples.png)
+
+Descarga `fm_99p1MHz_2p4Msps_g30.cu8` y comprueba que llegó íntegro antes de empezar. Son 48 MB y una descarga truncada produce errores confusos más adelante:
+
+=== "Linux"
+
+    ```bash
+    sha256sum samples/fm_99p1MHz_2p4Msps_g30.cu8
+    ```
+
+=== "macOS"
+
+    ```bash
+    shasum -a 256 samples/fm_99p1MHz_2p4Msps_g30.cu8
+    ```
+
+=== "Windows"
+
+    ```bat
+    certutil -hashfile samples\fm_99p1MHz_2p4Msps_g30.cu8 SHA256
+    ```
+
+El valor debe coincidir con el SHA-256 de la tabla anterior.
+
+### Organizar la carpeta de trabajo
+
+Reproduce esta estructura, que es la misma del repositorio del curso:
+
+```
+sdr/
+├── samples/
+│   └── fm_99p1MHz_2p4Msps_g30.cu8
+└── gnuradio-flowgraphs/
+    ├── test.grc
+    └── test2.grc
+```
+
+De ahí salen las dos rutas que verás a lo largo del laboratorio, y conviene entender por qué son distintas. Los comandos de terminal de la Parte A se ejecutan desde `sdr/`, así que usan `samples/fm_99p1MHz_2p4Msps_g30.cu8`. Los grafos, en cambio, guardan la ruta `../samples/fm_99p1MHz_2p4Msps_g30.cu8`, porque GNU Radio Companion ejecuta cada grafo desde la carpeta donde vive el `.grc`.
+
+!!! tip "Si el grafo no encuentra el archivo"
+    Abre el bloque **File Source**, pulsa el botón de examinar y selecciona el archivo a mano. GRC guardará entonces la ruta de tu máquina y el problema desaparece.
 
 ### Parte A: el archivo por dentro, sin GNU Radio
 
@@ -658,13 +701,13 @@ Ningún programa sabe qué contiene un archivo crudo. Hay que decírselo, y esta
 **A1. El chorro de bits.** Un archivo es una tira de unos y ceros sin separadores ni etiquetas.
 
 ```bash
-xxd -b -c1 -l8 fm_99p1MHz_2p4Msps_g30.cu8 | cut -d' ' -f2 | tr -d '\n'; echo
+xxd -b -c1 -l8 samples/fm_99p1MHz_2p4Msps_g30.cu8 | cut -d' ' -f2 | tr -d '\n'; echo
 ```
 
 **A2. Cortar cada 8 bits.** El corte cada ocho no es arbitrario: es la resolución del ADC del dongle.
 
 ```bash
-xxd -b -l12 fm_99p1MHz_2p4Msps_g30.cu8
+xxd -b -l12 samples/fm_99p1MHz_2p4Msps_g30.cu8
 ```
 
 `xxd -b` imprime 6 bytes por línea, es decir 3 muestras complejas. Como 6 es par, las columnas primera, tercera y quinta son siempre I, y la segunda, cuarta y sexta siempre Q.
@@ -672,7 +715,7 @@ xxd -b -l12 fm_99p1MHz_2p4Msps_g30.cu8
 **A3. Del bit al número.** Cada grupo de 8 bits vale lo que dicta la posición de cada uno.
 
 ```bash
-xxd -b -c1 -l1 fm_99p1MHz_2p4Msps_g30.cu8 | awk '{n=$2
+xxd -b -c1 -l1 samples/fm_99p1MHz_2p4Msps_g30.cu8 | awk '{n=$2
   printf "bit      "; for(k=1;k<=8;k++) printf "%4s", substr(n,k,1)
   printf "\npeso     "; for(k=1;k<=8;k++) printf "%4d", 2^(8-k)
   printf "\naporta   "; for(k=1;k<=8;k++) printf "%4d", substr(n,k,1)*2^(8-k); printf "\n"}'
@@ -683,7 +726,7 @@ De ahí sale el rango completo: `00000000` es 0, `11111111` es 255, y entre ambo
 **A4. El atajo.** `od` hace esa cuenta por ti y escribe el mismo byte en base 10.
 
 ```bash
-od -An -tu1 -N12 -v fm_99p1MHz_2p4Msps_g30.cu8
+od -An -tu1 -N12 -v samples/fm_99p1MHz_2p4Msps_g30.cu8
 ```
 
 !!! info "`od` no convierte nada"
@@ -692,18 +735,18 @@ od -An -tu1 -N12 -v fm_99p1MHz_2p4Msps_g30.cu8
 **A5. Una muestra por línea.** Con `-w2` cada línea es una muestra compleja, y la dirección avanza de dos en dos.
 
 ```bash
-od -Ad -tu1 -w2 -N20 -v fm_99p1MHz_2p4Msps_g30.cu8
+od -Ad -tu1 -w2 -N20 -v samples/fm_99p1MHz_2p4Msps_g30.cu8
 ```
 
 **A6. Comprobar el formato.** Tres medidas que confirman que la grabación es lo que dice ser.
 
 ```bash
-od -An -tu1 -v -N200000 fm_99p1MHz_2p4Msps_g30.cu8 | tr -s ' ' '\n' | grep . |
+od -An -tu1 -v -N200000 samples/fm_99p1MHz_2p4Msps_g30.cu8 | tr -s ' ' '\n' | grep . |
   awk '{v[NR]=$1; s+=$1} END {print "min", v[1]+0, "| max", v[NR]+0, "| promedio", sprintf("%.2f",s/NR)}'
 ```
 
 ```bash
-od -An -tu1 -v -N200000 fm_99p1MHz_2p4Msps_g30.cu8 | tr -s ' ' '\n' | grep . |
+od -An -tu1 -v -N200000 samples/fm_99p1MHz_2p4Msps_g30.cu8 | tr -s ' ' '\n' | grep . |
   awk '{h[int($1/16)]++} END {for(i=0;i<16;i++)
     printf "%3d-%3d %7d %s\n", i*16, i*16+15, h[i]+0, substr("########################################",1,int(h[i]/900))}'
 ```
@@ -746,7 +789,7 @@ Responde en el reporte, antes de leer la solución:
     Puedes ver la causa directamente en la terminal:
 
     ```bash
-    od -An -tf4 -N32 -v fm_99p1MHz_2p4Msps_g30.cu8
+    od -An -tf4 -N32 -v samples/fm_99p1MHz_2p4Msps_g30.cu8
     ```
 
     Los mismos bytes de la Parte A, leídos de a cuatro como `float32`, dan valores del orden de 10³⁴. GNU Radio no falló: obedeció una declaración de tipo equivocada.
