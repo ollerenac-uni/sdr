@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://ollerenac-uni.github.io/sdr/</loc>
+         <lastmod>2026-09-12</lastmod>
+    </url>
+    <url>
+         <loc>https://ollerenac-uni.github.io/sdr/exams/</loc>
+         <lastmod>2026-09-12</lastmod>
+    </url>
+    <url>
+         <loc>https://ollerenac-uni.github.io/sdr/sessions/</loc>
+         <lastmod>2026-09-12</lastmod>
+    </url>
+    <url>
+         <loc>https://ollerenac-uni.github.io/sdr/sessions/01-introduccion-sdr/</loc>
+         <lastmod>2026-09-12</lastmod>
+    </url>
+    <url>
+         <loc>https://ollerenac-uni.github.io/sdr/sessions/02-tiempo-frecuencia-iq/</loc>
+         <lastmod>2026-09-12</lastmod>
+    </url>
+    <url>
+         <loc>https://ollerenac-uni.github.io/sdr/setup/</loc>
+         <lastmod>2026-09-12</lastmod>
+    </url>
+    <url>
+         <loc>https://ollerenac-uni.github.io/sdr/setup/instalacion/</loc>
+         <lastmod>2026-09-12</lastmod>
+    </url>
+    <url>
+         <loc>https://ollerenac-uni.github.io/sdr/setup/rtl-sdr/</loc>
+         <lastmod>2026-09-12</lastmod>
+    </url>
+</urlset>

@@ -1,0 +1,2237 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Una introducción práctica a los dominios del tiempo y la frecuencia, la FFT, las señales complejas I/Q y los efectos visibles de un receptor real.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/02-tiempo-frecuencia-iq/">
+      
+      
+        <link rel="prev" href="../01-introduccion-sdr/">
+      
+      
+        <link rel="next" href="../../setup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Sesión 02 — Del tiempo al espectro: señales e IQ - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sesion-02-del-tiempo-al-espectro-senales-e-iq" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sesión 02 — Del tiempo al espectro: señales e IQ
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-introduccion-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción a SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Del tiempo al espectro
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Del tiempo al espectro
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#teoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Teoría
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Teoría">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-una-senal-dos-preguntas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Una señal, dos preguntas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-leer-un-pico-amplitud-frecuencia-y-fase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Leer un pico: amplitud, frecuencia y fase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-el-sdr-entrega-bloques-finitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. El SDR entrega bloques finitos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-construir-correctamente-los-ejes-de-la-fft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Construir correctamente los ejes de la FFT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-por-que-aparece-la-fuga-espectral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Por qué aparece la fuga espectral
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-senales-reales-y-senales-complejas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Señales reales y señales complejas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-traslacion-en-frecuencia-sintonizar-en-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Traslación en frecuencia: sintonizar en software
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-lo-que-revela-un-receptor-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Lo que revela un receptor real
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Síntesis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejercicios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-1-duracion-bins-e-intervalo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 1: duración, bins e intervalo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-2-real-o-compleja" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 2: real o compleja
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-3-fuga-o-dos-senales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 3: fuga o dos señales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-4-sintonizacion-digital" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 4: sintonización digital
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-5-diagnosticar-una-captura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 5: diagnosticar una captura
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-6-el-mismo-ppm-distinto-efecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 6: el mismo ppm, distinto efecto
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#laboratorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Laboratorio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Laboratorio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#archivos-necesarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archivos necesarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-a-construir-intuicion-con-gnu-radio-55-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A — Construir intuición con GNU Radio (55 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-b-inspeccionar-iq-en-numpy-40-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B — Inspeccionar I/Q en NumPy (40 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-c-comparar-la-grabacion-y-la-fuente-opcional-25-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C — Comparar la grabación y la fuente opcional (25 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reporte-1-del-tiempo-al-espectro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporte 1 — Del tiempo al espectro
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lecturas-recomendadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lecturas recomendadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#teoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Teoría
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Teoría">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-una-senal-dos-preguntas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Una señal, dos preguntas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-leer-un-pico-amplitud-frecuencia-y-fase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Leer un pico: amplitud, frecuencia y fase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-el-sdr-entrega-bloques-finitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. El SDR entrega bloques finitos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-construir-correctamente-los-ejes-de-la-fft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Construir correctamente los ejes de la FFT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-por-que-aparece-la-fuga-espectral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Por qué aparece la fuga espectral
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-senales-reales-y-senales-complejas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Señales reales y señales complejas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-traslacion-en-frecuencia-sintonizar-en-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Traslación en frecuencia: sintonizar en software
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-lo-que-revela-un-receptor-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Lo que revela un receptor real
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Síntesis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejercicios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-1-duracion-bins-e-intervalo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 1: duración, bins e intervalo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-2-real-o-compleja" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 2: real o compleja
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-3-fuga-o-dos-senales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 3: fuga o dos señales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-4-sintonizacion-digital" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 4: sintonización digital
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-5-diagnosticar-una-captura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 5: diagnosticar una captura
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-6-el-mismo-ppm-distinto-efecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 6: el mismo ppm, distinto efecto
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#laboratorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Laboratorio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Laboratorio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#archivos-necesarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archivos necesarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-a-construir-intuicion-con-gnu-radio-55-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A — Construir intuición con GNU Radio (55 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-b-inspeccionar-iq-en-numpy-40-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B — Inspeccionar I/Q en NumPy (40 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-c-comparar-la-grabacion-y-la-fuente-opcional-25-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C — Comparar la grabación y la fuente opcional (25 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reporte-1-del-tiempo-al-espectro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporte 1 — Del tiempo al espectro
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lecturas-recomendadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lecturas recomendadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="sesion-02-del-tiempo-al-espectro-senales-e-iq">Sesión 02 — Del tiempo al espectro: señales e IQ</h1>
+<h2 id="objetivos-de-aprendizaje">Objetivos de aprendizaje</h2>
+<p>Al finalizar esta sesión, el estudiante será capaz de:</p>
+<ol>
+<li>Interpretar los dominios del tiempo y la frecuencia como <strong>dos representaciones de la misma señal</strong></li>
+<li>Predecir el espectro de una senoide real, una senoide compleja y una suma de tonos</li>
+<li>Calcular la duración de una captura y la separación entre bins a partir de <span class="arithmatex">\(f_s\)</span> y <span class="arithmatex">\(N\)</span></li>
+<li>Reconocer fuga espectral, recorte, desplazamiento de continua y error de frecuencia en una visualización</li>
+<li>Explicar por qué las muestras I/Q distinguen frecuencias positivas y negativas respecto a <span class="arithmatex">\(f_c\)</span></li>
+<li>Analizar una grabación I/Q en GNU Radio y NumPy sin depender de un dongle</li>
+</ol>
+<div class="admonition abstract">
+<p class="admonition-title">La regla de esta sesión</p>
+<p>Cada ecuación debe permitir <strong>predecir algo que se pueda observar inmediatamente</strong> en GNU Radio o Python. No se evalúa la capacidad de repetir una tabla de transformadas ni de resolver integrales por memoria.</p>
+</div>
+<p>La sesión tiene 2 h de teoría y 2 h de laboratorio. La primera mitad construye una forma práctica de pensar las señales; la segunda utiliza esa forma de pensar para diagnosticar lo que entrega un SDR.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Minutos de teoría</th>
+<th>Pregunta conductora</th>
+<th>Resultado observable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0–20</td>
+<td>¿Qué revela cada dominio?</td>
+<td>relacionar una forma temporal con sus componentes</td>
+</tr>
+<tr>
+<td style="text-align: right;">20–45</td>
+<td>¿Qué calcula realmente una FFT?</td>
+<td>construir duración, intervalo y bins desde <span class="arithmatex">\(f_s\)</span> y <span class="arithmatex">\(N\)</span></td>
+</tr>
+<tr>
+<td style="text-align: right;">45–65</td>
+<td>¿Por qué un tono ocupa varios bins?</td>
+<td>distinguir fuga y efecto de una ventana</td>
+</tr>
+<tr>
+<td style="text-align: right;">65–90</td>
+<td>¿Por qué SDR utiliza I/Q?</td>
+<td>predecir espectros reales y complejos</td>
+</tr>
+<tr>
+<td style="text-align: right;">90–105</td>
+<td>¿Cómo se sintoniza en software?</td>
+<td>trasladar una señal mediante mezcla compleja</td>
+</tr>
+<tr>
+<td style="text-align: right;">105–120</td>
+<td>¿Qué defectos produce el hardware?</td>
+<td>reconocer recorte, DC, AGC y error en ppm</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="teoria">Teoría</h2>
+<h3 id="1-una-senal-dos-preguntas">1. Una señal, dos preguntas</h3>
+<p>Una señal es una magnitud que cambia: el voltaje en una antena, las muestras entregadas por un ADC o el audio producido por un demodulador. Puede describirse desde dos perspectivas complementarias:</p>
+<table>
+<thead>
+<tr>
+<th>Representación</th>
+<th>Pregunta que responde</th>
+<th>Resulta útil para observar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tiempo, <span class="arithmatex">\(x(t)\)</span> o <span class="arithmatex">\(x[n]\)</span></td>
+<td>¿Qué valor toma y cuándo cambia?</td>
+<td>pulsos, transitorios, recorte, envolvente, periodicidad</td>
+</tr>
+<tr>
+<td>Frecuencia, <span class="arithmatex">\(X(f)\)</span> o <span class="arithmatex">\(X[k]\)</span></td>
+<td>¿Qué componentes frecuenciales contiene?</td>
+<td>portadoras, ancho de banda, armónicos, interferencia, ruido</td>
+</tr>
+</tbody>
+</table>
+<p>La notación</p>
+<div class="arithmatex">\[
+x(t) \longleftrightarrow X(f)
+\]</div>
+<p>no describe dos señales. Indica dos representaciones de la misma información.</p>
+<p><img alt="Una misma señal de dos tonos observada en los dominios del tiempo y de la frecuencia" src="figures/dominios-tiempo-frecuencia.png" /></p>
+<p><strong>Figura 1.</strong> En el tiempo se aprecia la evolución de la amplitud; en frecuencia se identifican inmediatamente los componentes de 120 y 320 Hz.</p>
+<p>Un gráfico de magnitud espectral no muestra directamente cuándo ocurrió un evento. Eso no significa que la transformada de Fourier destruya la información temporal: la transformada completa también contiene fase y es invertible. La pantalla habitual del analizador simplemente oculta parte de esa información.</p>
+<details class="question">
+<summary>Comprobación rápida</summary>
+<p>Una captura presenta un pulso corto y un tono continuo. ¿En qué vista resulta más fácil localizar el pulso? ¿En cuál resulta más fácil medir la frecuencia del tono?</p>
+<details class="example">
+<summary>Respuesta</summary>
+<p>El pulso se localiza en el dominio del tiempo. La frecuencia del tono se mide con mayor facilidad en el espectro. Ambas vistas provienen de las mismas muestras.</p>
+</details>
+</details>
+<h3 id="2-leer-un-pico-amplitud-frecuencia-y-fase">2. Leer un pico: amplitud, frecuencia y fase</h3>
+<p>La senoide es el componente elemental del análisis frecuencial:</p>
+<div class="arithmatex">\[
+x(t)=A\cos(2\pi f_0t+\phi).
+\]</div>
+<ul>
+<li><span class="arithmatex">\(A\)</span> determina la amplitud.</li>
+<li><span class="arithmatex">\(f_0\)</span> determina cuántos ciclos ocurren por segundo.</li>
+<li><span class="arithmatex">\(\phi\)</span> determina dónde comienza el ciclo respecto al origen temporal.</li>
+</ul>
+<p>Una señal puede contener varias senoides. Si</p>
+<div class="arithmatex">\[
+x(t)=x_1(t)+x_2(t),
+\]</div>
+<p>entonces, por linealidad,</p>
+<div class="arithmatex">\[
+X(f)=X_1(f)+X_2(f).
+\]</div>
+<p>Por eso el espectro de la Figura 1 presenta dos componentes. El analizador no «descubre emisoras»: compara el bloque de muestras con ondas de distintas frecuencias y muestra cuánto coincide con cada una.</p>
+<p>Una forma de onda con cambios rápidos necesita componentes de frecuencia más alta. Al sumar los armónicos impares <span class="arithmatex">\(f_0,3f_0,5f_0,\ldots\)</span>, la forma se aproxima a una onda cuadrada. El sobreimpulso cerca de sus discontinuidades se denomina fenómeno de Gibbs, pero no se necesita calcularlo en esta sesión.</p>
+<p>El mismo principio permite diagnosticar saturación. Cuando un ADC recorta una senoide, aplana sus extremos y crea armónicos que no estaban en la entrada.</p>
+<p><img alt="Comparación temporal y espectral de una senoide, una señal recortada y una suma de armónicos impares" src="figures/armonicos-y-recorte.png" /></p>
+<p><strong>Figura 2.</strong> Los bordes y el recorte se manifiestan como contenido adicional de alta frecuencia.</p>
+<div class="admonition warning">
+<p class="admonition-title">Un pico no es necesariamente otra transmisión</p>
+<p>Los armónicos pueden originarse dentro del propio receptor por saturación o no linealidad. Antes de concluir que existe una señal en una frecuencia, reduce la ganancia y comprueba si el pico disminuye de manera desproporcionada o desaparece.</p>
+</div>
+<h3 id="3-el-sdr-entrega-bloques-finitos">3. El SDR entrega bloques finitos</h3>
+<p>El receptor no entrega una función continua e infinita. Entrega una secuencia de muestras separadas por</p>
+<div class="arithmatex">\[
+T_s=\frac{1}{f_s},
+\qquad
+x[n]=x(nT_s).
+\]</div>
+<p>Una FFT opera sobre un bloque de <span class="arithmatex">\(N\)</span> muestras. La duración observada por ese bloque es</p>
+<div class="arithmatex">\[
+T_{\text{captura}}=NT_s=\frac{N}{f_s}.
+\]</div>
+<p>La DFT puede escribirse como</p>
+<div class="arithmatex">\[
+X[k]=\sum_{n=0}^{N-1}x[n]e^{-j2\pi kn/N}.
+\]</div>
+<p>No se calculará esa suma a mano. Su interpretación práctica es suficiente: para cada índice <span class="arithmatex">\(k\)</span>, la DFT compara las <span class="arithmatex">\(N\)</span> muestras con una senoide compleja de frecuencia conocida y acumula el resultado. La <strong>FFT</strong> es un algoritmo eficiente para calcular esa misma DFT.</p>
+<div class="admonition note">
+<p class="admonition-title">Vocabulario mínimo</p>
+<ul>
+<li><strong>DFT:</strong> la operación matemática que transforma <span class="arithmatex">\(N\)</span> muestras en <span class="arithmatex">\(N\)</span> coeficientes frecuenciales.</li>
+<li><strong>FFT:</strong> el algoritmo rápido utilizado por NumPy y GNU Radio para calcular la DFT.</li>
+<li><strong>Bin:</strong> una de las frecuencias discretas evaluadas por la DFT.</li>
+</ul>
+</div>
+<p>La DFT trata el bloque como si se repitiera indefinidamente. En ese modelo, la última muestra queda junto a la primera. Esta vecindad circular es importante porque una unión brusca introduce un borde artificial.</p>
+<h3 id="4-construir-correctamente-los-ejes-de-la-fft">4. Construir correctamente los ejes de la FFT</h3>
+<p>Los bins están separados por</p>
+<div class="arithmatex">\[
+\Delta f = \frac{f_s}{N}.
+\]</div>
+<p>Este valor debe llamarse <strong>separación entre bins</strong>. La capacidad real de distinguir dos señales cercanas también depende de la ventana, la duración de la captura, el ruido y la diferencia de amplitudes.</p>
+<p><img alt="Relación entre un bloque temporal de N muestras y los N bins de una FFT compleja centrada" src="figures/ejes-fft.png" /></p>
+<p><strong>Figura 3.</strong> <span class="arithmatex">\(f_s\)</span> fija el intervalo total representado; <span class="arithmatex">\(N\)</span> divide ese intervalo en bins. Aumentar <span class="arithmatex">\(N\)</span> no aumenta el ancho de banda observado.</p>
+<p>Para muestras complejas I/Q, los <span class="arithmatex">\(N\)</span> bins cubren un intervalo completo de ancho <span class="arithmatex">\(f_s\)</span>. Después de centrar la FFT con <code>fftshift</code>, el eje habitual es</p>
+<div class="arithmatex">\[
+-\frac{f_s}{2}\leq f &lt; +\frac{f_s}{2}.
+\]</div>
+<p>Algunos tamaños usados en el curso ilustran el compromiso:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;"><span class="arithmatex">\(f_s\)</span></th>
+<th style="text-align: right;"><span class="arithmatex">\(N\)</span></th>
+<th style="text-align: right;"><span class="arithmatex">\(T_{captura}=N/f_s\)</span></th>
+<th style="text-align: right;"><span class="arithmatex">\(\Delta f=f_s/N\)</span></th>
+<th style="text-align: right;">Intervalo complejo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">32 kS/s</td>
+<td style="text-align: right;">1 024</td>
+<td style="text-align: right;">32 ms</td>
+<td style="text-align: right;">31.25 Hz</td>
+<td style="text-align: right;"><span class="arithmatex">\(-16\)</span> a <span class="arithmatex">\(+16\)</span> kHz</td>
+</tr>
+<tr>
+<td style="text-align: right;">2.4 MS/s</td>
+<td style="text-align: right;">1 024</td>
+<td style="text-align: right;">0.427 ms</td>
+<td style="text-align: right;">2.344 kHz</td>
+<td style="text-align: right;"><span class="arithmatex">\(-1.2\)</span> a <span class="arithmatex">\(+1.2\)</span> MHz</td>
+</tr>
+<tr>
+<td style="text-align: right;">2.4 MS/s</td>
+<td style="text-align: right;">4 096</td>
+<td style="text-align: right;">1.707 ms</td>
+<td style="text-align: right;">585.94 Hz</td>
+<td style="text-align: right;"><span class="arithmatex">\(-1.2\)</span> a <span class="arithmatex">\(+1.2\)</span> MHz</td>
+</tr>
+<tr>
+<td style="text-align: right;">2.4 MS/s</td>
+<td style="text-align: right;">32 768</td>
+<td style="text-align: right;">13.653 ms</td>
+<td style="text-align: right;">73.24 Hz</td>
+<td style="text-align: right;"><span class="arithmatex">\(-1.2\)</span> a <span class="arithmatex">\(+1.2\)</span> MHz</td>
+</tr>
+</tbody>
+</table>
+<p>Duplicar <span class="arithmatex">\(N\)</span> reduce <span class="arithmatex">\(\Delta f\)</span> a la mitad porque la FFT observa el doble de tiempo. Duplicar <span class="arithmatex">\(f_s\)</span> manteniendo <span class="arithmatex">\(N\)</span> duplica el intervalo observado, pero también duplica la separación entre bins.</p>
+<details class="question">
+<summary>Predicción antes de tocar el programa</summary>
+<p>Un Frequency Sink utiliza <span class="arithmatex">\(f_s=1\)</span> MS/s y <span class="arithmatex">\(N=2\,000\)</span>. ¿Qué intervalo muestra con muestras complejas? ¿Cuál es la separación entre bins?</p>
+<details class="example">
+<summary>Respuesta</summary>
+<p>El intervalo centrado es de <span class="arithmatex">\(-500\)</span> a <span class="arithmatex">\(+500\)</span> kHz y</p>
+<div class="arithmatex">\[
+\Delta f=\frac{10^6}{2000}=500\ \text{Hz}.
+\]</div>
+</details>
+</details>
+<h3 id="5-por-que-aparece-la-fuga-espectral">5. Por qué aparece la fuga espectral</h3>
+<p>Si una senoide completa un número entero de ciclos dentro del bloque, la unión circular es continua y su energía puede concentrarse en un bin. Si el bloque termina en otra fase, la repetición introduce un salto artificial. La FFT necesita varios bins para representar ese salto: aparece <strong>fuga espectral</strong>.</p>
+<p>Una ventana multiplica gradualmente el bloque:</p>
+<div class="arithmatex">\[
+x_w[n]=w[n]x[n].
+\]</div>
+<p>La ventana Hann reduce los lóbulos laterales, pero ensancha el pico y modifica su amplitud. No «limpia» la señal ni elimina la fuga gratuitamente.</p>
+<p><img alt="Comparación de una senoide coherente, una senoide fuera de bin y el efecto de una ventana Hann" src="figures/fuga-y-ventanas.png" /></p>
+<p><strong>Figura 4.</strong> La fuga proviene del intervalo finito de observación. Una ventana cambia el compromiso entre lóbulos laterales, anchura del pico y exactitud de amplitud.</p>
+<table>
+<thead>
+<tr>
+<th>Ventana</th>
+<th>Ventaja práctica</th>
+<th>Costo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rectangular</td>
+<td>Pico estrecho cuando existe coherencia</td>
+<td>lóbulos laterales altos ante una discontinuidad</td>
+</tr>
+<tr>
+<td>Hann</td>
+<td>reduce los lóbulos laterales y funciona bien como opción general</td>
+<td>ensancha el lóbulo principal</td>
+</tr>
+</tbody>
+</table>
+<p>En esta sesión se comparan las ventanas visualmente. La normalización de densidad espectral de potencia, el RBW y la medición rigurosa de SNR pertenecen a la Sesión 03.</p>
+<h3 id="6-senales-reales-y-senales-complejas">6. Señales reales y señales complejas</h3>
+<p>Una senoide real contiene dos exponenciales complejas:</p>
+<div class="arithmatex">\[
+\cos(2\pi f_0t)
+=\frac{1}{2}e^{j2\pi f_0t}
++\frac{1}{2}e^{-j2\pi f_0t}.
+\]</div>
+<p>Por ello, su espectro tiene componentes conjugadas en <span class="arithmatex">\(+f_0\)</span> y <span class="arithmatex">\(-f_0\)</span>. No son dos tonos físicos independientes; son la representación simétrica que necesita una señal real.</p>
+<p>Una muestra compleja contiene dos números reales:</p>
+<div class="arithmatex">\[
+z[n]=I[n]+jQ[n].
+\]</div>
+<p>Para <span class="arithmatex">\(z(t)=e^{j2\pi f_0t}\)</span>, <span class="arithmatex">\(I(t)=\cos(2\pi f_0t)\)</span> y <span class="arithmatex">\(Q(t)=\sin(2\pi f_0t)\)</span>. El par conserva el sentido de rotación y permite distinguir <span class="arithmatex">\(+f_0\)</span> de <span class="arithmatex">\(-f_0\)</span>.</p>
+<p><img alt="Comparación temporal y espectral de una senoide real y una senoide compleja formada por I y Q" src="figures/real-vs-compleja.png" /></p>
+<p><strong>Figura 5.</strong> Una señal real tiene espectro conjugado-simétrico. Una señal compleja I/Q utiliza todo el intervalo de ancho <span class="arithmatex">\(f_s\)</span> para representar frecuencias con signo.</p>
+<div class="admonition info">
+<p class="admonition-title">El signo es relativo, no una frecuencia RF negativa</p>
+<p>Si el tuner está centrado en <span class="arithmatex">\(f_c\)</span>, una componente I/Q situada en <span class="arithmatex">\(f_{BB}\)</span> corresponde a</p>
+<div class="arithmatex">\[
+f_{RF}=f_c+f_{BB}.
+\]</div>
+<p>Con <span class="arithmatex">\(f_c=99.1\)</span> MHz, un pico en <span class="arithmatex">\(+300\)</span> kHz representa 99.4 MHz y uno en <span class="arithmatex">\(-500\)</span> kHz representa 98.6 MHz.</p>
+</div>
+<h3 id="7-traslacion-en-frecuencia-sintonizar-en-software">7. Traslación en frecuencia: sintonizar en software</h3>
+<p>Multiplicar una señal compleja por otra exponencial compleja desplaza todo su espectro:</p>
+<div class="arithmatex">\[
+y[n]=x[n]e^{j2\pi f_0n/f_s}
+\quad\Longleftrightarrow\quad
+Y(f)=X(f-f_0).
+\]</div>
+<p>El signo debe verificarse en el sistema utilizado; con esta convención, <span class="arithmatex">\(f_0&gt;0\)</span> desplaza las componentes hacia frecuencias mayores. Se conservan la forma del espectro y las separaciones internas.</p>
+<p><img alt="Tres componentes complejas antes y después de una traslación de cuatro kilohertz" src="figures/traslacion-frecuencia.png" /></p>
+<p><strong>Figura 6.</strong> La mezcla compleja es una traslación, no una deformación. Es la operación central del DDC, la sintonización fina y la canalización digital.</p>
+<p>Para llevar una emisora ubicada en <span class="arithmatex">\(+300\)</span> kHz al centro, se multiplica por una exponencial de <span class="arithmatex">\(-300\)</span> kHz. Después puede aplicarse un filtro paso bajo y reducir la tasa. Esas dos operaciones se desarrollan en la Sesión 03.</p>
+<h3 id="8-lo-que-revela-un-receptor-real">8. Lo que revela un receptor real</h3>
+<p>Los dominios del tiempo y la frecuencia se convierten ahora en herramientas de diagnóstico:</p>
+<table>
+<thead>
+<tr>
+<th>Condición</th>
+<th>En el tiempo</th>
+<th>En frecuencia</th>
+<th>Decisión práctica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ganancia insuficiente</td>
+<td>amplitud pequeña</td>
+<td>señal cerca del piso visible</td>
+<td>aumentar ganancia y volver a observar</td>
+</tr>
+<tr>
+<td>Ganancia excesiva / recorte</td>
+<td>valores pegados a los extremos</td>
+<td>armónicos, espurias o pedestal elevado</td>
+<td>reducir ganancia</td>
+</tr>
+<tr>
+<td>AGC ajustándose</td>
+<td>envolvente que cambia con el tiempo</td>
+<td>nivel del espectro inestable</td>
+<td>usar ganancia manual para comparar mediciones</td>
+</tr>
+<tr>
+<td>Desplazamiento de continua</td>
+<td>media de I o Q distinta de cero</td>
+<td>pico exactamente en 0 Hz</td>
+<td>medir la media; evitar centrar allí una señal estrecha</td>
+</tr>
+<tr>
+<td>Error del oscilador</td>
+<td>no siempre evidente</td>
+<td>todas las componentes aparecen desplazadas</td>
+<td>calcular o estimar la corrección en ppm</td>
+</tr>
+</tbody>
+</table>
+<p>La <strong>ganancia manual</strong> mantiene fijo el estado del receptor y permite comparar capturas. El <strong>AGC</strong> cambia la ganancia para responder al nivel recibido: resulta cómodo para explorar una señal variable, pero altera la amplitud y puede ocultar si un cambio provino del entorno o del receptor. Por eso las tres grabaciones calificadas se realizan con ganancias manuales conocidas. La prueba con AGC queda como observación opcional para quien tenga hardware.</p>
+<p>El desplazamiento de continua puede medirse con</p>
+<div class="arithmatex">\[
+\mu=\frac{1}{N}\sum_{n=0}^{N-1}x[n].
+\]</div>
+<p>Restar <span class="arithmatex">\(\mu\)</span> elimina el componente constante de una captura para una visualización, pero no corrige todas las imperfecciones de un receptor de conversión directa.</p>
+<p>El error del oscilador se expresa en partes por millón:</p>
+<div class="arithmatex">\[
+\Delta f=f_c\frac{\text{ppm}}{10^6}.
+\]</div>
+<p>Un error de 1 ppm produce 99.1 Hz a 99.1 MHz y 1.09 kHz a 1090 MHz. La misma exactitud puede ser despreciable para un canal FM de 200 kHz y relevante para una señal estrecha.</p>
+<div class="admonition note">
+<p class="admonition-title">Qué no se evalúa todavía</p>
+<p>No se evalúa en esta sesión:</p>
+<ul>
+<li>resolver integrales de la transformada continua;</li>
+<li>memorizar la tabla completa de propiedades;</li>
+<li>implementar el algoritmo interno de la FFT o dibujar sus mariposas;</li>
+<li>calcular la ganancia de procesamiento de la FFT;</li>
+<li>diseñar ventanas;</li>
+<li>resolver convolución, filtros, PSD, RBW o SNR calibrada.</li>
+</ul>
+<p>La convolución, el filtrado y las mediciones espectrales rigurosas se desarrollan en la Sesión 03.</p>
+</div>
+<hr />
+<h2 id="sintesis">Síntesis</h2>
+<table>
+<thead>
+<tr>
+<th>Si se modifica…</th>
+<th>Entonces…</th>
+<th>Lo que no cambia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>La amplitud de un tono</td>
+<td>cambia la altura de su pico</td>
+<td>su frecuencia</td>
+</tr>
+<tr>
+<td>La fase o el instante inicial</td>
+<td>cambia la fase espectral</td>
+<td>la magnitud del tono</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(N\)</span> con <span class="arithmatex">\(f_s\)</span> fijo</td>
+<td>cambia <span class="arithmatex">\(T_{captura}\)</span> y <span class="arithmatex">\(\Delta f\)</span></td>
+<td>el intervalo total observado</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(f_s\)</span> con <span class="arithmatex">\(N\)</span> fijo</td>
+<td>cambia el intervalo y <span class="arithmatex">\(\Delta f\)</span></td>
+<td>la cantidad de bins</td>
+</tr>
+<tr>
+<td>La ventana</td>
+<td>cambian lóbulos, anchura y calibración</td>
+<td>las muestras originales almacenadas</td>
+</tr>
+<tr>
+<td>El tipo real por complejo</td>
+<td>desaparece la redundancia conjugada</td>
+<td>la información física representada</td>
+</tr>
+<tr>
+<td>La frecuencia de mezcla compleja</td>
+<td>se traslada todo el espectro</td>
+<td>su forma y separaciones internas</td>
+</tr>
+<tr>
+<td>La ganancia hasta producir recorte</td>
+<td>aparecen productos de distorsión</td>
+<td>la señal original que existía en la antena</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ejercicios">Ejercicios</h2>
+<h3 id="ejercicio-1-duracion-bins-e-intervalo">Ejercicio 1: duración, bins e intervalo</h3>
+<p>Un RTL-SDR entrega muestras complejas a 2.4 MS/s. El Frequency Sink utiliza <span class="arithmatex">\(N=4096\)</span>.</p>
+<ol>
+<li>Calcular la duración de cada bloque.</li>
+<li>Calcular la separación entre bins.</li>
+<li>Determinar el intervalo de frecuencia relativa mostrado.</li>
+<li>Si <span class="arithmatex">\(f_c=99.1\)</span> MHz, hallar el intervalo de frecuencia RF.</li>
+</ol>
+<details class="example">
+<summary>Solución</summary>
+<div class="arithmatex">\[
+T_{captura}=\frac{4096}{2.4\times10^6}=1.707\ \text{ms},
+\]</div>
+<div class="arithmatex">\[
+\Delta f=\frac{2.4\times10^6}{4096}=585.94\ \text{Hz}.
+\]</div>
+<p>El intervalo relativo es <span class="arithmatex">\(-1.2\)</span> a <span class="arithmatex">\(+1.2\)</span> MHz. Al sumar <span class="arithmatex">\(f_c\)</span>, el intervalo RF es 97.9–100.3 MHz.</p>
+</details>
+<h3 id="ejercicio-2-real-o-compleja">Ejercicio 2: real o compleja</h3>
+<p>Se observan dos espectros:</p>
+<ul>
+<li>A presenta picos iguales en <span class="arithmatex">\(-4\)</span> y <span class="arithmatex">\(+4\)</span> kHz.</li>
+<li>B presenta un único pico en <span class="arithmatex">\(+4\)</span> kHz.</li>
+</ul>
+<p>¿Cuál puede provenir directamente de una senoide real? ¿Cuál representa una exponencial compleja de frecuencia positiva?</p>
+<details class="example">
+<summary>Solución</summary>
+<p>A corresponde a una senoide real: su espectro debe ser conjugado-simétrico. B corresponde a <span class="arithmatex">\(e^{j2\pi(4\,\text{kHz})t}\)</span> y requiere dos componentes I/Q.</p>
+</details>
+<h3 id="ejercicio-3-fuga-o-dos-senales">Ejercicio 3: fuga o dos señales</h3>
+<p>Una senoide de frecuencia conocida aparece como un pico ancho con lóbulos laterales. Al cambiar su frecuencia unos pocos hertz, cambia la forma de los lóbulos. Al aplicar Hann, estos bajan pero el pico central se ensancha.</p>
+<p>¿El resultado demuestra que existen varias transmisiones cercanas?</p>
+<details class="example">
+<summary>Solución</summary>
+<p>No. El comportamiento es característico de fuga espectral causada por una captura finita y no coherente con los bins. La ventana modifica los lóbulos porque modifica el bloque observado. Antes de declarar varias señales se debe repetir la medición con otra duración o ventana.</p>
+</details>
+<h3 id="ejercicio-4-sintonizacion-digital">Ejercicio 4: sintonización digital</h3>
+<p>Una emisora aparece en <span class="arithmatex">\(f_{BB}=+420\)</span> kHz dentro de una captura centrada en 98.7 MHz.</p>
+<ol>
+<li>¿Cuál es su frecuencia RF?</li>
+<li>¿Por qué frecuencia compleja se debe multiplicar para llevarla a 0 Hz?</li>
+</ol>
+<details class="example">
+<summary>Solución</summary>
+<p>La frecuencia RF es <span class="arithmatex">\(98.7+0.420=99.120\)</span> MHz. Se multiplica por una exponencial compleja de <span class="arithmatex">\(-420\)</span> kHz. Toda la emisora se desplaza al centro sin cambiar su ancho de banda.</p>
+</details>
+<h3 id="ejercicio-5-diagnosticar-una-captura">Ejercicio 5: diagnosticar una captura</h3>
+<p>Al aumentar la ganancia, una señal deseada sube 4 dB, pero aparecen numerosos picos nuevos y muchas muestras I/Q quedan cerca de <span class="arithmatex">\(\pm1\)</span>.</p>
+<p>¿Se obtuvo una recepción mejor?</p>
+<details class="example">
+<summary>Solución</summary>
+<p>No. Los valores cercanos a los extremos y los productos espectrales nuevos indican recorte. La señal deseada ya no crece proporcionalmente porque la cadena está saturada. Se debe reducir la ganancia y comparar nuevamente.</p>
+</details>
+<h3 id="ejercicio-6-el-mismo-ppm-distinto-efecto">Ejercicio 6: el mismo ppm, distinto efecto</h3>
+<p>Calcular el error producido por 2 ppm a 100 MHz y a 1.5 GHz. Explicar por qué especificar solamente «2 ppm» no dice cuántos hertz se desplazará una señal.</p>
+<details class="example">
+<summary>Solución</summary>
+<p>A 100 MHz:</p>
+<div class="arithmatex">\[
+\Delta f=100\times10^6\frac{2}{10^6}=200\ \text{Hz}.
+\]</div>
+<p>A 1.5 GHz:</p>
+<div class="arithmatex">\[
+\Delta f=1.5\times10^9\frac{2}{10^6}=3\ \text{kHz}.
+\]</div>
+<p>El ppm es un error relativo. El desplazamiento absoluto aumenta en proporción a la frecuencia sintonizada.</p>
+</details>
+<hr />
+<h2 id="laboratorio">Laboratorio</h2>
+<p>El laboratorio sigue una ruta común sin hardware y una extensión opcional con dongle. Se utilizan primero señales sintéticas para aislar cada fenómeno y luego grabaciones I/Q para observar varios efectos simultáneamente.</p>
+<h3 id="archivos-necesarios">Archivos necesarios</h3>
+<ul>
+<li><a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test.grc"><code>test.grc</code></a>, preparado con <strong>File Source → Throttle</strong> como ruta activa.</li>
+<li>Las tres grabaciones FM oficiales <code>.cu8</code>: ganancia manual baja, media y alta.</li>
+<li>Un cuaderno local o Google Colab con NumPy y Matplotlib.</li>
+</ul>
+<p>El grafo también conserva una fuente <strong>Soapy RTL-SDR Source</strong> visible pero desactivada (<code>D</code>). Solo quien tenga dongle debe intercambiar las rutas.</p>
+<div class="admonition warning">
+<p class="admonition-title">Pendiente del profesor: grabaciones a tres ganancias</p>
+<p>Antes de publicar la sesión se añadirá aquí la URL de Google Drive y, para cada <code>.cu8</code>, el nombre, <span class="arithmatex">\(f_c\)</span>, <span class="arithmatex">\(f_s\)</span>, ganancia manual, antena, duración, formato y SHA-256. El laboratorio y la rúbrica ya están definidos; únicamente falta sustituir este aviso por los metadatos reales.</p>
+<p>El archivo oficial conserva los bytes crudos. El <code>.cfile</code> usado por <strong>File Source</strong> será un derivado reproducible creado con el conversor de la Parte B, no un segundo archivo fuente sin trazabilidad.</p>
+</div>
+<h3 id="parte-a-construir-intuicion-con-gnu-radio-55-min">Parte A — Construir intuición con GNU Radio (55 min)</h3>
+<p>Crea <code>s02_fft.grc</code> con estos bloques:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Signal Source → Throttle ─┬─→ QT GUI Time Sink
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                          └─→ QT GUI Frequency Sink
+</code></pre></div>
+<p>Configura inicialmente:</p>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th style="text-align: right;">Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tipo de salida</td>
+<td style="text-align: right;">Complex</td>
+</tr>
+<tr>
+<td>Forma</td>
+<td style="text-align: right;">Cosine</td>
+</tr>
+<tr>
+<td><code>samp_rate</code></td>
+<td style="text-align: right;">32 000 S/s</td>
+</tr>
+<tr>
+<td>Frecuencia</td>
+<td style="text-align: right;">1 000 Hz</td>
+</tr>
+<tr>
+<td>Amplitud</td>
+<td style="text-align: right;">0.8</td>
+</tr>
+<tr>
+<td>FFT size</td>
+<td style="text-align: right;">1 024</td>
+</tr>
+</tbody>
+</table>
+<p>Realiza las siguientes predicciones <strong>antes</strong> de ejecutar cada modificación:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Paso</th>
+<th>Modificación</th>
+<th>Predicción y evidencia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>Ejecutar la configuración inicial</td>
+<td>explicar qué revela cada dominio y localizar el pico</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>Detener el grafo; cambiar Signal Source, Throttle y ambos sinks a <code>Float</code></td>
+<td>predecir y capturar los picos en <span class="arithmatex">\(\pm1\)</span> kHz; después restaurar los cuatro bloques a <code>Complex</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>Volver a <code>Complex</code> y cambiar 1 000 por 1 010 Hz</td>
+<td>comparar fuga y ubicación entre bins</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>Comparar ventana rectangular y Hann</td>
+<td>identificar reducción de lóbulos y ensanchamiento del pico</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>Cambiar FFT size de 1 024 a 4 096</td>
+<td>calcular los nuevos <span class="arithmatex">\(T_{captura}\)</span> y <span class="arithmatex">\(\Delta f\)</span></td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td>Volver a 1 024 y duplicar <code>samp_rate</code></td>
+<td>predecir el intervalo y la nueva separación entre bins</td>
+</tr>
+</tbody>
+</table>
+<p>Para comprobar traslación en frecuencia, añade una segunda <strong>Signal Source</strong> compleja de 4 kHz y un bloque <strong>Multiply</strong>. Multiplica el tono de 1 kHz por el de 4 kHz. El resultado debe aparecer en 5 kHz. Cambia la segunda fuente a <span class="arithmatex">\(-4\)</span> kHz y comprueba que el resultado cae en <span class="arithmatex">\(-3\)</span> kHz.</p>
+<h3 id="parte-b-inspeccionar-iq-en-numpy-40-min">Parte B — Inspeccionar I/Q en NumPy (40 min)</h3>
+<p>Primero comprueba que un desplazamiento temporal puede conservar la magnitud y cambiar la fase. Para <span class="arithmatex">\(f_s=32\)</span> kS/s, <span class="arithmatex">\(N=1024\)</span> y <span class="arithmatex">\(f_0=1\)</span> kHz, un retraso circular de ocho muestras produce <span class="arithmatex">\(-\pi/2\)</span> radianes en el bin del tono:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">fs_demo</span><span class="p">,</span> <span class="n">n_demo</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">delay</span> <span class="o">=</span> <span class="mi">32_000</span><span class="p">,</span> <span class="mi">1_024</span><span class="p">,</span> <span class="mi">1_000</span><span class="p">,</span> <span class="mi">8</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_demo</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">x_demo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f0</span> <span class="o">*</span> <span class="n">n</span> <span class="o">/</span> <span class="n">fs_demo</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">y_demo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">x_demo</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">k0</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">f0</span> <span class="o">*</span> <span class="n">n_demo</span> <span class="o">/</span> <span class="n">fs_demo</span><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">X_demo</span><span class="p">,</span> <span class="n">Y_demo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">x_demo</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">y_demo</span><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"magnitudes:"</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">X_demo</span><span class="p">[</span><span class="n">k0</span><span class="p">]),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Y_demo</span><span class="p">[</span><span class="n">k0</span><span class="p">]))</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"cambio de fase:"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">Y_demo</span><span class="p">[</span><span class="n">k0</span><span class="p">]</span> <span class="o">/</span> <span class="n">X_demo</span><span class="p">[</span><span class="n">k0</span><span class="p">]))</span>
+</code></pre></div>
+<p>Después coloca los tres archivos <code>.cu8</code> en la misma carpeta del cuaderno. Sustituye nombres, <code>FS</code> y <code>FC</code> por los metadatos publicados:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">FS</span> <span class="o">=</span> <span class="mi">2_400_000</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">FC</span> <span class="o">=</span> <span class="mi">99_100_000</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">files</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="s2">"baja"</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"fm_ganancia_baja.cu8"</span><span class="p">),</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="s2">"media"</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"fm_ganancia_media.cu8"</span><span class="p">),</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="s2">"alta"</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"fm_ganancia_alta.cu8"</span><span class="p">),</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">}</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_cu8</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    <span class="n">raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: cantidad impar de bytes"</span><span class="p">)</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>    <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">-</span> <span class="mf">127.5</span><span class="p">)</span> <span class="o">/</span> <span class="mf">127.5</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>    <span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">-</span> <span class="mf">127.5</span><span class="p">)</span> <span class="o">/</span> <span class="mf">127.5</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="n">loaded</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">load_cu8</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="n">raw</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">loaded</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="n">iq</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">loaded</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+</code></pre></div>
+<p>Cada muestra cruda contiene dos bytes, <code>I,Q</code>, entre 0 y 255. La conversión</p>
+<div class="arithmatex">\[
+I=\frac{u_I-127.5}{127.5},
+\qquad
+Q=\frac{u_Q-127.5}{127.5}
+\]</div>
+<p>lleva cada componente aproximadamente al intervalo <span class="arithmatex">\([-1,+1]\)</span>. El archivo <code>.cfile</code> resultante contiene pares <code>float32</code> complejos y puede conectarse directamente al <strong>File Source</strong> de GNU Radio.</p>
+<p>Antes de abandonar los 8 bits, mide cuánto rango del ADC utilizó cada captura y cuántas muestras tocaron los códigos extremos 0/255:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">raw_metrics</span><span class="p">(</span><span class="n">u8</span><span class="p">):</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">i</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">u8</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">u8</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">at_rail</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">255</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">q</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">q</span> <span class="o">==</span> <span class="mi">255</span><span class="p">)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="k">return</span> <span class="p">{</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="s2">"I_codes"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">i</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        <span class="s2">"Q_codes"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">q</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">q</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        <span class="s2">"rail_sample_%"</span><span class="p">:</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">at_rail</span><span class="p">),</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="p">}</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">iq</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">raw_metrics</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="n">name</span><span class="p">]),</span> <span class="p">{</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>        <span class="s2">"rms"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)),</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>        <span class="s2">"mean"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="p">})</span>
+</code></pre></div>
+<p>Un intervalo de códigos muy estrecho indica que se desaprovecha el convertidor. Un porcentaje apreciable exactamente en 0/255 es evidencia fuerte de recorte. Ninguna métrica aislada sustituye la inspección conjunta en tiempo y frecuencia.</p>
+<p>Genera también los <code>.cfile</code> derivados para GNU Radio:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">output</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">".cfile"</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">iq</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span> <span class="s2">"bytes"</span><span class="p">)</span>
+</code></pre></div>
+<p>Para comparar espectros usa el mismo <span class="arithmatex">\(N\)</span> y la misma ventana en todos los archivos:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">magnitude_spectrum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">nfft</span><span class="o">=</span><span class="mi">262_144</span><span class="p">,</span> <span class="n">remove_dc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">nfft</span><span class="p">]</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="k">if</span> <span class="n">remove_dc</span><span class="p">:</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">window</span><span class="p">))</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">frequency</span> <span class="o">=</span> <span class="n">fc</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">))</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="n">magnitude_db</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span> <span class="o">/</span> <span class="n">window</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="mf">1e-12</span><span class="p">))</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="k">return</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">magnitude_db</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">iq</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    <span class="n">f</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">magnitude_spectrum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">FS</span><span class="p">,</span> <span class="n">FC</span><span class="p">)</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Frecuencia RF (MHz)"</span><span class="p">)</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Magnitud por bin (dB, ref. amplitud compleja 1)"</span><span class="p">)</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</code></pre></div>
+<p>La referencia de 0 dB es una exponencial compleja de amplitud unitaria que cae exactamente en un bin. La gráfica se denomina magnitud por bin, no PSD. La normalización rigurosa por hertz se realizará en la Sesión 03.</p>
+<p>Finalmente, compara el espectro de una captura antes y después de restar su media:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">x</span> <span class="o">=</span> <span class="n">iq</span><span class="p">[</span><span class="s2">"media"</span><span class="p">]</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">for</span> <span class="n">remove_dc</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">((</span><span class="kc">False</span><span class="p">,</span> <span class="s2">"original"</span><span class="p">),</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s2">"media removida"</span><span class="p">)):</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">f</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">magnitude_spectrum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">FS</span><span class="p">,</span> <span class="n">FC</span><span class="p">,</span> <span class="n">remove_dc</span><span class="o">=</span><span class="n">remove_dc</span><span class="p">)</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="n">FC</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e3</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Frecuencia relativa a $f_c$ (kHz)"</span><span class="p">)</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Magnitud por bin (dB, ref. amplitud compleja 1)"</span><span class="p">)</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</code></pre></div>
+<p>Explica qué parte desaparece, qué permanece y por qué restar la media no constituye una reparación general del receptor.</p>
+<h3 id="parte-c-comparar-la-grabacion-y-la-fuente-opcional-25-min">Parte C — Comparar la grabación y la fuente opcional (25 min)</h3>
+<ol>
+<li>Abre <code>gnuradio-flowgraphs/test.grc</code>.</li>
+<li>Confirma que <strong>File Source</strong> y <strong>Throttle</strong> están activos.</li>
+<li>Confirma que <strong>Soapy RTL-SDR Source</strong> permanece desactivada (<code>D</code>).</li>
+<li>Selecciona uno de los <code>.cfile</code> derivados en la Parte B, ejecuta y observa simultáneamente tiempo y frecuencia.</li>
+<li>Repite con las otras dos ganancias sin cambiar escala, FFT ni ventana.</li>
+<li>Identifica cuál captura queda subutilizada, cuál aprovecha mejor el rango y cuál presenta evidencia de saturación. La conclusión debe basarse en observaciones, no en asumir que «más ganancia es mejor».</li>
+</ol>
+<p>Quien tenga un RTL-SDR puede detener el grafo, desactivar <strong>File Source</strong> y <strong>Throttle</strong>, activar <strong>Soapy RTL-SDR Source</strong> y repetir la observación en vivo. Esta extensión no modifica la calificación.</p>
+<p>Con hardware, usa primero ganancia manual. Después activa AGC, vuelve a ejecutar y observa si la envolvente o el nivel espectral cambia durante el ajuste. No compares amplitudes entre dos configuraciones si el AGC estuvo activo.</p>
+<div class="admonition tip">
+<p class="admonition-title">Antena del kit: una variable que también debe permanecer fija</p>
+<p>En FM, comienza con el dipolo orientado verticalmente y cerca de una ventana; evita apoyarlo sobre la laptop o junto al cable USB. Como aproximación, cada brazo de un dipolo mide <span class="arithmatex">\(\lambda/4=c/(4f)\)</span>: a 100 MHz son unos 75 cm. Para comparar ganancias, no cambies simultáneamente posición, longitud u orientación de la antena.</p>
+</div>
+<h3 id="reporte-1-del-tiempo-al-espectro">Reporte 1 — Del tiempo al espectro</h3>
+<ul>
+<li><strong>Vence:</strong> al inicio de la Sesión 03.</li>
+<li><strong>Hardware:</strong> indicar «sin dongle» o el modelo utilizado; no afecta la nota.</li>
+<li><strong>Archivos:</strong> registrar nombre y SHA-256 de las tres grabaciones <code>.cu8</code>; los <code>.cfile</code> son derivados locales.</li>
+<li><strong>Resultados mínimos:</strong></li>
+<li>tabla con <span class="arithmatex">\(f_s\)</span>, <span class="arithmatex">\(N\)</span>, <span class="arithmatex">\(T_{captura}\)</span> y <span class="arithmatex">\(\Delta f\)</span> del experimento sintético;</li>
+<li>capturas real versus compleja y rectangular versus Hann;</li>
+<li>tabla de rangos de códigos 8-bit, ocupación de 0/255 y métricas para las tres ganancias;</li>
+<li>espectros comparativos con escalas idénticas;</li>
+<li>explicación de recorte, DC y selección de ganancia basada en evidencia.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th style="text-align: right;">Puntos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flowgraph reproducible, parámetros y archivos identificados</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr>
+<td>Cálculos correctos de captura, bins e intervalo</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr>
+<td>Predicciones real/compleja y ventana verificadas</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr>
+<td>Comparación cuantitativa de códigos y espectros para las tres ganancias</td>
+<td style="text-align: right;">1.5</td>
+</tr>
+<tr>
+<td>Interpretación clara de recorte y DC</td>
+<td style="text-align: right;">0.5</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>5.0</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="lecturas-recomendadas">Lecturas recomendadas</h2>
+<ol>
+<li>T. F. Collins, R. Getz, D. Pu y A. M. Wyglinski, <em>Software-Defined Radio for Engineers</em>, cap. 2, §§2.1 y 2.3. La sesión adapta estos apartados y corrige su presentación del espectro complejo.</li>
+<li><a href="https://numpy.org/doc/stable/reference/routines.fft.html">NumPy: Discrete Fourier Transform</a>. Convenciones de bins, frecuencias y normalización utilizadas por <code>numpy.fft</code>.</li>
+<li><a href="https://wiki.gnuradio.org/index.php/QT_GUI_Frequency_Sink">GNU Radio Wiki: QT GUI Frequency Sink</a>. Parámetros del analizador utilizado en el laboratorio.</li>
+<li><a href="../01-introduccion-sdr/#2-cadena-de-recepcion-del-rtl-sdr">Sesión 01: cadena de recepción del RTL-SDR</a>. Origen de las muestras I/Q, <span class="arithmatex">\(f_c\)</span>, <span class="arithmatex">\(f_s\)</span>, ganancia y resolución de 8 bits.</li>
+</ol>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

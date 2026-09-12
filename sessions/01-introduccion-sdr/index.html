@@ -1,0 +1,3009 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Qué es un SDR, cómo funciona un receptor RTL-SDR por dentro, qué limita su desempeño y qué se puede recibir legalmente en Perú.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/01-introduccion-sdr/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../02-tiempo-frecuencia-iq/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Sesión 01 — Introducción a la Radio Definida por Software - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sesion-01-introduccion-a-la-radio-definida-por-software" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sesión 01 — Introducción a la Radio Definida por Software
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción a SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción a SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Introducción
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#teoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Teoría
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Teoría">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-del-superheterodino-al-sdr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Del superheterodino al SDR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cadena-de-recepcion-del-rtl-sdr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Cadena de recepción del RTL-SDR
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Cadena de recepción del RTL-SDR">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-punto-1-en-la-antena-banda-de-rf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1. Punto ① — En la antena: banda de RF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-punto-2-tras-el-tuner-senal-real-en-la-if" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2. Punto ② — Tras el tuner: señal real en la IF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-punto-3-adc-288-millones-de-muestras-reales-por-segundo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3. Punto ③ — ADC: 28.8 millones de muestras reales por segundo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-punto-4-del-voltaje-real-a-las-muestras-complejas-iq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4. Punto ④ — Del voltaje real a las muestras complejas I/Q
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4. Punto ④ — Del voltaje real a las muestras complejas I/Q">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#241-mezcla-digital-y-desplazamiento-del-espectro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4.1. Mezcla digital y desplazamiento del espectro
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4.1. Mezcla digital y desplazamiento del espectro">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#que-ve-cada-rama-por-separado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué ve cada rama por separado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-punto-5-filtro-paso-bajo-y-decimacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5. Punto ⑤ — Filtro paso bajo y decimación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-punto-6-usb-bytes-i-q-i-q" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6. Punto ⑥ — USB: bytes I, Q, I, Q…
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-los-cuatro-parametros-y-sus-limites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Los cuatro parámetros y sus límites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-el-ecosistema-de-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. El ecosistema de software
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-que-se-puede-recibir-en-lima" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Qué se puede recibir en Lima
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-marco-legal-del-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Marco legal del curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-ejemplo-end-to-end-planificar-una-captura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Ejemplo end-to-end: planificar una captura
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Síntesis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejercicios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-1-caudal-por-usb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 1: Caudal por USB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-2-rango-dinamico-y-bits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 2: Rango dinámico y bits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-3-error-de-frecuencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 3: Error de frecuencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-4-ancho-de-banda-y-canales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 4: Ancho de banda y canales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-5-planificar-una-captura-de-atis-integrador" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 5: Planificar una captura de ATIS (integrador)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#laboratorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Laboratorio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Laboratorio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#materiales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Materiales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#descargar-la-grabacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Descargar la grabación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#organizar-la-carpeta-de-trabajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organizar la carpeta de trabajo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-a-el-archivo-por-dentro-sin-gnu-radio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A: el archivo por dentro, sin GNU Radio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-b-la-prueba-fallida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B: la prueba fallida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-c-la-lectura-correcta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C: la lectura correcta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-d-con-dongle-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte D: con dongle, opcional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cierre-que-contenian-los-diez-segundos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cierre: qué contenían los diez segundos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cierre: qué contenían los diez segundos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#como-se-dibujan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo se dibujan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reporte-0-del-bit-al-espectro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporte 0: del bit al espectro
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lecturas-recomendadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lecturas recomendadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-tiempo-frecuencia-iq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Del tiempo al espectro
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Introducción
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#teoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Teoría
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Teoría">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-del-superheterodino-al-sdr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Del superheterodino al SDR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cadena-de-recepcion-del-rtl-sdr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Cadena de recepción del RTL-SDR
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Cadena de recepción del RTL-SDR">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-punto-1-en-la-antena-banda-de-rf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1. Punto ① — En la antena: banda de RF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-punto-2-tras-el-tuner-senal-real-en-la-if" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2. Punto ② — Tras el tuner: señal real en la IF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-punto-3-adc-288-millones-de-muestras-reales-por-segundo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3. Punto ③ — ADC: 28.8 millones de muestras reales por segundo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-punto-4-del-voltaje-real-a-las-muestras-complejas-iq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4. Punto ④ — Del voltaje real a las muestras complejas I/Q
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4. Punto ④ — Del voltaje real a las muestras complejas I/Q">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#241-mezcla-digital-y-desplazamiento-del-espectro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4.1. Mezcla digital y desplazamiento del espectro
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4.1. Mezcla digital y desplazamiento del espectro">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#que-ve-cada-rama-por-separado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué ve cada rama por separado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-punto-5-filtro-paso-bajo-y-decimacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5. Punto ⑤ — Filtro paso bajo y decimación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-punto-6-usb-bytes-i-q-i-q" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6. Punto ⑥ — USB: bytes I, Q, I, Q…
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-los-cuatro-parametros-y-sus-limites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Los cuatro parámetros y sus límites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-el-ecosistema-de-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. El ecosistema de software
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-que-se-puede-recibir-en-lima" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Qué se puede recibir en Lima
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-marco-legal-del-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Marco legal del curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-ejemplo-end-to-end-planificar-una-captura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Ejemplo end-to-end: planificar una captura
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Síntesis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejercicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejercicios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-1-caudal-por-usb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 1: Caudal por USB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-2-rango-dinamico-y-bits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 2: Rango dinámico y bits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-3-error-de-frecuencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 3: Error de frecuencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-4-ancho-de-banda-y-canales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 4: Ancho de banda y canales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-5-planificar-una-captura-de-atis-integrador" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio 5: Planificar una captura de ATIS (integrador)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#laboratorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Laboratorio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Laboratorio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#materiales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Materiales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#descargar-la-grabacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Descargar la grabación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#organizar-la-carpeta-de-trabajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organizar la carpeta de trabajo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-a-el-archivo-por-dentro-sin-gnu-radio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A: el archivo por dentro, sin GNU Radio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-b-la-prueba-fallida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B: la prueba fallida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-c-la-lectura-correcta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C: la lectura correcta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-d-con-dongle-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte D: con dongle, opcional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cierre-que-contenian-los-diez-segundos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cierre: qué contenían los diez segundos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cierre: qué contenían los diez segundos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#como-se-dibujan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo se dibujan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reporte-0-del-bit-al-espectro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporte 0: del bit al espectro
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lecturas-recomendadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lecturas recomendadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="sesion-01-introduccion-a-la-radio-definida-por-software">Sesión 01 — Introducción a la Radio Definida por Software</h1>
+<h2 id="objetivos-de-aprendizaje">Objetivos de aprendizaje</h2>
+<p>Al finalizar esta sesión, el estudiante será capaz de:</p>
+<ol>
+<li>Explicar qué es un <em>software-defined radio</em> (radio definida por software) y qué funciones del receptor pasan del hardware al software</li>
+<li>Describir la cadena de recepción del RTL-SDR (tuner → ADC → DDC → USB) y el papel de cada bloque</li>
+<li>Relacionar los parámetros <span class="arithmatex">\(f_c\)</span>, <span class="arithmatex">\(f_s\)</span>, ganancia y resolución en bits con el ancho de banda observable y el rango dinámico</li>
+<li>Verificar GNU Radio y reproducir una grabación I/Q en un <em>flowgraph</em>; opcionalmente, comprobar un dongle con <code>rtl_test</code></li>
+<li>Identificar qué señales del espectro peruano se pueden recibir y publicar dentro del marco legal del curso</li>
+</ol>
+<hr />
+<h2 id="introduccion">Introducción</h2>
+<p>Antes de la adopción masiva del procesamiento digital, una radio convencional se diseñaba para un solo sistema. Cada función —filtrado, mezcla y demodulación— correspondía a un circuito fijo. Cambiar de estándar exigía cambiar el hardware.</p>
+<p>La radio definida por software (<em>software-defined radio</em>, SDR) cambia ese enfoque: digitaliza la señal tan pronto como resulta técnica y económicamente viable, y traslada al software el procesamiento posterior.</p>
+<p>Una misma plataforma puede recibir FM, señales aeronáuticas, satélites o sensores con solo cambiar el programa.</p>
+<p>Joseph Mitola acuñó el término en 1995. Durante la primera década, la tecnología se concentró en entornos militares y de laboratorio.</p>
+<p>En una radio convencional, cada aplicación determina una cadena de circuitos. En un SDR, varias aplicaciones reutilizan el mismo <em>front-end</em> y digitalizador; la selección, el filtrado y la demodulación pasan al software.</p>
+<p><img alt="Comparación entre tres radios convencionales con hardware dedicado y una plataforma SDR cuyo hardware alimenta varias aplicaciones definidas por software" src="figures/radio-convencional-vs-sdr.png" /></p>
+<p><strong>Figura 1.</strong> Comparación entre radios convencionales de hardware dedicado y una plataforma SDR reutilizable.</p>
+<p>El SDR no elimina necesariamente el hardware analógico. Desplaza hacia el dominio digital una frontera que depende del costo, el consumo y la frecuencia de operación del equipo.</p>
+<p>En 2012, Antti Palosaari descubrió que el RTL2832U de ciertos sintonizadores USB de televisión digital podía entregar muestras I/Q crudas al computador. El proyecto Osmocom desarrolló <code>librtlsdr</code> y dio origen al <strong>RTL-SDR</strong> de bajo costo.</p>
+<p>El curso utiliza ese dongle, o grabaciones realizadas con él, para construir receptores completos en GNU Radio y Python.</p>
+<p>La sesión responde tres preguntas: ¿qué contiene el dongle?, ¿qué limita su funcionamiento? y ¿qué señales pueden recibirse legalmente?</p>
+<hr />
+<h2 id="teoria">Teoría</h2>
+<h3 id="1-del-superheterodino-al-sdr">1. Del superheterodino al SDR</h3>
+<p>El receptor <em>superheterodino</em> dominó la radio durante gran parte del siglo XX. Su nombre describe la generación de «otra frecuencia» mediante la mezcla de la señal recibida con un oscilador local.</p>
+<p>Fessenden introdujo el término en 1901. El método consiste en <strong>multiplicar</strong> la señal recibida, de frecuencia <span class="arithmatex">\(f_{RF}\)</span>, por una senoide local de frecuencia <span class="arithmatex">\(f_{LO}\)</span>. El producto contiene dos frecuencias nuevas: la suma y la diferencia.</p>
+<div class="arithmatex">\[
+\cos(2\pi f_{RF} t)\cos(2\pi f_{LO} t) = \tfrac{1}{2}\cos\!\big(2\pi (f_{RF}-f_{LO})\,t\big) + \tfrac{1}{2}\cos\!\big(2\pi (f_{RF}+f_{LO})\,t\big).
+\]</div>
+<p>Un filtro conserva la diferencia y traslada la señal a una frecuencia elegida por el diseño. En el superheterodino de Armstrong (1918), esa diferencia se sitúa en una frecuencia intermedia (IF) fija, como 455 kHz en AM o 10.7 MHz en FM.</p>
+<p>Un mismo filtro estrecho y un amplificador trabajan en esa IF para cualquier emisora. La sintonización se logra modificando <span class="arithmatex">\(f_{LO}\)</span>.</p>
+<pre class="mermaid"><code>flowchart LR
+    ANT[Antena] --&gt;|①| PRE[Filtro RF&lt;br/&gt;preselector]
+    PRE --&gt;|②| LNA[Amplificador&lt;br/&gt;de bajo ruido]
+    LNA --&gt;|③| MIX((×))
+    LO[Oscilador local&lt;br/&gt;f_LO] --&gt; MIX
+    MIX --&gt;|④| IFF[Filtro IF&lt;br/&gt;paso banda]
+    IFF --&gt;|⑤| IFA[Amplificador IF]
+    IFA --&gt;|⑥| DEM[Demodulador]
+    DEM --&gt;|⑦| AF[Amplificador&lt;br/&gt;de audio]</code></pre>
+<p><strong>Figura 2.</strong> Cadena funcional de un receptor superheterodino y puntos de observación de la señal.</p>
+<p>Puntos de observación del espectro:</p>
+<ul>
+<li>① en la antena,</li>
+<li>② tras el preselector,</li>
+<li>③ tras el LNA,</li>
+<li>④ a la salida del mezclador, donde aparecen suma y diferencia,</li>
+<li>⑤ tras el filtro IF,</li>
+<li>⑥ tras el amplificador IF,</li>
+<li>⑦ banda base tras el demodulador.</li>
+</ul>
+<p>Cada bloque es un circuito diseñado para una IF y una modulación concretas. El <strong>SDR ideal</strong> reduce la cadena a antena, ADC y software.</p>
+<p>Sin embargo, digitalizar directamente a 1 GHz con buena resolución exige un ADC rápido, costoso y de alto consumo.</p>
+<p>Por ello, los SDR prácticos conservan un <em>front-end</em> analógico. Su función es acondicionar y, cuando resulta necesario, trasladar la señal a una frecuencia que pueda muestrear un ADC más modesto.</p>
+<p>Según dónde queda la señal antes del ADC hay tres familias:</p>
+<table>
+<thead>
+<tr>
+<th>Arquitectura</th>
+<th>Señal antes del ADC</th>
+<th>Ejemplos</th>
+<th>Costo típico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>RF sampling</em></td>
+<td>En RF, sin mezcla</td>
+<td>Convertidores RF de laboratorio</td>
+<td>miles de US$</td>
+</tr>
+<tr>
+<td><em>Zero-IF</em> (conversión directa)</td>
+<td>En banda base, I y Q separados</td>
+<td>ADALM-Pluto, HackRF, LimeSDR</td>
+<td>100–400 US$</td>
+</tr>
+<tr>
+<td><em>Low-IF</em></td>
+<td>En una IF baja, señal real</td>
+<td><strong>RTL-SDR</strong></td>
+<td>30–40 US$</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Comparación de las cadenas de recepción de muestreo directo de RF, Zero-IF y Low-IF, indicando dónde aparece el ADC y dónde se forman I y Q" src="figures/arquitecturas-receptores-sdr.png" /></p>
+<p><strong>Figura 3.</strong> Comparación entre muestreo directo de RF, conversión directa (<em>Zero-IF</em>) y frecuencia intermedia baja (<em>Low-IF</em>).</p>
+<p>La diferencia decisiva es <strong>qué señal ve el ADC</strong>. En muestreo directo ve RF; en <em>Zero-IF</em> dos ADC reciben los voltajes I y Q producidos por mezcladores analógicos; en <em>Low-IF</em> un ADC recibe una IF real y un DDC forma I/Q digitalmente.</p>
+<p>La figura sintetiza las comparaciones publicadas por <a href="https://www.analog.com/en/resources/technical-articles/a-review-of-wideband-rf-receiver-architecture-options.html">Analog Devices</a>.</p>
+<p>También considera el informe de arquitecturas de recepción de <a href="https://www.ti.com/kr/lit/pdf/snaa329">Texas Instruments</a>.</p>
+<p>Como ejemplo verificable de <em>Zero-IF</em>, el <a href="https://wiki.analog.com/university/tools/pluto/users/understanding">ADALM-Pluto</a> emplea conversión directa dentro del AD9363.</p>
+<p>El RTL-SDR es <em>Low-IF</em>: el tuner deja la señal en una IF de pocos megahercios y el ADC la muestrea como señal real.</p>
+<p>La separación en componentes I y Q ocurre después, en el dominio digital. Para comprender el proceso, resulta necesario examinar el interior del receptor.</p>
+<h3 id="2-cadena-de-recepcion-del-rtl-sdr">2. Cadena de recepción del RTL-SDR</h3>
+<p><img alt="Diagrama técnico simplificado del interior de un RTL-SDR Blog V4, con el triplexor, el tuner R828D, el RTL2832U, el TCXO y las rutas de señal" src="figures/rtl-sdr-v4-interior.png" /></p>
+<p><strong>Figura 4.</strong> Representación funcional de los componentes principales de un RTL-SDR Blog V4.</p>
+<p>La ilustración es funcional, no fotográfica: identifica los componentes necesarios para seguir la señal, pero no reproduce su posición exacta sobre la placa.</p>
+<p>Su contenido se basa en la <a href="https://www.rtl-sdr.com/wp-content/uploads/2024/12/RTLSDR_V4_Datasheet_V_1_0.pdf">hoja de datos oficial del V4</a>.</p>
+<p><strong>V3</strong> y <strong>V4</strong> son generaciones comerciales del dongle RTL-SDR Blog, no versiones del estándar USB ni del chip RTL2832U. El V3 emplea el tuner R820T2; el V4 lo reemplaza por el R828D y añade filtrado de entrada y un <em>upconverter</em> para HF.</p>
+<p>El dongle contiene dos circuitos integrados principales en la cadena de recepción:</p>
+<ul>
+<li>El <strong>tuner</strong> es el <em>front-end</em> analógico: Rafael Micro R820T2 en el V3 y R828D en el V4.</li>
+</ul>
+<p>Ambos pertenecen a la misma familia y utilizan el mismo driver. El R828D sustituyó al R820T2 y ofrece tres entradas de RF, utilizadas por el V4 para los filtros de banda y el <em>upconverter</em> de HF.
+- El <strong>RTL2832U</strong> es un demodulador de televisión reconvertido en digitalizador: contiene el ADC, el conversor descendente digital y el controlador USB.</p>
+<pre class="mermaid"><code>flowchart LR
+    ANT[Antena] --&gt;|①| TUN[Tuner R828D / R820T2&lt;br/&gt;LNA · mezclador · filtro IF 5 MHz · VGA]
+    TUN --&gt;|② IF real&lt;br/&gt;3.57 MHz| ADC[ADC 8 bits&lt;br/&gt;28.8 MS/s]
+    ADC --&gt;|③| DDC[Mezcla digital&lt;br/&gt;× cos, × −sin a 3.57 MHz]
+    DDC --&gt;|④ I/Q| LPF[Filtro paso bajo&lt;br/&gt;+ decimación → f_s]
+    LPF --&gt;|⑤| USB[Control USB&lt;br/&gt;bytes I,Q,I,Q…]
+    USB --&gt;|⑥ USB 2.0| PC[PC: librtlsdr&lt;br/&gt;→ GNU Radio / Python]
+    XTAL[Cristal 28.8 MHz&lt;br/&gt;TCXO 1 ppm] -.-&gt; TUN
+    XTAL -.-&gt; ADC</code></pre>
+<p><strong>Figura 5.</strong> Cadena completa de recepción del RTL-SDR, desde la antena hasta el computador.</p>
+<p>Todo el procesamiento comprendido entre los puntos ② y ⑤ ocurre dentro del RTL2832U.</p>
+<p>La exposición siguiente recorre la señal punto por punto y muestra su espectro. Cada diagrama resalta en ámbar el bloque activo. El ejemplo corresponde a la sección 7: una emisora objetivo en <span class="arithmatex">\(f_c = 99.1\)</span> MHz y una tasa <span class="arithmatex">\(f_s = 2.4\)</span> MS/s.</p>
+<p>Las figuras son esquemáticas: lóbulos de 200 kHz para cada emisora de FM, sin escala de potencia.</p>
+<h4 id="21-punto-1-en-la-antena-banda-de-rf">2.1. Punto ① — En la antena: banda de RF</h4>
+<pre class="mermaid"><code>flowchart LR
+    ANT[Antena] --&gt;|①| TUN[Tuner R828D / R820T2&lt;br/&gt;LNA · mezclador · filtro IF 5 MHz · VGA]
+    TUN --&gt;|② IF real&lt;br/&gt;3.57 MHz| ADC[ADC 8 bits&lt;br/&gt;28.8 MS/s]
+    ADC --&gt;|③| DDC[Mezcla digital&lt;br/&gt;× cos, × −sin a 3.57 MHz]
+    DDC --&gt;|④ I/Q| LPF[Filtro paso bajo&lt;br/&gt;+ decimación → f_s]
+    LPF --&gt;|⑤| USB[Control USB&lt;br/&gt;bytes I,Q,I,Q…]
+    USB --&gt;|⑥ USB 2.0| PC[PC: librtlsdr&lt;br/&gt;→ GNU Radio / Python]
+    XTAL[Cristal 28.8 MHz&lt;br/&gt;TCXO 1 ppm] -.-&gt; TUN
+    XTAL -.-&gt; ADC
+    classDef activo fill:#fde68a,stroke:#d97706,stroke-width:3px,color:#111827;
+    class ANT activo;</code></pre>
+<p><img alt="Espectro en la antena: emisoras de FM cada 400 kHz alrededor de la emisora objetivo en 99.1 MHz y el oscilador local del tuner en 95.53 MHz" src="figures/cadena-rx-1-antena.png" /></p>
+<p><strong>Figura 6.</strong> Punto ①: banda de RF en la antena y ubicación del bloque observado en la cadena RTL-SDR.</p>
+<ul>
+<li>Cada lóbulo gris representa una emisora de FM; el azul identifica la emisora objetivo en <span class="arithmatex">\(f_c = 99.1\)</span> MHz.</li>
+<li>La línea verde punteada representa el oscilador local del tuner, situado por el driver en <span class="arithmatex">\(f_{LO} = f_c - 3.57\)</span> MHz.</li>
+<li><strong>Sintonizar equivale a elegir <span class="arithmatex">\(f_{LO}\)</span></strong>: la emisora ubicada 3.57 MHz por encima del LO cae en el centro de la IF.</li>
+<li>El LNA (<em>Low Noise Amplifier</em>) eleva el nivel de toda la banda con la ganancia configurada en el dongle.</li>
+</ul>
+<h4 id="22-punto-2-tras-el-tuner-senal-real-en-la-if">2.2. Punto ② — Tras el tuner: señal real en la IF</h4>
+<ul>
+<li>El mezclador multiplica la banda completa por el LO y, por la identidad de la sección 1, produce suma y diferencia.</li>
+<li>La diferencia traslada la banda en bloque: la emisora en <span class="arithmatex">\(f_c\)</span> cae en 3.57 MHz, y cada vecina en <span class="arithmatex">\(3.57 + (f - f_c)\)</span> MHz, conservando sus separaciones.</li>
+<li>La suma cae cerca de 194 MHz y el filtro IF la elimina.</li>
+<li>El filtro tiene 5 MHz de ancho por defecto y está centrado en 3.57 MHz. Por tanto, deja pasar de 1.07 a 6.07 MHz, equivalentes a unos ±2.5 MHz alrededor de <span class="arithmatex">\(f_c\)</span>.</li>
+<li>El VGA (Variable Gain Amplifier) ajusta el nivel antes del ADC.</li>
+</ul>
+<pre class="mermaid"><code>flowchart LR
+    ANT[Antena] --&gt;|①| TUN[Tuner R828D / R820T2&lt;br/&gt;LNA · mezclador · filtro IF 5 MHz · VGA]
+    TUN --&gt;|② IF real&lt;br/&gt;3.57 MHz| ADC[ADC 8 bits&lt;br/&gt;28.8 MS/s]
+    ADC --&gt;|③| DDC[Mezcla digital&lt;br/&gt;× cos, × −sin a 3.57 MHz]
+    DDC --&gt;|④ I/Q| LPF[Filtro paso bajo&lt;br/&gt;+ decimación → f_s]
+    LPF --&gt;|⑤| USB[Control USB&lt;br/&gt;bytes I,Q,I,Q…]
+    USB --&gt;|⑥ USB 2.0| PC[PC: librtlsdr&lt;br/&gt;→ GNU Radio / Python]
+    XTAL[Cristal 28.8 MHz&lt;br/&gt;TCXO 1 ppm] -.-&gt; TUN
+    XTAL -.-&gt; ADC
+    classDef activo fill:#fde68a,stroke:#d97706,stroke-width:3px,color:#111827;
+    class TUN activo;</code></pre>
+<p><img alt="Espectro real en la IF: lóbulo de la señal en +3.57 MHz, su espejo en −3.57 MHz, vecinas trasladadas y la máscara del filtro IF de 5 MHz" src="figures/cadena-rx-2-if.png" /></p>
+<p><strong>Figura 7.</strong> Punto ②: bloque tuner resaltado y espectro real resultante en la IF de 3.57 MHz.</p>
+<p>Hay un hecho que el diagrama no dice y que decide todo lo que viene después: <strong>la señal en la IF es real</strong>.</p>
+<p>Aquí <em>real</em> no significa «física» en oposición a «simulada». Significa que, en cada instante, la IF está representada por un único valor real de tensión en un cable.</p>
+<p>La señal de RF que llega a la antena también es físicamente real. Los números complejos son una representación matemática que permite describir su amplitud y su fase. El espectro de una señal real es simétrico:</p>
+<div class="arithmatex">\[
+x(t) = \mathrm{Re}\{m(t)\,e^{j2\pi f_{IF} t}\}
+\quad\Longrightarrow\quad
+X(f) = \tfrac{1}{2}M(f - f_{IF}) + \tfrac{1}{2}M^*(-f - f_{IF}).
+\]</div>
+<p>El espectro contiene un lóbulo en <span class="arithmatex">\(+3.57\)</span> MHz y su espejo conjugado en <span class="arithmatex">\(-3.57\)</span> MHz. No representan dos señales, sino las dos mitades de una señal real, del mismo modo que un coseno puede expresarse como la suma de dos exponenciales.</p>
+<p>El primer <em>flowgraph</em> de la guía muestra el mismo efecto: la salida <em>Complex</em> presenta un pico en <span class="arithmatex">\(+1\)</span> kHz, mientras que la salida <em>Float</em> presenta dos picos en <span class="arithmatex">\(\pm 1\)</span> kHz.</p>
+<p>La señal azul aparece en <span class="arithmatex">\(+3.57\)</span> MHz y las emisoras vecinas, en gris, permanecen a sus lados. El lóbulo rojo rayado corresponde al espejo en <span class="arithmatex">\(-3.57\)</span> MHz. La respuesta simétrica del filtro IF se representa con una línea negra punteada.</p>
+<p>En 0 Hz permanecen el desplazamiento de continua, la fuga del LO y el ruido 1/f. La arquitectura <em>Low-IF</em> aleja esos defectos 3.57 MHz de la señal útil, aunque exige un ADC más rápido.</p>
+<h4 id="23-punto-3-adc-288-millones-de-muestras-reales-por-segundo">2.3. Punto ③ — ADC: 28.8 millones de muestras reales por segundo</h4>
+<p>La frecuencia más alta que entra al ADC es <span class="arithmatex">\(3.57 + 2.5 = 6.07\)</span> MHz. Nyquist exige una tasa superior a <span class="arithmatex">\(2 \times 6.07 = 12.1\)</span> MS/s. El RTL2832U muestrea a 28.8 MS/s, la frecuencia de su cristal, y ofrece margen suficiente.</p>
+<p>Su zona de Nyquist abarca de <span class="arithmatex">\(-14.4\)</span> a <span class="arithmatex">\(+14.4\)</span> MHz. El filtro IF también actúa como filtro <em>anti-aliasing</em>: cualquier componente que superase 14.4 MHz reaparecería plegada dentro de esa zona.</p>
+<p>Muestrear tiene una consecuencia sobre el espectro: lo hace <strong>periódico</strong>. El espectro entero se copia cada <span class="arithmatex">\(f_s = 28.8\)</span> MHz. Basta mirar un período.</p>
+<pre class="mermaid"><code>flowchart LR
+    ANT[Antena] --&gt;|①| TUN[Tuner R828D / R820T2&lt;br/&gt;LNA · mezclador · filtro IF 5 MHz · VGA]
+    TUN --&gt;|② IF real&lt;br/&gt;3.57 MHz| ADC[ADC 8 bits&lt;br/&gt;28.8 MS/s]
+    ADC --&gt;|③| DDC[Mezcla digital&lt;br/&gt;× cos, × −sin a 3.57 MHz]
+    DDC --&gt;|④ I/Q| LPF[Filtro paso bajo&lt;br/&gt;+ decimación → f_s]
+    LPF --&gt;|⑤| USB[Control USB&lt;br/&gt;bytes I,Q,I,Q…]
+    USB --&gt;|⑥ USB 2.0| PC[PC: librtlsdr&lt;br/&gt;→ GNU Radio / Python]
+    XTAL[Cristal 28.8 MHz&lt;br/&gt;TCXO 1 ppm] -.-&gt; TUN
+    XTAL -.-&gt; ADC
+    classDef activo fill:#fde68a,stroke:#d97706,stroke-width:3px,color:#111827;
+    class ADC activo;</code></pre>
+<p><img alt="Espectro tras el ADC: los dos lóbulos de la IF intactos dentro de la zona de Nyquist de ±14.4 MHz y sus copias periódicas en ±28.8 MHz" src="figures/cadena-rx-3-adc.png" /></p>
+<p><strong>Figura 8.</strong> Punto ③: ADC resaltado, zona de Nyquist y copias periódicas producidas por el muestreo.</p>
+<p>La franja azul claro representa la zona de Nyquist. Dentro de ella se mantiene el espectro del punto ②: la banda gris de 5 MHz, la emisora objetivo en azul y su espejo en rojo.</p>
+<p>Las copias en <span class="arithmatex">\(\pm 28.8\)</span> MHz son una consecuencia del muestreo y no contienen información nueva. No se solapan porque la señal termina en 6.07 MHz, muy por debajo de 14.4 MHz. La señal conserva su información, ahora codificada con 8 bits.</p>
+<h4 id="24-punto-4-del-voltaje-real-a-las-muestras-complejas-iq">2.4. Punto ④ — Del voltaje real a las muestras complejas I/Q</h4>
+<p>El ADC no produce números complejos. En cada instante <span class="arithmatex">\(n\)</span> entrega un único número real <span class="arithmatex">\(x[n]\)</span>, proporcional al voltaje de la IF. La cuadratura aparece en el bloque digital siguiente: el DDC.</p>
+<p>El DDC envía la misma secuencia <span class="arithmatex">\(x[n]\)</span> por dos ramas. Una se multiplica por un coseno y la otra por un seno con un desfase de <span class="arithmatex">\(90^\circ\)</span>:</p>
+<div class="arithmatex">\[
+I_{\mathrm{raw}}[n]=x[n]\cos\!\left(2\pi f_{IF}\frac{n}{f_{ADC}}\right),
+\qquad
+Q_{\mathrm{raw}}[n]=-x[n]\sin\!\left(2\pi f_{IF}\frac{n}{f_{ADC}}\right).
+\]</div>
+<p>Los filtros paso bajo eliminan los productos de alta frecuencia y dejan <span class="arithmatex">\(I[n]\)</span> y <span class="arithmatex">\(Q[n]\)</span>. No son dos mediciones independientes: son la misma señal comparada con dos referencias separadas <span class="arithmatex">\(90^\circ\)</span>.</p>
+<p>El par conserva la amplitud y la fase de la señal. Por conveniencia, GNU Radio lo transporta como un solo número complejo:</p>
+<div class="arithmatex">\[
+z[n]=I[n]+jQ[n].
+\]</div>
+<p>Para una sinusoide didáctica, ignorando una ganancia común, <span class="arithmatex">\(I(t)=\cos(2\pi f_0t)\)</span> y <span class="arithmatex">\(Q(t)=\sin(2\pi f_0t)\)</span>. Cada una es una señal real; juntas trazan la hélice de <span class="arithmatex">\(z(t)=e^{j2\pi f_0t}\)</span>.</p>
+<p><img alt="Una sinusoide compleja representada como una hélice cuyas proyecciones son las dos señales reales I y Q, separadas noventa grados" src="figures/iq-cuadratura-tiempo.png" /></p>
+<p><strong>Figura 9.</strong> Representación conjunta de una sinusoide compleja y sus componentes reales I y Q en cuadratura.</p>
+<p>Cada componente real tiene dos copias espectrales, en <span class="arithmatex">\(+f_0\)</span> y <span class="arithmatex">\(-f_0\)</span>. Al formar <span class="arithmatex">\(I+jQ\)</span>, el factor <span class="arithmatex">\(j\)</span> cambia sus fases: las copias positivas se suman y las negativas se cancelan.</p>
+<p>No se cancela «la parte imaginaria» para obtener una señal real. El resultado sigue siendo complejo, pero ya permite distinguir una frecuencia positiva de una negativa respecto a la frecuencia central.</p>
+<p><img alt="Espectros de I, jQ e I más jQ: las componentes se suman en frecuencia positiva y se cancelan en frecuencia negativa" src="figures/iq-cancelacion-espectral.png" /></p>
+<p><strong>Figura 10.</strong> Formación de <span class="arithmatex">\(I+jQ\)</span>: suma de las componentes positivas y cancelación de las copias negativas.</p>
+<div class="admonition info">
+<p class="admonition-title">¿Qué significa <code>Complex Float 32</code> en GNU Radio?</p>
+<p>Una muestra contiene dos números <code>float32</code>: uno para I y otro para Q. Cada componente ocupa 32 bits, de modo que la muestra compleja completa ocupa 64 bits u 8 bytes.</p>
+<p>Las fuentes SDR y la cadena de procesamiento I/Q suelen usar este tipo. No todos los bloques de GNU Radio son complejos: después de demodular, por ejemplo, el audio normalmente se representa como <code>Float 32</code>.</p>
+<p>Esto tampoco es el formato <code>.cu8</code> del cable USB. Allí I y Q ocupan un byte cada uno; el bloque fuente de GNU Radio los centra, normaliza y entrega al <em>flowgraph</em> como componentes de punto flotante.</p>
+</div>
+<h5 id="241-mezcla-digital-y-desplazamiento-del-espectro">2.4.1. Mezcla digital y desplazamiento del espectro</h5>
+<p>En el RTL2832U, los multiplicadores usan <span class="arithmatex">\(\cos(2\pi \cdot 3.57\,\text{MHz}\cdot t)\)</span> y <span class="arithmatex">\(-\sin(2\pi \cdot 3.57\,\text{MHz}\cdot t)\)</span>.</p>
+<p>Juntas, las dos ramas equivalen a multiplicar por <span class="arithmatex">\(e^{-j2\pi \cdot 3.57\,\text{MHz}\cdot t}\)</span>.</p>
+<p>Multiplicar por esa exponencial compleja <strong>desplaza todo el espectro</strong> en <span class="arithmatex">\(-3.57\)</span> MHz. La señal que estaba en <span class="arithmatex">\(+3.57\)</span> MHz cae en 0 Hz; su espejo, situado en <span class="arithmatex">\(-3.57\)</span> MHz, cae en <span class="arithmatex">\(-7.14\)</span> MHz.</p>
+<pre class="mermaid"><code>flowchart LR
+    ANT[Antena] --&gt;|①| TUN[Tuner R828D / R820T2&lt;br/&gt;LNA · mezclador · filtro IF 5 MHz · VGA]
+    TUN --&gt;|② IF real&lt;br/&gt;3.57 MHz| ADC[ADC 8 bits&lt;br/&gt;28.8 MS/s]
+    ADC --&gt;|③| DDC[Mezcla digital&lt;br/&gt;× cos, × −sin a 3.57 MHz]
+    DDC --&gt;|④ I/Q| LPF[Filtro paso bajo&lt;br/&gt;+ decimación → f_s]
+    LPF --&gt;|⑤| USB[Control USB&lt;br/&gt;bytes I,Q,I,Q…]
+    USB --&gt;|⑥ USB 2.0| PC[PC: librtlsdr&lt;br/&gt;→ GNU Radio / Python]
+    XTAL[Cristal 28.8 MHz&lt;br/&gt;TCXO 1 ppm] -.-&gt; TUN
+    XTAL -.-&gt; ADC
+    classDef activo fill:#fde68a,stroke:#d97706,stroke-width:3px,color:#111827;
+    class DDC activo;</code></pre>
+<p><img alt="Espectro tras la mezcla digital: la señal centrada en 0 Hz, la imagen en −7.14 MHz y la máscara del filtro paso bajo digital de ±1.2 MHz" src="figures/cadena-rx-4-ddc.png" /></p>
+<p><strong>Figura 11.</strong> Punto ④: DDC resaltado y desplazamiento de la señal útil a 0 Hz y de su imagen a <span class="arithmatex">\(-7.14\)</span> MHz.</p>
+<p>La flecha negra indica el desplazamiento de <span class="arithmatex">\(-3.57\)</span> MHz. La señal azul queda en 0 Hz y pasa a ser compleja: el multiplicador por coseno produce I y el multiplicador por seno produce Q. El lóbulo rayado en <span class="arithmatex">\(-7.14\)</span> MHz es la imagen.</p>
+<p>El coseno y el seno digitales mantienen un desfase exacto de 90° y amplitudes idénticas. Por ello, esta generación de cuadratura evita el desbalance I/Q propio de mezcladores analógicos.</p>
+<h6 id="que-ve-cada-rama-por-separado">Qué ve cada rama por separado</h6>
+<p>La Figura 10 mostró la cancelación con una sinusoide aislada. Conviene repetir el experimento sobre el caso real, porque revela algo más fuerte que «se cancela una copia»: <strong>una sola rama no basta para saber dónde está una emisora</strong>.</p>
+<p>El montaje es el siguiente. Se sintetiza una señal de paso banda real con tres emisoras situadas <strong>solo por encima</strong> de la frecuencia central, en <span class="arithmatex">\(+0.2\)</span>, <span class="arithmatex">\(+0.5\)</span> y <span class="arithmatex">\(+0.9\)</span> MHz. Por debajo no hay ninguna. En la IF eso las coloca en 3.77, 4.07 y 4.47 MHz, todas por encima de la referencia de 3.57, con su grupo espejo en las posiciones negativas correspondientes. Luego se multiplica por <span class="arithmatex">\(\cos\)</span> y por <span class="arithmatex">\(-\sin\)</span>, exactamente como hace el RTL2832U.</p>
+<div class="admonition note">
+<p class="admonition-title">Esta figura usa una escena distinta a la de las Figuras 6 a 11, y es deliberado</p>
+<p>Las figuras del recorrido ① a ⑥ dibujan la banda de FM completa, con emisoras repartidas a ambos lados de <span class="arithmatex">\(f_c\)</span> cada 400 kHz. Esa escena es la realista, pero aquí sería inservible: al bajar a banda base, el espejo de la emisora que está en <span class="arithmatex">\(f_c + 0.4\)</span> cae justo encima de la que está en <span class="arithmatex">\(f_c - 0.4\)</span>, donde ya hay una emisora de verdad. Los espejos quedarían escondidos debajo de señales legítimas y la figura no podría distinguirlos.</p>
+<p>Poner emisoras a un solo lado los separa y los hace visibles. El precio es que la escena es artificial; la ventaja es que el mecanismo queda a la vista.</p>
+<p>Y conviene no perder de vista lo que ese solapamiento significa en la banda real: <strong>los espejos existen igual, solo que caen encima de otras emisoras</strong>. Por eso la ambigüedad de una sola rama no es un detalle de laboratorio, sino la razón de que haga falta la segunda.</p>
+</div>
+<p>Las cuatro filas están dibujadas en <strong>amplitud lineal con signo</strong>, no en decibelios. El logaritmo destruye el signo, y aquí el signo es toda la historia.</p>
+<p><img alt="Cuatro filas en amplitud con signo: la entrada real en la IF, la rama I con todo positivo, la rama Q con los espejos negativos, y la suma directa donde los espejos se anulan" src="figures/cadena-rx-4b-ramas-iq.png" /></p>
+<p><strong>Figura 12.</strong> Las dos ramas del DDC dibujadas con signo, de modo que la fila (d) es la suma directa de las filas (b) y (c).</p>
+<p>Lo que ocurre en cada fila:</p>
+<ul>
+<li><strong>(a)</strong> La entrada es real, de modo que su espectro es simétrico: los mismos tres lóbulos aparecen alrededor de <span class="arithmatex">\(+3.57\)</span> y de <span class="arithmatex">\(-3.57\)</span> MHz. En banda base todavía no hay nada.</li>
+<li><strong>(b)</strong> La rama I traslada ambos grupos. Alrededor de 0 Hz aparecen <strong>seis</strong> emisoras: las tres verdaderas en <span class="arithmatex">\(+0.2\)</span>, <span class="arithmatex">\(+0.5\)</span> y <span class="arithmatex">\(+0.9\)</span> MHz, y tres espejos en las posiciones negativas correspondientes. Todas con el mismo signo, así que nada en esta fila distingue unas de otras.</li>
+<li><strong>(c)</strong> La rama Q produce <strong>las mismas alturas</strong>, pero con los espejos hacia abajo. Ese cambio de signo es la única diferencia entre las dos ramas, y es lo que las hace complementarias en lugar de redundantes.</li>
+<li><strong>(d)</strong> La suma directa, columna a columna. Donde los dos signos coinciden, las alturas se suman y la emisora se duplica. Donde se oponen, se restan y el espejo desaparece. La aritmética de la ampliación es literal: <span class="arithmatex">\(1 + 1 = 2\)</span> en las reales, <span class="arithmatex">\(1 + (-1) = 0\)</span> en los espejos.</li>
+</ul>
+<p>Lo mismo pasa con las réplicas de <span class="arithmatex">\(\pm 2f_{IF}\)</span>: la de <span class="arithmatex">\(-7.14\)</span> MHz sobrevive y la de <span class="arithmatex">\(+7.14\)</span> se anula, por el mismo mecanismo de signos. La que queda es la imagen que el filtro paso bajo eliminará en el punto ⑤.</p>
+<p>Medido sobre la simulación:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Frecuencia</th>
+<th style="text-align: right;">Rama I</th>
+<th style="text-align: right;">Rama Q</th>
+<th style="text-align: right;">Suma</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><span class="arithmatex">\(-0.9\)</span> MHz</td>
+<td style="text-align: right;"><span class="arithmatex">\(+0.056\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(-0.056\)</span></td>
+<td style="text-align: right;">0.000</td>
+<td>espejo, no existe</td>
+</tr>
+<tr>
+<td style="text-align: right;"><span class="arithmatex">\(-0.5\)</span> MHz</td>
+<td style="text-align: right;"><span class="arithmatex">\(+0.081\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(-0.081\)</span></td>
+<td style="text-align: right;">0.000</td>
+<td>espejo, no existe</td>
+</tr>
+<tr>
+<td style="text-align: right;"><span class="arithmatex">\(-0.2\)</span> MHz</td>
+<td style="text-align: right;"><span class="arithmatex">\(+0.110\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(-0.110\)</span></td>
+<td style="text-align: right;">0.000</td>
+<td>espejo, no existe</td>
+</tr>
+<tr>
+<td style="text-align: right;"><span class="arithmatex">\(+0.2\)</span> MHz</td>
+<td style="text-align: right;"><span class="arithmatex">\(+0.110\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(+0.110\)</span></td>
+<td style="text-align: right;">0.220</td>
+<td>emisora real</td>
+</tr>
+<tr>
+<td style="text-align: right;"><span class="arithmatex">\(+0.5\)</span> MHz</td>
+<td style="text-align: right;"><span class="arithmatex">\(+0.081\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(+0.081\)</span></td>
+<td style="text-align: right;">0.161</td>
+<td>emisora real</td>
+</tr>
+<tr>
+<td style="text-align: right;"><span class="arithmatex">\(+0.9\)</span> MHz</td>
+<td style="text-align: right;"><span class="arithmatex">\(+0.056\)</span></td>
+<td style="text-align: right;"><span class="arithmatex">\(+0.056\)</span></td>
+<td style="text-align: right;">0.113</td>
+<td>emisora real</td>
+</tr>
+</tbody>
+</table>
+<p>La supresión de los espejos supera los 170 dB, es decir, es exacta salvo por el redondeo de la aritmética.</p>
+<div class="admonition info">
+<p class="admonition-title">Por qué el signo solo puede ser <span class="arithmatex">\(+1\)</span> o <span class="arithmatex">\(-1\)</span></p>
+<p>En la figura, la rama Q nunca vale un 70 % ni un 130 % de la rama I: vale exactamente lo mismo, con el mismo signo o con el contrario. Eso no es casualidad del ejemplo elegido, y conviene ver de dónde sale.</p>
+<p>Llamemos <span class="arithmatex">\(A\)</span> y <span class="arithmatex">\(B\)</span> a las dos copias que produce cada multiplicación. Con las identidades del coseno y del seno,</p>
+<div class="arithmatex">\[
+\mathcal{F}\{I\} = \tfrac{1}{2}(A + B),
+\qquad
+j\,\mathcal{F}\{Q\} = \tfrac{1}{2}(B - A).
+\]</div>
+<p>En cada frecuencia de banda base solo una de las dos copias es distinta de cero: <span class="arithmatex">\(B\)</span> en las emisoras reales y <span class="arithmatex">\(A\)</span> en los espejos. Sustituyendo, en las reales ambas ramas valen <span class="arithmatex">\(\tfrac{1}{2}B\)</span>, y en los espejos valen <span class="arithmatex">\(\tfrac{1}{2}A\)</span> y <span class="arithmatex">\(-\tfrac{1}{2}A\)</span>. De ahí el <span class="arithmatex">\(+1\)</span> y el <span class="arithmatex">\(-1\)</span>, sin valores intermedios. Sumando, queda <span class="arithmatex">\(\mathcal{F}\{I\} + j\,\mathcal{F}\{Q\} = B\)</span>, que es el espectro original desplazado, justamente lo que buscábamos.</p>
+</div>
+<p>El signo de la fila (c) es una forma compacta de decir algo sobre la <strong>fase</strong>. Las dos ramas tienen la misma magnitud en todas las frecuencias, y lo que las diferencia es la dirección de sus valores complejos: coinciden en las emisoras reales y se oponen en los espejos. Verlo como flechas lo deja explícito.</p>
+<p><img alt="Dos diagramas de fasores en el plano complejo: en la emisora real las flechas se encadenan y el extremo queda al doble de distancia; en el espejo la cadena regresa al origen" src="figures/cadena-rx-4c-fasores.png" /></p>
+<p><strong>Figura 13.</strong> Suma de las dos ramas como flechas, en una emisora real y en un espejo.</p>
+<p>En cada panel, la flecha azul es el valor complejo de <span class="arithmatex">\(\mathcal{F}\{I\}\)</span> a esa frecuencia, el punto exacto que el panel (b) dibuja como una altura. La flecha roja es <span class="arithmatex">\(j\,\mathcal{F}\{Q\}\)</span>, que es lo que el panel (c) resume en otra altura. Sumar dos números complejos es poner la segunda flecha donde termina la primera, y el punto grande marca dónde acaba la cadena: <strong>ese punto es el valor que dibuja el panel (d)</strong>.</p>
+<p>A la izquierda las dos flechas apuntan en la misma dirección, así que la cadena se estira y el extremo queda al doble de distancia del origen. A la derecha apuntan en direcciones opuestas y la cadena regresa exactamente al punto de partida, de modo que el panel (d) dibuja un cero.</p>
+<p>Las cuatro flechas de la figura miden lo mismo. Lo único que cambia entre los dos casos es hacia dónde apuntan, y esa dirección es el signo de la fila (c) de la figura anterior.</p>
+<p>Ahí está la clave de toda la arquitectura. Como las dos ramas tienen <strong>la misma magnitud</strong> en todas las frecuencias, la información que distingue una frecuencia positiva de una negativa no está en cuánto vale cada una, sino en <strong>si se acompañan o se oponen</strong>. Una sola rama no puede llevar esa información, y por eso hacen falta dos.</p>
+<p>De ahí se sigue por qué el desbalance I/Q importa tanto en los receptores de conversión directa. Si una rama tiene un poco más de ganancia que la otra, o el desfase no es de <span class="arithmatex">\(90^\circ\)</span> exactos, la cancelación deja de ser perfecta y reaparece un espejo atenuado. Una emisora fuerte puede entonces fabricar un fantasma en el lado opuesto del espectro, donde no hay nada. En el RTL2832U ese riesgo no existe, porque el coseno y el seno se generan digitalmente con amplitudes idénticas y desfase exacto.</p>
+<details class="question">
+<summary>¿Por qué no basta con mirar la magnitud de una sola rama?</summary>
+<p>Porque una señal real no puede distinguir <span class="arithmatex">\(+f\)</span> de <span class="arithmatex">\(-f\)</span>. Su espectro es simétrico por construcción, de modo que cualquier receptor que produzca una sola señal real entrega siempre pares de candidatos.</p>
+<p>Un receptor antiguo resolvía esto con hardware: un filtro de banda lateral colocado antes del mezclador eliminaba físicamente una de las dos posibilidades. La cuadratura consigue lo mismo sin filtros, a cambio de duplicar la cadena y exigir que las dos ramas estén bien apareadas.</p>
+</details>
+<h4 id="25-punto-5-filtro-paso-bajo-y-decimacion">2.5. Punto ⑤ — Filtro paso bajo y decimación</h4>
+<p>Un filtro paso bajo digital conserva <span class="arithmatex">\(|f| &lt; f_s^{\text{out}}/2\)</span>: ±1.2 MHz para una salida de 2.4 MS/s. El filtro elimina la imagen de <span class="arithmatex">\(-7.14\)</span> MHz y las emisoras que quedan fuera de la ventana.</p>
+<p>Después, un <em>downsampler</em> reduce la tasa de 28.8 a 2.4 MS/s, lo que equivale a conservar una de cada 12 muestras. Cuando la razón no es entera, el chip utiliza un <em>resampler</em> fraccional.</p>
+<p>El registro de razón se gobierna mediante <span class="arithmatex">\(28.8\,\text{MHz} \cdot 2^{22} / f_s\)</span>. Por ello, el dispositivo admite tasas como 1.024 MS/s, aunque no dividan exactamente 28.8 MHz, con una ligera cuantización de la tasa real.</p>
+<pre class="mermaid"><code>flowchart LR
+    ANT[Antena] --&gt;|①| TUN[Tuner R828D / R820T2&lt;br/&gt;LNA · mezclador · filtro IF 5 MHz · VGA]
+    TUN --&gt;|② IF real&lt;br/&gt;3.57 MHz| ADC[ADC 8 bits&lt;br/&gt;28.8 MS/s]
+    ADC --&gt;|③| DDC[Mezcla digital&lt;br/&gt;× cos, × −sin a 3.57 MHz]
+    DDC --&gt;|④ I/Q| LPF[Filtro paso bajo&lt;br/&gt;+ decimación → f_s]
+    LPF --&gt;|⑤| USB[Control USB&lt;br/&gt;bytes I,Q,I,Q…]
+    USB --&gt;|⑥ USB 2.0| PC[PC: librtlsdr&lt;br/&gt;→ GNU Radio / Python]
+    XTAL[Cristal 28.8 MHz&lt;br/&gt;TCXO 1 ppm] -.-&gt; TUN
+    XTAL -.-&gt; ADC
+    classDef activo fill:#fde68a,stroke:#d97706,stroke-width:3px,color:#111827;
+    class LPF activo;</code></pre>
+<p><img alt="Espectro tras filtrar y decimar: la emisora objetivo en 0 Hz y sus vecinas dentro de la ventana de ±1.2 MHz; el ancho observable es fs = 2.4 MHz" src="figures/cadena-rx-5-decimacion.png" /></p>
+<p><strong>Figura 14.</strong> Punto ⑤: filtro y decimador resaltados, con la señal útil dentro de la ventana de ±1.2 MHz.</p>
+<p>El eje representa frecuencia respecto a <span class="arithmatex">\(f_c\)</span>. Solo permanecen la emisora objetivo y las vecinas comprendidas dentro de ±1.2 MHz. La señal compleja no requiere una copia espectral redundante; por eso, el ancho de banda observable es <span class="arithmatex">\(f_s\)</span>.</p>
+<p>El filtro digital fija el ancho de banda mostrado por GNU Radio, mientras que el filtro IF protege al ADC. Las muestras I y Q vuelven a recortarse a 8 bits para el enlace USB, y los bordes del filtro reducen la zona útil a cerca del 80 %.</p>
+<h4 id="26-punto-6-usb-bytes-i-q-i-q">2.6. Punto ⑥ — USB: bytes I, Q, I, Q…</h4>
+<pre class="mermaid"><code>flowchart LR
+    ANT[Antena] --&gt;|①| TUN[Tuner R828D / R820T2&lt;br/&gt;LNA · mezclador · filtro IF 5 MHz · VGA]
+    TUN --&gt;|② IF real&lt;br/&gt;3.57 MHz| ADC[ADC 8 bits&lt;br/&gt;28.8 MS/s]
+    ADC --&gt;|③| DDC[Mezcla digital&lt;br/&gt;× cos, × −sin a 3.57 MHz]
+    DDC --&gt;|④ I/Q| LPF[Filtro paso bajo&lt;br/&gt;+ decimación → f_s]
+    LPF --&gt;|⑤| USB[Control USB&lt;br/&gt;bytes I,Q,I,Q…]
+    USB --&gt;|⑥ USB 2.0| PC[PC: librtlsdr&lt;br/&gt;→ GNU Radio / Python]
+    XTAL[Cristal 28.8 MHz&lt;br/&gt;TCXO 1 ppm] -.-&gt; TUN
+    XTAL -.-&gt; ADC
+    classDef activo fill:#fde68a,stroke:#d97706,stroke-width:3px,color:#111827;
+    class USB activo;</code></pre>
+<p><img alt="Salida USB: muestras I y Q como bytes sin signo de 0 a 255, con el cero en 127.5, intercalados" src="figures/cadena-rx-6-usb.png" /></p>
+<p><strong>Figura 15.</strong> Punto ⑥: interfaz USB resaltada y representación de las muestras I/Q como bytes intercalados.</p>
+<p>Cada muestra compleja sale como dos bytes sin signo, primero I y luego Q, con el cero en 127.5. A 2.4 MS/s, el caudal alcanza 4.8 MB/s. GNU Radio o NumPy convierten la secuencia al intervalo de <span class="arithmatex">\(-1\)</span> a <span class="arithmatex">\(+1\)</span> mediante <span class="arithmatex">\((x-127.5)/127.5\)</span>.</p>
+<p>La <a href="../../setup/rtl-sdr/#grabar-muestras-iq">guía del RTL-SDR</a> desarrolla esa conversión. El mismo enlace USB transporta las órdenes de frecuencia, ganancia y tasa hacia los registros del RTL2832U, que programa el tuner por I²C.</p>
+<p>El cristal de 28.8 MHz, representado con una línea discontinua, sirve como referencia del PLL del tuner y como reloj del ADC. Un error de <span class="arithmatex">\(p\)</span> ppm desplaza <span class="arithmatex">\(f_c\)</span> y <span class="arithmatex">\(f_s\)</span> en la misma proporción; una sola corrección compensa ambos errores.</p>
+<details class="note">
+<summary>Muestreo directo en el V3, y por qué el V4 lo cambió</summary>
+<p>El V3 dispone de un modo <em>direct sampling</em> para HF. Un puente conduce la señal de la antena, a través de un filtro paso bajo, directamente a la entrada Q del ADC y evita el tuner.</p>
+<p>En este modo, la zona de Nyquist abarca de 0 a 14.4 MHz. Una señal de HF por encima de 14.4 MHz se pliega dentro de esa zona y aparece como una imagen, sin la protección del filtro IF.</p>
+<p>El V4 reemplazó ese modo por un <em>upconverter</em>. Este bloque traslada la banda de 0–24 MHz a una frecuencia que el tuner puede recibir, por lo que las señales de HF recorren la cadena normal.</p>
+</details>
+<p>El tuner y el ADC constituyen la etapa previa al procesamiento por software. Las operaciones del curso —filtrado, demodulación FM, sincronización BPSK y decodificación ADS-B— actúan sobre la secuencia I/Q del punto ⑥.</p>
+<p>Esa secuencia queda sujeta a los límites descritos a continuación.</p>
+<h3 id="3-los-cuatro-parametros-y-sus-limites">3. Los cuatro parámetros y sus límites</h3>
+<p><strong>Frecuencia central <span class="arithmatex">\(f_c\)</span>.</strong> El tuner sintoniza de 24 MHz a 1.766 GHz. El V4 incorpora un <em>upconverter</em> que traslada la banda de 500 kHz a 24 MHz, por lo que también recibe onda corta y media.</p>
+<p>Por debajo de 24 MHz, el V3 solo puede utilizar <em>direct sampling</em> —muestreo directo sin tuner—, con menor sensibilidad.</p>
+<p><strong>Tasa de muestreo <span class="arithmatex">\(f_s\)</span>.</strong> <code>librtlsdr</code> acepta 225–300 kS/s y 900 kS/s–3.2 MS/s. Con muestreo complejo, el ancho de banda observable es igual a <span class="arithmatex">\(f_s\)</span>.</p>
+<p>Los filtros del DDC atenúan los bordes, por lo que en la práctica se aprovecha cerca del 80 % central.</p>
+<p>Por encima de 2.4 MS/s, el enlace USB puede perder muestras. Por ello, el curso adopta 2.4 MS/s como tasa de referencia. El caudal resultante es</p>
+<div class="arithmatex">\[
+R = f_s \times 2\ \text{bytes} = 2.4 \times 10^6 \times 2 = 4.8\ \text{MB/s} \approx 38.4\ \text{Mbit/s},
+\]</div>
+<p>Este caudal queda por debajo de los 480 Mbit/s de USB 2.0 y por encima de los 12 Mbit/s de USB 1.1. El dongle no requiere USB 3.0, pero sí un puerto USB 2.0 real.</p>
+<p>Una máquina virtual mal configurada o un concentrador deficiente pueden ocasionar pérdidas de muestras.</p>
+<p><strong>Resolución: 8 bits.</strong> Un ADC de <span class="arithmatex">\(N\)</span> bits tiene una relación señal a ruido de cuantización máxima</p>
+<div class="arithmatex">\[
+\text{SQNR} \approx 6.02\,N + 1.76\ \text{dB},
+\]</div>
+<p>Con <span class="arithmatex">\(N = 8\)</span>, el resultado es 49.9 dB. En la práctica, el rango dinámico útil ronda los 45 dB. Si dos señales dentro de la ventana difieren más que ese valor, la débil desaparece bajo el ruido de cuantización o la fuerte satura el ADC.</p>
+<p>Esta limitación explica la importancia de ajustar correctamente la ganancia.</p>
+<p><strong>Ganancia.</strong> Los 29 pasos de 0 a 49.6 dB distribuyen la ganancia entre el LNA, el mezclador y el VGA.</p>
+<p>Con poca ganancia domina el ruido del ADC. Con demasiada, una señal fuerte lleva el ADC a sus extremos, produce recorte y genera espurias.</p>
+<p>El modo AGC (<em>automatic gain control</em>) se ajusta según la señal más fuerte presente. Esto puede ocultar señales débiles cerca de un transmisor de FM o TV. La Sesión 02 mide el efecto mediante grabaciones con tres niveles de ganancia.</p>
+<p>Otros dos límites condicionan el desempeño:</p>
+<ul>
+<li><strong>Exactitud de frecuencia.</strong> El cristal de 28.8 MHz presenta un error en partes por millón: <span class="arithmatex">\(\Delta f = f_c \times \text{ppm} \times 10^{-6}\)</span>.</li>
+</ul>
+<p>Los V3 y V4 incorporan un TCXO de 1 ppm, equivalente a 1.09 kHz de error a 1090 MHz. Un cristal de 50–100 ppm se desvía entre 55 y 110 kHz a esa frecuencia.
+- <strong>Figura de ruido.</strong> El tuner añade unos 3.5 dB de ruido propio. Para señales muy débiles (satélites) se antepone un LNA alimentado por el bias-tee. Se cuantifica en la Sesión 05 con el presupuesto de enlace.</p>
+<h3 id="4-el-ecosistema-de-software">4. El ecosistema de software</h3>
+<table>
+<thead>
+<tr>
+<th>Capa</th>
+<th>Herramienta</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Driver</td>
+<td><code>librtlsdr</code> (<code>rtl_test</code>, <code>rtl_sdr</code>, <code>rtl_fm</code>, <code>rtl_power</code>, <code>rtl_tcp</code>)</td>
+<td>Habla con el dongle; utilidades de línea de comandos para probar, grabar, demodular FM, barrer espectro y servir muestras por red</td>
+</tr>
+<tr>
+<td>Abstracción</td>
+<td>SoapySDR, <code>gr-osmosdr</code></td>
+<td>Interfaz común para muchos SDR; el bloque <strong>RTL-SDR Source</strong> de GNU Radio viene de <code>gr-osmosdr</code></td>
+</tr>
+<tr>
+<td>Framework</td>
+<td>GNU Radio 3.10</td>
+<td>Bloques de procesamiento conectados en <em>flowgraphs</em>; GNU Radio Companion (GRC) es su editor gráfico</td>
+</tr>
+<tr>
+<td>Aplicaciones</td>
+<td>SDR++, GQRX, SDR#</td>
+<td>Receptores de propósito general con interfaz gráfica; útiles para explorar, no para el curso</td>
+</tr>
+<tr>
+<td>Distribución</td>
+<td>radioconda 2025.03.14</td>
+<td>Instala todo lo anterior con versiones fijas en Windows, Linux y macOS</td>
+</tr>
+</tbody>
+</table>
+<p>El curso utiliza GNU Radio para los <em>flowgraphs</em> y Python con NumPy para el análisis y los prototipos. Las aplicaciones de la última fila permiten explorar el espectro, pero no muestran el funcionamiento interno de un receptor.</p>
+<h3 id="5-que-se-puede-recibir-en-lima">5. Qué se puede recibir en Lima</h3>
+<p>Con el dongle y su antena telescópica, desde una ventana o azotea:</p>
+<table>
+<thead>
+<tr>
+<th>Señal</th>
+<th>Frecuencia</th>
+<th>Qué se ve</th>
+<th>Sesión</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radiodifusión FM y su RDS</td>
+<td>88–108 MHz</td>
+<td>Audio estéreo; texto y hora en RDS (BPSK a 1187.5 bit/s)</td>
+<td>02–10</td>
+</tr>
+<tr>
+<td>Difusiones aeronáuticas automáticas (ATIS, VOLMET)</td>
+<td>118–137 MHz, AM</td>
+<td>Reportes meteorológicos de voz sintetizada</td>
+<td>05</td>
+</tr>
+<tr>
+<td>ADS-B</td>
+<td>1090 MHz</td>
+<td>Posición y altitud de aviones (Jorge Chávez)</td>
+<td>10</td>
+</tr>
+<tr>
+<td>AIS</td>
+<td>161.975 / 162.025 MHz</td>
+<td>Posición de barcos (Callao; requiere antena en altura)</td>
+<td>proyecto</td>
+</tr>
+<tr>
+<td>Televisión digital ISDB-Tb</td>
+<td>UHF, p. ej. canal 16 (482–488 MHz)</td>
+<td>Espectro OFDM de 6 MHz, visible solo en parte a 2.4 MS/s</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Satélite Meteor M2-4 (LRPT)</td>
+<td>137.9 MHz</td>
+<td>Imágenes meteorológicas digitales</td>
+<td>14</td>
+</tr>
+<tr>
+<td>Sensores y LoRa en banda ICM</td>
+<td>915–928 MHz</td>
+<td>Telemetría OOK/FSK; chirps LoRa (plan AU915)</td>
+<td>13</td>
+</tr>
+<tr>
+<td>Radioaficionados</td>
+<td>144–148 y 430–440 MHz</td>
+<td>Voz NBFM, APRS</td>
+<td>proyecto</td>
+</tr>
+</tbody>
+</table>
+<p>Fuera de alcance: Wi-Fi y Bluetooth (2.4 GHz, fuera del rango del tuner y con 20 MHz de ancho), telefonía celular (ilegal en el curso, ver abajo), GPS (posible con antena activa pero fuera del programa).</p>
+<h3 id="6-marco-legal-del-curso">6. Marco legal del curso</h3>
+<p>La recepción técnica no autoriza el acceso a cualquier comunicación. La legislación peruana protege la inviolabilidad de las telecomunicaciones:</p>
+<ul>
+<li>El <a href="https://www.osiptel.gob.pe/media/kbejkkkk/ds013-93-tcc-tuo-ley-de-telecomunicaciones.pdf">TUO de la Ley de Telecomunicaciones</a>, DS 013-93-TCC, art. 4, declara inviolable el secreto de las telecomunicaciones.</li>
+</ul>
+<p>También tipifica como infracción muy grave la interceptación de servicios no destinados al uso libre del público y la divulgación de su contenido.
+- El <a href="https://www.osiptel.gob.pe/media/wvidghyb/ds06-94-tcc-reg-general-ley-de-telecomunicaciones.pdf">Reglamento General</a>, DS 06-94-TCC, art. 10, considera violación intentar conocer una comunicación ajena.
+- El Código Penal (art. 162 y 162-A) sanciona la interceptación de comunicaciones telefónicas o similares y la posesión de equipos destinados a interceptarlas.</p>
+<p>La recepción de radiodifusión, señales de navegación y emisiones destinadas al público no requiere una licencia de receptor. De este marco se derivan las reglas del curso:</p>
+<ol>
+<li><strong>Solo recepción.</strong> El RTL-SDR no puede transmitir; ningún trabajo del curso transmite.</li>
+<li><strong>Solo servicios destinados al público:</strong> radiodifusión y RDS, ADS-B, AIS, satélites, sensores en banda ICM, difusiones automáticas ATIS y VOLMET.</li>
+<li><strong>Prohibido</strong> sintonizar, decodificar o publicar telefonía celular, sistemas troncalizados o cualquier comunicación privada. La voz de controladores y pilotos no se graba ni se publica.</li>
+<li>En los reportes se publican espectros, constelaciones, datos de aviones y barcos, imágenes de satélite y telemetría de sensores. Nunca audio de voz.</li>
+</ol>
+<p>El <a href="https://www.gob.pe/institucion/mtc/normas-legales/4243339-0597-2023-mtc-01-03">Plan Nacional de Atribución de Frecuencias</a> y el <a href="https://rnf.mtc.gob.pe/">Registro Nacional de Frecuencias</a> identifican el servicio asignado a cada banda.</p>
+<p>Ambas fuentes se estudian en la Sesión 11.</p>
+<h3 id="7-ejemplo-end-to-end-planificar-una-captura">7. Ejemplo end-to-end: planificar una captura</h3>
+<p>El ejemplo plantea la grabación de 10 s de una emisora en 99.1 MHz para las Sesiones 02 y 03.</p>
+<ol>
+<li><strong>Tasa.</strong> Con <span class="arithmatex">\(f_s = 2.4\)</span> MS/s la ventana va de 97.9 a 100.3 MHz; el 80 % útil (1.92 MHz) cubre unas 9 emisoras de 200 kHz. Suficiente para ver la emisora objetivo y sus vecinas.</li>
+<li><strong>Ganancia.</strong> Se parte de 30 dB, sin AGC. Cerca de la UNI existen transmisores potentes de FM y TV; el AGC se ajustaría a la señal más fuerte y ocultaría las vecinas débiles.</li>
+</ol>
+<p>Un piso de ruido elevado o picos repetidos indican saturación y exigen reducir la ganancia.
+3. <strong>Exactitud.</strong> 1 ppm a 99.1 MHz son 99 Hz. Frente a un canal de 200 kHz, despreciable.
+4. <strong>Tamaño.</strong> <span class="arithmatex">\(10\ \text{s} \times 2.4 \times 10^6\ \text{muestras/s} \times 2\ \text{bytes} = 48\)</span> MB. El archivo no debe almacenarse en Git, porque cada versión aumenta el historial.</p>
+<p>Las grabaciones se distribuyen mediante la carpeta de Google Drive del curso. El enlace y los metadatos de cada muestra se publican en el laboratorio correspondiente.
+5. <strong>Legalidad.</strong> Radiodifusión FM: servicio destinado al público. Sin restricción.</p>
+<p>El comando resultante es el de la <a href="../../setup/rtl-sdr/#grabar-muestras-iq">guía del RTL-SDR</a>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>rtl_sdr<span class="w"> </span>-f<span class="w"> </span><span class="m">99</span>.1e6<span class="w"> </span>-s<span class="w"> </span><span class="m">2400000</span><span class="w"> </span>-g<span class="w"> </span><span class="m">30</span><span class="w"> </span>-n<span class="w"> </span><span class="m">24000000</span><span class="w"> </span>fm_99p1MHz_2p4Msps_g30.cu8
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">¿Qué describe la extensión <code>.cu8</code>?</p>
+<p>El nombre abrevia <strong>c</strong>omplejo, <strong>u</strong>nsigned (sin signo), <strong>8</strong> bits por componente. Cada muestra contiene un byte <code>uint8</code> para I y otro para Q: 16 bits o 2 bytes en total, intercalados como <code>I,Q,I,Q,…</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Representación</th>
+<th style="text-align: right;">Componente I</th>
+<th style="text-align: right;">Componente Q</th>
+<th style="text-align: right;">Total por muestra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.cu8</code></td>
+<td style="text-align: right;"><code>uint8</code>, 1 byte</td>
+<td style="text-align: right;"><code>uint8</code>, 1 byte</td>
+<td style="text-align: right;">2 bytes</td>
+</tr>
+<tr>
+<td>GNU Radio <code>Complex Float 32</code></td>
+<td style="text-align: right;"><code>float32</code>, 4 bytes</td>
+<td style="text-align: right;"><code>float32</code>, 4 bytes</td>
+<td style="text-align: right;">8 bytes</td>
+</tr>
+</tbody>
+</table>
+<p><code>.cu8</code> es una convención descriptiva, no una extensión que <code>rtl_sdr</code> interprete. La utilidad escribe los bytes crudos en el archivo cuyo nombre recibe; podría llamarse <code>.bin</code>, pero entonces el tipo no quedaría indicado.</p>
+<p><a href="https://sigmf.org/sigmf-spec.pdf">SigMF</a> formaliza el nombre de tipo <code>cu8</code> y permite acompañar los datos con metadatos.</p>
+<p>El <a href="https://github.com/osmocom/rtl-sdr/blob/master/src/rtl_sdr.c">código de <code>rtl_sdr</code></a> confirma que la utilidad graba un búfer <code>uint8_t</code> y utiliza dos bytes por muestra compleja.</p>
+<p>El laboratorio de esta sesión trabaja directamente sobre el <code>.cu8</code>, sin convertirlo. Un bloque <strong>File Source</strong> de tipo <em>Complex</em> espera 8 bytes por muestra y por tanto <strong>no</strong> puede leer este archivo; la Parte B demuestra qué ocurre si se intenta.</p>
+</div>
+<hr />
+<h2 id="sintesis">Síntesis</h2>
+<table>
+<thead>
+<tr>
+<th>Concepto</th>
+<th>Implicación de diseño</th>
+<th>Se profundiza en</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arquitectura <em>low-IF</em> con DDC digital</td>
+<td>I y Q nacen en el RTL2832U; toda la selectividad fina se hace en software</td>
+<td>S02, S03</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(f_c\)</span> (tuner) y <span class="arithmatex">\(f_s\)</span> (RTL2832U) son independientes</td>
+<td><span class="arithmatex">\(f_s\)</span> fija el ancho de banda visible; <span class="arithmatex">\(f_c\)</span> dónde se mira</td>
+<td>S02</td>
+</tr>
+<tr>
+<td>8 bits → ~45 dB de rango dinámico</td>
+<td>La ganancia se elige por la señal más fuerte presente, no por la que interesa</td>
+<td>S02</td>
+</tr>
+<tr>
+<td>2.4 MS/s → 38 Mbit/s por USB 2.0</td>
+<td>Sin USB 3.0; sí puerto directo y sin virtualización descuidada</td>
+<td>guía RTL-SDR</td>
+</tr>
+<tr>
+<td>Error de cristal en ppm</td>
+<td>1 ppm es despreciable en FM; 50 ppm rompe un canal NBFM</td>
+<td>S07</td>
+</tr>
+<tr>
+<td>Figura de ruido ≈ 3.5 dB</td>
+<td>Señales de satélite exigen LNA alimentado por bias-tee</td>
+<td>S05, S14</td>
+</tr>
+<tr>
+<td>Solo recepción de servicios públicos</td>
+<td>Define qué señales entran en labs y proyectos</td>
+<td>S05, S10, S11</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ejercicios">Ejercicios</h2>
+<h3 id="ejercicio-1-caudal-por-usb">Ejercicio 1: Caudal por USB</h3>
+<p>Un estudiante configura el dongle a 2.56 MS/s. Se debe calcular el caudal en MB/s y Mbit/s, determinar si funcionaría en un puerto USB 1.1 de 12 Mbit/s y hallar la tasa máxima teórica de ese puerto.</p>
+<details class="example">
+<summary>Solución</summary>
+<p>Cada muestra son 2 bytes (I y Q de 8 bits):</p>
+<div class="arithmatex">\[
+R = 2.56 \times 10^6 \times 2 = 5.12\ \text{MB/s} = 40.96\ \text{Mbit/s}.
+\]</div>
+<p>USB 1.1 ofrece 12 Mbit/s, por lo que no alcanza. La tasa máxima teórica sería <span class="arithmatex">\(12 \times 10^6 / 16 = 0.75\)</span> MS/s; en la práctica, la sobrecarga del protocolo la reduce a unos 0.25–0.5 MS/s.</p>
+<p>Una máquina virtual limitada a USB 1.1 presenta el síntoma característico: <code>rtl_test</code> informa pérdidas incluso con tasas bajas.</p>
+</details>
+<h3 id="ejercicio-2-rango-dinamico-y-bits">Ejercicio 2: Rango dinámico y bits</h3>
+<p>Se debe calcular la SQNR máxima para 8 bits (RTL-SDR), 12 bits (ADALM-Pluto) y 14 bits (USRP B210). Si dos señales dentro de una misma ventana difieren en 60 dB, se debe determinar el mínimo de bits necesario para observar ambas.</p>
+<details class="example">
+<summary>Solución</summary>
+<p>Con <span class="arithmatex">\(\text{SQNR} \approx 6.02N + 1.76\)</span> dB:</p>
+<table>
+<thead>
+<tr>
+<th>Bits</th>
+<th>SQNR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>49.9 dB</td>
+</tr>
+<tr>
+<td>12</td>
+<td>74.0 dB</td>
+</tr>
+<tr>
+<td>14</td>
+<td>86.0 dB</td>
+</tr>
+</tbody>
+</table>
+<p>Para 60 dB de separación se necesita <span class="arithmatex">\(N \geq (60 - 1.76)/6.02 = 9.7\)</span>, es decir, un mínimo de 10 bits.</p>
+<p>Con el RTL-SDR, la señal débil queda bajo el ruido de cuantización. Si se reduce la ganancia para evitar saturación, también se pierde la señal débil. La solución requiere un filtro analógico previo al ADC.</p>
+</details>
+<h3 id="ejercicio-3-error-de-frecuencia">Ejercicio 3: Error de frecuencia</h3>
+<p>Se debe calcular el desplazamiento para 1 ppm a 99.1 MHz y 1090 MHz, y para un clon de 60 ppm a 1090 MHz. Después se debe determinar si ese clon resulta adecuado para un receptor NBFM de 435 MHz con canales de 12.5 kHz.</p>
+<details class="example">
+<summary>Solución</summary>
+<p><span class="arithmatex">\(\Delta f = f_c \times \text{ppm} \times 10^{-6}\)</span>:</p>
+<ul>
+<li>1 ppm, 99.1 MHz: 99 Hz.</li>
+<li>1 ppm, 1090 MHz: 1.09 kHz.</li>
+<li>60 ppm, 1090 MHz: 65.4 kHz. Para ADS-B, cuyo receptor abarca unos 2 MHz, sigue dentro de la ventana; se decodifica.</li>
+<li>60 ppm, 435 MHz: 26.1 kHz, más de dos canales de 12.5 kHz. El clon sintoniza el canal equivocado. Habría que calibrar el ppm con una señal de referencia conocida, como el piloto de 19 kHz de FM estéreo (Sesión 05).</li>
+</ul>
+</details>
+<h3 id="ejercicio-4-ancho-de-banda-y-canales">Ejercicio 4: Ancho de banda y canales</h3>
+<p>Para <span class="arithmatex">\(f_s = 2.4\)</span> MS/s y <span class="arithmatex">\(f_c = 96.0\)</span> MHz, se debe hallar el rango observado y la cantidad de canales FM de 200 kHz que caben en el 80 % útil.</p>
+<p>También se debe determinar cuántas capturas cubren 88–108 MHz y qué herramienta automatiza el proceso.</p>
+<details class="example">
+<summary>Solución</summary>
+<p>La ventana abarca <span class="arithmatex">\(96.0 \pm 1.2\)</span> MHz, es decir, de 94.8 a 97.2 MHz. La parte útil mide 1.92 MHz y admite nueve canales de 200 kHz.</p>
+<p>La banda completa mide 20 MHz. Como <span class="arithmatex">\(20 / 1.92 \approx 10.4\)</span>, se necesitan 11 capturas solapadas. <code>rtl_power</code> automatiza el barrido en pasos de <span class="arithmatex">\(f_s\)</span> y entrega el espectro promedio en un archivo CSV.</p>
+</details>
+<h3 id="ejercicio-5-planificar-una-captura-de-atis-integrador">Ejercicio 5: Planificar una captura de ATIS (integrador)</h3>
+<p>El ATIS del aeropuerto Jorge Chávez emite en AM dentro de 118–137 MHz. Para el ejercicio se adopta 128.8 MHz. A 4 km existe un transmisor de FM comercial cuya señal en la antena supera al ATIS en 30 dB.</p>
+<p>Se debe planificar una grabación de 30 s: seleccionar <span class="arithmatex">\(f_s\)</span>, ganancia y nombre de archivo; calcular el tamaño; y determinar si la captura y su publicación en el reporte son legales.</p>
+<details class="example">
+<summary>Solución</summary>
+<ul>
+<li><strong><span class="arithmatex">\(f_s\)</span>.</strong> El canal AM aeronáutico ocupa 8.33 o 25 kHz, por lo que no requiere 2.4 MS/s. Con <span class="arithmatex">\(f_s = 1.024\)</span> MS/s, la ventana abarca de 128.29 a 129.31 MHz.</li>
+</ul>
+<p>La banda de FM queda fuera y el transmisor fuerte no alcanza el ADC. El filtro del tuner, de unos 6 MHz, también rechaza una emisora situada a 20 MHz.
+- <strong>Ganancia.</strong> Sin una señal fuerte en la ventana, la ganancia puede elevarse a 40 dB. Si el espectro muestra saturación, debe reducirse.
+- <strong>Tamaño.</strong> <span class="arithmatex">\(30 \times 1.024 \times 10^6 \times 2 = 61.4\)</span> MB.
+- <strong>Nombre.</strong> <code>atis_128p8MHz_1p024Msps_g40.cu8</code>.
+- <strong>Legalidad.</strong> ATIS es una difusión automática de información meteorológica destinada a cualquier aeronave que la sintonice. Por ello, se considera un servicio dirigido al público y su recepción está permitida.</p>
+<p>Las reglas del curso permiten publicar el espectro y el reporte meteorológico. No permiten publicar la voz de la torre ni de los pilotos en canales de control, porque esas comunicaciones no están destinadas al público.</p>
+<p>El ejercicio combina cuatro conceptos de la sesión: ancho de banda observable (<span class="arithmatex">\(f_s\)</span>), rango dinámico (evitado por selección de ventana), tamaño de archivo y marco legal.</p>
+</details>
+<hr />
+<h2 id="laboratorio">Laboratorio</h2>
+<p>El laboratorio recorre una sola grabación desde los bits del disco hasta el espectro en pantalla. Tiene cuatro partes: la primera no necesita GNU Radio, la segunda muestra un fallo deliberado, la tercera lo repara y la cuarta es opcional para quien tenga dongle.</p>
+<p>Antes de la clase, instala las herramientas según las guías:</p>
+<ul>
+<li><a href="../../setup/instalacion/">Instalar GNU Radio con radioconda</a></li>
+<li><a href="../../setup/rtl-sdr/">Configurar el RTL-SDR</a> (solo para quien disponga del dongle)</li>
+</ul>
+<h3 id="materiales">Materiales</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fm_99p1MHz_2p4Msps_g30.cu8</code></td>
+<td>Grabación oficial de la sesión. Se descarga de Drive</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test.grc"><code>test.grc</code></a></td>
+<td>Grafo con un error deliberado. Parte B</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc"><code>test2.grc</code></a></td>
+<td>Solución de referencia. Consúltala solo al terminar la Parte C</td>
+</tr>
+</tbody>
+</table>
+<p>Metadatos de la grabación:</p>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frecuencia central <span class="arithmatex">\(f_c\)</span></td>
+<td>99.1 MHz</td>
+</tr>
+<tr>
+<td>Tasa de muestreo <span class="arithmatex">\(f_s\)</span></td>
+<td>2.4 MS/s</td>
+</tr>
+<tr>
+<td>Ganancia manual</td>
+<td>30 dB</td>
+</tr>
+<tr>
+<td>Formato</td>
+<td><code>.cu8</code>, dos bytes por muestra compleja</td>
+</tr>
+<tr>
+<td>Duración</td>
+<td>10.0 s</td>
+</tr>
+<tr>
+<td>Tamaño</td>
+<td>48 000 000 bytes</td>
+</tr>
+<tr>
+<td>SHA-256</td>
+<td><code>3944638586f418d7fd271ae03bcaa1b622d6bcc08ecc700e9cb5df0dc2d94579</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="descargar-la-grabacion">Descargar la grabación</h3>
+<p>Las muestras del curso están en una carpeta compartida de Google Drive:</p>
+<p><strong><a href="https://drive.google.com/drive/folders/1tP8u1tQZDnvi_-ZAxZ3J8tehdKwi92an?usp=drive_link">Carpeta <code>samples</code> del curso</a></strong></p>
+<p><img alt="Carpeta samples en Google Drive, con el archivo fm_99p1MHz_2p4Msps_g30.cu8" src="figures/drive-carpeta-samples.png" /></p>
+<p><strong>Figura 16.</strong> Carpeta compartida del curso en Google Drive con la grabación oficial de la sesión.</p>
+<p>Descarga <code>fm_99p1MHz_2p4Msps_g30.cu8</code> y comprueba que llegó íntegro antes de empezar. Son 48 MB y una descarga truncada produce errores confusos más adelante:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Linux</label><label for="__tabbed_1_2">macOS</label><label for="__tabbed_1_3">Windows</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sha256sum<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>shasum<span class="w"> </span>-a<span class="w"> </span><span class="m">256</span><span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>certutil -hashfile samples\fm_99p1MHz_2p4Msps_g30.cu8 SHA256
+</code></pre></div>
+</div>
+</div>
+</div>
+<p>El valor debe coincidir con el SHA-256 de la tabla anterior.</p>
+<h3 id="organizar-la-carpeta-de-trabajo">Organizar la carpeta de trabajo</h3>
+<p>Reproduce esta estructura, que es la misma del repositorio del curso:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sdr/
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>├── samples/
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>│   └── fm_99p1MHz_2p4Msps_g30.cu8
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>└── gnuradio-flowgraphs/
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    ├── test.grc
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    └── test2.grc
+</code></pre></div>
+<p>De ahí salen las dos rutas que verás a lo largo del laboratorio, y conviene entender por qué son distintas. Los comandos de terminal de la Parte A se ejecutan desde <code>sdr/</code>, así que usan <code>samples/fm_99p1MHz_2p4Msps_g30.cu8</code>. Los grafos, en cambio, guardan la ruta <code>../samples/fm_99p1MHz_2p4Msps_g30.cu8</code>, porque GNU Radio Companion ejecuta cada grafo desde la carpeta donde vive el <code>.grc</code>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Si el grafo no encuentra el archivo</p>
+<p>Abre el bloque <strong>File Source</strong>, pulsa el botón de examinar y selecciona el archivo a mano. GRC guardará entonces la ruta de tu máquina y el problema desaparece.</p>
+</div>
+<h3 id="parte-a-el-archivo-por-dentro-sin-gnu-radio">Parte A: el archivo por dentro, sin GNU Radio</h3>
+<p>Ningún programa sabe qué contiene un archivo crudo. Hay que decírselo, y esta parte establece qué hay que decirle. Trabaja en la terminal, sobre la grabación descargada.</p>
+<p><strong>A1. El chorro de bits.</strong> Un archivo es una tira de unos y ceros sin separadores ni etiquetas.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>xxd<span class="w"> </span>-b<span class="w"> </span>-c1<span class="w"> </span>-l8<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="s1">' '</span><span class="w"> </span>-f2<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">'\n'</span><span class="p">;</span><span class="w"> </span><span class="nb">echo</span>
+</code></pre></div>
+<p><strong>A2. Cortar cada 8 bits.</strong> El corte cada ocho no es arbitrario: es la resolución del ADC del dongle.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>xxd<span class="w"> </span>-b<span class="w"> </span>-l12<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8
+</code></pre></div>
+<p><code>xxd -b</code> imprime 6 bytes por línea, es decir 3 muestras complejas. Como 6 es par, las columnas primera, tercera y quinta son siempre I, y la segunda, cuarta y sexta siempre Q.</p>
+<p><strong>A3. Del bit al número.</strong> Cada grupo de 8 bits vale lo que dicta la posición de cada uno.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>xxd<span class="w"> </span>-b<span class="w"> </span>-c1<span class="w"> </span>-l1<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">'{n=$2</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="s1">  printf "bit      "; for(k=1;k&lt;=8;k++) printf "%4s", substr(n,k,1)</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="s1">  printf "\npeso     "; for(k=1;k&lt;=8;k++) printf "%4d", 2^(8-k)</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="s1">  printf "\naporta   "; for(k=1;k&lt;=8;k++) printf "%4d", substr(n,k,1)*2^(8-k); printf "\n"}'</span>
+</code></pre></div>
+<p>De ahí sale el rango completo: <code>00000000</code> es 0, <code>11111111</code> es 255, y entre ambos hay <span class="arithmatex">\(2^8 = 256\)</span> niveles. Eso, y nada más, significa "ADC de 8 bits".</p>
+<p><strong>A4. El atajo.</strong> <code>od</code> hace esa cuenta por ti y escribe el mismo byte en base 10.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>od<span class="w"> </span>-An<span class="w"> </span>-tu1<span class="w"> </span>-N12<span class="w"> </span>-v<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title"><code>od</code> no convierte nada</p>
+<p>El byte ya <em>es</em> el entero. <code>xxd -b</code> lo escribe en base 2 y <code>od -tu1</code> en base 10, pero son los mismos ocho bits. <code>10000011</code> y <code>131</code> son la misma cosa escrita de dos formas. Retén esta distinción: en la Parte B aparecerá una operación que sí cambia el significado de los bits.</p>
+</div>
+<p><strong>A5. Una muestra por línea.</strong> Con <code>-w2</code> cada línea es una muestra compleja, y la dirección avanza de dos en dos.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>od<span class="w"> </span>-Ad<span class="w"> </span>-tu1<span class="w"> </span>-w2<span class="w"> </span>-N20<span class="w"> </span>-v<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8
+</code></pre></div>
+<p><strong>A6. Comprobar el formato.</strong> Tres medidas que confirman que la grabación es lo que dice ser.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>od<span class="w"> </span>-An<span class="w"> </span>-tu1<span class="w"> </span>-v<span class="w"> </span>-N200000<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-s<span class="w"> </span><span class="s1">' '</span><span class="w"> </span><span class="s1">'\n'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>.<span class="w"> </span><span class="p">|</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span>awk<span class="w"> </span><span class="s1">'{v[NR]=$1; s+=$1} END {print "min", v[1]+0, "| max", v[NR]+0, "| promedio", sprintf("%.2f",s/NR)}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>od<span class="w"> </span>-An<span class="w"> </span>-tu1<span class="w"> </span>-v<span class="w"> </span>-N200000<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-s<span class="w"> </span><span class="s1">' '</span><span class="w"> </span><span class="s1">'\n'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>.<span class="w"> </span><span class="p">|</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span>awk<span class="w"> </span><span class="s1">'{h[int($1/16)]++} END {for(i=0;i&lt;16;i++)</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="s1">    printf "%3d-%3d %7d %s\n", i*16, i*16+15, h[i]+0, substr("########################################",1,int(h[i]/900))}'</span>
+</code></pre></div>
+<details class="question">
+<summary>A6. ¿Qué demuestra cada número?</summary>
+<p>El promedio cae en 127.4, no en 0 ni en 128. Es el cero de la señal, que en un formato sin signo vive en mitad de la escala, en 127.5.</p>
+<p>El histograma sale en forma de campana con los dos tramos centrales empatados. Esa simetría alrededor de 127.5 es la misma afirmación vista como dibujo.</p>
+<p>Las colas llegan a cero antes de tocar los extremos. En los 48 millones de bytes de la grabación completa solo 6 tocan 0 o 255, uno de cada ocho millones: es la cola de la gaussiana, no recorte. La ganancia de 30 dB está bien elegida.</p>
+<p>Si el histograma tuviera picos altos pegados a 0 y a 255, habría saturación y la ganancia sería excesiva. Ese caso se estudia en la Sesión 02.</p>
+</details>
+<h3 id="parte-b-la-prueba-fallida">Parte B: la prueba fallida</h3>
+<p>Abre <code>test.grc</code> y ejecútalo con <strong>F6</strong>. Su <code>File Source</code> está declarado de tipo <em>Complex</em>.</p>
+<p>Observarás dos cosas: el Time Sink muestra líneas que saltan entre <span class="arithmatex">\(+1\)</span> y <span class="arithmatex">\(-1\)</span> sin estructura, y el Frequency Sink queda <strong>completamente vacío</strong>. No hay mensaje de error.</p>
+<p>Responde en el reporte, antes de leer la solución:</p>
+<ol>
+<li>¿Cuántos bytes lee el bloque por muestra cuando está en modo <em>Complex</em>? ¿Cuántos tiene en realidad cada muestra del archivo?</li>
+<li>¿Por qué el Time Sink dibuja algo y el Frequency Sink no dibuja nada?</li>
+</ol>
+<details class="example">
+<summary>Solución de la Parte B</summary>
+<p>Un <code>File Source</code> de tipo <em>Complex</em> consume 8 bytes por muestra, dos <code>float32</code>. El archivo tiene 2. El bloque toma entonces cuatro bytes <code>uint8</code> consecutivos y los lee como un solo <code>float32</code>, así que produce cuatro veces menos muestras que las que hay.</p>
+<p>El byte más significativo de ese grupo cae sobre el campo de exponente del formato IEEE-754. Con bytes repartidos alrededor de 127, el exponente aterriza cerca de su valor máximo con frecuencia. Medido sobre esta grabación:</p>
+<table>
+<thead>
+<tr>
+<th>Efecto</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Muestras producidas</td>
+<td>4 veces menos de las reales</td>
+</tr>
+<tr>
+<td>Muestras NaN o infinitas</td>
+<td>1.4 %</td>
+</tr>
+<tr>
+<td>Magnitud mediana de las finitas</td>
+<td>4.5 × 10²⁴</td>
+</tr>
+</tbody>
+</table>
+<p>El Time Sink tiene autoescala apagada y rango <span class="arithmatex">\(\pm 1\)</span>, así que valores de 10²⁴ rielan contra los bordes. Eso es lo que dibuja.</p>
+<p>El Frequency Sink calcula una FFT sobre ventanas de 1024 muestras. Con 1.4 % de NaN, cada ventana contiene unas catorce, y un solo NaN convierte toda la FFT en NaN. No queda nada representable, y por eso la pantalla está en blanco.</p>
+<p>Puedes ver la causa directamente en la terminal:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>od<span class="w"> </span>-An<span class="w"> </span>-tf4<span class="w"> </span>-N32<span class="w"> </span>-v<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8
+</code></pre></div>
+<p>Los mismos bytes de la Parte A, leídos de a cuatro como <code>float32</code>, dan valores del orden de 10³⁴. GNU Radio no falló: obedeció una declaración de tipo equivocada.</p>
+</details>
+<div class="admonition danger">
+<p class="admonition-title">Convertir no es reinterpretar</p>
+<p>Son operaciones opuestas y confundirlas causa este fallo.</p>
+<p><strong>Reinterpretar</strong> conserva los bits y destruye el valor. El byte <code>10000011</code> junto a sus tres vecinos pasa a valer 9.1 × 10³⁴. Es lo que acaba de ocurrir.</p>
+<p><strong>Convertir</strong> conserva el valor y reescribe los bits. El byte <code>10000011</code> vale 131, y como <code>float32</code> de 32 bits se escribe <code>00000000 00000000 00000011 01000011</code>, que sigue valiendo 131. Es lo que hará <code>UChar To Float</code> en la Parte C.</p>
+</div>
+<h3 id="parte-c-la-lectura-correcta">Parte C: la lectura correcta</h3>
+<p>Construye un grafo nuevo, guárdalo como <code>mi_lectura.grc</code> y sigue la cadena de abajo. El objetivo es traducir a bloques exactamente lo que hiciste a mano en la Parte A.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Bloque</th>
+<th>Parámetros</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>File Source</td>
+<td><code>Output Type: Byte</code>, archivo <code>.cu8</code>, <code>Repeat: Yes</code></td>
+<td>Entrega los bytes crudos, sin interpretarlos</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Throttle</td>
+<td><code>Type: Byte</code>, <code>Sample Rate: 2*samp_rate</code></td>
+<td>Limita la reproducción a tiempo real</td>
+</tr>
+<tr>
+<td>3</td>
+<td>UChar To Float</td>
+<td>sin parámetros</td>
+<td>Convierte el entero 0…255 al real 0.0…255.0</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Add Const</td>
+<td><code>Type: Float</code>, <code>Constant: -127.5</code></td>
+<td>Lleva el cero de la señal al cero del eje</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Multiply Const</td>
+<td><code>Type: Float</code>, <code>Constant: 1/127.5</code></td>
+<td>Normaliza al intervalo <span class="arithmatex">\([-1, +1]\)</span></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Deinterleave</td>
+<td><code>Type: Float</code>, <code>Num Streams: 2</code></td>
+<td>Separa el flujo alternado en dos: todas las I por una salida, todas las Q por la otra</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Float To Complex</td>
+<td>sin parámetros</td>
+<td>Une los dos flujos en uno de muestras complejas</td>
+</tr>
+<tr>
+<td>8</td>
+<td>QT GUI Time Sink y Frequency Sink</td>
+<td><code>Type: Complex</code>, <code>Center Frequency: 99.1e6</code>, <code>Bandwidth: samp_rate</code></td>
+<td>Muestran el resultado</td>
+</tr>
+</tbody>
+</table>
+<p>Define además la variable <code>samp_rate</code> con valor <code>2400000</code>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Por qué el Throttle va a <code>2*samp_rate</code></p>
+<p>El Throttle está colocado sobre un flujo de <strong>bytes</strong>, no de muestras. Como cada muestra compleja ocupa dos bytes, para reproducir 2.4 millones de muestras por segundo hacen falta 4.8 millones de bytes por segundo. Si dejas <code>samp_rate</code> a secas, el archivo se reproduce a mitad de velocidad. El espectro sale igual, pero los 10 segundos de grabación duran 20.</p>
+</div>
+<p>Ejecuta el grafo. Ahora el Time Sink muestra dos trazas que oscilan alrededor de cero sin acercarse a los bordes, y el Frequency Sink muestra el espectro con varias portadoras de FM.</p>
+<p>Comprueba tu trabajo con <code>test2.grc</code>, que es la solución de referencia.</p>
+<details class="question">
+<summary>C1. La cuenta de muestras</summary>
+<p>Si entran 12 bytes por el bloque 1, ¿cuántos valores salen de cada bloque de la cadena?</p>
+<p><strong>Respuesta.</strong> Salen 12 de los bloques 1 a 5, porque operan muestra a muestra sin cambiar la cantidad. <code>Deinterleave</code> rompe esa cuenta por primera vez: entran 12 y salen 6 por cada una de sus dos salidas. <code>Float To Complex</code> la cierra: entran 6 y 6, salen 6 muestras complejas.</p>
+<p>De los siete bloques, solo dos cambian el número de elementos, y hacen operaciones opuestas. Uno separa para que el otro pueda emparejar.</p>
+</details>
+<details class="question">
+<summary>C2. El recorrido de un número</summary>
+<p>Sigue el primer byte de la grabación a lo largo de toda la cadena y anota su valor en cada etapa.</p>
+<p><strong>Respuesta.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>En el disco</td>
+<td><code>10000011</code></td>
+</tr>
+<tr>
+<td>Leído como entero</td>
+<td>131</td>
+</tr>
+<tr>
+<td>Tras UChar To Float</td>
+<td>131.0</td>
+</tr>
+<tr>
+<td>Tras Add Const</td>
+<td>+3.5</td>
+</tr>
+<tr>
+<td>Tras Multiply Const</td>
+<td>+0.0275</td>
+</tr>
+<tr>
+<td>Tras Float To Complex</td>
+<td>parte real de la primera muestra</td>
+</tr>
+</tbody>
+</table>
+<p>Ese +0.0275 es el primer punto que dibuja el Time Sink.</p>
+</details>
+<details class="question">
+<summary>C3. El ancho de banda observable</summary>
+<p>Con <span class="arithmatex">\(f_c = 99.1\)</span> MHz y <span class="arithmatex">\(f_s = 2.4\)</span> MS/s, ¿qué intervalo de frecuencias muestra el Frequency Sink? ¿Cuántos canales de FM de 200 kHz caben?</p>
+<p><strong>Respuesta.</strong> El intervalo va de 97.9 a 100.3 MHz, porque en muestreo complejo el ancho observable es <span class="arithmatex">\(f_s\)</span> entero y no <span class="arithmatex">\(f_s/2\)</span>. Los filtros del conversor descendente atenúan los bordes, así que se aprovecha el 80 % central, unos 1.92 MHz. Ahí caben nueve canales de 200 kHz.</p>
+<p>Identifica al menos tres portadoras en tu pantalla y anota su frecuencia.</p>
+</details>
+<h3 id="parte-d-con-dongle-opcional">Parte D: con dongle, opcional</h3>
+<p>Quien tenga el RTL-SDR puede sustituir la fuente por hardware. Desactiva <code>File Source</code> y <code>Throttle</code> con la tecla <code>D</code>, activa <code>Soapy RTL-SDR Source</code> y ejecuta. Esta parte no altera la calificación.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>rtl_test<span class="w"> </span>-t<span class="w">              </span><span class="c1"># detección y tipo de tuner</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>rtl_test<span class="w"> </span>-s<span class="w"> </span><span class="m">2400000</span><span class="w">      </span><span class="c1"># 60 s; registra cuántas líneas "lost at least" aparecen</span>
+</code></pre></div>
+<p>Observa que la fuente del dongle entrega muestras complejas ya normalizadas a <span class="arithmatex">\(\pm 1\)</span>. La conversión que construiste en la Parte C ocurre dentro del driver, y por eso la cadena de siete bloques se reduce a uno.</p>
+<h3 id="cierre-que-contenian-los-diez-segundos">Cierre: qué contenían los diez segundos</h3>
+<p>Esta parte es una demostración del profesor y no entra en la calificación. Cierra la pregunta que queda abierta tras la Parte C: has visto una muestra, ¿qué había en los veinticuatro millones restantes?</p>
+<p>Primero, por qué caben 2.4 MHz de espectro en una lista de números:</p>
+<table>
+<thead>
+<tr>
+<th>Concepto</th>
+<th style="text-align: right;">Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Muestras complejas del archivo</td>
+<td style="text-align: right;">24 000 000</td>
+</tr>
+<tr>
+<td>Números reales, contando I y Q por separado</td>
+<td style="text-align: right;">48 000 000</td>
+</tr>
+<tr>
+<td>Grados de libertad de una banda <span class="arithmatex">\(B\)</span> durante <span class="arithmatex">\(T\)</span>, es decir <span class="arithmatex">\(2BT\)</span></td>
+<td style="text-align: right;">48 000 000</td>
+</tr>
+</tbody>
+</table>
+<p>La coincidencia es exacta, no aproximada. Una banda de 2.4 MHz observada durante 10 segundos tiene exactamente esa cantidad de grados de libertad, y el archivo guarda exactamente esa cantidad de números. Con menos, se perdería información de forma irreversible; con más, se estaría guardando redundancia.</p>
+<p>El punto que conviene dejar claro es que <strong>ninguna muestra individual contiene una frecuencia</strong>. Cada número complejo es el valor instantáneo de los 2.4 MHz enteros, con todas las emisoras sumadas encima. Las frecuencias no están guardadas por separado en ningún sitio: están en el <strong>orden</strong> de la secuencia. Lo que las separa es la transformada.</p>
+<p><img alt="Tres paneles: las senoides de referencia, un bloque de muestras que parece ruido, y su espectro con las emisoras separadas" src="figures/de-muestras-a-espectro.png" /></p>
+<p><strong>Figura 17.</strong> De las muestras al espectro: las senoides de referencia, el bloque crudo y el resultado de compararlos.</p>
+<p>El panel (a) muestra contra qué se compara. Cada bin <span class="arithmatex">\(k\)</span> es la senoide que completa <strong>exactamente <span class="arithmatex">\(k\)</span> vueltas enteras dentro del bloque</strong>, y de ahí sale el espaciado entre bins. Con <span class="arithmatex">\(N = 2048\)</span> muestras a 2.4 MS/s el bloque dura 853 µs, así que el bin 1 da una vuelta en ese tiempo, es decir 1172 Hz; el bin 853 da 853 vueltas, casi exactamente 1 MHz.</p>
+<p>El panel (b) es el bloque tal cual sale del archivo. Parece ruido, y sin embargo contiene tres emisoras.</p>
+<p>El panel (c) es el resultado de las 2048 comparaciones, puestas en orden. Los datos son los mismos que en (b): lo único que cambió es quién los mira. Observa que lleva dos ejes, porque la transformada devuelve desplazamientos respecto a 0 Hz y la frecuencia absoluta es una etiqueta que se añade después, sumando <span class="arithmatex">\(f_c\)</span>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Dos períodos distintos, con trabajos opuestos</p>
+<p>Es fácil confundirlos porque ambos se miden en segundos.</p>
+<p><span class="arithmatex">\(T_s = 1/f_s\)</span> es la separación <strong>entre</strong> muestras, 416.7 ns aquí, y fija el <strong>ancho</strong> de la banda observable.</p>
+<p><span class="arithmatex">\(T_b = N \cdot T_s\)</span> es la duración del <strong>bloque</strong>, 853.3 µs, y fija la <strong>resolución</strong> <span class="arithmatex">\(\Delta f = 1/T_b\)</span>, que aquí vale 1172 Hz.</p>
+<p>Uno decide cuánto espectro ves; el otro, con cuánto detalle.</p>
+</div>
+<p>Repitiendo esa operación sobre los 11 718 bloques del archivo y apilando los resultados en orden temporal se obtiene el espectrograma, que es la fotografía completa de la grabación:</p>
+<p><img alt="Espectrograma de la grabación completa: tres emisoras de FM como bandas verticales a lo largo de diez segundos" src="figures/espectrograma.png" /></p>
+<p><strong>Figura 18.</strong> Espectrograma de los diez segundos completos: frecuencia en el eje horizontal, tiempo en el vertical.</p>
+<p>Cada fila horizontal es el espectro de un instante; el eje vertical es el tiempo. Se distinguen tres emisoras fuertes en 98.1, 99.1 y 100.1 MHz, cada una de unos 200 kHz de ancho, y su brillo late con el programa de audio que transportan. Las líneas verticales finas y constantes son portadoras piloto y espurias del propio dongle.</p>
+<p>Los mismos datos admiten una representación como superficie, con la potencia en el eje vertical:</p>
+<p><img alt="Los mismos datos dibujados como superficie tridimensional" src="figures/superficie3d.png" /></p>
+<p><strong>Figura 19.</strong> La misma matriz del espectrograma dibujada como superficie, para comparar legibilidad.</p>
+<p>Se ve más espectacular y se lee peor: los picos del frente tapan lo que hay detrás y el ojo no compara alturas en perspectiva. El mapa plano contiene exactamente la misma información y permite leer una frecuencia o un instante concretos, y por eso todo receptor real, de GNU Radio a SDR++, muestra una cascada plana y no una superficie.</p>
+<p>Queda una elección por hacer, y es el tema con el que arranca la Sesión 03. Al fijar <span class="arithmatex">\(N\)</span> decides dónde gastar la resolución, porque el producto <span class="arithmatex">\(\Delta f \cdot \Delta t\)</span> siempre vale uno:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;"><span class="arithmatex">\(N\)</span></th>
+<th style="text-align: right;"><span class="arithmatex">\(\Delta f\)</span></th>
+<th style="text-align: right;"><span class="arithmatex">\(\Delta t\)</span></th>
+<th style="text-align: right;">Bloques en 10 s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">9375 Hz</td>
+<td style="text-align: right;">107 µs</td>
+<td style="text-align: right;">93 750</td>
+</tr>
+<tr>
+<td style="text-align: right;">1024</td>
+<td style="text-align: right;">2344 Hz</td>
+<td style="text-align: right;">427 µs</td>
+<td style="text-align: right;">23 437</td>
+</tr>
+<tr>
+<td style="text-align: right;">4096</td>
+<td style="text-align: right;">586 Hz</td>
+<td style="text-align: right;">1.7 ms</td>
+<td style="text-align: right;">5 859</td>
+</tr>
+<tr>
+<td style="text-align: right;">65 536</td>
+<td style="text-align: right;">37 Hz</td>
+<td style="text-align: right;">27 ms</td>
+<td style="text-align: right;">366</td>
+</tr>
+</tbody>
+</table>
+<p>Bloques largos distinguen frecuencias muy juntas pero emborronan cuándo ocurrió cada cosa. Bloques cortos fechan los eventos con precisión pero no separan frecuencias vecinas. Ningún ajuste gana en ambas.</p>
+<h4 id="como-se-dibujan">Cómo se dibujan</h4>
+<p>Las dos vistas salen de la misma matriz, y construirla son diez líneas. El fragmento lee la grabación, la corta en bloques, transforma cada uno y promedia grupos de bloques para que la imagen quepa en pantalla.</p>
+<div class="highlight"><span class="filename">espectrograma.py</span><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="n">FS</span><span class="p">,</span> <span class="n">FC</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">FILAS</span> <span class="o">=</span> <span class="mf">2.4e6</span><span class="p">,</span> <span class="mf">99.1e6</span><span class="p">,</span> <span class="mi">2048</span><span class="p">,</span> <span class="mi">300</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="n">crudo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="s2">"samples/fm_99p1MHz_2p4Msps_g30.cu8"</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="n">iq</span> <span class="o">=</span> <span class="p">((</span><span class="n">crudo</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">127.5</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">crudo</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">127.5</span><span class="p">))</span> <span class="o">/</span> <span class="mf">127.5</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="c1"># Un espectro por cada bloque de N muestras</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="n">n_bloques</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq</span><span class="p">)</span> <span class="o">//</span> <span class="n">N</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="n">bloques</span> <span class="o">=</span> <span class="n">iq</span><span class="p">[:</span> <span class="n">n_bloques</span> <span class="o">*</span> <span class="n">N</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_bloques</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="n">pot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">bloques</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axes</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="c1"># Promedia grupos de bloques para que la imagen quepa en pantalla</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="n">pot</span> <span class="o">=</span> <span class="n">pot</span><span class="p">[:</span> <span class="n">n_bloques</span> <span class="o">//</span> <span class="n">FILAS</span> <span class="o">*</span> <span class="n">FILAS</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">FILAS</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="n">db</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pot</span><span class="p">)</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="n">db</span> <span class="o">-=</span> <span class="n">db</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="n">FC</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">FS</span><span class="p">)))</span> <span class="o">/</span> <span class="mf">1e6</span>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq</span><span class="p">)</span> <span class="o">/</span> <span class="n">FS</span><span class="p">,</span> <span class="n">FILAS</span><span class="p">)</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>
+<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">shading</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"magma"</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">30</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">"Frecuencia (MHz)"</span><span class="p">)</span>
+<a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">"Tiempo (s)"</span><span class="p">)</span>
+<a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"Potencia relativa (dB)"</span><span class="p">)</span>
+<a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p>La línea del <code>reshape</code> es la que conviene leer despacio: convierte una tira de 24 millones de muestras en 11 718 bloques de 2048, y cada bloque se transformará por separado. La multiplicación por <code>np.hanning(N)</code> es la ventana que suaviza los extremos de cada bloque; sin ella aparece la fuga espectral de la sección anterior.</p>
+<p>La superficie usa exactamente la misma matriz <code>db</code>, solo que dibujada en perspectiva y submuestreada para que la malla no se sature:</p>
+<div class="highlight"><span class="filename">superficie3d.py, continúa el anterior</span><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">"3d"</span><span class="p">)</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="n">F</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">f</span><span class="p">[::</span><span class="mi">6</span><span class="p">],</span> <span class="n">t</span><span class="p">[::</span><span class="mi">5</span><span class="p">])</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">db</span><span class="p">[::</span><span class="mi">5</span><span class="p">,</span> <span class="p">::</span><span class="mi">6</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"magma"</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">30</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Frecuencia (MHz)"</span><span class="p">)</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Tiempo (s)"</span><span class="p">)</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s2">"Potencia (dB)"</span><span class="p">)</span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">elev</span><span class="o">=</span><span class="mi">38</span><span class="p">,</span> <span class="n">azim</span><span class="o">=-</span><span class="mi">122</span><span class="p">)</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p>Los pasos <code>[::6]</code> y <code>[::5]</code> descartan cinco de cada seis columnas y cuatro de cada cinco filas. Sin ellos matplotlib dibuja 614 400 polígonos y tarda minutos en responder.</p>
+<details class="tip">
+<summary>Las figuras de esta sección</summary>
+<p>Las tres salen del generador <a href="https://github.com/ollerenac-uni/sdr/blob/main/docs/sessions/01-introduccion-sdr/figures/gen_espectro_tiempo.py"><code>gen_espectro_tiempo.py</code></a>, que es la versión cuidada de los fragmentos de arriba. Cambia <code>N</code> y vuelve a ejecutarlo para ver el compromiso de la tabla con tus propios ojos:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nb">cd</span><span class="w"> </span>docs/sessions/01-introduccion-sdr/figures
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>python<span class="w"> </span>gen_espectro_tiempo.py
+</code></pre></div>
+</details>
+<h3 id="reporte-0-del-bit-al-espectro">Reporte 0: del bit al espectro</h3>
+<ul>
+<li><strong>Vence:</strong> al inicio de la Sesión 02, publicado en el sitio de reportes del estudiante.</li>
+<li><strong>Contenido obligatorio:</strong> sistema operativo y versión de GNU Radio; salidas de A1 a A6 y respuesta a A6; capturas de la Parte B con las dos respuestas; captura del grafo de la Parte C y de sus dos sumideros, con las respuestas C1, C2 y C3; problemas de instalación encontrados y su solución.</li>
+<li><strong>Opcional:</strong> evidencia de la Parte D.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th style="text-align: center;">Puntos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Salidas de la Parte A completas y legibles, con la interpretación de A6</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td>Diagnóstico correcto del fallo de la Parte B, con la distinción entre convertir y reinterpretar</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td>Grafo de la Parte C funcionando, con capturas de ambos sumideros</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td>Respuestas C1, C2 y C3 correctas</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td>Publicación puntual, con la plantilla y el archivo <code>.grc</code> enlazado en el repositorio</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+<p>La clínica de instalación se desarrolla en paralelo durante toda la sesión. Quien encuentre problemas con Zadig, el módulo DVB de Linux o <code>rtl_test</code> los resuelve con el profesor y los voluntarios; el Reporte 0 debe registrar el problema y su solución.</p>
+<hr />
+<h2 id="lecturas-recomendadas">Lecturas recomendadas</h2>
+<ol>
+<li>M. Lichtman, <em>PySDR: A Guide to SDR and DSP using Python</em>: <a href="https://pysdr.org/content/intro.html">introducción</a> y <a href="https://pysdr.org/content/rtlsdr.html">RTL-SDR</a>. Lectura gratuita de referencia del curso.</li>
+<li>rtl-sdr.com, <em>About RTL-SDR</em>. Especificaciones, historia y límites del dongle. <a href="https://www.rtl-sdr.com/about-rtl-sdr/">rtl-sdr.com/about-rtl-sdr</a></li>
+<li>Osmocom, <em>rtl-sdr wiki</em>. Documentación del driver y de las utilidades <code>rtl_*</code>. <a href="https://osmocom.org/projects/rtl-sdr/wiki">osmocom.org/projects/rtl-sdr/wiki</a></li>
+<li>GNU Radio Wiki, <em>Tutorials: Your First Flowgraph</em> y <em>Python Variables in GRC</em>. <a href="https://wiki.gnuradio.org/index.php/Tutorials">wiki.gnuradio.org/index.php/Tutorials</a></li>
+<li>J. Mitola, "The software radio architecture", <em>IEEE Communications Magazine</em>, vol. 33, n.º 5, 1995. El artículo que dio nombre al campo.</li>
+<li>TUO de la Ley de Telecomunicaciones (DS 013-93-TCC) y Reglamento General (DS 06-94-TCC), artículos citados en la sección 6.</li>
+</ol>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
