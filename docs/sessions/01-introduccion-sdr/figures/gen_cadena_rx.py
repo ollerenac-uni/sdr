@@ -212,3 +212,86 @@ ax.legend(loc="upper right", ncol=2, frameon=False)
 bytes_txt = " ".join(f"{i} {q}" for i, q in zip(I[:6], Q[:6]))
 ax.set_title(f"⑥ Salida USB: I, Q, I, Q… un byte cada uno; a {FS_OUT} MS/s son 4.8 MB/s\nprimeros bytes en el cable: {bytes_txt} …", fontsize=9)
 save(fig, "cadena-rx-6-usb.png")
+
+
+
+# ---------------------------------------------------------------- ④b ramas I y Q
+# Demostración en el dominio del tiempo de por qué hacen falta DOS ramas.
+# Se sintetiza una señal de paso banda real con emisoras SOLO por encima de la
+# frecuencia central, se multiplica por cos y por -sin, y se comparan los tres
+# espectros. Cada rama por sí sola muestra el doble de emisoras de las que hay.
+
+def _escena_iq(n_muestras=32768, fs_adc=28.8e6, f_if=FIF * 1e6, semilla=11):
+    """Señal real en la IF con emisoras solo en offsets positivos."""
+    t = np.arange(n_muestras) / fs_adc
+    rng_local = np.random.default_rng(semilla)
+    offsets = np.array([0.2, 0.5, 0.9]) * 1e6
+    amplitudes = np.array([1.0, 0.65, 0.45])
+    banda = sum(
+        a * np.exp(2j * np.pi * o * t + 1j * rng_local.uniform(0, 2 * np.pi))
+        for o, a in zip(offsets, amplitudes)
+    )
+    x = np.real(banda * np.exp(2j * np.pi * f_if * t))
+    i_rama = x * np.cos(2 * np.pi * f_if * t)
+    q_rama = -x * np.sin(2 * np.pi * f_if * t)
+    freqs = np.fft.fftshift(np.fft.fftfreq(n_muestras, 1 / fs_adc)) / 1e6
+
+    def magnitud(s):
+        return np.abs(np.fft.fftshift(np.fft.fft(s * np.hanning(n_muestras)))) / n_muestras
+
+    return freqs, offsets / 1e6, {
+        "x": magnitud(x), "I": magnitud(i_rama),
+        "Q": magnitud(q_rama), "z": magnitud(i_rama + 1j * q_rama),
+    }
+
+
+def fig_ramas_iq():
+    f, offsets, S = _escena_iq()
+    tope = max(v.max() for v in S.values())
+    filas = [
+        ("x[n]", "x", GRAY, "(a) Entrada real en la IF: dos lóbulos simétricos en $\\pm 3.57$ MHz"),
+        ("I", "I", BLUE, "(b) Rama I = x·cos: seis emisoras aparentes, pero solo tres existen"),
+        ("Q", "Q", RED, "(c) Rama Q = −x·sen: magnitud idéntica a la de I. Lo que cambia es la fase"),
+        ("z = I+jQ", "z", GREEN, "(d) Al combinar: los espejos se cancelan; quedan las tres reales"),
+    ]
+    fig, ax = plt.subplots(4, 2, figsize=(8.4, 8.6),
+                           gridspec_kw={"width_ratios": [1.9, 1]})
+    for r, (nombre, clave, color, titulo) in enumerate(filas):
+        y = 20 * np.log10(S[clave] / tope + 1e-12)
+        for c, (lim, paso) in enumerate(((14.4, None), (1.5, 0.5))):
+            a = ax[r, c]
+            a.plot(f, y, color=color, lw=0.8)
+            a.set_xlim(-lim, lim); a.set_ylim(-70, 5)
+            a.axvline(0, color="#bbb", lw=0.6, zorder=0)
+            if c == 1:
+                for o in offsets:
+                    a.axvline(+o, color=GREEN, ls=":", lw=0.9)
+                    if clave in ("I", "Q"):
+                        a.axvline(-o, color=RED, ls=":", lw=0.9)
+                a.set_yticklabels([])
+            else:
+                a.set_ylabel("dB")
+        ax[r, 0].set_title(titulo, fontsize=9, loc="left")
+        ax[r, 1].set_title("ampliación de la banda base", fontsize=8, loc="left", color="#666")
+    # (a) todavía no hay nada en banda base: la señal sigue en la IF
+    ax[0, 1].text(0, -32, "todavía nada aquí:\nla señal está en $\\pm 3.57$ MHz",
+                  ha="center", fontsize=8, color=GRAY)
+    ax[1, 1].text(-0.95, -6, "espejo", color=RED, fontsize=8, ha="center")
+    ax[1, 1].text(+0.95, -6, "real", color=GREEN, fontsize=8, ha="center")
+    ax[3, 1].text(-0.75, -30, "nada:\nse cancelaron", color=GREEN, fontsize=8, ha="center")
+    # las réplicas en ±2·f_IF, que el filtro paso bajo eliminará después
+    for fila in (1, 2, 3):
+        for signo in (-1, 1):
+            if fila == 3 and signo > 0:
+                continue
+            ax[fila, 0].annotate("", xy=(signo * 7.7, -14), xytext=(signo * 7.7, -4),
+                                 arrowprops=dict(arrowstyle="->", color=DARK, lw=0.8))
+    ax[1, 0].text(0, -4, "réplicas en $\\pm 2f_{IF}$", ha="center", fontsize=7.5, color=DARK)
+    ax[3, 0].text(-7.7, -2, "solo queda la de $-7.14$", ha="center", fontsize=7.5, color=DARK)
+    for c in range(2):
+        ax[3, c].set_xlabel("Frecuencia (MHz)")
+    fig.tight_layout(h_pad=1.1)
+    save(fig, "cadena-rx-4b-ramas-iq.png")
+
+
+fig_ramas_iq()

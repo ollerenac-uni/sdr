@@ -326,6 +326,45 @@ La flecha negra indica el desplazamiento de $-3.57$ MHz. La señal azul queda en
 
 El coseno y el seno digitales mantienen un desfase exacto de 90° y amplitudes idénticas. Por ello, esta generación de cuadratura evita el desbalance I/Q propio de mezcladores analógicos.
 
+###### Qué ve cada rama por separado
+
+La Figura 10 mostró la cancelación con una sinusoide aislada. Conviene repetir el experimento sobre el caso real, porque revela algo más fuerte que «se cancela una copia»: **una sola rama no basta para saber dónde está una emisora**.
+
+El montaje es el siguiente. Se sintetiza una señal de paso banda real con tres emisoras situadas **solo por encima** de la frecuencia central, en $+0.2$, $+0.5$ y $+0.9$ MHz. Por debajo no hay ninguna. Luego se multiplica por $\cos$ y por $-\sin$, exactamente como hace el RTL2832U, y se comparan los tres espectros.
+
+![Cuatro filas de espectros: la entrada real en la IF, la rama I sola, la rama Q sola y la combinación I+jQ, con ampliaciones de la banda base](figures/cadena-rx-4b-ramas-iq.png)
+
+**Figura 12.** Las dos ramas del DDC por separado y su combinación, sobre una escena con emisoras únicamente en offsets positivos.
+
+Lo que ocurre en cada fila:
+
+- **(a)** La entrada es real, de modo que su espectro es simétrico: los mismos tres lóbulos aparecen alrededor de $+3.57$ y de $-3.57$ MHz. En banda base todavía no hay nada.
+- **(b)** La rama I traslada ambos grupos. Alrededor de 0 Hz aparecen **seis** emisoras: las tres verdaderas en $+0.2$, $+0.5$ y $+0.9$ MHz, y tres espejos en las posiciones negativas correspondientes. Nada en el espectro distingue unas de otras. Las réplicas en $\pm 2f_{IF}$ son el producto de alta frecuencia que el filtro paso bajo eliminará después.
+- **(c)** La rama Q produce una magnitud **idéntica** a la de I, hasta el último decimal. Si I y Q se diferenciaran en amplitud, bastaría una de las dos.
+- **(d)** Al formar $I+jQ$ los seis lóbulos de banda base se reducen a tres, y son los tres correctos. Los espejos desaparecen; las emisoras reales duplican su amplitud.
+
+Medido sobre la simulación:
+
+| Frecuencia | I sola | Q sola | $I+jQ$ | Qué es |
+|---:|---:|---:|---:|---|
+| $-0.9$ MHz | 0.056 | 0.056 | 0.000 | espejo, no existe |
+| $-0.5$ MHz | 0.081 | 0.081 | 0.000 | espejo, no existe |
+| $-0.2$ MHz | 0.110 | 0.110 | 0.000 | espejo, no existe |
+| $+0.2$ MHz | 0.110 | 0.110 | 0.220 | emisora real |
+| $+0.5$ MHz | 0.081 | 0.081 | 0.161 | emisora real |
+| $+0.9$ MHz | 0.056 | 0.056 | 0.113 | emisora real |
+
+La supresión de los espejos supera los 170 dB, es decir, es exacta salvo por el redondeo de la aritmética.
+
+Las dos columnas centrales son la clave de toda la arquitectura. Como I y Q tienen **la misma magnitud**, la información que distingue una frecuencia positiva de una negativa no está en cuánto vale cada rama, sino en **la fase relativa entre ellas**. El factor $j$ de la suma $I+jQ$ es lo que convierte esa diferencia de fase en una cancelación: donde las dos ramas están en oposición, el resultado se anula; donde coinciden, se refuerza.
+
+De ahí se sigue por qué el desbalance I/Q importa tanto en los receptores de conversión directa. Si una rama tiene un poco más de ganancia que la otra, o el desfase no es de $90^\circ$ exactos, la cancelación deja de ser perfecta y reaparece un espejo atenuado. Una emisora fuerte puede entonces fabricar un fantasma en el lado opuesto del espectro, donde no hay nada. En el RTL2832U ese riesgo no existe, porque el coseno y el seno se generan digitalmente con amplitudes idénticas y desfase exacto.
+
+??? question "¿Por qué no basta con mirar la magnitud de una sola rama?"
+    Porque una señal real no puede distinguir $+f$ de $-f$. Su espectro es simétrico por construcción, de modo que cualquier receptor que produzca una sola señal real entrega siempre pares de candidatos.
+
+    Un receptor antiguo resolvía esto con hardware: un filtro de banda lateral colocado antes del mezclador eliminaba físicamente una de las dos posibilidades. La cuadratura consigue lo mismo sin filtros, a cambio de duplicar la cadena y exigir que las dos ramas estén bien apareadas.
+
 #### 2.5. Punto ⑤ — Filtro paso bajo y decimación
 
 Un filtro paso bajo digital conserva $|f| < f_s^{\text{out}}/2$: ±1.2 MHz para una salida de 2.4 MS/s. El filtro elimina la imagen de $-7.14$ MHz y las emisoras que quedan fuera de la ventana.
@@ -350,7 +389,7 @@ flowchart LR
 
 ![Espectro tras filtrar y decimar: la emisora objetivo en 0 Hz y sus vecinas dentro de la ventana de ±1.2 MHz; el ancho observable es fs = 2.4 MHz](figures/cadena-rx-5-decimacion.png)
 
-**Figura 12.** Punto ⑤: filtro y decimador resaltados, con la señal útil dentro de la ventana de ±1.2 MHz.
+**Figura 13.** Punto ⑤: filtro y decimador resaltados, con la señal útil dentro de la ventana de ±1.2 MHz.
 
 El eje representa frecuencia respecto a $f_c$. Solo permanecen la emisora objetivo y las vecinas comprendidas dentro de ±1.2 MHz. La señal compleja no requiere una copia espectral redundante; por eso, el ancho de banda observable es $f_s$.
 
@@ -374,7 +413,7 @@ flowchart LR
 
 ![Salida USB: muestras I y Q como bytes sin signo de 0 a 255, con el cero en 127.5, intercalados](figures/cadena-rx-6-usb.png)
 
-**Figura 13.** Punto ⑥: interfaz USB resaltada y representación de las muestras I/Q como bytes intercalados.
+**Figura 14.** Punto ⑥: interfaz USB resaltada y representación de las muestras I/Q como bytes intercalados.
 
 Cada muestra compleja sale como dos bytes sin signo, primero I y luego Q, con el cero en 127.5. A 2.4 MS/s, el caudal alcanza 4.8 MB/s. GNU Radio o NumPy convierten la secuencia al intervalo de $-1$ a $+1$ mediante $(x-127.5)/127.5$.
 
