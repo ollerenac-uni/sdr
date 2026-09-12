@@ -866,6 +866,70 @@ rtl_test -s 2400000      # 60 s; registra cuántas líneas "lost at least" apare
 
 Observa que la fuente del dongle entrega muestras complejas ya normalizadas a $\pm 1$. La conversión que construiste en la Parte C ocurre dentro del driver, y por eso la cadena de siete bloques se reduce a uno.
 
+### Cierre: qué contenían los diez segundos
+
+Esta parte es una demostración del profesor y no entra en la calificación. Cierra la pregunta que queda abierta tras la Parte C: has visto una muestra, ¿qué había en los veinticuatro millones restantes?
+
+Primero, por qué caben 2.4 MHz de espectro en una lista de números:
+
+| Concepto | Valor |
+|---|---:|
+| Muestras complejas del archivo | 24 000 000 |
+| Números reales, contando I y Q por separado | 48 000 000 |
+| Grados de libertad de una banda $B$ durante $T$, es decir $2BT$ | 48 000 000 |
+
+La coincidencia es exacta, no aproximada. Una banda de 2.4 MHz observada durante 10 segundos tiene exactamente esa cantidad de grados de libertad, y el archivo guarda exactamente esa cantidad de números. Con menos, se perdería información de forma irreversible; con más, se estaría guardando redundancia.
+
+El punto que conviene dejar claro es que **ninguna muestra individual contiene una frecuencia**. Cada número complejo es el valor instantáneo de los 2.4 MHz enteros, con todas las emisoras sumadas encima. Las frecuencias no están guardadas por separado en ningún sitio: están en el **orden** de la secuencia. Lo que las separa es la transformada.
+
+![Tres paneles: las senoides de referencia, un bloque de muestras que parece ruido, y su espectro con las emisoras separadas](figures/de-muestras-a-espectro.png)
+
+El panel (a) muestra contra qué se compara. Cada bin $k$ es la senoide que completa **exactamente $k$ vueltas enteras dentro del bloque**, y de ahí sale el espaciado entre bins. Con $N = 2048$ muestras a 2.4 MS/s el bloque dura 853 µs, así que el bin 1 da una vuelta en ese tiempo, es decir 1172 Hz; el bin 853 da 853 vueltas, casi exactamente 1 MHz.
+
+El panel (b) es el bloque tal cual sale del archivo. Parece ruido, y sin embargo contiene tres emisoras.
+
+El panel (c) es el resultado de las 2048 comparaciones, puestas en orden. Los datos son los mismos que en (b): lo único que cambió es quién los mira. Observa que lleva dos ejes, porque la transformada devuelve desplazamientos respecto a 0 Hz y la frecuencia absoluta es una etiqueta que se añade después, sumando $f_c$.
+
+!!! warning "Dos períodos distintos, con trabajos opuestos"
+    Es fácil confundirlos porque ambos se miden en segundos.
+
+    $T_s = 1/f_s$ es la separación **entre** muestras, 416.7 ns aquí, y fija el **ancho** de la banda observable.
+
+    $T_b = N \cdot T_s$ es la duración del **bloque**, 853.3 µs, y fija la **resolución** $\Delta f = 1/T_b$, que aquí vale 1172 Hz.
+
+    Uno decide cuánto espectro ves; el otro, con cuánto detalle.
+
+Repitiendo esa operación sobre los 11 718 bloques del archivo y apilando los resultados en orden temporal se obtiene el espectrograma, que es la fotografía completa de la grabación:
+
+![Espectrograma de la grabación completa: tres emisoras de FM como bandas verticales a lo largo de diez segundos](figures/espectrograma.png)
+
+Cada fila horizontal es el espectro de un instante; el eje vertical es el tiempo. Se distinguen tres emisoras fuertes en 98.1, 99.1 y 100.1 MHz, cada una de unos 200 kHz de ancho, y su brillo late con el programa de audio que transportan. Las líneas verticales finas y constantes son portadoras piloto y espurias del propio dongle.
+
+Los mismos datos admiten una representación como superficie, con la potencia en el eje vertical:
+
+![Los mismos datos dibujados como superficie tridimensional](figures/superficie3d.png)
+
+Se ve más espectacular y se lee peor: los picos del frente tapan lo que hay detrás y el ojo no compara alturas en perspectiva. El mapa plano contiene exactamente la misma información y permite leer una frecuencia o un instante concretos, y por eso todo receptor real, de GNU Radio a SDR++, muestra una cascada plana y no una superficie.
+
+Queda una elección por hacer, y es el tema con el que arranca la Sesión 03. Al fijar $N$ decides dónde gastar la resolución, porque el producto $\Delta f \cdot \Delta t$ siempre vale uno:
+
+| $N$ | $\Delta f$ | $\Delta t$ | Bloques en 10 s |
+|---:|---:|---:|---:|
+| 256 | 9375 Hz | 107 µs | 93 750 |
+| 1024 | 2344 Hz | 427 µs | 23 437 |
+| 4096 | 586 Hz | 1.7 ms | 5 859 |
+| 65 536 | 37 Hz | 27 ms | 366 |
+
+Bloques largos distinguen frecuencias muy juntas pero emborronan cuándo ocurrió cada cosa. Bloques cortos fechan los eventos con precisión pero no separan frecuencias vecinas. Ningún ajuste gana en ambas.
+
+??? tip "Reproducir estas figuras"
+    Las tres salen del generador [`gen_espectro_tiempo.py`](https://github.com/ollerenac-uni/sdr/blob/main/docs/sessions/01-introduccion-sdr/figures/gen_espectro_tiempo.py), que lee la misma grabación del laboratorio. Cambia `N` y vuelve a ejecutarlo para ver el compromiso de la tabla con tus propios ojos:
+
+    ```bash
+    cd docs/sessions/01-introduccion-sdr/figures
+    python gen_espectro_tiempo.py
+    ```
+
 ### Reporte 0: del bit al espectro
 
 - **Vence:** al inicio de la Sesión 02, publicado en el sitio de reportes del estudiante.
