@@ -236,17 +236,16 @@ def _escena_iq(n_muestras=32768, fs_adc=28.8e6, f_if=FIF * 1e6, semilla=11):
     q_rama = -x * np.sin(2 * np.pi * f_if * t)
     freqs = np.fft.fftshift(np.fft.fftfreq(n_muestras, 1 / fs_adc)) / 1e6
 
-    def magnitud(s):
-        return np.abs(np.fft.fftshift(np.fft.fft(s * np.hanning(n_muestras)))) / n_muestras
+    def espectro(s):
+        return np.fft.fftshift(np.fft.fft(s * np.hanning(n_muestras))) / n_muestras
 
-    return freqs, offsets / 1e6, {
-        "x": magnitud(x), "I": magnitud(i_rama),
-        "Q": magnitud(q_rama), "z": magnitud(i_rama + 1j * q_rama),
-    }
+    E = {"x": espectro(x), "I": espectro(i_rama),
+         "Q": espectro(q_rama), "z": espectro(i_rama + 1j * q_rama)}
+    return freqs, offsets / 1e6, {k: np.abs(v) for k, v in E.items()}, E
 
 
 def fig_ramas_iq():
-    f, offsets, S = _escena_iq()
+    f, offsets, S, E = _escena_iq()
     tope = max(v.max() for v in S.values())
     filas = [
         ("x[n]", "x", GRAY, "(a) Entrada real en la IF: dos lóbulos simétricos en $\\pm 3.57$ MHz"),
@@ -254,7 +253,7 @@ def fig_ramas_iq():
         ("Q", "Q", RED, "(c) Rama Q = −x·sen: magnitud idéntica a la de I. Lo que cambia es la fase"),
         ("z = I+jQ", "z", GREEN, "(d) Al combinar: los espejos se cancelan; quedan las tres reales"),
     ]
-    fig, ax = plt.subplots(4, 2, figsize=(8.4, 8.6),
+    fig, ax = plt.subplots(5, 2, figsize=(8.4, 10.4),
                            gridspec_kw={"width_ratios": [1.9, 1]})
     for r, (nombre, clave, color, titulo) in enumerate(filas):
         y = 20 * np.log10(S[clave] / tope + 1e-12)
@@ -288,8 +287,33 @@ def fig_ramas_iq():
                                  arrowprops=dict(arrowstyle="->", color=DARK, lw=0.8))
     ax[1, 0].text(0, -4, "réplicas en $\\pm 2f_{IF}$", ha="center", fontsize=7.5, color=DARK)
     ax[3, 0].text(-7.7, -2, "solo queda la de $-7.14$", ha="center", fontsize=7.5, color=DARK)
+    # (e) la fase, que es donde vive la información que las magnitudes no muestran
+    dif = np.degrees(np.angle(1j * E["Q"]) - np.angle(E["I"]))
+    dif = (dif + 180) % 360 - 180
+    visible = S["I"] > 0.02 * S["I"].max()
+    for c, lim in enumerate((14.4, 1.5)):
+        a = ax[4, c]
+        a.axhline(0, color=GREEN, lw=1, ls="--")
+        a.axhline(180, color=RED, lw=1, ls="--")
+        a.axhline(-180, color=RED, lw=1, ls="--")
+        a.plot(f[visible], dif[visible], ".", color=DARK, ms=3)
+        a.set_xlim(-lim, lim); a.set_ylim(-260, 260)
+        a.set_yticks([-180, 0, 180])
+        a.axvline(0, color="#bbb", lw=0.6, zorder=0)
+        if c == 0:
+            a.set_ylabel("grados")
+            a.text(-13.5, 200, "180° → se cancelan", color=RED, fontsize=7.5)
+            a.text(-13.5, 40, "0° → se refuerzan", color=GREEN, fontsize=7.5)
+        else:
+            a.set_yticklabels([])
+            for o in offsets:
+                a.axvline(+o, color=GREEN, ls=":", lw=0.9)
+                a.axvline(-o, color=RED, ls=":", lw=0.9)
+    ax[4, 0].set_title("(e) Desfase entre las ramas: lo que (b) y (c) no pueden mostrar",
+                       fontsize=9, loc="left")
+    ax[4, 1].set_title("ampliación de la banda base", fontsize=8, loc="left", color="#666")
     for c in range(2):
-        ax[3, c].set_xlabel("Frecuencia (MHz)")
+        ax[4, c].set_xlabel("Frecuencia (MHz)")
     fig.tight_layout(h_pad=1.1)
     save(fig, "cadena-rx-4b-ramas-iq.png")
 
