@@ -342,7 +342,7 @@ Lo que ocurre en cada fila:
 - **(b)** La rama I traslada ambos grupos. Alrededor de 0 Hz aparecen **seis** emisoras: las tres verdaderas en $+0.2$, $+0.5$ y $+0.9$ MHz, y tres espejos en las posiciones negativas correspondientes. Nada en el espectro distingue unas de otras. Las réplicas en $\pm 2f_{IF}$ son el producto de alta frecuencia que el filtro paso bajo eliminará después.
 - **(c)** La rama Q produce una magnitud **idéntica** a la de I, hasta el último decimal. Si I y Q se diferenciaran en amplitud, bastaría una de las dos.
 - **(d)** Al formar $I+jQ$ los seis lóbulos de banda base se reducen a tres, y son los tres correctos. Los espejos desaparecen; las emisoras reales duplican su amplitud.
-- **(e)** El desfase entre las dos ramas, que es la pieza que (b) y (c) no pueden enseñar. En las emisoras reales vale $0^\circ$ y en los espejos $\pm 180^\circ$.
+- **(e)** La fase de cada rama, que es el dato que (b) y (c) no dibujan. Hay dos series de puntos, una por panel: círculos azules para la fase de $\mathcal{F}\{I\}$ y aspas rojas para la de $j\,\mathcal{F}\{Q\}$. Donde las emisoras son reales, los dos símbolos caen encima uno del otro. En los espejos quedan separados $180^\circ$.
 
 Medido sobre la simulación:
 
@@ -374,6 +374,18 @@ La supresión de los espejos supera los 170 dB, es decir, es exacta salvo por el
     | $-0.5$ MHz | 2641 | 2641 | $180^\circ$ | 0 |
 
     Mismas magnitudes, resultados opuestos. La diferencia está entera en la fase, y por eso la figura incluye la fila (e): sin ella, el paso de (c) a (d) parecería arbitrario.
+
+Queda una última pregunta razonable: la fila (e) da dos ángulos, pero ¿cómo se convierten dos ángulos en una suma que vale el doble o vale cero? La respuesta se ve mejor dibujando esos dos valores como flechas en el plano complejo y encadenándolas punta con cola.
+
+![Dos diagramas de fasores en el plano complejo: en la emisora real las flechas se encadenan y el extremo queda al doble de distancia; en el espejo la cadena regresa al origen](figures/cadena-rx-4c-fasores.png)
+
+**Figura 13.** Suma de las dos ramas como flechas, en una emisora real y en un espejo.
+
+En cada panel, la flecha azul es el valor complejo de $\mathcal{F}\{I\}$ a esa frecuencia, el punto exacto que el panel (b) dibuja como una altura. La flecha roja es $j\,\mathcal{F}\{Q\}$, que es lo que el panel (c) resume en otra altura. Sumar dos números complejos es poner la segunda flecha donde termina la primera, y el punto grande marca dónde acaba la cadena: **ese punto es el valor que dibuja el panel (d)**.
+
+A la izquierda las dos flechas apuntan en la misma dirección, así que la cadena se estira y el extremo queda al doble de distancia del origen. A la derecha apuntan en direcciones opuestas y la cadena regresa exactamente al punto de partida, de modo que el panel (d) dibuja un cero.
+
+Las cuatro flechas de la figura miden lo mismo. Lo único que cambia entre los dos casos es hacia dónde apuntan, y esa dirección es la fase que muestra la fila (e) de la figura anterior.
 
 Las dos columnas centrales son la clave de toda la arquitectura. Como I y Q tienen **la misma magnitud**, la información que distingue una frecuencia positiva de una negativa no está en cuánto vale cada rama, sino en **la fase relativa entre ellas**. El factor $j$ de la suma $I+jQ$ es lo que convierte esa diferencia de fase en una cancelación: donde las dos ramas están en oposición, el resultado se anula; donde coinciden, se refuerza.
 
@@ -408,7 +420,7 @@ flowchart LR
 
 ![Espectro tras filtrar y decimar: la emisora objetivo en 0 Hz y sus vecinas dentro de la ventana de ±1.2 MHz; el ancho observable es fs = 2.4 MHz](figures/cadena-rx-5-decimacion.png)
 
-**Figura 13.** Punto ⑤: filtro y decimador resaltados, con la señal útil dentro de la ventana de ±1.2 MHz.
+**Figura 14.** Punto ⑤: filtro y decimador resaltados, con la señal útil dentro de la ventana de ±1.2 MHz.
 
 El eje representa frecuencia respecto a $f_c$. Solo permanecen la emisora objetivo y las vecinas comprendidas dentro de ±1.2 MHz. La señal compleja no requiere una copia espectral redundante; por eso, el ancho de banda observable es $f_s$.
 
@@ -432,7 +444,7 @@ flowchart LR
 
 ![Salida USB: muestras I y Q como bytes sin signo de 0 a 255, con el cero en 127.5, intercalados](figures/cadena-rx-6-usb.png)
 
-**Figura 14.** Punto ⑥: interfaz USB resaltada y representación de las muestras I/Q como bytes intercalados.
+**Figura 15.** Punto ⑥: interfaz USB resaltada y representación de las muestras I/Q como bytes intercalados.
 
 Cada muestra compleja sale como dos bytes sin signo, primero I y luego Q, con el cero en 127.5. A 2.4 MS/s, el caudal alcanza 4.8 MB/s. GNU Radio o NumPy convierten la secuencia al intervalo de $-1$ a $+1$ mediante $(x-127.5)/127.5$.
 
@@ -712,7 +724,7 @@ Las muestras del curso están en una carpeta compartida de Google Drive:
 
 ![Carpeta samples en Google Drive, con el archivo fm_99p1MHz_2p4Msps_g30.cu8](figures/drive-carpeta-samples.png)
 
-**Figura 15.** Carpeta compartida del curso en Google Drive con la grabación oficial de la sesión.
+**Figura 16.** Carpeta compartida del curso en Google Drive con la grabación oficial de la sesión.
 
 Descarga `fm_99p1MHz_2p4Msps_g30.cu8` y comprueba que llegó íntegro antes de empezar. Son 48 MB y una descarga truncada produce errores confusos más adelante:
 
@@ -944,7 +956,7 @@ El punto que conviene dejar claro es que **ninguna muestra individual contiene u
 
 ![Tres paneles: las senoides de referencia, un bloque de muestras que parece ruido, y su espectro con las emisoras separadas](figures/de-muestras-a-espectro.png)
 
-**Figura 16.** De las muestras al espectro: las senoides de referencia, el bloque crudo y el resultado de compararlos.
+**Figura 17.** De las muestras al espectro: las senoides de referencia, el bloque crudo y el resultado de compararlos.
 
 El panel (a) muestra contra qué se compara. Cada bin $k$ es la senoide que completa **exactamente $k$ vueltas enteras dentro del bloque**, y de ahí sale el espaciado entre bins. Con $N = 2048$ muestras a 2.4 MS/s el bloque dura 853 µs, así que el bin 1 da una vuelta en ese tiempo, es decir 1172 Hz; el bin 853 da 853 vueltas, casi exactamente 1 MHz.
 
@@ -965,7 +977,7 @@ Repitiendo esa operación sobre los 11 718 bloques del archivo y apilando los re
 
 ![Espectrograma de la grabación completa: tres emisoras de FM como bandas verticales a lo largo de diez segundos](figures/espectrograma.png)
 
-**Figura 17.** Espectrograma de los diez segundos completos: frecuencia en el eje horizontal, tiempo en el vertical.
+**Figura 18.** Espectrograma de los diez segundos completos: frecuencia en el eje horizontal, tiempo en el vertical.
 
 Cada fila horizontal es el espectro de un instante; el eje vertical es el tiempo. Se distinguen tres emisoras fuertes en 98.1, 99.1 y 100.1 MHz, cada una de unos 200 kHz de ancho, y su brillo late con el programa de audio que transportan. Las líneas verticales finas y constantes son portadoras piloto y espurias del propio dongle.
 
@@ -973,7 +985,7 @@ Los mismos datos admiten una representación como superficie, con la potencia en
 
 ![Los mismos datos dibujados como superficie tridimensional](figures/superficie3d.png)
 
-**Figura 18.** La misma matriz del espectrograma dibujada como superficie, para comparar legibilidad.
+**Figura 19.** La misma matriz del espectrograma dibujada como superficie, para comparar legibilidad.
 
 Se ve más espectacular y se lee peor: los picos del frente tapan lo que hay detrás y el ojo no compara alturas en perspectiva. El mapa plano contiene exactamente la misma información y permite leer una frecuencia o un instante concretos, y por eso todo receptor real, de GNU Radio a SDR++, muestra una cascada plana y no una superficie.
 

@@ -287,29 +287,30 @@ def fig_ramas_iq():
                                  arrowprops=dict(arrowstyle="->", color=DARK, lw=0.8))
     ax[1, 0].text(0, -4, "réplicas en $\\pm 2f_{IF}$", ha="center", fontsize=7.5, color=DARK)
     ax[3, 0].text(-7.7, -2, "solo queda la de $-7.14$", ha="center", fontsize=7.5, color=DARK)
-    # (e) la fase, que es donde vive la información que las magnitudes no muestran
-    dif = np.degrees(np.angle(1j * E["Q"]) - np.angle(E["I"]))
-    dif = (dif + 180) % 360 - 180
+    # (e) las DOS fases por separado, una por rama: donde coinciden se suman,
+    # donde difieren 180 grados se anulan. No es una resta: son dos cantidades,
+    # cada una perteneciente a uno de los paneles de arriba.
+    fase_I = np.degrees(np.angle(E["I"]))
+    fase_jQ = np.degrees(np.angle(1j * E["Q"]))
     visible = S["I"] > 0.02 * S["I"].max()
     for c, lim in enumerate((14.4, 1.5)):
         a = ax[4, c]
-        a.axhline(0, color=GREEN, lw=1, ls="--")
-        a.axhline(180, color=RED, lw=1, ls="--")
-        a.axhline(-180, color=RED, lw=1, ls="--")
-        a.plot(f[visible], dif[visible], ".", color=DARK, ms=3)
+        a.plot(f[visible], fase_I[visible], "o", color=BLUE, ms=4.5, label="fase de I, panel (b)")
+        a.plot(f[visible], fase_jQ[visible], "x", color=RED, ms=5, mew=1.4, label="fase de jQ, panel (c)")
         a.set_xlim(-lim, lim); a.set_ylim(-260, 260)
-        a.set_yticks([-180, 0, 180])
+        a.set_yticks([-180, -90, 0, 90, 180])
         a.axvline(0, color="#bbb", lw=0.6, zorder=0)
         if c == 0:
             a.set_ylabel("grados")
-            a.text(-13.5, 200, "180° → se cancelan", color=RED, fontsize=7.5)
-            a.text(-13.5, 40, "0° → se refuerzan", color=GREEN, fontsize=7.5)
+            a.legend(fontsize=7.5, frameon=False, loc="lower left", ncol=2)
         else:
             a.set_yticklabels([])
             for o in offsets:
                 a.axvline(+o, color=GREEN, ls=":", lw=0.9)
                 a.axvline(-o, color=RED, ls=":", lw=0.9)
-    ax[4, 0].set_title("(e) Desfase entre las ramas: lo que (b) y (c) no pueden mostrar",
+            a.text(+0.55, 215, "coinciden\n→ se suman", color=GREEN, fontsize=7, ha="center")
+            a.text(-0.55, 215, "opuestas\n→ se anulan", color=RED, fontsize=7, ha="center")
+    ax[4, 0].set_title("(e) La fase de cada rama: el dato que (b) y (c) no dibujan",
                        fontsize=9, loc="left")
     ax[4, 1].set_title("ampliación de la banda base", fontsize=8, loc="left", color="#666")
     for c in range(2):
@@ -319,3 +320,60 @@ def fig_ramas_iq():
 
 
 fig_ramas_iq()
+
+
+# ---------------------------------------------------------------- fasores
+# El puente entre "el espectro vale tanto a esta frecuencia" y "las ramas se suman
+# o se anulan": dibujar esos dos valores como flechas y encadenarlas punta con cola.
+
+def fig_fasores():
+    from matplotlib.lines import Line2D
+
+    f, offsets, S, E = _escena_iq()
+    fig, ax = plt.subplots(1, 2, figsize=(7.8, 4.4))
+    ref = max(abs(E["I"][int(np.argmin(np.abs(f - v)))]) for v in (+0.5, -0.5))
+    for col, (freq, titulo, color) in enumerate((
+        (+0.5, "En $+0.5$ MHz: emisora real", GREEN),
+        (-0.5, "En $-0.5$ MHz: espejo", RED),
+    )):
+        k = int(np.argmin(np.abs(f - freq)))
+        a, b = E["I"][k] / ref, 1j * E["Q"][k] / ref
+        fin = a + b
+        p_ = ax[col]
+        p_.axhline(0, color="#ddd", lw=0.8, zorder=0)
+        p_.axvline(0, color="#ddd", lw=0.8, zorder=0)
+
+        # 1) F{I} desde el origen; 2) jF{Q} desde donde terminó la anterior
+        p_.annotate("", xy=(a.real, a.imag), xytext=(0, 0),
+                    arrowprops=dict(arrowstyle="-|>", color=BLUE, lw=2.6,
+                                    shrinkA=0, shrinkB=0, mutation_scale=19))
+        p_.annotate("", xy=(fin.real, fin.imag), xytext=(a.real, a.imag),
+                    arrowprops=dict(arrowstyle="-|>", color=RED, lw=2.6,
+                                    shrinkA=0, shrinkB=0, mutation_scale=19))
+        p_.plot(0, 0, "o", color=DARK, ms=5, zorder=6)
+        p_.plot(fin.real, fin.imag, "o", color=color, ms=13, zorder=6)
+
+        p_.text(0.5, 0.16,
+                "la cadena acaba lejos del origen:\npanel (d), el doble de largo"
+                if abs(fin) > 0.05 else
+                "la cadena vuelve al origen:\npanel (d), cero",
+                transform=p_.transAxes, ha="center", fontsize=8.5,
+                color=color, fontweight="bold")
+        p_.text(0.5, 0.05, "las dos flechas miden lo mismo: $|I| = |Q|$",
+                transform=p_.transAxes, ha="center", fontsize=7.5, color=DARK)
+
+        p_.set_xlim(-2.5, 2.5); p_.set_ylim(-2.1, 2.1)
+        p_.set_aspect("equal"); p_.set_xticks([]); p_.set_yticks([])
+        p_.set_xlabel("parte real"); p_.set_ylabel("parte imaginaria")
+        p_.set_title(titulo, fontsize=9.5, color=color)
+
+    fig.legend(handles=[
+        Line2D([], [], color=BLUE, lw=2.6, label="$\\mathcal{F}\\{I\\}$, del panel (b)"),
+        Line2D([], [], color=RED, lw=2.6, label="$j\\,\\mathcal{F}\\{Q\\}$, del panel (c)"),
+    ], loc="lower center", ncol=2, frameon=False, fontsize=8.5)
+    fig.suptitle("Las mismas dos longitudes, dos resultados opuestos", fontsize=10)
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
+    save(fig, "cadena-rx-4c-fasores.png")
+
+
+fig_fasores()
