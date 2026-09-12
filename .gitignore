@@ -23,3 +23,15 @@ venv/
 exams/**/entregas/
 exams/**/soluciones/
 exams/**/notas*
+
+# Grabaciones I/Q: pesadas y se distribuyen por Drive, no por Git
+*.cu8
+*.cfile
+*.sigmf-data
+
+# Python generado por GNU Radio Companion a partir de los .grc
+gnuradio-flowgraphs/*.py
+
+# PDFs de referencia y notas locales de investigación
+referencia/
+.planning/research/

@@ -12,7 +12,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: test
+    id: test2
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -23,7 +23,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: "Sesi\xF3n 01 - Prueba fallida: leer .cu8 como complex64"
+    title: "Sesi\xF3n 01 - Lectura correcta de una muestra .cu8"
     window_size: (1000,1000)
   states:
     bus_sink: false
@@ -100,6 +100,43 @@ blocks:
     coordinate: [168, 16.0]
     rotation: 0
     state: enabled
+- name: blocks_add_const_vxx_0
+  id: blocks_add_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '-127.5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [144, 496.0]
+    rotation: 0
+    state: enabled
+- name: blocks_deinterleave_0
+  id: blocks_deinterleave
+  parameters:
+    affinity: ''
+    alias: ''
+    blocksize: '1'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_streams: '2'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [392, 560.0]
+    rotation: 0
+    state: enabled
 - name: blocks_file_source_0
   id: blocks_file_source
   parameters:
@@ -114,13 +151,47 @@ blocks:
     minoutbuf: '0'
     offset: '0'
     repeat: 'True'
-    type: complex
+    type: byte
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 312.0]
+    coordinate: [24, 248.0]
+    rotation: 0
+    state: enabled
+- name: blocks_float_to_complex_0
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [400, 432.0]
+    rotation: 0
+    state: enabled
+- name: blocks_multiply_const_vxx_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: 1/127.5
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [192, 568.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle2_0
@@ -135,14 +206,29 @@ blocks:
     maximum: '0.1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: samp_rate
-    type: complex
+    samples_per_second: 2*samp_rate
+    type: byte
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [320, 312.0]
+    coordinate: [224, 360.0]
+    rotation: 0
+    state: enabled
+- name: blocks_uchar_to_float_0
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [48, 432.0]
     rotation: 0
     state: enabled
 - name: qtgui_freq_sink_x_0
@@ -223,7 +309,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 312.0]
+    coordinate: [568, 272.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -320,7 +406,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 192.0]
+    coordinate: [576, 160.0]
     rotation: 0
     state: enabled
 - name: soapy_rtlsdr_source_0
@@ -350,9 +436,15 @@ blocks:
     state: disabled
 
 connections:
+- [blocks_add_const_vxx_0, '0', blocks_multiply_const_vxx_0, '0']
+- [blocks_deinterleave_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_deinterleave_0, '1', blocks_float_to_complex_0, '1']
 - [blocks_file_source_0, '0', blocks_throttle2_0, '0']
-- [blocks_throttle2_0, '0', qtgui_freq_sink_x_0, '0']
-- [blocks_throttle2_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_float_to_complex_0, '0', qtgui_freq_sink_x_0, '0']
+- [blocks_float_to_complex_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_multiply_const_vxx_0, '0', blocks_deinterleave_0, '0']
+- [blocks_throttle2_0, '0', blocks_uchar_to_float_0, '0']
+- [blocks_uchar_to_float_0, '0', blocks_add_const_vxx_0, '0']
 - [soapy_rtlsdr_source_0, '0', qtgui_freq_sink_x_0, '0']
 - [soapy_rtlsdr_source_0, '0', qtgui_time_sink_x_0, '0']
 

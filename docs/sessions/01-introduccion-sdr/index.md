@@ -521,7 +521,7 @@ rtl_sdr -f 99.1e6 -s 2400000 -g 30 -n 24000000 fm_99p1MHz_2p4Msps_g30.cu8
 
     El [código de `rtl_sdr`](https://github.com/osmocom/rtl-sdr/blob/master/src/rtl_sdr.c) confirma que la utilidad graba un búfer `uint8_t` y utiliza dos bytes por muestra compleja.
 
-    Para el laboratorio, el profesor proporciona una copia `complex64` llamada `fm_muestra.cfile`. Este formato puede conectarse directamente a un bloque **File Source** de tipo *Complex*.
+    El laboratorio de esta sesión trabaja directamente sobre el `.cu8`, sin convertirlo. Un bloque **File Source** de tipo *Complex* espera 8 bytes por muestra y por tanto **no** puede leer este archivo; la Parte B demuestra qué ocurre si se intenta.
 
 ---
 
@@ -619,44 +619,225 @@ Se debe planificar una grabación de 30 s: seleccionar $f_s$, ganancia y nombre 
 
 ## Laboratorio
 
-El laboratorio valida el entorno sin exigir hardware. Cada estudiante trabaja con una grabación I/Q; quien tenga un RTL-SDR puede repetir la observación con señales en vivo.
+El laboratorio recorre una sola grabación desde los bits del disco hasta el espectro en pantalla. Tiene cuatro partes: la primera no necesita GNU Radio, la segunda muestra un fallo deliberado, la tercera lo repara y la cuarta es opcional para quien tenga dongle.
 
 Antes de la clase, instala las herramientas según las guías:
 
 - [Instalar GNU Radio con radioconda](../../setup/instalacion.md)
 - [Configurar el RTL-SDR](../../setup/rtl-sdr.md) (solo para quien disponga del dongle)
 
-Descarga también el [`test.grc` preparado](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test.grc). El grafo contiene dos rutas de entrada:
+### Materiales
 
-- **File Source → Throttle**, activa de forma predeterminada.
-- **Soapy RTL-SDR Source**, visible pero desactivada (`D`).
+| Archivo | Qué es |
+|---|---|
+| `fm_99p1MHz_2p4Msps_g30.cu8` | Grabación oficial de la sesión |
+| [`test.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test.grc) | Grafo con un error deliberado. Parte B |
+| [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc) | Solución de referencia. Consúltala solo al terminar la Parte C |
 
-!!! warning "Pendiente del profesor: muestra I/Q"
-    Antes de publicar la sesión se añadirá aquí la URL de Google Drive, junto con la frecuencia central, tasa de muestreo, ganancia, duración y suma SHA-256 de `fm_muestra.cfile`.
+Metadatos de la grabación:
 
-Guarda `test.grc` y `fm_muestra.cfile` en una misma carpeta. Al abrir el grafo, entra a **File Source** y selecciona el archivo descargado para evitar problemas con rutas relativas.
+| Parámetro | Valor |
+|---|---|
+| Frecuencia central $f_c$ | 99.1 MHz |
+| Tasa de muestreo $f_s$ | 2.4 MS/s |
+| Ganancia manual | 30 dB |
+| Formato | `.cu8`, dos bytes por muestra compleja |
+| Duración | 10.0 s |
+| Tamaño | 48 000 000 bytes |
+| SHA-256 | `3944638586f418d7fd271ae03bcaa1b622d6bcc08ecc700e9cb5df0dc2d94579` |
 
-### En clase (2 h)
+!!! warning "Pendiente del profesor: enlace de descarga"
+    Antes de publicar la sesión se añadirá aquí la URL de Google Drive de `fm_99p1MHz_2p4Msps_g30.cu8`. Los metadatos de la tabla ya son los definitivos; verifica tu descarga con `sha256sum` antes de empezar.
 
-| # | Paso | Evidencia para el Reporte 0 | Obligatorio |
-|---|---|---|:---:|
-| 1 | Ejecutar `python -c "from gnuradio import gr; print(gr.version())"`; debe imprimir `3.10.12.0` | Texto de la salida | ✓ |
-| 2 | Crear `prueba.grc` (Signal Source → Throttle → Frequency Sink) y observar un pico en +1 kHz | Capturas del grafo y del espectro | ✓ |
-| 3 | Cambiar `Output Type` de Signal Source a *Float* y explicar el cambio del espectro | Captura y explicación breve | ✓ |
-| 4 | Abrir `test.grc`, elegir `fm_muestra.cfile` en File Source y confirmar que Soapy permanece desactivado | Captura del grafo completo | ✓ |
-| 5 | Ejecutar el grafo y observar la grabación en tiempo y frecuencia | Dos capturas y descripción de lo observado | ✓ |
-| 6 | Relacionar el eje del espectro con la frecuencia central y $f_s$ indicadas en los metadatos | Cálculo del intervalo visible | ✓ |
-| 7 | Con dongle: desactivar File Source y Throttle, activar Soapy, ejecutar `rtl_test` y observar una señal en vivo | Evidencia adicional | No |
+Guarda el `.cu8` y los dos grafos en una misma carpeta y trabaja desde ahí. Los grafos referencian el archivo por nombre relativo, así que se abren sin tocar nada si la carpeta es la misma.
 
-Los pasos 1–6 constituyen la ruta común y no requieren dongle. El paso 7 es una extensión opcional y no modifica la calificación.
+### Parte A: el archivo por dentro, sin GNU Radio
 
-La clínica de instalación se desarrolla en paralelo. Quien encuentre problemas con Zadig, el módulo DVB de Linux o `rtl_test` puede resolverlos con el profesor y los voluntarios. El Reporte 0 debe registrar el problema y su solución.
+Ningún programa sabe qué contiene un archivo crudo. Hay que decírselo, y esta parte establece qué hay que decirle. Trabaja en la terminal, sobre la grabación descargada.
 
-### Reporte 0: instalación y prueba del entorno
+**A1. El chorro de bits.** Un archivo es una tira de unos y ceros sin separadores ni etiquetas.
 
-- **Vence:** al inicio de la Sesión 02; debe publicarse en el sitio de reportes del estudiante.
-- **Contenido:** sistema operativo y versión; evidencias obligatorias de la tabla; interpretación de la grabación; problemas encontrados y solución. La evidencia de `rtl_test` es opcional.
-- **Rúbrica (5 puntos):** evidencias completas y legibles (2), explicación del paso 3 (1), interpretación de la grabación y su intervalo de frecuencias (1), publicación puntual con la plantilla (1).
+```bash
+xxd -b -c1 -l8 fm_99p1MHz_2p4Msps_g30.cu8 | cut -d' ' -f2 | tr -d '\n'; echo
+```
+
+**A2. Cortar cada 8 bits.** El corte cada ocho no es arbitrario: es la resolución del ADC del dongle.
+
+```bash
+xxd -b -l12 fm_99p1MHz_2p4Msps_g30.cu8
+```
+
+`xxd -b` imprime 6 bytes por línea, es decir 3 muestras complejas. Como 6 es par, las columnas primera, tercera y quinta son siempre I, y la segunda, cuarta y sexta siempre Q.
+
+**A3. Del bit al número.** Cada grupo de 8 bits vale lo que dicta la posición de cada uno.
+
+```bash
+xxd -b -c1 -l1 fm_99p1MHz_2p4Msps_g30.cu8 | awk '{n=$2
+  printf "bit      "; for(k=1;k<=8;k++) printf "%4s", substr(n,k,1)
+  printf "\npeso     "; for(k=1;k<=8;k++) printf "%4d", 2^(8-k)
+  printf "\naporta   "; for(k=1;k<=8;k++) printf "%4d", substr(n,k,1)*2^(8-k); printf "\n"}'
+```
+
+De ahí sale el rango completo: `00000000` es 0, `11111111` es 255, y entre ambos hay $2^8 = 256$ niveles. Eso, y nada más, significa "ADC de 8 bits".
+
+**A4. El atajo.** `od` hace esa cuenta por ti y escribe el mismo byte en base 10.
+
+```bash
+od -An -tu1 -N12 -v fm_99p1MHz_2p4Msps_g30.cu8
+```
+
+!!! info "`od` no convierte nada"
+    El byte ya *es* el entero. `xxd -b` lo escribe en base 2 y `od -tu1` en base 10, pero son los mismos ocho bits. `10000011` y `131` son la misma cosa escrita de dos formas. Retén esta distinción: en la Parte B aparecerá una operación que sí cambia el significado de los bits.
+
+**A5. Una muestra por línea.** Con `-w2` cada línea es una muestra compleja, y la dirección avanza de dos en dos.
+
+```bash
+od -Ad -tu1 -w2 -N20 -v fm_99p1MHz_2p4Msps_g30.cu8
+```
+
+**A6. Comprobar el formato.** Tres medidas que confirman que la grabación es lo que dice ser.
+
+```bash
+od -An -tu1 -v -N200000 fm_99p1MHz_2p4Msps_g30.cu8 | tr -s ' ' '\n' | grep . |
+  awk '{v[NR]=$1; s+=$1} END {print "min", v[1]+0, "| max", v[NR]+0, "| promedio", sprintf("%.2f",s/NR)}'
+```
+
+```bash
+od -An -tu1 -v -N200000 fm_99p1MHz_2p4Msps_g30.cu8 | tr -s ' ' '\n' | grep . |
+  awk '{h[int($1/16)]++} END {for(i=0;i<16;i++)
+    printf "%3d-%3d %7d %s\n", i*16, i*16+15, h[i]+0, substr("########################################",1,int(h[i]/900))}'
+```
+
+??? question "A6. ¿Qué demuestra cada número?"
+    El promedio cae en 127.4, no en 0 ni en 128. Es el cero de la señal, que en un formato sin signo vive en mitad de la escala, en 127.5.
+
+    El histograma sale en forma de campana con los dos tramos centrales empatados. Esa simetría alrededor de 127.5 es la misma afirmación vista como dibujo.
+
+    Las colas llegan a cero antes de tocar los extremos. En los 48 millones de bytes de la grabación completa solo 6 tocan 0 o 255, uno de cada ocho millones: es la cola de la gaussiana, no recorte. La ganancia de 30 dB está bien elegida.
+
+    Si el histograma tuviera picos altos pegados a 0 y a 255, habría saturación y la ganancia sería excesiva. Ese caso se estudia en la Sesión 02.
+
+### Parte B: la prueba fallida
+
+Abre `test.grc` y ejecútalo con **F6**. Su `File Source` está declarado de tipo *Complex*.
+
+Observarás dos cosas: el Time Sink muestra líneas que saltan entre $+1$ y $-1$ sin estructura, y el Frequency Sink queda **completamente vacío**. No hay mensaje de error.
+
+Responde en el reporte, antes de leer la solución:
+
+1. ¿Cuántos bytes lee el bloque por muestra cuando está en modo *Complex*? ¿Cuántos tiene en realidad cada muestra del archivo?
+2. ¿Por qué el Time Sink dibuja algo y el Frequency Sink no dibuja nada?
+
+??? example "Solución de la Parte B"
+    Un `File Source` de tipo *Complex* consume 8 bytes por muestra, dos `float32`. El archivo tiene 2. El bloque toma entonces cuatro bytes `uint8` consecutivos y los lee como un solo `float32`, así que produce cuatro veces menos muestras que las que hay.
+
+    El byte más significativo de ese grupo cae sobre el campo de exponente del formato IEEE-754. Con bytes repartidos alrededor de 127, el exponente aterriza cerca de su valor máximo con frecuencia. Medido sobre esta grabación:
+
+    | Efecto | Valor |
+    |---|---|
+    | Muestras producidas | 4 veces menos de las reales |
+    | Muestras NaN o infinitas | 1.4 % |
+    | Magnitud mediana de las finitas | 4.5 × 10²⁴ |
+
+    El Time Sink tiene autoescala apagada y rango $\pm 1$, así que valores de 10²⁴ rielan contra los bordes. Eso es lo que dibuja.
+
+    El Frequency Sink calcula una FFT sobre ventanas de 1024 muestras. Con 1.4 % de NaN, cada ventana contiene unas catorce, y un solo NaN convierte toda la FFT en NaN. No queda nada representable, y por eso la pantalla está en blanco.
+
+    Puedes ver la causa directamente en la terminal:
+
+    ```bash
+    od -An -tf4 -N32 -v fm_99p1MHz_2p4Msps_g30.cu8
+    ```
+
+    Los mismos bytes de la Parte A, leídos de a cuatro como `float32`, dan valores del orden de 10³⁴. GNU Radio no falló: obedeció una declaración de tipo equivocada.
+
+!!! danger "Convertir no es reinterpretar"
+    Son operaciones opuestas y confundirlas causa este fallo.
+
+    **Reinterpretar** conserva los bits y destruye el valor. El byte `10000011` junto a sus tres vecinos pasa a valer 9.1 × 10³⁴. Es lo que acaba de ocurrir.
+
+    **Convertir** conserva el valor y reescribe los bits. El byte `10000011` vale 131, y como `float32` de 32 bits se escribe `00000000 00000000 00000011 01000011`, que sigue valiendo 131. Es lo que hará `UChar To Float` en la Parte C.
+
+### Parte C: la lectura correcta
+
+Construye un grafo nuevo, guárdalo como `mi_lectura.grc` y sigue la cadena de abajo. El objetivo es traducir a bloques exactamente lo que hiciste a mano en la Parte A.
+
+| # | Bloque | Parámetros | Qué hace |
+|---|---|---|---|
+| 1 | File Source | `Output Type: Byte`, archivo `.cu8`, `Repeat: Yes` | Entrega los bytes crudos, sin interpretarlos |
+| 2 | Throttle | `Type: Byte`, `Sample Rate: 2*samp_rate` | Limita la reproducción a tiempo real |
+| 3 | UChar To Float | sin parámetros | Convierte el entero 0…255 al real 0.0…255.0 |
+| 4 | Add Const | `Type: Float`, `Constant: -127.5` | Lleva el cero de la señal al cero del eje |
+| 5 | Multiply Const | `Type: Float`, `Constant: 1/127.5` | Normaliza al intervalo $[-1, +1]$ |
+| 6 | Deinterleave | `Type: Float`, `Num Streams: 2` | Separa el flujo alternado en dos: todas las I por una salida, todas las Q por la otra |
+| 7 | Float To Complex | sin parámetros | Une los dos flujos en uno de muestras complejas |
+| 8 | QT GUI Time Sink y Frequency Sink | `Type: Complex`, `Center Frequency: 99.1e6`, `Bandwidth: samp_rate` | Muestran el resultado |
+
+Define además la variable `samp_rate` con valor `2400000`.
+
+!!! tip "Por qué el Throttle va a `2*samp_rate`"
+    El Throttle está colocado sobre un flujo de **bytes**, no de muestras. Como cada muestra compleja ocupa dos bytes, para reproducir 2.4 millones de muestras por segundo hacen falta 4.8 millones de bytes por segundo. Si dejas `samp_rate` a secas, el archivo se reproduce a mitad de velocidad. El espectro sale igual, pero los 10 segundos de grabación duran 20.
+
+Ejecuta el grafo. Ahora el Time Sink muestra dos trazas que oscilan alrededor de cero sin acercarse a los bordes, y el Frequency Sink muestra el espectro con varias portadoras de FM.
+
+Comprueba tu trabajo con `test2.grc`, que es la solución de referencia.
+
+??? question "C1. La cuenta de muestras"
+    Si entran 12 bytes por el bloque 1, ¿cuántos valores salen de cada bloque de la cadena?
+
+    **Respuesta.** Salen 12 de los bloques 1 a 5, porque operan muestra a muestra sin cambiar la cantidad. `Deinterleave` rompe esa cuenta por primera vez: entran 12 y salen 6 por cada una de sus dos salidas. `Float To Complex` la cierra: entran 6 y 6, salen 6 muestras complejas.
+
+    De los siete bloques, solo dos cambian el número de elementos, y hacen operaciones opuestas. Uno separa para que el otro pueda emparejar.
+
+??? question "C2. El recorrido de un número"
+    Sigue el primer byte de la grabación a lo largo de toda la cadena y anota su valor en cada etapa.
+
+    **Respuesta.**
+
+    | Etapa | Valor |
+    |---|---|
+    | En el disco | `10000011` |
+    | Leído como entero | 131 |
+    | Tras UChar To Float | 131.0 |
+    | Tras Add Const | +3.5 |
+    | Tras Multiply Const | +0.0275 |
+    | Tras Float To Complex | parte real de la primera muestra |
+
+    Ese +0.0275 es el primer punto que dibuja el Time Sink.
+
+??? question "C3. El ancho de banda observable"
+    Con $f_c = 99.1$ MHz y $f_s = 2.4$ MS/s, ¿qué intervalo de frecuencias muestra el Frequency Sink? ¿Cuántos canales de FM de 200 kHz caben?
+
+    **Respuesta.** El intervalo va de 97.9 a 100.3 MHz, porque en muestreo complejo el ancho observable es $f_s$ entero y no $f_s/2$. Los filtros del conversor descendente atenúan los bordes, así que se aprovecha el 80 % central, unos 1.92 MHz. Ahí caben nueve canales de 200 kHz.
+
+    Identifica al menos tres portadoras en tu pantalla y anota su frecuencia.
+
+### Parte D: con dongle, opcional
+
+Quien tenga el RTL-SDR puede sustituir la fuente por hardware. Desactiva `File Source` y `Throttle` con la tecla `D`, activa `Soapy RTL-SDR Source` y ejecuta. Esta parte no altera la calificación.
+
+```bash
+rtl_test -t              # detección y tipo de tuner
+rtl_test -s 2400000      # 60 s; registra cuántas líneas "lost at least" aparecen
+```
+
+Observa que la fuente del dongle entrega muestras complejas ya normalizadas a $\pm 1$. La conversión que construiste en la Parte C ocurre dentro del driver, y por eso la cadena de siete bloques se reduce a uno.
+
+### Reporte 0: del bit al espectro
+
+- **Vence:** al inicio de la Sesión 02, publicado en el sitio de reportes del estudiante.
+- **Contenido obligatorio:** sistema operativo y versión de GNU Radio; salidas de A1 a A6 y respuesta a A6; capturas de la Parte B con las dos respuestas; captura del grafo de la Parte C y de sus dos sumideros, con las respuestas C1, C2 y C3; problemas de instalación encontrados y su solución.
+- **Opcional:** evidencia de la Parte D.
+
+| Criterio | Puntos |
+|---|:---:|
+| Salidas de la Parte A completas y legibles, con la interpretación de A6 | 1 |
+| Diagnóstico correcto del fallo de la Parte B, con la distinción entre convertir y reinterpretar | 1 |
+| Grafo de la Parte C funcionando, con capturas de ambos sumideros | 1 |
+| Respuestas C1, C2 y C3 correctas | 1 |
+| Publicación puntual, con la plantilla y el archivo `.grc` enlazado en el repositorio | 1 |
+
+La clínica de instalación se desarrolla en paralelo durante toda la sesión. Quien encuentre problemas con Zadig, el módulo DVB de Linux o `rtl_test` los resuelve con el profesor y los voluntarios; el Reporte 0 debe registrar el problema y su solución.
 
 ---
 

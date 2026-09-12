@@ -216,8 +216,8 @@ iq = ((raw[0::2].astype(np.float32) - 127.5) + 1j * (raw[1::2].astype(np.float32
 
 Para reproducirlo en GNU Radio Companion hay dos opciones:
 
-- **RTL-SDR Source** con `Device Arguments` = `file=/ruta/al/archivo.cu8,rate=2.4e6`. El bloque lee el archivo como si fuera el dongle.
-- Convertir una vez a `complex64` y usar **File Source** (tipo *complex*) seguido de **Throttle**:
+- **File Source** de tipo *Byte*, seguido de `UChar To Float`, `Add Const (-127.5)`, `Multiply Const (1/127.5)`, `Deinterleave` y `Float To Complex`. Es la cadena que construyes en la [Sesión 01](../sessions/01-introduccion-sdr/index.md#parte-c-la-lectura-correcta), y lee el `.cu8` sin convertirlo previamente.
+- Convertir una vez a `complex64` y usar **File Source** (tipo *Complex*) seguido de **Throttle**. Un `File Source` de tipo *Complex* solo acepta archivos ya convertidos; apuntarlo a un `.cu8` produce valores sin sentido, no un error:
 
 ```python
 iq.astype(np.complex64).tofile("fm_99p1MHz_2p4Msps_g30.cfile")
