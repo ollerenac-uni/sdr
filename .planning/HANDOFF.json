@@ -1,127 +1,54 @@
 {
   "version": "1.0",
-  "timestamp": "2026-09-10T14:56:04.374Z",
-  "phase": "research",
-  "phase_name": "Curso SDR — Sesión 02: tiempo, frecuencia e IQ",
-  "phase_dir": ".planning/research",
+  "timestamp": "2026-09-12T20:20:00.431Z",
+  "phase": "default",
+  "phase_name": "Curso SDR — Sesión 01 terminada y en revisión editorial",
+  "phase_dir": ".planning",
   "plan": "docs/plans/2026-09-05-curso-sdr.md",
-  "task": 4,
-  "total_tasks": 4,
+  "task": 5,
+  "total_tasks": 10,
   "status": "paused",
   "completed_tasks": [
-    {
-      "id": 1,
-      "name": "Inspeccionar el capítulo 2 de Software-Defined Radio for Engineers",
-      "status": "done",
-      "output": ".planning/research/sdr4engineers-signals-chapter.md"
-    },
-    {
-      "id": 2,
-      "name": "Puntuar y seleccionar los conceptos prácticos de tiempo y frecuencia",
-      "status": "done",
-      "output": ".planning/research/sdr4engineers-time-frequency-priority-score.md"
-    },
-    {
-      "id": 3,
-      "name": "Crear, verificar, publicar y desplegar la Sesión 02 en español",
-      "status": "done",
-      "commit": "46a9b07",
-      "verification": "16 pruebas aprobadas; mkdocs build --strict correcto; GitHub Actions 34372276244 correcto; página HTTP 200"
-    }
+    {"id": 1, "name": "Fijar mkdocs-material 9.7.x", "status": "done"},
+    {"id": 2, "name": "Pestaña Guías e índice de setup", "status": "done"},
+    {"id": 3, "name": "Guía radioconda (docs/setup/instalacion.md)", "status": "done"},
+    {"id": 4, "name": "Guía RTL-SDR (docs/setup/rtl-sdr.md)", "status": "done"},
+    {"id": 5, "name": "Syllabus, portada, índice de sesiones, evaluación", "status": "in_progress", "progress": "Portada e índice alineados. Faltan docs/syllabus.md con pestaña Programa y docs/exams/index.md con parcial + proyecto por hitos."},
+    {"id": "S01", "name": "Sesión 01 — contenido completo", "status": "in_progress", "commit": "e110431", "progress": "Teoría, 19 figuras, 5 ejercicios, laboratorio de cuatro partes con fallo deliberado, cierre con espectrograma. Conserva status: draft a la espera de la aprobación del profesor."},
+    {"id": "S02", "name": "Sesión 02 — contenido completo", "status": "in_progress", "commit": "46a9b07", "progress": "Publicada con 6 figuras. Conserva status: draft; le faltan las tres grabaciones de ganancia."},
+    {"id": "INFRA", "name": "AGENTS.md y prueba de numeración de figuras", "status": "done", "commit": "cfc8c4d"}
   ],
   "remaining_tasks": [
-    {
-      "id": 4,
-      "name": "Integrar muestras oficiales y cerrar los borradores de S01/S02",
-      "status": "human_action",
-      "progress": "Lecciones, laboratorios, análisis NumPy, flowgraph y rúbricas completos; faltan archivos, URLs y metadatos reales."
-    },
-    {
-      "id": "COURSE-INFRA",
-      "name": "Completar la infraestructura restante del curso",
-      "status": "not_started",
-      "detail": "Syllabus/evaluación, repo plantilla de reportes, tutorial, plantilla de issue y actualización del plan de datasets a Google Drive."
-    }
+    {"id": 6, "name": "Repo plantilla ollerenac-uni/sdr-reportes-template", "status": "not_started", "detail": "Crea repo público en GitHub: pedir confirmación antes."},
+    {"id": 7, "name": "Tutorial docs/setup/sitio-reportes.md", "status": "not_started", "detail": "Depende de la tarea 6. Bloquea el Reporte 0, que vence al inicio de S02."},
+    {"id": 8, "name": "Plantilla de issue .github/ISSUE_TEMPLATE/instalacion.yml", "status": "not_started"},
+    {"id": 9, "name": "Repo ollerenac-uni/sdr-datasets", "status": "obsoleto", "detail": "Las muestras se distribuyen por Google Drive. El plan debe actualizarse o la tarea eliminarse."},
+    {"id": "S03", "name": "Sesión 03", "status": "blocked", "detail": "Bloqueada por la puerta de status: draft de S01."}
   ],
   "blockers": [
-    {
-      "description": "Faltan los enlaces y metadatos verificables de la muestra de S01 y de las tres capturas FM de S02.",
-      "type": "human_action",
-      "workaround": "Mantener los avisos visibles y status: draft; no inventar ni sustituir los datos."
-    }
+    {"description": "S01 y S02 conservan status: draft a la espera de revisión del profesor", "type": "human_action", "workaround": "No iniciar S03. Aplicar cambios en ciclos edición → pytest → mkdocs build --strict → commit."},
+    {"description": "S02 necesita tres grabaciones FM a ganancia manual baja, media y alta", "type": "human_action", "workaround": "El aviso visible en docs/sessions/02-tiempo-frecuencia-iq/index.md:405 mantiene la sesión accesible como borrador."},
+    {"description": "El Reporte 0 exige que cada alumno tenga sitio de reportes, y las tareas 6 y 7 no están hechas", "type": "human_action", "workaround": "Ejecutarlas antes de la semana 2."}
   ],
   "async_jobs": [],
   "human_actions_pending": [
-    {
-      "action": "Subir fm_muestra.cfile a Google Drive y proporcionar frecuencia central, tasa de muestreo, ganancia, duración y SHA-256.",
-      "context": "Cierre de S01 y ruta base sin dongle.",
-      "blocking": true
-    },
-    {
-      "action": "Subir las tres capturas FM .cu8 de ganancia manual baja, media y alta y proporcionar nombre, fc, fs, ganancia, antena, duración, formato y SHA-256 por archivo.",
-      "context": "Laboratorio calificable y cierre de S02.",
-      "blocking": true
-    },
-    {
-      "action": "Revisar S01 y S02 y aprobar el retiro de status: draft.",
-      "context": "Puerta editorial del curso después de integrar los datasets.",
-      "blocking": true
-    }
+    {"action": "Revisar la Sesión 01 y aprobar el retiro de status: draft", "context": "Es la puerta que bloquea la Sesión 03. El contenido ya no tiene nada pendiente por mi parte.", "blocking": true},
+    {"action": "Grabar las tres capturas FM de ganancia baja, media y alta para S02, subirlas a la carpeta samples de Drive y dar nombre, fc, fs, ganancia, antena, duración, formato y SHA-256 de cada una", "context": "Único material que falta para cerrar S02.", "blocking": true},
+    {"action": "Decidir si borra el repo huérfano público https://github.com/ollerenac/sdr", "context": "Creado por error con la cuenta equivocada; tiene su propio sitio publicado. Irreversible.", "blocking": false},
+    {"action": "Decidir si elimina el GNU Radio 3.10.7 instalado por apt", "context": "Convive con radioconda 3.10.12. Con (base) activo gana radioconda; solo genera confusión.", "blocking": false},
+    {"action": "Validar la guía de Windows (Zadig, rtl_test) en una máquina Windows 11 y planificar la clínica de drivers de S01", "context": "El profesor no tiene laptop Windows.", "blocking": false}
   ],
   "decisions": [
-    {
-      "decision": "Comenzar S02 por los dominios temporal y frecuencial.",
-      "rationale": "Construir la intuición necesaria antes de IQ, FFT y hardware.",
-      "phase": "S02"
-    },
-    {
-      "decision": "Retener solo matemáticas que produzcan predicciones observables inmediatamente.",
-      "rationale": "Dar una comprensión práctica de señales y SDR sin convertir la sesión en un curso formal de transformadas.",
-      "phase": "S02"
-    },
-    {
-      "decision": "Usar File Source + Throttle como ruta activa y Soapy RTL-SDR Source visible pero desactivada.",
-      "rationale": "Los alumnos no deben necesitar dongle para completar el laboratorio.",
-      "phase": "S01-S02"
-    },
-    {
-      "decision": "Conservar .cu8 como formato oficial y derivar .cfile localmente.",
-      "rationale": "Preservar los bytes I/Q originales y permitir una conversión auditable para GNU Radio.",
-      "phase": "S02"
-    },
-    {
-      "decision": "Diferir convolución, PSD/RBW/SNR, ganancia de proceso y resolución rigurosa a S03.",
-      "rationale": "No son necesarias para la primera comprensión operativa del espectro.",
-      "phase": "S02"
-    },
-    {
-      "decision": "Cancelar los diagramas espectrales del receptor heterodino.",
-      "rationale": "Orden explícita del profesor.",
-      "phase": "S01-S02"
-    }
+    {"decision": "El laboratorio de S01 recorre una sola grabación del bit al espectro, en cuatro partes más un cierre", "rationale": "Parte A en terminal sin GNU Radio, B con fallo deliberado, C construcción de la cadena, D opcional con dongle.", "phase": "S01"},
+    {"decision": "test.grc falla a propósito y test2.grc es la solución de referencia", "rationale": "El diagnóstico del fallo es contenido calificable; arreglarlo destruiría la Parte B.", "phase": "S01"},
+    {"decision": "Las figuras que ilustran una suma se dibujan en amplitud lineal con signo, no en decibelios", "rationale": "El logaritmo destruye el signo. Propuesta del profesor; permitió retirar una fila de fases y un aviso de que las curvas no se podían sumar.", "phase": "S01"},
+    {"decision": "La Figura 12 usa una escena artificial con emisoras a un solo lado, señalizada con una nota", "rationale": "Con la banda de FM completa los espejos caen encima de emisoras reales y no se distinguirían.", "phase": "S01"},
+    {"decision": "Las grabaciones se distribuyen por Google Drive, no por Git ni por GitHub Releases", "rationale": "48 MB por archivo. Anula la tarea 9 del plan.", "phase": "infra"},
+    {"decision": "Los .grc guardan ../samples/… y los comandos de terminal samples/…", "rationale": "GRC ejecuta cada grafo desde el directorio de su .grc; verificado en el código de GRC.", "phase": "S01"},
+    {"decision": "AGENTS.md recoge las convenciones y una prueba las hace cumplir donde es posible", "rationale": "La regla de numeración de figuras escrita sola no impedía nada.", "phase": "infra"},
+    {"decision": "Regla de puerta: no se inicia la sesión N+1 mientras la N esté en status: draft", "rationale": "El profesor revisa sesión por sesión.", "phase": "infra"}
   ],
-  "uncommitted_files": [
-    {
-      "path": ".planning/research/sdr4engineers-signals-chapter.md",
-      "state": "untracked",
-      "detail": "Nota local de investigación; deliberadamente fuera del commit de pausa."
-    },
-    {
-      "path": ".planning/research/sdr4engineers-time-frequency-priority-score.md",
-      "state": "untracked",
-      "detail": "Nota local de priorización; deliberadamente fuera del commit de pausa."
-    },
-    {
-      "path": "referencia/SDR4Engineers.pdf",
-      "state": "untracked",
-      "detail": "Libro de referencia local; no incluir en Git."
-    },
-    {
-      "path": "referencia/Network_GPRS_Prototype_based_on_SDR_and_OpenBTS_as_an_IoT-lab_Testbed.pdf",
-      "state": "untracked",
-      "detail": "PDF local ajeno al commit; no incluir en Git."
-    }
-  ],
-  "next_action": "Leer .planning/HANDOFF.json. Si están disponibles los enlaces de Drive, validar archivos y hashes, sustituir los avisos de S01/S02, ejecutar pytest y mkdocs build --strict, y solicitar aprobación para retirar status: draft. Si no están disponibles, no inventar metadatos y continuar el backlog de infraestructura.",
-  "context_notes": "S02 está publicada en español en https://ollerenac-uni.github.io/sdr/sessions/02-tiempo-frecuencia-iq/ desde 46a9b07. La página usa seis figuras reproducibles y un laboratorio obligatorio sin dongle. GitHub Actions 34372276244 terminó correctamente. No hay procesos ni trabajos asíncronos activos. El runtime .agents de GSD falló por package.json faltante; la instalación .codex está funcional. Los PDFs y las notas de investigación quedan locales y no deben entrar en commits incidentales."
+  "uncommitted_files": [],
+  "next_action": "Preguntar al profesor si aprueba la Sesión 01. Si la aprueba: quitar status: draft, pytest, mkdocs build --strict desde la raíz, commit, push y esperar la Action; solo entonces abrir la Sesión 03 con status: draft. Si no, seguir aplicando sus observaciones en ciclos cortos. En paralelo y antes de la semana 2, proponer las tareas 6 y 7 del plan, pidiendo confirmación explícita antes de crear el repo en GitHub.",
+  "context_notes": "Sitio en https://ollerenac-uni.github.io/sdr/, publicado por Actions en cada push a main. Verificación obligatoria antes de cada commit: pytest tests/ con /usr/bin/python3, que es el único intérprete con pytest, y mkdocs build --strict desde la raíz del repositorio. 40 tests y 114 subtests en verde. El profesor revisa figura por figura y detecta errores reales: en esta sesión encontró que la Figura 12 invitaba a sumar magnitudes, y que su panel (a) no se relacionaba con la escena de las figuras de la cadena. Sus objeciones han sido correctas todas las veces; conviene verificarlas numéricamente antes de responder y rediseñar en vez de justificar."
 }
