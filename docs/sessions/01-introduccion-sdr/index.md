@@ -693,6 +693,8 @@ Las muestras del curso están en una carpeta compartida de Google Drive:
 
 ![Carpeta samples en Google Drive, con el archivo fm_99p1MHz_2p4Msps_g30.cu8](figures/drive-carpeta-samples.png)
 
+**Figura 15.** Carpeta compartida del curso en Google Drive con la grabación oficial de la sesión.
+
 Descarga `fm_99p1MHz_2p4Msps_g30.cu8` y comprueba que llegó íntegro antes de empezar. Son 48 MB y una descarga truncada produce errores confusos más adelante:
 
 === "Linux"
@@ -923,6 +925,8 @@ El punto que conviene dejar claro es que **ninguna muestra individual contiene u
 
 ![Tres paneles: las senoides de referencia, un bloque de muestras que parece ruido, y su espectro con las emisoras separadas](figures/de-muestras-a-espectro.png)
 
+**Figura 16.** De las muestras al espectro: las senoides de referencia, el bloque crudo y el resultado de compararlos.
+
 El panel (a) muestra contra qué se compara. Cada bin $k$ es la senoide que completa **exactamente $k$ vueltas enteras dentro del bloque**, y de ahí sale el espaciado entre bins. Con $N = 2048$ muestras a 2.4 MS/s el bloque dura 853 µs, así que el bin 1 da una vuelta en ese tiempo, es decir 1172 Hz; el bin 853 da 853 vueltas, casi exactamente 1 MHz.
 
 El panel (b) es el bloque tal cual sale del archivo. Parece ruido, y sin embargo contiene tres emisoras.
@@ -942,11 +946,15 @@ Repitiendo esa operación sobre los 11 718 bloques del archivo y apilando los re
 
 ![Espectrograma de la grabación completa: tres emisoras de FM como bandas verticales a lo largo de diez segundos](figures/espectrograma.png)
 
+**Figura 17.** Espectrograma de los diez segundos completos: frecuencia en el eje horizontal, tiempo en el vertical.
+
 Cada fila horizontal es el espectro de un instante; el eje vertical es el tiempo. Se distinguen tres emisoras fuertes en 98.1, 99.1 y 100.1 MHz, cada una de unos 200 kHz de ancho, y su brillo late con el programa de audio que transportan. Las líneas verticales finas y constantes son portadoras piloto y espurias del propio dongle.
 
 Los mismos datos admiten una representación como superficie, con la potencia en el eje vertical:
 
 ![Los mismos datos dibujados como superficie tridimensional](figures/superficie3d.png)
+
+**Figura 18.** La misma matriz del espectrograma dibujada como superficie, para comparar legibilidad.
 
 Se ve más espectacular y se lee peor: los picos del frente tapan lo que hay detrás y el ojo no compara alturas en perspectiva. El mapa plano contiene exactamente la misma información y permite leer una frecuencia o un instante concretos, y por eso todo receptor real, de GNU Radio a SDR++, muestra una cascada plana y no una superficie.
 
@@ -961,8 +969,61 @@ Queda una elección por hacer, y es el tema con el que arranca la Sesión 03. Al
 
 Bloques largos distinguen frecuencias muy juntas pero emborronan cuándo ocurrió cada cosa. Bloques cortos fechan los eventos con precisión pero no separan frecuencias vecinas. Ningún ajuste gana en ambas.
 
-??? tip "Reproducir estas figuras"
-    Las tres salen del generador [`gen_espectro_tiempo.py`](https://github.com/ollerenac-uni/sdr/blob/main/docs/sessions/01-introduccion-sdr/figures/gen_espectro_tiempo.py), que lee la misma grabación del laboratorio. Cambia `N` y vuelve a ejecutarlo para ver el compromiso de la tabla con tus propios ojos:
+#### Cómo se dibujan
+
+Las dos vistas salen de la misma matriz, y construirla son diez líneas. El fragmento lee la grabación, la corta en bloques, transforma cada uno y promedia grupos de bloques para que la imagen quepa en pantalla.
+
+```python title="espectrograma.py"
+import numpy as np
+import matplotlib.pyplot as plt
+
+FS, FC, N, FILAS = 2.4e6, 99.1e6, 2048, 300
+
+crudo = np.fromfile("samples/fm_99p1MHz_2p4Msps_g30.cu8", dtype=np.uint8)
+iq = ((crudo[0::2] - 127.5) + 1j * (crudo[1::2] - 127.5)) / 127.5
+
+# Un espectro por cada bloque de N muestras
+n_bloques = len(iq) // N
+bloques = iq[: n_bloques * N].reshape(n_bloques, N) * np.hanning(N)
+pot = np.abs(np.fft.fftshift(np.fft.fft(bloques, axis=1), axes=1)) ** 2
+
+# Promedia grupos de bloques para que la imagen quepa en pantalla
+pot = pot[: n_bloques // FILAS * FILAS].reshape(FILAS, -1, N).mean(axis=1)
+db = 10 * np.log10(pot)
+db -= db.max()
+
+f = (FC + np.fft.fftshift(np.fft.fftfreq(N, 1 / FS))) / 1e6
+t = np.linspace(0, len(iq) / FS, FILAS)
+
+plt.pcolormesh(f, t, db, shading="auto", cmap="magma", vmin=-30, vmax=0)
+plt.xlabel("Frecuencia (MHz)")
+plt.ylabel("Tiempo (s)")
+plt.colorbar(label="Potencia relativa (dB)")
+plt.show()
+```
+
+La línea del `reshape` es la que conviene leer despacio: convierte una tira de 24 millones de muestras en 11 718 bloques de 2048, y cada bloque se transformará por separado. La multiplicación por `np.hanning(N)` es la ventana que suaviza los extremos de cada bloque; sin ella aparece la fuga espectral de la sección anterior.
+
+La superficie usa exactamente la misma matriz `db`, solo que dibujada en perspectiva y submuestreada para que la malla no se sature:
+
+```python title="superficie3d.py, continúa el anterior"
+fig = plt.figure(figsize=(8, 5))
+ax = fig.add_subplot(projection="3d")
+
+F, T = np.meshgrid(f[::6], t[::5])
+ax.plot_surface(F, T, db[::5, ::6], cmap="magma", vmin=-30, vmax=0, linewidth=0)
+
+ax.set_xlabel("Frecuencia (MHz)")
+ax.set_ylabel("Tiempo (s)")
+ax.set_zlabel("Potencia (dB)")
+ax.view_init(elev=38, azim=-122)
+plt.show()
+```
+
+Los pasos `[::6]` y `[::5]` descartan cinco de cada seis columnas y cuatro de cada cinco filas. Sin ellos matplotlib dibuja 614 400 polígonos y tarda minutos en responder.
+
+??? tip "Las figuras de esta sección"
+    Las tres salen del generador [`gen_espectro_tiempo.py`](https://github.com/ollerenac-uni/sdr/blob/main/docs/sessions/01-introduccion-sdr/figures/gen_espectro_tiempo.py), que es la versión cuidada de los fragmentos de arriba. Cambia `N` y vuelve a ejecutarlo para ver el compromiso de la tabla con tus propios ojos:
 
     ```bash
     cd docs/sessions/01-introduccion-sdr/figures
