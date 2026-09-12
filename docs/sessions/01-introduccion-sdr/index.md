@@ -330,7 +330,14 @@ El coseno y el seno digitales mantienen un desfase exacto de 90° y amplitudes i
 
 La Figura 10 mostró la cancelación con una sinusoide aislada. Conviene repetir el experimento sobre el caso real, porque revela algo más fuerte que «se cancela una copia»: **una sola rama no basta para saber dónde está una emisora**.
 
-El montaje es el siguiente. Se sintetiza una señal de paso banda real con tres emisoras situadas **solo por encima** de la frecuencia central, en $+0.2$, $+0.5$ y $+0.9$ MHz. Por debajo no hay ninguna. Luego se multiplica por $\cos$ y por $-\sin$, exactamente como hace el RTL2832U, y se comparan los tres espectros.
+El montaje es el siguiente. Se sintetiza una señal de paso banda real con tres emisoras situadas **solo por encima** de la frecuencia central, en $+0.2$, $+0.5$ y $+0.9$ MHz. Por debajo no hay ninguna. En la IF eso las coloca en 3.77, 4.07 y 4.47 MHz, todas por encima de la referencia de 3.57, con su grupo espejo en las posiciones negativas correspondientes. Luego se multiplica por $\cos$ y por $-\sin$, exactamente como hace el RTL2832U.
+
+!!! note "Esta figura usa una escena distinta a la de las Figuras 6 a 11, y es deliberado"
+    Las figuras del recorrido ① a ⑥ dibujan la banda de FM completa, con emisoras repartidas a ambos lados de $f_c$ cada 400 kHz. Esa escena es la realista, pero aquí sería inservible: al bajar a banda base, el espejo de la emisora que está en $f_c + 0.4$ cae justo encima de la que está en $f_c - 0.4$, donde ya hay una emisora de verdad. Los espejos quedarían escondidos debajo de señales legítimas y la figura no podría distinguirlos.
+
+    Poner emisoras a un solo lado los separa y los hace visibles. El precio es que la escena es artificial; la ventaja es que el mecanismo queda a la vista.
+
+    Y conviene no perder de vista lo que ese solapamiento significa en la banda real: **los espejos existen igual, solo que caen encima de otras emisoras**. Por eso la ambigüedad de una sola rama no es un detalle de laboratorio, sino la razón de que haga falta la segunda.
 
 Las cuatro filas están dibujadas en **amplitud lineal con signo**, no en decibelios. El logaritmo destruye el signo, y aquí el signo es toda la historia.
 

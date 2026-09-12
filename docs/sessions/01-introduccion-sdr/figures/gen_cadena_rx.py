@@ -262,7 +262,7 @@ def fig_ramas_iq():
     escala = b.max()
     filas = [
         (np.abs(E["x"]) / escala, GRAY,
-         "(a) Entrada real en la IF: dos grupos simétricos en $\\pm 3.57$ MHz"),
+         "(a) Entrada real en la IF: las tres emisoras quedan por encima de $+f_{IF}$"),
         (b / escala, BLUE,
          "(b) Rama I: seis emisoras aparentes, todas con el mismo signo"),
         (c / escala, RED,
@@ -291,7 +291,16 @@ def fig_ramas_iq():
         ax[r, 0].set_title(titulo, fontsize=9, loc="left")
         ax[r, 1].set_title("ampliación de la banda base", fontsize=8, loc="left", color="#666")
 
-    ax[0, 1].text(0, 1.5, "todavía nada aquí:\nla señal está en $\\pm 3.57$ MHz",
+    for signo in (-1, 1):
+        ax[0, 0].axvline(signo * FIF, color=DARK, ls="--", lw=1.1)
+    ax[0, 0].annotate("$+f_{IF} = 3.57$", xy=(FIF, 2.0), xytext=(FIF - 0.4, 2.05),
+                      ha="right", fontsize=8, color=DARK)
+    ax[0, 0].annotate("$-f_{IF}$", xy=(-FIF, 2.0), xytext=(-FIF + 0.4, 2.05),
+                      ha="left", fontsize=8, color=DARK)
+    ax[0, 0].annotate("las tres, por encima", xy=(4.1, 1.0), xytext=(9.0, 1.35),
+                      fontsize=7.5, color=GREEN, ha="center",
+                      arrowprops=dict(arrowstyle="->", color=GREEN, lw=0.8))
+    ax[0, 1].text(0, 1.5, "todavía nada aquí:\nla señal sigue en la IF",
                   ha="center", fontsize=8, color=GRAY)
     ax[1, 1].text(-0.95, 1.5, "espejo", color=RED, fontsize=8, ha="center")
     ax[1, 1].text(+0.95, 1.5, "real", color=GREEN, fontsize=8, ha="center")
