@@ -65,6 +65,7 @@ class TestCalentamiento(unittest.TestCase):
         f = self.p("qtgui_freq_sink_x_0")
         self.assertEqual((f["fftsize"], f["bw"], f["fc"]), ("32", "samp_rate", "0"))
         self.assertEqual(f["wintype"], "window.WIN_RECTANGULAR")
+        self.assertEqual(f["label1"], "Espectro")
 
     def test_sin_hardware(self):
         """El dongle no puede muestrear a 32 kS/s: no hay fuente de hardware."""
