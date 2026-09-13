@@ -40,6 +40,7 @@
 | Ids y parámetros de filtros | `fir_filter_xxx`: `type`, `decim`, `taps`; `interp_fir_filter_xxx`: `type`, `interp`, `taps`; `blocks_keep_one_in_n`: `type`, `n`. **Ojo:** los archivos se llaman `filter_fir_filter_xxx.block.yml` y `filter_interp_fir_filter_xxx.block.yml`, pero el `id:` no lleva el prefijo `filter_`. Con el nombre del archivo como id, GRC crea un bloque ficticio y `grcc` falla con `Port is not connected` | yml de bloques de radioconda y `grcc` |
 | `firdes.low_pass` | `low_pass(gain, sampling_freq, cutoff_freq, transition_width, window=WIN_HAMMING, param=6.76)`; con `(1, 2.4e6, 120e3, 30e3)` da **193** coeficientes | ejecutado con `~/radioconda/bin/python` |
 | `grcc` | compila `test2.grc` sin GUI, `exit=0` | ejecutado |
+| Comentarios de `test2.grc` | `description` menciona Soapy, el comentario del File Source dice «convertida de CU8 a complex64» (falso) y el del Throttle dice «a samp_rate» con valor `2*samp_rate`. Todo grafo derivado debe reescribirlos | leído en la Tarea 4 |
 | Tono: bytes de n = 0, 8, 16, 24 | (228,128), (128,228), (28,128), (127,28) | archivo generado y leído con `od` |
 | Tono: rango | 28–228 | medido |
 | Tono: FFT de 32 | máximo en el bin 1; bin 1 / mayor del resto = 623.6 | medido |
@@ -1198,7 +1199,10 @@ g["blocks"] = [b for b in g["blocks"] if b["name"] not in fuera]
 g["connections"] = [c for c in g["connections"] if c[0] not in fuera and c[2] not in fuera]
 g["options"]["parameters"]["id"] = "decimacion"
 g["options"]["parameters"]["title"] = "Laboratorio de muestreo - Decimación con y sin filtro"
+g["options"]["parameters"]["description"] = "Decima la grabación oficial de 2.4 MS/s por D con Keep 1 in N y con Decimating FIR, para comparar los espectros."
 por_nombre = {b["name"]: b for b in g["blocks"]}
+por_nombre["blocks_file_source_0"]["parameters"]["comment"] = "Lee el .cu8 byte a byte: I, Q, I, Q... sin signo, con el cero en 127.5."
+por_nombre["blocks_throttle2_0"]["parameters"]["comment"] = "Limita el flujo a 2*samp_rate bytes por segundo, dos por muestra compleja. Sin hardware que marque el ritmo, el archivo se leería a toda velocidad."
 original = por_nombre["qtgui_freq_sink_x_0"]
 original["parameters"].update(fc="99.1e6", name='"Original, 2.4 MS/s"')
 
@@ -1407,6 +1411,7 @@ g["blocks"] = [b for b in g["blocks"] if b["name"] not in fuera]
 g["connections"] = [c for c in g["connections"] if c[0] not in fuera and c[2] not in fuera]
 g["options"]["parameters"]["id"] = "interpolacion"
 g["options"]["parameters"]["title"] = "Laboratorio de muestreo - Interpolación con y sin filtro"
+g["options"]["parameters"]["description"] = "Baja la grabación oficial a 300 kS/s y la vuelve a subir a 2.4 MS/s insertando ceros, con y sin Interpolating FIR."
 por_nombre = {b["name"]: b for b in g["blocks"]}
 sink300 = por_nombre.pop("qtgui_freq_sink_con_filtro")
 sink300["name"] = "qtgui_freq_sink_300k"
