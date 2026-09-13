@@ -133,11 +133,13 @@ La primera línea empieza por `0000000 344 200 342 223`. Es el mismo archivo, as
 - `samp_rate` vale `32000` y el `File Source` lee `tono_1kHz_32kSps.cu8`.
 - El `File Source` tiene `Repeat` en `No` y `Length` en 64. `Length` cuenta elementos del tipo de salida, que aquí es `Byte`: son los 64 bytes que pediste a `od` con `-N64`. Forman 32 muestras complejas, cada una un par (I, Q) del mismo instante; no son 64 muestras, ni 32 valores de I seguidos de 32 de Q.
 - `Add Const` y `Multiply Const` están en *bypass*: el bloque deja pasar la señal sin tocarla, como un cable, y GRC lo pinta de amarillo claro para distinguirlo. Al Time Sink llegan los bytes del archivo, pasados a número real por `UChar To Float`, pero sin centrar ni escalar.
-- El Time Sink dibuja 32 puntos con `Y min` en 0 y `Y max` en 256, la escala del byte. Marca cada muestra como la Figura 1: círculo para I, en azul, y cuadrado para Q, en rojo.
+- El Time Sink tiene `Number of Points` en 32, así que dibuja 32 muestras, con `Y min` en 0 y `Y max` en 256, la escala del byte. Marca cada muestra con un círculo azul para I y un cuadrado rojo para Q, como en la Figura 1 de más abajo.
 
 Ejecútalo con **F6**. El Time Sink dibuja las 32 muestras y la imagen se queda quieta: tras 64 bytes el `File Source` deja de entregar datos, el flujo termina y el visor conserva lo último que recibió. Para volver a dibujarla, cierra la ventana y ejecuta otra vez.
 
-El Frequency Sink también se abre, pero déjalo para 1.6: con los bytes sin centrar, su línea se sale por encima del eje alrededor de 0 kHz y no se puede leer.
+El Frequency Sink también se abre, y con los bytes sin centrar su línea se sale por encima del eje alrededor de 0 kHz. Su lectura queda para 1.6.
+
+Con el eje de 0 a 256, a ojo no se distingue 226 de 228. Para leer valores, pasa el cursor sobre la gráfica: junto a él aparecen su tiempo y su altura, por ejemplo `0.9770 ms, 172.4082`. Son las coordenadas del cursor, no las de la muestra más cercana, así que hay que ponerlo encima del marcador. Para acercarte, arrastra con el botón izquierdo un rectángulo alrededor de los marcadores que te interesen y el visor ampliará esa zona. El botón derecho deshace un paso de zoom, y Ctrl más el botón derecho vuelve a la vista completa.
 
 Compara la pantalla con la salida de `od` de 1.2, línea a línea. La línea de dirección 2n es la muestra n, y el Time Sink la coloca en $t = n / f_s$. Busca las líneas `0000000`, `0000016` y la última con valores. ¿Dónde está `0000064`?
 
@@ -183,9 +185,11 @@ La muestra 32 ya pertenece al ciclo siguiente y vuelve al máximo de I. No apare
     ??? note "Si en n = 8 también hay residuo, ¿por qué la suma queda en 127.5?"
         Porque es demasiado pequeño. En n = 8 el residuo vale $+6.1 \times 10^{-15}$. Cerca de 127.5 la coma flotante solo distingue pasos de $1.4 \times 10^{-14}$, y un residuo menor que medio paso, $7.1 \times 10^{-15}$, se pierde al sumar. La suma queda en 127.5 exacto y se aplica el redondeo al par. El residuo de n = 24 supera ese medio paso y sí mueve la suma.
 
-**1.5. Centrar y escalar.** Vuelve a GRC, selecciona `Add Const` y `Multiply Const` y quítales el bypass con `Enable`: la tecla **E**, que también está en el menú `Edit` y en el del clic derecho. `Bypass`, la **B**, pone el bypass pero no lo quita. Cambia en el Time Sink `Y min` a −1 y `Y max` a 1, y ejecuta otra vez con **F6**.
+**1.5. Centrar y escalar.** Vuelve a GRC. Haz clic en `Add Const`, añade `Multiply Const` con Ctrl+clic y pulsa **E**, que es `Enable` y también está en el menú `Edit` y en el clic derecho. Los dos bloques deben perder el amarillo. `Bypass`, la **B**, pone el bypass pero no lo quita. En las propiedades del Time Sink pon `Y min` en `-1` y `Y max` en `1`, y ejecuta otra vez con **F6**.
 
 La forma es la de 1.3, pero la curva azul arranca ahora en 0.788 y no en 228: los dos bloques hacen la cuenta de C2 de la Sesión 01, $(228 - 127.5) / 127.5 = 0.788$.
+
+En el Frequency Sink ya no se sale nada por arriba. Con los bytes sin centrar se salían dos componentes: la constante 127.5, que es frecuencia 0, y el tono, todavía sin escalar. `Add Const` quitó la constante y `Multiply Const` bajó el tono a unos −2 dB.
 
 Calcula qué altura deben tener Q e I en n = 8, que en el eje de tiempo es 0.25 ms, y compruébalo en la pantalla.
 
@@ -205,9 +209,9 @@ Calcula qué altura deben tener Q e I en n = 8, que en el eje de tiempo es 0.25 
 - El tono cae exacto en el bin de +1 kHz y marca unos −2 dB, $20 \log_{10}(0.79)$: su amplitud en decibelios.
 - Sale en +1 kHz y no en −1 kHz por el orden de I y Q. En 1.4 viste que Q repite a I un cuarto de ciclo después: I es un coseno y Q un seno, y en la [hélice de la Sesión 01](index.md#24-punto-4-del-voltaje-real-a-las-muestras-complejas-iq) las copias de ese par se suman en $+f_0$ y se cancelan en $-f_0$. Si Q fuera por delante de I, la raya estaría en −1 kHz. Puedes comprobarlo cruzando las dos salidas del `Deinterleave`.
 
-La línea une los bins y sugiere valores entre ellos que la FFT no calculó. Para ver solo los 32 bins, haz clic derecho sobre el espectro: debajo de `Axis Labels` hay una entrada sin nombre, con una flecha, que abre el menú de la línea. Elige ahí `Line Style` → `None` y `Line Marker` → `Circle`. Quedan 32 puntos sueltos: el tono arriba y los otros 31 abajo, entre unos −72 y −58 dB. Es un ajuste de la ventana y no del grafo, así que se pierde al volver a ejecutar.
+La línea une los bins y sugiere valores entre ellos que la FFT no calculó. Para ver solo los 32 bins, haz clic con el botón central del ratón, la rueda, sobre el espectro; en estos visores el derecho no abre el menú, sino que deshace el zoom. Entra en `Espectro`, el menú de la línea, y elige ahí `Line Style` → `None` y `Line Marker` → `Circle`. Quedan 32 puntos sueltos: el tono arriba y los otros 31 abajo, entre unos −72 y −58 dB. Es un ajuste de la ventana y no del grafo, así que se pierde al volver a ejecutar.
 
-??? question "¿De dónde salen los 31 puntos de abajo, y por qué no subir `Y min` para quitarlos?"
+??? note "¿De dónde salen los 31 puntos de abajo, y por qué no subir `Y min` para quitarlos?"
     En n = 1 la cuenta da 225.58, pero un byte solo admite enteros y guarda 226. Esa diferencia, repetida en cada muestra, es una señal pequeña que viaja sumada al tono, y la FFT la dibuja como a cualquier otra. Es el precio de los 256 niveles que definieron «ADC de 8 bits» en la [Parte A de la Sesión 01](index.md#parte-a-el-archivo-por-dentro-sin-gnu-radio).
 
     El error del redondeo queda 47.8 dB por debajo del tono. Son los 49.9 dB que la [Sesión 01](index.md#3-los-cuatro-parametros-y-sus-limites) calcula para 8 bits, menos 2.1 dB porque el tono no usa todo el rango del byte: su amplitud es de 100 niveles y no de 127.5. Sumados, los 31 puntos quedan algo más abajo, a 48.8 dB, porque una parte de ese error cae en el mismo bin que el tono.
@@ -221,16 +225,18 @@ Ahora cambia `Offset` del `File Source` a 64 y ejecuta otra vez. `Offset` cuenta
 
     No todos los periodos del archivo son idénticos: difieren en ±1 justo donde la cuenta da 127.5, como explica el aviso de 1.4. Ese ±1 cambia el error del redondeo y, con él, los bins de abajo. Solo 26 de los 100 periodos se ven sin huecos, como el primero. Con `Offset` en $64 k$ ves el periodo $k + 1$.
 
-Vuelve a poner `Offset` en 0 y cambia `FFT Size` a 1024. GRC solo acepta potencias de dos entre 32 y 32768: con otro valor, el nombre del bloque se pinta en rojo y GRC no deja generar ni ejecutar el grafo. Antes de ejecutar, predice qué dibujará el Frequency Sink. Después pon `Length` en 2048 y predice cuánto se separan los bins, cuánto tiempo abarca cada FFT y dónde estará la raya.
+Vuelve a poner `Offset` en 0 y cambia `FFT Size` a 1024. GRC solo acepta potencias de dos entre 32 y 32768: con otro valor, el nombre del bloque se pinta en rojo y GRC no deja generar ni ejecutar el grafo. Predice qué dibujará el Frequency Sink y ejecuta. Después, ¿qué `Length` hace falta para que llegue justo una FFT de 1024 muestras? Ponlo, predice cuánto se separan los bins, cuánto tiempo abarca la FFT y dónde estará la raya, y ejecuta.
 
 ??? question "1.6. ¿Qué cambió con 1024?"
     Con `Length` en 64 el espectro queda en blanco. El flujo trae 32 muestras y termina, y el visor necesita juntar 1024 para calcular un solo espectro.
 
-    Con `Length` en 2048 llegan 1024 muestras, 32 periodos del tono, justo una FFT. La separación entre bins baja a 32 000 / 1024 = 31.25 Hz.
+    Hace falta `Length` en 2048: `Length` cuenta bytes, y 1024 muestras de dos bytes cada una son 2048. Llegan 32 periodos del tono, justo una FFT. La separación entre bins baja a 32 000 / 1024 = 31.25 Hz.
 
     Esa FFT abarca 1024 / 32 000 s = 32 ms: treinta y dos ciclos del tono en lugar de uno.
 
     La raya sigue en 1 kHz y a unos −2 dB, ahora mucho más fina.
+
+    El Time Sink sigue dibujando 32 puntos, 1 ms: su `Number of Points` no cambió. El espectro mira ahora 32 veces más tiempo del que enseña el Time Sink.
 
 ??? note "¿Y el rizado entre las rayas?"
     Con 1024, el error del redondeo sigue dejando rayas en múltiplos de 1 kHz, y entre ellas, donde la FFT de 32 no tenía bins, aparece un rizado entre unos −85 y −113 dB.

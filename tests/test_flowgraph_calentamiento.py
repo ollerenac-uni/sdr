@@ -55,7 +55,7 @@ class TestCalentamiento(unittest.TestCase):
         self.assertEqual((t["marker1"], t["marker2"]), ("0", "1"))
 
     def test_la_normalizacion_empieza_en_bypass(self):
-        """La guía empieza comparando los bytes crudos con od; el alumno quita el bypass en 1.5."""
+        """La guía empieza comparando los bytes crudos con od; el alumno quita el bypass al centrar y escalar."""
         for nombre, const in (("blocks_add_const_vxx_0", "-127.5"), ("blocks_multiply_const_vxx_0", "1/127.5")):
             with self.subTest(bloque=nombre):
                 self.assertEqual(self.b[nombre]["states"]["state"], "bypassed")
@@ -66,6 +66,7 @@ class TestCalentamiento(unittest.TestCase):
         self.assertEqual((f["fftsize"], f["bw"], f["fc"]), ("32", "samp_rate", "0"))
         self.assertEqual(f["wintype"], "window.WIN_RECTANGULAR")
         self.assertEqual(f["label1"], "Espectro")
+        self.assertEqual((f["ymin"], f["ymax"]), ("-140", "10"))
 
     def test_sin_hardware(self):
         """El dongle no puede muestrear a 32 kS/s: no hay fuente de hardware."""
