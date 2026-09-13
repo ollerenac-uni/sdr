@@ -32,7 +32,8 @@ class TestCalentamiento(unittest.TestCase):
         fuente = self.p("blocks_file_source_0")
         self.assertEqual(fuente["file"], "../samples/tono_1kHz_32kSps.cu8")
         self.assertEqual(fuente["type"], "byte")
-        self.assertEqual(fuente["repeat"], "True")
+        self.assertEqual(fuente["repeat"], "False")
+        self.assertEqual((fuente["offset"], fuente["length"]), ("0", "64"))
         self.assertEqual(self.p("blocks_throttle2_0")["samples_per_second"], "2*samp_rate")
 
     def test_misma_cadena_que_test2(self):
@@ -43,14 +44,22 @@ class TestCalentamiento(unittest.TestCase):
         for sumidero in ("qtgui_freq_sink_x_0", "qtgui_time_sink_x_0"):
             self.assertIn(("blocks_float_to_complex_0", "0", sumidero, "0"), self.c)
 
-    def test_el_time_sink_muestra_un_milisegundo_quieto(self):
+    def test_el_time_sink_muestra_un_periodo_de_bytes_crudos(self):
+        """El File Source termina tras 64 bytes, así que la imagen se congela en el primer
+        periodo: no hace falta disparo. Marcadores como en la Figura 1: círculo I, cuadrado Q."""
         t = self.p("qtgui_time_sink_x_0")
         self.assertEqual((t["size"], t["srate"]), ("32", "samp_rate"))
-        self.assertEqual(t["tr_mode"], "qtgui.TRIG_MODE_NORM")
-        self.assertEqual(t["tr_slope"], "qtgui.TRIG_SLOPE_POS")
-        self.assertEqual(t["tr_level"], "0.78")
-        self.assertEqual((t["tr_chan"], t["tr_delay"]), ("0", "0"))
+        self.assertEqual(t["tr_mode"], "qtgui.TRIG_MODE_FREE")
+        self.assertEqual((t["ymin"], t["ymax"]), ("0", "256"))
         self.assertEqual((t["label1"], t["label2"]), ("I", "Q"))
+        self.assertEqual((t["marker1"], t["marker2"]), ("0", "1"))
+
+    def test_la_normalizacion_empieza_en_bypass(self):
+        """La guía empieza comparando los bytes crudos con od; el alumno quita el bypass en 1.5."""
+        for nombre, const in (("blocks_add_const_vxx_0", "-127.5"), ("blocks_multiply_const_vxx_0", "1/127.5")):
+            with self.subTest(bloque=nombre):
+                self.assertEqual(self.b[nombre]["states"]["state"], "bypassed")
+                self.assertEqual(self.p(nombre)["const"], const)
 
     def test_el_freq_sink_da_bins_de_1_khz_sin_ensanchar_la_raya(self):
         f = self.p("qtgui_freq_sink_x_0")
