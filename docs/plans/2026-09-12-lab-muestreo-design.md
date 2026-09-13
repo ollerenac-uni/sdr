@@ -139,8 +139,9 @@ Cinco pasos, cada uno confirmando al anterior:
    32, un cuarto de ciclo. La cuadratura medida en bytes.
 4. **Ver el mismo milisegundo en GNU Radio.** El Time Sink dibuja un ciclo por milisegundo.
    Se comparan alturas con los bytes de `od`, pasando por el `−127.5` y el `/127.5`.
-   En n=24 `od` da `I=127` y en n=8 `I=128`, aunque el coseno vale cero en ambos: 127.5 cae
-   entre dos enteros y el residuo de coma flotante decide el redondeo. La guía lo dice.
+   En n=24 `od` da `I=127` y en n=8 `I=128`, aunque el coseno vale cero en ambos. En n=8 la
+   cuenta da 127.5 exacto y NumPy redondea al par; en n=24 un residuo de −1.8e-14 la deja por
+   debajo y sale 127. La guía lo dice.
 5. **Tocar el tamaño de FFT.** Con 32, una raya limpia en 1 kHz. Con 1024, la raya sigue
    pero la ventana pasa a durar 32 ms. La regla se lee en los dos sentidos: `RBW = fs/N` y
    `duración = N/fs`.

@@ -327,10 +327,10 @@ DURACION = 0.1  # s
 SALIDA = Path(__file__).parent / "tono_1kHz_32kSps.cu8"
 
 
-def tono(fs=FS, f0=F0, amplitud=AMPLITUD, duracion=DURACION):
+def tono():
     """Bytes I, Q, I, Q... del tono complejo."""
-    n = np.arange(round(fs * duracion))
-    z = amplitud * np.exp(2j * np.pi * f0 * n / fs)
+    n = np.arange(round(FS * DURACION))
+    z = AMPLITUD * np.exp(2j * np.pi * F0 * n / FS)
     iq = np.empty(2 * n.size, dtype=np.uint8)
     iq[0::2] = np.round(127.5 + z.real)
     iq[1::2] = np.round(127.5 + z.imag)
@@ -779,7 +779,7 @@ Salida: el bloque completo de «Hechos verificados», copiado tal cual. Lectura 
 
 Seguida de lectura guiada: la línea discontinua es el cero (127.5, lo que A6 de S01 midió como promedio); I y Q se persiguen con un cuarto de ciclo de retraso; la muestra 32 vuelve al máximo de I, pero su Q sale 127 y no 128, por el redondeo del aviso siguiente.
 
-Añadir un aviso `!!! info` sobre el redondeo: en n=24 `od` da I=127 y en n=8 da 128, aunque el coseno vale cero en ambos. 127.5 cae entre dos enteros y el residuo de coma flotante decide hacia dónde se redondea. Por la misma razón, ciclos sucesivos pueden diferir en ±1 en esos valores. No es un error del archivo.
+Añadir un aviso `!!! info` sobre el redondeo: en n=8 `od` da I=128 y en n=24 da 127, aunque el coseno vale cero en ambos. El cero del formato es 127.5, a medio camino entre dos enteros. Cuando la cuenta da **exactamente** 127.5 (n=0 en Q, n=8 en I), NumPy redondea al par: 128. Cuando la coma flotante deja un residuo del orden de 1e-14 que mueve la suma (n=16, 24, 32), el signo del residuo decide: n=24 da −1.8e-14 y sale 127. Por eso ciclos sucesivos pueden diferir en ±1 justo en esos valores. No es un error del archivo. Hechos medidos: residuo en n=8 = +6.1e-15, menor que medio paso de coma flotante en 127.5 (7.1e-15), así que la suma queda en 127.5 exacto.
 
 **1.4 El mismo milisegundo en GNU Radio.** Abrir `calentamiento_32k.grc`, F6. Es la cadena de la Parte C de la Sesión 01 con dos cambios: `samp_rate = 32000` y el archivo. Hechos:
 - Time Sink con `size = 32` → dibuja 32 muestras = 1 ms. Tiene un disparo (*trigger*) en 0.78, flanco de subida, para que la imagen quede quieta empezando en n=0.
