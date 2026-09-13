@@ -19,10 +19,10 @@ DURACION = 0.1  # s
 SALIDA = Path(__file__).parent / "tono_1kHz_32kSps.cu8"
 
 
-def tono(fs=FS, f0=F0, amplitud=AMPLITUD, duracion=DURACION):
+def tono():
     """Bytes I, Q, I, Q... del tono complejo."""
-    n = np.arange(round(fs * duracion))
-    z = amplitud * np.exp(2j * np.pi * f0 * n / fs)
+    n = np.arange(round(FS * DURACION))
+    z = AMPLITUD * np.exp(2j * np.pi * F0 * n / FS)
     iq = np.empty(2 * n.size, dtype=np.uint8)
     iq[0::2] = np.round(127.5 + z.real)
     iq[1::2] = np.round(127.5 + z.imag)
