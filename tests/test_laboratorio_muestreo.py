@@ -49,5 +49,26 @@ class TestCalentamiento(unittest.TestCase):
             self.assertIn(dato, pagina)
 
 
+class TestGrabacionReal(unittest.TestCase):
+    MUESTRA = "samples/fm_99p1MHz_2p4Msps_g30.cu8"
+
+    def test_cita_las_cuentas_a_24_msps(self):
+        pagina = texto()
+        for dato in (f"wc -c < {self.MUESTRA}", "48000000",
+                     f"od -An -tu1 -w2 -N4800 -v {self.MUESTRA} | wc -l",
+                     "2343.75 Hz", "426.7 µs", "1171.875 Hz"):
+            self.assertIn(dato, pagina)
+
+    @unittest.skipUnless((ROOT / "samples/fm_99p1MHz_2p4Msps_g30.cu8").exists(),
+                         "Falta samples/fm_99p1MHz_2p4Msps_g30.cu8; se descarga de Drive")
+    def test_los_comandos_publicados_dan_lo_que_dice_la_guia(self):
+        for comando, esperado in ((f"wc -c < {self.MUESTRA}", "48000000"),
+                                  (f"od -An -tu1 -w2 -N4800 -v {self.MUESTRA} | wc -l", "2400")):
+            with self.subTest(comando=comando):
+                salida = subprocess.run(comando, shell=True, cwd=ROOT,
+                                        capture_output=True, text=True, check=True).stdout
+                self.assertEqual(salida.strip(), esperado)
+
+
 if __name__ == "__main__":
     unittest.main()

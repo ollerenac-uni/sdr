@@ -186,6 +186,65 @@ Las dos cuentas salen de la regla de 1.1. Una FFT de $N$ muestras abarca $T = N 
 
 ## 2. Las mismas reglas donde no se pueden contar
 
+La grabación de la Sesión 01 obedece a la misma regla que el tono, $N = f_s \cdot T$, pero a 2.4 MS/s. A esa tasa un milisegundo ya no cabe en una pantalla de terminal. Aquí las muestras no se miran: se cuentan con comandos, y lo que dibujan los visores se calcula antes de ejecutar.
+
+**2.1. Predecir con papel.** Desde la carpeta `sdr/`, pide el tamaño de la grabación:
+
+```bash
+wc -c < samples/fm_99p1MHz_2p4Msps_g30.cu8
+```
+
+`wc -c` cuenta bytes, y el `<` hace que imprima solo el número, sin el nombre del archivo. Responde `48000000`. Con eso, y antes de ejecutar nada más:
+
+1. A 2.4 MS/s, ¿cuántas muestras hay en 1 ms? ¿Cuántos bytes ocupan?
+2. ¿Cuánto dura la grabación?
+
+??? question "2.1. ¿Cuántas muestras y cuánto dura?"
+    2.4 MS/s son 2400 kS/s, así que por el atajo de 1.1 en 1 ms hay 2400 muestras. A dos bytes por muestra ocupan 4800 bytes.
+
+    Los 48 000 000 bytes son 24 000 000 muestras, y $T = N / f_s = 24\,000\,000 / 2\,400\,000 = 10$ s: los diez segundos de la grabación.
+
+**2.2. Contar sin mirar.** Pide a `od` ese milisegundo, 4800 bytes con una muestra por línea, pero en lugar de leer las líneas, cuéntalas con `wc -l`:
+
+```bash
+od -An -tu1 -w2 -N4800 -v samples/fm_99p1MHz_2p4Msps_g30.cu8 | wc -l
+```
+
+Responde `2400`: una línea por muestra, el milisegundo entero. El comando cambia una opción respecto a 1.2: `-An` en lugar de `-Ad`. ¿Cuántas líneas contaría `wc -l` con `-Ad`, y por qué?
+
+??? question "2.2. ¿Por qué `-An`?"
+    Con `-Ad` salen 2401. La línea de más es `0004800`, la dirección donde terminó la lectura, sin valores, igual que `0000064` en 1.2.
+
+    `-An` es la opción de A4 de la Sesión 01: quita la columna de direcciones y, con ella, esa última línea. Así `wc -l` cuenta solo muestras.
+
+**2.3. Lo que dibuja `test2.grc`.** Abre [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc), la solución de referencia de la Parte C de la Sesión 01, y ejecútalo con **F6** sin cambiar nada. Su Time Sink tiene `Number of Points` en 1024 y su Frequency Sink, `FFT Size` también en 1024. Antes de mirar la pantalla, calcula con las cuentas de 1.5 cuánto tiempo abarca cada imagen y cuánto se separan los bins, y después compruébalo en los ejes.
+
+La traza del Time Sink ya no se lee como el tono de 1.4. Cada muestra es el valor instantáneo de los 2.4 MHz enteros, con todas las emisoras sumadas, y en pantalla parece ruido.
+
+El Frequency Sink usa la ventana Blackman-Harris y no la rectangular de 1.5. Cambia la forma de cada raya, como avisa la nota del final de la sección 1, pero no la separación entre bins, que sigue siendo $f_s / N$.
+
+??? question "2.3. ¿Cuánto tiempo y cuántos hercios?"
+    El Time Sink dibuja 1024 / 2 400 000 s = 426.7 µs, menos de medio milisegundo. Su eje, rotulado `Time (us)`, va de 0 a unos 427: GNU Radio escribe `us` por µs.
+
+    En el Frequency Sink los bins quedan a 2 400 000 / 1024 = 2343.75 Hz. Los 1024 bins se reparten un eje de 2.4 MHz, de 97.9 a 100.3 MHz, el intervalo de C3 de la Sesión 01.
+
+    Cada espectro sale también de 426.7 µs de señal: el mismo $N$ y la misma $f_s$ que el Time Sink dan el mismo $T = N / f_s$.
+
+**2.4. Ajustar los visores.** ¿Qué `Number of Points` hay que poner al Time Sink para ver exactamente 1 ms? ¿Qué `FFT Size` daría bins de 1 kHz, como los de 1.5? ¿Acepta GRC los dos valores?
+
+??? question "2.4. 1 ms y 1 kHz a 2.4 MS/s"
+    Por el atajo de 1.1, 1 ms son 2400 muestras. `Number of Points` no exige potencia de dos, así que con 2400 el eje del Time Sink llega a 1000 us.
+
+    Bins de 1 kHz piden $N = f_s / \Delta f = 2\,400\,000 / 1000 = 2400$. Pero 2400 no es potencia de dos, y como viste en 1.5, GRC no deja generar el grafo con ese `FFT Size`. La potencia de dos más cercana es 2048: bins a 2 400 000 / 2048 = 1171.875 Hz, y cada espectro abarca 2048 / 2 400 000 s = 853.3 µs.
+
+Las cuentas son las de la sección 1; solo cambió la escala.
+
+| $N$ a 2.4 MS/s | Tiempo que abarca, $T = N / f_s$ | Separación entre bins, $\Delta f = f_s / N$ |
+|---:|---:|---:|
+| 1024 | 426.7 µs | 2343.75 Hz |
+| 2048 | 853.3 µs | 1171.875 Hz |
+| 2400 | 1 ms | 1000 Hz, pero GRC no lo acepta como `FFT Size` |
+
 ## 3. La escalera con hardware real
 
 !!! warning "Pendiente"
