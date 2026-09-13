@@ -530,7 +530,9 @@ Abrir `gnuradio-flowgraphs/calentamiento_32k.grc` en GRC y ejecutar con F6, tras
 
 Expected:
 - Time Sink: un ciclo completo de ancho 1 ms, **quieto**; la curva real empieza arriba, en 0.788.
-- Freq Sink: una sola raya en +1 kHz, eje de −16 a +16 kHz.
+- Freq Sink: la raya del tono en +1 kHz a unos −2 dB, eje de −16 a +16 kHz, y un peine de torres entre −58 y −68 dB separado por huecos que caen a −140 (error de cuantización; ver §1.5 en la Tarea 6).
+
+Verificado ya sin interfaz por la revisión de calidad de la Tarea 4, con capturas `offscreen` y leyendo `time_sink_c_impl.cc` de GNU Radio 3.10.12: con `tr_delay = 0` la primera muestra dibujada es la del disparo, n=0; `tr_chan 0` es la parte real; la imagen queda quieta. Falta solo la mirada del profesor.
 
 Si el trazo no empieza en el máximo, el parámetro a ajustar es `tr_delay`. Anota el valor que funcione y actualiza el test.
 
@@ -783,12 +785,13 @@ Seguida de lectura guiada: la línea discontinua es el cero (127.5, lo que A6 de
 Añadir un aviso `!!! info` sobre el redondeo: en n=8 `od` da I=128 y en n=24 da 127, aunque el coseno vale cero en ambos. El cero del formato es 127.5, a medio camino entre dos enteros. Cuando la cuenta da **exactamente** 127.5 (n=0 en Q, n=8 en I), NumPy redondea al par: 128. Cuando la coma flotante deja un residuo del orden de 1e-14 que mueve la suma (n=16, 24, 32), el signo del residuo decide: n=24 da −1.8e-14 y sale 127. Por eso ciclos sucesivos pueden diferir en ±1 justo en esos valores. No es un error del archivo. Hechos medidos: residuo en n=8 = +6.1e-15, menor que medio paso de coma flotante en 127.5 (7.1e-15), así que la suma queda en 127.5 exacto.
 
 **1.4 El mismo milisegundo en GNU Radio.** Abrir `calentamiento_32k.grc`, F6. Es la cadena de la Parte C de la Sesión 01 con dos cambios: `samp_rate = 32000` y el archivo. Hechos:
-- Time Sink con `size = 32` → dibuja 32 muestras = 1 ms. Tiene un disparo (*trigger*) en 0.78, flanco de subida, para que la imagen quede quieta empezando en n=0.
+- Time Sink con `size = 32` → dibuja 32 muestras = 1 ms. Leyenda `I` (azul) y `Q` (rojo), con rejilla. Tiene un disparo (*trigger*) en 0.78 sobre la parte real, flanco de subida, para que la imagen quede quieta empezando en n=0: I arranca en 0.788 y Q en 0.
 - La altura inicial de la curva real es 0.788 y no 228: (228 − 127.5) / 127.5 = 0.788. Los bloques `Add Const` y `Multiply Const` hacen esa cuenta. Pedir al alumno que calcule la altura en n=8 para Q y la compruebe.
 
 **1.5 El tamaño de FFT.** Freq Sink con `fftsize = 32`, `bw = samp_rate`, ventana `WIN_RECTANGULAR`:
 - Eje de −16 a +16 kHz: la FFT de una señal compleja muestra de −fs/2 a +fs/2.
-- 32 bins repartidos en 32 kHz → separación de 1000 Hz. El tono cae exacto en el bin de +1 kHz.
+- 32 bins repartidos en 32 kHz → separación de 1000 Hz. El tono cae exacto en el bin de +1 kHz, a unos −2 dB: 20·log10(0.788).
+- Lo que no es el tono: un peine de torres entre unos −58 y −68 dB, con huecos que caen al fondo de la escala (−140). Es el error de redondear a 8 bits: el ADC no puede escribir 227.3 y escribe 227. Queda unos 60 dB por debajo del tono. Enlazar con «ADC de 8 bits» de la Parte A de la Sesión 01, sin cifra de figura. **No** subir `ymin` para esconderlo: se explica en una frase y en un `??? question`. Comprobar las cifras mirando el grafo en ejecución antes de escribirlas.
 - Pedir que cambie `fftsize` a 1024: separación 32 000 / 1024 = 31.25 Hz; la FFT abarca 1024 / 32 000 s = 32 ms. La raya sigue en 1 kHz.
 - La regla en los dos sentidos: `Δf = fs/N` y `T = N/fs`. Más resolución en frecuencia cuesta más tiempo de observación.
 - `!!! note`: la ventana es rectangular a propósito. Con la Blackman-Harris que trae `test2.grc` la raya se ensancha varios bins; por qué, lo explica la [Sesión 02 §5](../02-tiempo-frecuencia-iq/index.md). No explicar la fuga aquí.
