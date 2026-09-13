@@ -123,9 +123,11 @@ bloques que el alumno ya construyó en la Parte C de la Sesión 01, cambiando `s
 32000 y el archivo.
 
 ```
-file_source -> deinterleave -> uchar_to_float -> add_const(-127.5)
-            -> multiply_const(1/127.5) -> float_to_complex -> throttle2 -> time/freq sink
+file_source -> throttle2(byte, 2*samp_rate) -> uchar_to_float -> add_const(-127.5)
+            -> multiply_const(1/127.5) -> deinterleave -> float_to_complex -> time/freq sink
 ```
+
+Orden fijado por `tests/test_test_flowgraph.py::test_la_cadena_completa_esta_conectada_en_orden`.
 
 Cinco pasos, cada uno confirmando al anterior:
 
@@ -137,12 +139,14 @@ Cinco pasos, cada uno confirmando al anterior:
    32, un cuarto de ciclo. La cuadratura medida en bytes.
 4. **Ver el mismo milisegundo en GNU Radio.** El Time Sink dibuja un ciclo por milisegundo.
    Se comparan alturas con los bytes de `od`, pasando por el `−127.5` y el `/127.5`.
+   En n=24 `od` da `I=127` y en n=8 `I=128`, aunque el coseno vale cero en ambos: 127.5 cae
+   entre dos enteros y el residuo de coma flotante decide el redondeo. La guía lo dice.
 5. **Tocar el tamaño de FFT.** Con 32, una raya limpia en 1 kHz. Con 1024, la raya sigue
    pero la ventana pasa a durar 32 ms. La regla se lee en los dos sentidos: `RBW = fs/N` y
    `duración = N/fs`.
 
 El paso 4 debe explicar que la división por 127.5 es la que convierte el 228 de `od` en el
-0.79 del Time Sink. Sin eso, el alumno ve dos números distintos y supone que uno está mal.
+0.788 del Time Sink. Sin eso, el alumno ve dos números distintos y supone que uno está mal.
 
 La fuga espectral **no** entra aquí: ya vive en la Sesión 02 §5.
 
@@ -201,4 +205,5 @@ vacío. Interpolar no inventa información.
 Conviene que salgan de la misma sesión con el dongle que las tres capturas de ganancia que
 espera la Sesión 02.
 
-La guía se escribe sin esperar a esas grabaciones: §1 y §2 no las necesitan.
+La guía se escribe sin esperar a esas grabaciones: §1, §2, §4 y §6 parten del tono sintético
+o de la grabación oficial de 2.4 Msps. Solo §3 y §5 las necesitan.
