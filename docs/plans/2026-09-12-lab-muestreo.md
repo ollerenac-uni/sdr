@@ -769,7 +769,7 @@ Salida: el bloque completo de «Hechos verificados», copiado tal cual. Lectura 
 - La dirección avanza de dos en dos; n = dirección / 2.
 - Primera columna I, segunda Q, igual que en A5 de la Sesión 01.
 
-**1.3 Encontrar los 90°.** Pedir que localice I máximo y Q máximo. I máximo en n=0 (228), Q máximo en n=8 (dirección `0000016`, 228). Ocho de 32 muestras son un cuarto de ciclo: 90°. Enlazar con la Figura 13 de la Sesión 01 (fasores) por texto: `[Sesión 01](index.md)`. Insertar la figura:
+**1.3 Encontrar los 90°.** Pedir que localice I máximo y Q máximo. I máximo en n=0 (228), Q máximo en n=8 (dirección `0000016`, 228). Ocho de 32 muestras son un cuarto de ciclo: 90°. Enlazar con la figura de los fasores de la [Sesión 01](index.md), **sin escribir su número**: `test_las_citas_en_el_texto_apuntan_a_figuras_existentes` compara cada «Figura N» con las figuras de *esta* página, que tiene 3; «Figura 13» haría fallar el test. Insertar la figura:
 
 ```markdown
 ![Treinta y tres muestras del tono de 1 kHz a 32 kS/s: bytes de I y Q contra el índice n y contra el tiempo en milisegundos](figures/muestreo-un-milisegundo.png)
@@ -1313,7 +1313,7 @@ Hechos:
 - Lo que había fuera de ±150 kHz no desaparece por quedarse con una de cada ocho muestras: se **pliega** dentro. Fórmula de plegado: `f' = ((f + fs'/2) mod fs') − fs'/2`. Ejemplo medido en el Step 1.
 - `Keep 1 in N` solo descarta muestras. `Decimating FIR Filter` filtra primero y luego descarta. Filtro: `firdes.low_pass(1, samp_rate, 0.4*samp_rate/D, 0.1*samp_rate/D)`: corte en 120 kHz y transición de 30 kHz para D=8, que acaba justo en 150 kHz. 193 coeficientes con la ventana Hamming por defecto.
 - Figura 2 con pie `**Figura 2.** …` y lectura guiada panel a panel.
-- Enlazar con la Sesión 01: el DDC del RTL2832U ya hace esta operación dentro del chip (`figures/cadena-rx-5-decimacion.png` de `index.md`, citándolo por texto, sin volver a insertar la imagen).
+- Enlazar con la Sesión 01: el DDC del RTL2832U ya hace esta operación dentro del chip (la figura de la decimación en la cadena de recepción de [`index.md`](index.md), nombrada sin su número por la misma razón que en 1.3, y sin volver a insertar la imagen).
 - Ejercicio en el grafo: `D = 2`. Pregunta: ¿aparece aliasing? La respuesta sale del grafo, no de la teoría. Anotar lo observado.
 
 **Step 5: Verificar y commit**
