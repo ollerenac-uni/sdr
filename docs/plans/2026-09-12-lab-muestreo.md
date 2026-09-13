@@ -777,10 +777,10 @@ Salida: el bloque completo de «Hechos verificados», copiado tal cual. Lectura 
 ```markdown
 ![Treinta y tres muestras del tono de 1 kHz a 32 kS/s: bytes de I y Q contra el índice n y contra el tiempo en milisegundos](figures/muestreo-un-milisegundo.png)
 
-**Figura 1.** Un milisegundo del tono, muestra a muestra: cada par de peines es una línea de `od`.
+**Figura 1.** Un milisegundo del tono, muestra a muestra: en cada posición n están los dos bytes de una línea de `od`, I y Q del mismo instante.
 ```
 
-Seguida de lectura guiada: la línea discontinua es el cero (127.5, lo que A6 de S01 midió como promedio); I y Q se persiguen con un cuarto de ciclo de retraso; la muestra 32 vuelve al máximo de I, pero su Q sale 127 y no 128, por el redondeo del aviso siguiente.
+Seguida de lectura guiada: la línea discontinua es el cero (127.5, lo que A6 de S01 midió como promedio) y los tallos crecen desde ella, hacia arriba o hacia abajo, con la misma forma que dibujará el Time Sink; I es el círculo azul relleno y Q el cuadrado rojo hueco, en la misma posición porque son el mismo instante; cada etiqueta da n y la dirección que imprime `od`, que es 2n; I y Q se persiguen con un cuarto de ciclo de retraso; la muestra 32 vuelve al máximo de I, pero su Q sale 127 y no 128, por el redondeo del aviso siguiente.
 
 Añadir un aviso `!!! info` sobre el redondeo: en n=8 `od` da I=128 y en n=24 da 127, aunque el coseno vale cero en ambos. El cero del formato es 127.5, a medio camino entre dos enteros. Cuando la cuenta da **exactamente** 127.5 (n=0 en Q, n=8 en I), NumPy redondea al par: 128. Cuando la coma flotante deja un residuo del orden de 1e-14 que mueve la suma (n=16, 24, 32), el signo del residuo decide: n=24 da −1.8e-14 y sale 127. Por eso ciclos sucesivos pueden diferir en ±1 justo en esos valores. No es un error del archivo. Hechos medidos: residuo en n=8 = +6.1e-15, menor que medio paso de coma flotante en 127.5 (7.1e-15), así que la suma queda en 127.5 exacto.
 
