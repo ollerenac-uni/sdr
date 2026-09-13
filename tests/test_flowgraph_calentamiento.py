@@ -32,6 +32,7 @@ class TestCalentamiento(unittest.TestCase):
         fuente = self.p("blocks_file_source_0")
         self.assertEqual(fuente["file"], "../samples/tono_1kHz_32kSps.cu8")
         self.assertEqual(fuente["type"], "byte")
+        self.assertEqual(fuente["repeat"], "True")
         self.assertEqual(self.p("blocks_throttle2_0")["samples_per_second"], "2*samp_rate")
 
     def test_misma_cadena_que_test2(self):
@@ -48,6 +49,8 @@ class TestCalentamiento(unittest.TestCase):
         self.assertEqual(t["tr_mode"], "qtgui.TRIG_MODE_NORM")
         self.assertEqual(t["tr_slope"], "qtgui.TRIG_SLOPE_POS")
         self.assertEqual(t["tr_level"], "0.78")
+        self.assertEqual((t["tr_chan"], t["tr_delay"]), ("0", "0"))
+        self.assertEqual((t["label1"], t["label2"]), ("I", "Q"))
 
     def test_el_freq_sink_da_bins_de_1_khz_sin_ensanchar_la_raya(self):
         f = self.p("qtgui_freq_sink_x_0")

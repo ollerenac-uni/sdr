@@ -96,7 +96,8 @@ blocks:
     affinity: ''
     alias: ''
     begin_tag: pmt.PMT_NIL
-    comment: 'Lee el .cu8 byte a byte: I, Q, I, Q... sin signo, con el cero en 127.5.'
+    comment: 'Lee el .cu8 byte a byte: I, Q, I, Q... sin signo, con el cero en 127.5.
+      Genera el archivo con: python samples/gen_tono.py'
     file: ../samples/tono_1kHz_32kSps.cu8
     length: '0'
     maxoutbuf: '0'
@@ -306,11 +307,11 @@ blocks:
     comment: ''
     ctrlpanel: 'False'
     entags: 'True'
-    grid: 'False'
+    grid: 'True'
     gui_hint: ''
-    label1: Signal 1
+    label1: I
     label10: Signal 10
-    label2: Signal 2
+    label2: Q
     label3: Signal 3
     label4: Signal 4
     label5: Signal 5
