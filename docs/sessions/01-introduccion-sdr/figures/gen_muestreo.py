@@ -40,14 +40,16 @@ def generar(salida: Path = OUT) -> Path:
     n, i, q = un_milisegundo()
     fig, ax = plt.subplots(figsize=(10, 4.2), dpi=300)
     # Misma x para I y Q (una línea de od = un instante); tallos desde el cero, como el Time Sink.
-    mi, _, _ = ax.stem(n, i, linefmt=BLUE, markerfmt="o", basefmt=" ", bottom=127.5,
-                       label="I (dirección par de od)")
-    mq, _, _ = ax.stem(n, q, linefmt=RED, markerfmt="s", basefmt=" ", bottom=127.5,
-                       label="Q (dirección impar de od)")
-    mq.set_markerfacecolor("none")
-    mq.set_markersize(8)  # el cuadrado hueco rodea al círculo cuando I == Q (n = 4, 20)
-    for m in (mi, mq):
-        m.set_zorder(3)  # marcadores por encima de los tallos del otro canal
+    # En cada n se dibuja primero el tallo largo y encima el corto: cada marcador queda al final
+    # de su propio segmento de color.
+    largo_i = np.abs(i - 127.5) >= np.abs(q - 127.5)
+    ax.vlines(n[largo_i], 127.5, i[largo_i], color=BLUE, lw=1.5, zorder=1)
+    ax.vlines(n[~largo_i], 127.5, q[~largo_i], color=RED, lw=1.5, zorder=1)
+    ax.vlines(n[~largo_i], 127.5, i[~largo_i], color=BLUE, lw=1.5, zorder=2)
+    ax.vlines(n[largo_i], 127.5, q[largo_i], color=RED, lw=1.5, zorder=2)
+    # El círculo va encima del cuadrado relleno de blanco: con I == Q (n = 4, 20) se ve dentro.
+    ax.plot(n, i, "o", color=BLUE, zorder=4, label="I (dirección par de od)")
+    ax.plot(n, q, "s", color=RED, mfc="white", ms=8, zorder=3, label="Q (dirección impar de od)")
     ax.axhline(127.5, color="0.4", ls="--", lw=1)
     # En n = 17..23 los dos canales están por debajo del cero: el hueco de encima es libre.
     ax.text(20, 134, "cero = 127.5", ha="center", va="bottom", color="0.3", fontsize=10)
