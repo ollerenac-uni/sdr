@@ -89,7 +89,7 @@ Primeras muestras medidas sobre el archivo generado:
 | 32 | — | — | vuelve a empezar: un ciclo = 1 ms |
 
 El cuarto de ciclo cae en la muestra 8, exacta: **los 90° entre I y Q se leen como dos
-números en `od`**, y enlazan con la Figura 13 de fasores de la Sesión 01.
+números en `od`**, y enlazan con la hélice de la Figura 9 de la Sesión 01 (§2.4), donde I y Q son las proyecciones de $e^{j2\pi f_0 t}$.
 
 FFT de 32 puntos sobre las 32 primeras muestras: `|X[1]| = 3205.73` frente a ~1 en los
 bins vecinos. El 1.7 % de energía fuera del bin 1 es ruido de cuantización por redondear a

@@ -772,7 +772,7 @@ Salida: el bloque completo de «Hechos verificados», copiado tal cual. Lectura 
 - La dirección avanza de dos en dos; n = dirección / 2.
 - Primera columna I, segunda Q, igual que en A5 de la Sesión 01.
 
-**1.3 Encontrar los 90°.** Pedir que localice I máximo y Q máximo. I máximo en n=0 (228), Q máximo en n=8 (dirección `0000016`, 228). Ocho de 32 muestras son un cuarto de ciclo: 90°. Enlazar con la figura de los fasores de la [Sesión 01](index.md), **sin escribir su número**: `test_las_citas_en_el_texto_apuntan_a_figuras_existentes` compara cada «Figura N» con las figuras de *esta* página, que tiene 3; «Figura 13» haría fallar el test. Insertar la figura:
+**1.3 Encontrar los 90°.** Pedir que localice I máximo y Q máximo. I máximo en n=0 (228), Q máximo en n=8 (dirección `0000016`, 228). Ocho de 32 muestras son un cuarto de ciclo: 90°. Enlazar con la hélice de la [Sesión 01, §2.4](index.md#24-punto-4-del-voltaje-real-a-las-muestras-complejas-iq), donde I y Q son las proyecciones de una flecha que gira (no con los fasores de §2.4.1, que dibujan componentes espectrales fijas), **sin escribir su número**: `test_las_citas_en_el_texto_apuntan_a_figuras_existentes` compara cada «Figura N» con las figuras de *esta* página, que tiene 3; «Figura 9» haría fallar el test. Insertar la figura:
 
 ```markdown
 ![Treinta y tres muestras del tono de 1 kHz a 32 kS/s: bytes de I y Q contra el índice n y contra el tiempo en milisegundos](figures/muestreo-un-milisegundo.png)
