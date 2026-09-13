@@ -124,8 +124,9 @@ class TestContratoComun(unittest.TestCase):
 
     def test_los_identificadores_no_colisionan(self):
         """Con el mismo id, grcc genera el mismo .py y un grafo pisa al otro."""
-        ids = [cargar(n)[0]["options"]["parameters"]["id"] for n in ("test.grc", "test2.grc")]
-        self.assertEqual(len(set(ids)), 2, f"ids duplicados: {ids}")
+        grafos = sorted((ROOT / "gnuradio-flowgraphs").glob("*.grc"))
+        ids = [yaml.safe_load(g.read_text(encoding="utf-8"))["options"]["parameters"]["id"] for g in grafos]
+        self.assertEqual(len(ids), len(set(ids)), f"ids duplicados: {ids}")
 
     def test_el_slider_alcanza_la_frecuencia_de_la_muestra(self):
         """99.1 MHz debe ser alcanzable: con paso 2 desde 100 nunca se llega."""
