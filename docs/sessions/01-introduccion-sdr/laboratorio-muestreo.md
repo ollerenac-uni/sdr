@@ -92,7 +92,7 @@ Cómo leerlo:
 - `-N64` pide 64 bytes. A dos bytes por muestra son 32 muestras, y a 32 kS/s eso es exactamente el milisegundo de 1.1.
 - Salen 33 líneas. Las 32 primeras son muestras. La última, `0000064`, no trae valores: es la dirección donde terminó la lectura.
 - La primera columna es la dirección, la posición en decimal del primer byte de la línea. Avanza de dos en dos, así que el índice de la muestra es n = dirección / 2: la línea `0000016` es la muestra 8.
-- Tras la dirección vienen los dos bytes de la muestra, primero I y después Q, igual que en A5 de la Sesión 01.
+- Tras la dirección vienen los dos bytes de la muestra, primero I y después Q, como en A2 y A5 de la Sesión 01.
 
 **1.3 Encontrar los 90°.** Busca en la salida el valor más alto de I y el valor más alto de Q. Anota en qué línea está cada uno y cuántas muestras los separan.
 
@@ -101,7 +101,7 @@ Cómo leerlo:
 
     Q alcanza el mismo 228 en la dirección `0000016`, muestra n = 8.
 
-    Los separan ocho muestras. Un tono de 1 kHz completa un ciclo por milisegundo, así que un ciclo ocupa las 32 muestras y ocho son un cuarto de ciclo: 90°. Q hace lo mismo que I con un cuarto de ciclo de retraso. Son las dos proyecciones de una flecha que gira, la misma forma de dibujar un número complejo que usa la figura de los fasores de la [Sesión 01](index.md#2-cadena-de-recepcion-del-rtl-sdr).
+    Los separan ocho muestras. Un tono de 1 kHz completa un ciclo por milisegundo, así que un ciclo ocupa las 32 muestras y ocho son un cuarto de ciclo: 90°. Q hace lo mismo que I con un cuarto de ciclo de retraso. Son las dos proyecciones de una flecha que gira, la hélice que dibuja la [Sesión 01 en 2.4](index.md#24-punto-4-del-voltaje-real-a-las-muestras-complejas-iq).
 
 ![Treinta y tres muestras del tono de 1 kHz a 32 kS/s: bytes de I y Q contra el índice n y contra el tiempo en milisegundos](figures/muestreo-un-milisegundo.png)
 
@@ -125,7 +125,7 @@ La muestra 32 ya pertenece al ciclo siguiente y vuelve al máximo de I. No apare
     Por eso ciclos sucesivos pueden diferir en ±1 justo en esos valores.
 
     ??? question "¿Por qué n = 8 da 128 y n = 24 da 127?"
-        En n = 8 también hay residuo: el coseno calculado vale $+6.1 \times 10^{-15}$. Pero cerca de 127.5 la coma flotante solo distingue pasos de $1.4 \times 10^{-14}$, y un residuo menor que medio paso, $7.1 \times 10^{-15}$, se pierde al sumar. La suma queda en 127.5 exacto y se aplica el redondeo al par. El residuo de n = 24 supera ese medio paso y sí mueve la suma.
+        En n = 8 también hay residuo: $+6.1 \times 10^{-15}$. Pero cerca de 127.5 la coma flotante solo distingue pasos de $1.4 \times 10^{-14}$, y un residuo menor que medio paso, $7.1 \times 10^{-15}$, se pierde al sumar. La suma queda en 127.5 exacto y se aplica el redondeo al par. El residuo de n = 24 supera ese medio paso y sí mueve la suma.
 
 **1.4 El mismo milisegundo en GNU Radio.** Abre [`calentamiento_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/calentamiento_32k.grc) y ejecútalo con **F6**. Los bloques son los de la Parte C de la Sesión 01 con dos cambios: `samp_rate` vale `32000` y el `File Source` lee `../samples/tono_1kHz_32kSps.cu8`. Lo que interesa está en cómo se configuraron los dos visores.
 
