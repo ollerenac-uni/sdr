@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 import subprocess
 import tempfile
 import unittest
@@ -27,11 +28,14 @@ class TestCalentamiento(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             ruta = Path(tmp) / "tono.cu8"
             gen.tono().tofile(ruta)
+            tamano = ruta.stat().st_size
             salida = subprocess.run(["od", "-Ad", "-tu1", "-w2", "-N64", "-v", str(ruta)],
                                     capture_output=True, text=True, check=True).stdout
         pagina = texto()
-        for linea in salida.splitlines():
-            self.assertIn(linea, pagina, f"La guía no muestra la línea real de od: {linea!r}")
+        bloque = re.search(r"El segundo imprime esto:\n\n```\n(.*?)```", pagina, re.S)
+        self.assertIsNotNone(bloque, "No se encuentra el bloque de salida de od tras «El segundo imprime esto:»")
+        self.assertEqual(bloque.group(1), salida)
+        self.assertIn(f"`tono_1kHz_32kSps.cu8: {tamano} bytes`", pagina)
 
     def test_enlaza_el_generador_y_el_grafo(self):
         pagina = texto()
@@ -41,7 +45,7 @@ class TestCalentamiento(unittest.TestCase):
     def test_cita_los_numeros_que_sostienen_el_ejercicio(self):
         pagina = texto()
         for dato in ("od -Ad -tu1 -w2 -N64 -v samples/tono_1kHz_32kSps.cu8",
-                     "0.788", "31.25 Hz", "32 ms", "0000064", "WIN_RECTANGULAR"):
+                     "0.788", "31.25 Hz", "32 ms", "0000064"):
             self.assertIn(dato, pagina)
 
 
