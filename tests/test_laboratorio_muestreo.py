@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).parents[1]
 PAGINA = ROOT / "docs/sessions/01-introduccion-sdr/laboratorio-muestreo.md"
 GITHUB = "https://github.com/ollerenac-uni/sdr/blob/main/"
+MUESTRA = "samples/fm_99p1MHz_2p4Msps_g30.cu8"
 
 
 def texto():
@@ -50,20 +51,19 @@ class TestCalentamiento(unittest.TestCase):
 
 
 class TestGrabacionReal(unittest.TestCase):
-    MUESTRA = "samples/fm_99p1MHz_2p4Msps_g30.cu8"
-
     def test_cita_las_cuentas_a_24_msps(self):
         pagina = texto()
-        for dato in (f"wc -c < {self.MUESTRA}", "48000000",
-                     f"od -An -tu1 -w2 -N4800 -v {self.MUESTRA} | wc -l",
-                     "2343.75 Hz", "426.7 µs", "1171.875 Hz"):
+        for dato in (f"wc -c < {MUESTRA}", "48000000",
+                     f"od -An -tu1 -w2 -N4800 -v {MUESTRA} | wc -l",
+                     "2343.75 Hz", "426.7 µs", "1171.875 Hz", "585.9 Hz"):
             self.assertIn(dato, pagina)
 
-    @unittest.skipUnless((ROOT / "samples/fm_99p1MHz_2p4Msps_g30.cu8").exists(),
-                         "Falta samples/fm_99p1MHz_2p4Msps_g30.cu8; se descarga de Drive")
+    @unittest.skipUnless((ROOT / MUESTRA).exists(),
+                         f"Falta {MUESTRA}; se descarga de Drive")
     def test_los_comandos_publicados_dan_lo_que_dice_la_guia(self):
-        for comando, esperado in ((f"wc -c < {self.MUESTRA}", "48000000"),
-                                  (f"od -An -tu1 -w2 -N4800 -v {self.MUESTRA} | wc -l", "2400")):
+        for comando, esperado in ((f"wc -c < {MUESTRA}", "48000000"),
+                                  (f"od -An -tu1 -w2 -N4800 -v {MUESTRA} | wc -l", "2400"),
+                                  (f"od -Ad -tu1 -w2 -N4800 -v {MUESTRA} | wc -l", "2401")):
             with self.subTest(comando=comando):
                 salida = subprocess.run(comando, shell=True, cwd=ROOT,
                                         capture_output=True, text=True, check=True).stdout

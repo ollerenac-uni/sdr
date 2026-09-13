@@ -15,6 +15,7 @@ Materiales, en la misma carpeta `sdr/` de la Sesión 01:
 |---|---|---|
 | [`gen_tono.py`](https://github.com/ollerenac-uni/sdr/blob/main/samples/gen_tono.py) | `sdr/samples/` | Genera `tono_1kHz_32kSps.cu8`. Sección 1 |
 | [`calentamiento_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/calentamiento_32k.grc) | `sdr/gnuradio-flowgraphs/`, porque lee `../samples/` | Grafo de la sección 1 |
+| [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc) | `sdr/gnuradio-flowgraphs/`, ya lo tienes de la Sesión 01 | Solución de referencia de la Parte C. Sección 2 |
 | `fm_99p1MHz_2p4Msps_g30.cu8` | `sdr/samples/` | La grabación de la Sesión 01. Secciones 2, 4 y 6 |
 
 ## 1. Calentamiento: el milisegundo que se puede contar
@@ -194,7 +195,7 @@ La grabación de la Sesión 01 obedece a la misma regla que el tono, $N = f_s \c
 wc -c < samples/fm_99p1MHz_2p4Msps_g30.cu8
 ```
 
-`wc -c` cuenta bytes, y el `<` hace que imprima solo el número, sin el nombre del archivo. Responde `48000000`. Con eso, y antes de ejecutar nada más:
+`wc -c` cuenta bytes. Con `<` es la terminal la que abre el archivo y se lo pasa a `wc` por su entrada; `wc` no llega a conocer el nombre y por eso imprime solo el número. Responde `48000000`. Con eso, y antes de ejecutar nada más:
 
 1. A 2.4 MS/s, ¿cuántas muestras hay en 1 ms? ¿Cuántos bytes ocupan?
 2. ¿Cuánto dura la grabación?
@@ -217,11 +218,13 @@ Responde `2400`: una línea por muestra, el milisegundo entero. El comando cambi
 
     `-An` es la opción de A4 de la Sesión 01: quita la columna de direcciones y, con ella, esa última línea. Así `wc -l` cuenta solo muestras.
 
-**2.3. Lo que dibuja `test2.grc`.** Abre [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc), la solución de referencia de la Parte C de la Sesión 01, y ejecútalo con **F6** sin cambiar nada. Su Time Sink tiene `Number of Points` en 1024 y su Frequency Sink, `FFT Size` también en 1024. Antes de mirar la pantalla, calcula con las cuentas de 1.5 cuánto tiempo abarca cada imagen y cuánto se separan los bins, y después compruébalo en los ejes.
+**2.3. Lo que dibuja `test2.grc`.** Abre [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc), la solución de referencia de la Parte C de la Sesión 01, y ejecútalo con **F6** sin cambiar nada, tampoco el deslizador `Frequency`. Con una grabación como fuente, ese deslizador solo cambia el centro del Frequency Sink, `freq*M`: reetiqueta el eje, no sintoniza nada. Su Time Sink tiene `Number of Points` en 1024 y su Frequency Sink, `FFT Size` también en 1024. Antes de mirar la pantalla, calcula con las cuentas de 1.5 cuánto tiempo abarca cada imagen y cuánto se separan los bins.
 
-La traza del Time Sink ya no se lee como el tono de 1.4. Cada muestra es el valor instantáneo de los 2.4 MHz enteros, con todas las emisoras sumadas, y en pantalla parece ruido.
+En pantalla comprueba lo que está rotulado: el tiempo en el eje del Time Sink y los 2.4 MHz que abarca el eje del Frequency Sink. La separación entre bins no aparece en ningún eje; sale de dividir ese ancho entre el número de bins.
 
-El Frequency Sink usa la ventana Blackman-Harris y no la rectangular de 1.5. Cambia la forma de cada raya, como avisa la nota del final de la sección 1, pero no la separación entre bins, que sigue siendo $f_s / N$.
+El Time Sink dibuja dos trazas, `Signal 1` en azul y `Signal 2` en rojo: este grafo no las renombró como el de 1.4. `Signal 1` es I, la parte real, y `Signal 2` es Q, pero ya no se leen como el tono: cada muestra es la suma, en ese instante, de todo lo que cabe en los 2.4 MHz —las emisoras, fuertes y débiles, y el ruido—, y en pantalla parece ruido.
+
+El Frequency Sink usa la ventana Blackman-Harris y no la rectangular de 1.5: cambia cuánto se derrama cada componente sobre los bins vecinos, como avisa la nota del final de la sección 1, pero no dónde están los bins, que siguen separados $f_s / N$.
 
 ??? question "2.3. ¿Cuánto tiempo y cuántos hercios?"
     El Time Sink dibuja 1024 / 2 400 000 s = 426.7 µs, menos de medio milisegundo. Su eje, rotulado `Time (us)`, va de 0 a unos 427: GNU Radio escribe `us` por µs.
@@ -235,7 +238,9 @@ El Frequency Sink usa la ventana Blackman-Harris y no la rectangular de 1.5. Cam
 ??? question "2.4. 1 ms y 1 kHz a 2.4 MS/s"
     Por el atajo de 1.1, 1 ms son 2400 muestras. `Number of Points` no exige potencia de dos, así que con 2400 el eje del Time Sink llega a 1000 us.
 
-    Bins de 1 kHz piden $N = f_s / \Delta f = 2\,400\,000 / 1000 = 2400$. Pero 2400 no es potencia de dos, y como viste en 1.5, GRC no deja generar el grafo con ese `FFT Size`. La potencia de dos más cercana es 2048: bins a 2 400 000 / 2048 = 1171.875 Hz, y cada espectro abarca 2048 / 2 400 000 s = 853.3 µs.
+    Bins de 1 kHz piden $N = f_s / \Delta f = 2\,400\,000 / 1000 = 2400$. Pero 2400 no es potencia de dos, y como avisa 1.5, GRC no deja generar el grafo con ese `FFT Size`. La potencia de dos más cercana es 2048: bins a 2 400 000 / 2048 = 1171.875 Hz, y cada espectro abarca 2048 / 2 400 000 s = 853.3 µs.
+
+    Si hace falta separar al menos 1 kHz, sirve 4096: bins a 585.9 Hz, a cambio de 1.7 ms por espectro.
 
 Las cuentas son las de la sección 1; solo cambió la escala.
 
@@ -243,7 +248,10 @@ Las cuentas son las de la sección 1; solo cambió la escala.
 |---:|---:|---:|
 | 1024 | 426.7 µs | 2343.75 Hz |
 | 2048 | 853.3 µs | 1171.875 Hz |
-| 2400 | 1 ms | 1000 Hz, pero GRC no lo acepta como `FFT Size` |
+| 2400 | 1 ms | 1000 Hz |
+| 4096 | 1.7 ms | 585.9 Hz |
+
+2400 vale como `Number of Points`, pero no como `FFT Size`.
 
 ## 3. La escalera con hardware real
 
