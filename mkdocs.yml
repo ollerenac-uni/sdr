@@ -73,7 +73,9 @@ nav:
   - Inicio: index.md
   - Sesiones:
       - sessions/index.md
-      - "01 — Introducción a SDR": sessions/01-introduccion-sdr/index.md
+      - "01 — Introducción a SDR":
+          - sessions/01-introduccion-sdr/index.md
+          - "Laboratorio de muestreo": sessions/01-introduccion-sdr/laboratorio-muestreo.md
       - "02 — Del tiempo al espectro": sessions/02-tiempo-frecuencia-iq/index.md
   - Guías:
       - setup/index.md

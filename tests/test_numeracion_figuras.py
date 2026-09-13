@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).parents[1]
-SESIONES = sorted(ROOT.glob("docs/sessions/*/index.md"))
+SESIONES = sorted(ROOT.glob("docs/sessions/*/*.md"))
 
 PIE = re.compile(r"^\*\*Figura (\d+)\.\*\*\s*(.+)$")
 IMAGEN = re.compile(r"^!\[(.*?)\]\((figures/[^)]+)\)")
@@ -27,18 +27,30 @@ def pies_de(sesion):
     return [int(m.group(1)) for l in lineas(sesion) if (m := PIE.match(l))]
 
 
+def nombre(sesion):
+    return str(sesion.relative_to(ROOT / "docs/sessions"))
+
+
 class TestNumeracionDeFiguras(unittest.TestCase):
     def test_hay_sesiones_que_revisar(self):
         self.assertTrue(SESIONES, "No se encontró ninguna sesión en docs/sessions/")
 
+    def test_cubre_todas_las_paginas_de_cada_sesion(self):
+        """Una guía hermana de index.md también numera figuras y necesita la misma red."""
+        paginas = set(ROOT.glob("docs/sessions/*/*.md"))
+        self.assertTrue(
+            paginas <= set(SESIONES),
+            f"Páginas sin revisar: {sorted(str(p.relative_to(ROOT)) for p in paginas - set(SESIONES))}",
+        )
+
     def test_los_pies_van_de_uno_a_n_sin_saltos(self):
         for sesion in SESIONES:
-            with self.subTest(sesion=sesion.parent.name):
+            with self.subTest(sesion=nombre(sesion)):
                 nums = pies_de(sesion)
                 self.assertEqual(
                     nums,
                     list(range(1, len(nums) + 1)),
-                    f"Numeración rota en {sesion.parent.name}: {nums}. "
+                    f"Numeración rota en {nombre(sesion)}: {nums}. "
                     "Renumera los pies posteriores tras insertar una figura (AGENTS.md).",
                 )
 
@@ -49,10 +61,10 @@ class TestNumeracionDeFiguras(unittest.TestCase):
                 if not (m := IMAGEN.match(l)):
                     continue
                 siguientes = L[i + 1 : i + 4]
-                with self.subTest(sesion=sesion.parent.name, figura=m.group(2)):
+                with self.subTest(sesion=nombre(sesion), figura=m.group(2)):
                     self.assertTrue(
                         any(PIE.match(s) for s in siguientes),
-                        f"{m.group(2)} en {sesion.parent.name}:{i+1} no tiene pie "
+                        f"{m.group(2)} en {nombre(sesion)}:{i+1} no tiene pie "
                         "'**Figura N.** …' en las tres líneas siguientes.",
                     )
 
@@ -60,7 +72,7 @@ class TestNumeracionDeFiguras(unittest.TestCase):
         for sesion in SESIONES:
             for l in lineas(sesion):
                 if m := IMAGEN.match(l):
-                    with self.subTest(sesion=sesion.parent.name, figura=m.group(2)):
+                    with self.subTest(sesion=nombre(sesion), figura=m.group(2)):
                         self.assertTrue((sesion.parent / m.group(2)).exists(),
                                         f"Falta el archivo {m.group(2)}")
 
@@ -68,7 +80,7 @@ class TestNumeracionDeFiguras(unittest.TestCase):
         for sesion in SESIONES:
             for i, l in enumerate(lineas(sesion)):
                 if m := IMAGEN.match(l):
-                    with self.subTest(sesion=sesion.parent.name, linea=i + 1):
+                    with self.subTest(sesion=nombre(sesion), linea=i + 1):
                         self.assertGreater(len(m.group(1)), 20,
                                            f"Texto alternativo demasiado corto en {m.group(2)}")
 
@@ -81,10 +93,10 @@ class TestNumeracionDeFiguras(unittest.TestCase):
                 if PIE.match(l):
                     continue
                 for n in map(int, cita.findall(l)):
-                    with self.subTest(sesion=sesion.parent.name, linea=i + 1, cita=n):
+                    with self.subTest(sesion=nombre(sesion), linea=i + 1, cita=n):
                         self.assertLessEqual(
                             n, total,
-                            f"{sesion.parent.name}:{i+1} cita la Figura {n} pero la sesión "
+                            f"{nombre(sesion)}:{i+1} cita la Figura {n} pero la sesión "
                             f"solo tiene {total}.",
                         )
 
