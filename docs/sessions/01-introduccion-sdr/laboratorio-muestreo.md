@@ -16,6 +16,7 @@ Materiales, en la misma carpeta `sdr/` de la Sesión 01:
 | [`gen_tono.py`](https://github.com/ollerenac-uni/sdr/blob/main/samples/gen_tono.py) | `sdr/samples/` | Genera `tono_1kHz_32kSps.cu8`. Sección 1 |
 | [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/warmup_32k.grc) | `sdr/gnuradio-flowgraphs/`, porque lee `../samples/` | Grafo de la sección 1 |
 | [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc) | `sdr/gnuradio-flowgraphs/`, ya lo tienes de la Sesión 01 | Solución de referencia de la Parte C. Sección 2 |
+| [`decimacion.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/decimacion.grc) | `sdr/gnuradio-flowgraphs/`, porque lee `../samples/` | Comparación de decimación con y sin filtro. Sección 4 |
 | `fm_99p1MHz_2p4Msps_g30.cu8` | `sdr/samples/` | La grabación de la Sesión 01. Secciones 2, 4 y 6 |
 
 ## 1. Warm-up: el milisegundo que se puede contar
@@ -343,9 +344,68 @@ La primera debe ocupar 24 000 000 bytes y la segunda 6 000 000 bytes. Conserva l
 
 ## 4. Decimación en software
 
-## 5. El careo: grabado contra decimado
+La grabación original contiene muestras complejas a 2.4 MS/s. En esta sección se construyen dos versiones de ella a 300 kS/s, sin usar de nuevo el dongle. Las dos reducen la tasa por el mismo factor,
+
+$$
+f_{s,\mathrm{salida}} = \frac{f_{s,\mathrm{entrada}}}{D}
+= \frac{2.4\ \mathrm{MS/s}}{8} = 300\ \mathrm{kS/s}.
+$$
+
+Una señal compleja a 300 kS/s ocupa una ventana de frecuencia de −150 a +150 kHz alrededor de 0 Hz. La emisora sintonizada a 99.1 MHz sigue en 0 Hz; lo que cambia es cuánto contenido vecino puede sobrevivir alrededor de ella.
+
+La comparación sirve para separar dos ideas que suelen confundirse:
+
+- **Reducir la tasa** significa entregar menos muestras por segundo. Aquí se conservará una de cada ocho.
+- **Reducir el espectro correctamente** exige preparar la señal antes de retirar muestras. El contenido que no cabe en la nueva ventana debe ser atenuado primero.
+
+**4.1. Preparar la comparación.** El estudiante abre [`decimacion.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/decimacion.grc) en GNU Radio Companion y lo ejecuta con **F6**. El grafo lee la grabación oficial, centra y escala sus bytes como `test2.grc`, y a partir de esa señal compleja crea tres caminos:
+
+| Camino | Bloque principal | Tasa de salida | Qué hace |
+|---|---|---:|---|
+| Referencia | — | 2.4 MS/s | Conserva la grabación original. |
+| Descarte directo | `Keep 1 in N`, con `N = D = 8` | 300 kS/s | Conserva una muestra y elimina las siete siguientes. |
+| Decimación correcta | `Decimating FIR Filter`, con `D = 8` | 300 kS/s | Filtra primero y después conserva una muestra de cada ocho. |
+
+Los tres visores muestran la misma zona central de la grabación, pero sus ejes no cubren lo mismo. El visor de referencia llega de −1.2 a +1.2 MHz. Los otros dos llegan de −150 a +150 kHz. Por eso no basta con ampliar o reducir el eje de una gráfica: se ha cambiado la señal que llega al visor.
+
+**4.2. Qué falla al solo retirar muestras.** `Keep 1 in N` es útil para demostrar el problema, pero no es un decimador completo. No pregunta qué frecuencias se están eliminando; simplemente toma las muestras 0, 8, 16, 24 y así sucesivamente.
+
+Una componente que estaba fuera de la nueva ventana no desaparece al hacer esto. Sus valores, vistos ahora con menos instantes por segundo, pueden parecer una componente distinta dentro de la ventana. Ese desplazamiento se llama *aliasing* o plegamiento espectral.
+
+En la grabación usada aquí aparece contenido intenso alrededor de −1.00 MHz relativo a 99.1 MHz, aproximadamente 98.10 MHz en frecuencia absoluta. Al descartar una de cada ocho muestras sin filtrar, aparece alrededor de −100 kHz dentro de la nueva ventana. No es una nueva señal en −100 kHz: es contenido lejano que se ha plegado allí.
+
+**4.3. Filtrar antes de retirar.** La tercera rama evita ese error. Su bloque `Decimating FIR Filter` usa este filtro:
+
+```python
+firdes.low_pass(1, samp_rate, 0.4*samp_rate/D, 0.1*samp_rate/D)
+```
+
+Con `samp_rate = 2400000` y `D = 8`, el filtro deja pasar con comodidad hasta 120 kHz, hace la transición entre 120 y 150 kHz y atenúa lo que queda fuera. Tiene 193 coeficientes y usa la ventana Hamming predeterminada de GNU Radio. Solo después de esa preparación el bloque toma una muestra de cada ocho.
+
+![Tres espectros de la grabación de 99.1 MHz: el original a 2.4 MS/s, el resultado de descartar siete de cada ocho muestras y el resultado de filtrar antes de descartar](figures/decimacion-con-y-sin-filtro.png)
+
+**Figura 2.** Decimación por ocho de la grabación oficial: sin filtro las señales fuera de la nueva banda se pliegan; con un filtro FIR previo solo se conserva la banda central.
+
+En (a), el eje completo permite ver contenido hasta ±1.2 MHz. En particular, hay actividad importante cerca de −1 MHz y +1 MHz que no cabe en una señal a 300 kS/s.
+
+En (b), el eje ya termina en ±150 kHz, pero aparecen picos y una banda ancha cerca de −100 kHz y +100 kHz. Vienen de posiciones alejadas del panel (a); no pertenecían originalmente a esa parte central del espectro. Es la huella visible del plegamiento.
+
+En (c), la línea verde conserva la región alrededor de 0 Hz y cae con fuerza al acercarse a los bordes. Los picos plegados que se veían en (b) ya no llegan al resultado porque el filtro los atenuó antes de retirar las muestras. La caída no es vertical: entre 120 y 150 kHz está la banda de transición necesaria para que un filtro real pase suavemente de «dejar pasar» a «atenuar».
+
+El proceso que realiza esta tercera rama es la misma idea que ya aparece dentro del receptor de la [Sesión 01](index.md): tras convertir la señal a I/Q, el receptor filtra y reduce la tasa antes de enviar las muestras por USB. Aquí la operación se observa después de grabar, con tres visores que permiten comparar sus consecuencias.
+
+**4.4. Comprobar una reducción menor.** El estudiante cambia `D` de 8 a 2 y ejecuta de nuevo. La tasa de salida pasa a 1.2 MS/s y cada uno de los dos visores inferiores debe configurarse automáticamente para un ancho de `samp_rate/D`: de −600 a +600 kHz.
+
+Antes de mirar los visores, el estudiante debe anotar una predicción: ¿qué contenido de la captura original queda fuera de ±600 kHz?, ¿podría aparecer dentro de ese intervalo si se usa solo `Keep 1 in N`? Después debe comparar las dos ramas y describir únicamente lo observado: qué picos aparecen sin filtro, cuáles desaparecen con el FIR y si la diferencia es menor o mayor que con `D = 8`.
+
+??? question "4.4. ¿Qué representa la señal de −100 kHz?"
+    No representa necesariamente una señal que estuviera a −100 kHz de la emisora central. En la comparación de `D = 8`, el contenido próximo a −1 MHz de la grabación original se reubica cerca de −100 kHz cuando se retiran muestras sin filtro. Es una copia plegada por el cambio de tasa.
+
+    La rama FIR no «borra una emisora en −100 kHz»: impide que el contenido de fuera de ±150 kHz llegue a plegarse allí. Por eso el orden importa: primero filtrar y después descartar.
+
+<!-- ## 5. El careo: grabado contra decimado
 
 !!! warning "Pendiente"
     Esta parte necesita la grabación a 300 kS/s, que todavía no está publicada.
 
-## 6. Interpolación
+## 6. Interpolación -->
