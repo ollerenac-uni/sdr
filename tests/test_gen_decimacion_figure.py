@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -40,10 +41,10 @@ class TestDecimacionDeLaFigura(unittest.TestCase):
                          "Falta la grabación oficial; se descarga de Drive")
     def test_genera_la_figura_de_decimacion(self):
         g = cargar()
-        destino = ROOT / "docs/sessions/01-introduccion-sdr/figures"
-        ruta = g.generar(destino)
-        self.assertEqual(ruta.name, "decimacion-con-y-sin-filtro.png")
-        self.assertGreater(ruta.stat().st_size, 10_000)
+        with tempfile.TemporaryDirectory() as temporal:
+            ruta = g.generar(Path(temporal))
+            self.assertEqual(ruta.name, "decimacion-con-y-sin-filtro.png")
+            self.assertGreater(ruta.stat().st_size, 10_000)
 
 
 if __name__ == "__main__":

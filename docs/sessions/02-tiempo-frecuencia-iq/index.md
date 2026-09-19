@@ -133,36 +133,62 @@ No se calculará esa suma a mano. Su interpretación práctica es suficiente: pa
 
 La DFT trata el bloque como si se repitiera indefinidamente. En ese modelo, la última muestra queda junto a la primera. Esta vecindad circular es importante porque una unión brusca introduce un borde artificial.
 
-### 4. Construir correctamente los ejes de la FFT
+### 4. De $N$ muestras a $N$ bins de frecuencia
 
-Los bins están separados por
+Una FFT toma un bloque de $N$ muestras y entrega exactamente $N$ números complejos. Cada número de salida es un **bin**: la medida de cuánto hay de una frecuencia concreta dentro del bloque. No crea muestras ni las elimina; cambia la forma de describirlas:
 
 $$
-\Delta f = \frac{f_s}{N}.
+\underbrace{x[0],x[1],\ldots,x[N-1]}_{N\ \text{muestras en el tiempo}}
+\quad\longrightarrow\quad
+\underbrace{X[0],X[1],\ldots,X[N-1]}_{N\ \text{bins en frecuencia}}.
 $$
 
-Este valor debe llamarse **separación entre bins**. La capacidad real de distinguir dos señales cercanas también depende de la ventana, la duración de la captura, el ruido y la diferencia de amplitudes.
+Para que esos bins tengan unidades de hercios hacen falta dos datos: la tasa de muestreo $f_s$ y el número de muestras $N$. Cada uno controla algo distinto.
 
 ![Relación entre un bloque temporal de N muestras y los N bins de una FFT compleja centrada](figures/ejes-fft.png)
 
 **Figura 3.** $f_s$ fija el intervalo total representado; $N$ divide ese intervalo en bins. Aumentar $N$ no aumenta el ancho de banda observado.
 
-Para muestras complejas I/Q, los $N$ bins cubren un intervalo completo de ancho $f_s$. Después de centrar la FFT con `fftshift`, el eje habitual es
+**Primero: $f_s$ fija el intervalo total.** Para muestras complejas I/Q, los $N$ bins cubren un intervalo completo de ancho $f_s$. Después de centrar la FFT con `fftshift`, el eje habitual es
 
 $$
 -\frac{f_s}{2}\leq f < +\frac{f_s}{2}.
 $$
 
-Algunos tamaños usados en el curso ilustran el compromiso:
+Por ejemplo, con $f_s=2.4$ MS/s, la FFT representa desde −1.2 hasta justo antes de +1.2 MHz, sin importar si se calculó con 1024, 4096 o 32768 muestras. Más muestras no hacen que aparezca más espectro: solo miran durante más tiempo el mismo intervalo.
+
+**Después: $N$ divide ese intervalo.** La distancia entre dos bins vecinos es
+
+$$
+\Delta f = \frac{f_s}{N}.
+$$
+
+Un bin que está tres posiciones a la derecha de 0 representa la frecuencia $+3\Delta f$; uno dos posiciones a la izquierda representa $-2\Delta f$. Este valor se llama **separación entre bins**. No es por sí solo la capacidad real de distinguir dos señales cercanas: también influyen la ventana, el ruido, la duración de la captura y la diferencia de amplitudes.
+
+Los dos cambios posibles se entienden mejor por separado.
+
+**Caso A: aumentar $N$ y conservar $f_s$.** La captura dura más tiempo y los bins quedan más juntos, pero el intervalo observado no cambia.
 
 | $f_s$ | $N$ | $T_{captura}=N/f_s$ | $\Delta f=f_s/N$ | Intervalo complejo |
 |---:|---:|---:|---:|---:|
-| 32 kS/s | 1 024 | 32 ms | 31.25 Hz | $-16$ a $+16$ kHz |
 | 2.4 MS/s | 1 024 | 0.427 ms | 2.344 kHz | $-1.2$ a $+1.2$ MHz |
 | 2.4 MS/s | 4 096 | 1.707 ms | 585.94 Hz | $-1.2$ a $+1.2$ MHz |
 | 2.4 MS/s | 32 768 | 13.653 ms | 73.24 Hz | $-1.2$ a $+1.2$ MHz |
 
-Duplicar $N$ reduce $\Delta f$ a la mitad porque la FFT observa el doble de tiempo. Duplicar $f_s$ manteniendo $N$ duplica el intervalo observado, pero también duplica la separación entre bins.
+Al pasar de 1024 a 4096 muestras, $N$ se multiplica por cuatro. La captura pasa de 0.427 a 1.707 ms y la separación pasa de 2344 a 586 Hz: los bins quedan cuatro veces más juntos. El eje sigue llegando de −1.2 a +1.2 MHz.
+
+**Caso B: aumentar $f_s$ y conservar $N$.** Ahora entra un intervalo más ancho, pero las mismas $N$ muestras ocupan menos tiempo y los bins quedan más separados.
+
+| $f_s$ | $N$ | $T_{captura}=N/f_s$ | $\Delta f=f_s/N$ | Intervalo complejo |
+|---:|---:|---:|---:|---|
+| 2.4 MS/s | 1 024 | 0.427 ms | 2.344 kHz | $-1.2$ a $+1.2$ MHz |
+| 4.8 MS/s | 1 024 | 0.213 ms | 4.688 kHz | $-2.4$ a $+2.4$ MHz |
+
+Al duplicar $f_s$, el intervalo pasa de 2.4 a 4.8 MHz de ancho. Pero el bloque sigue teniendo solo 1024 muestras: dura la mitad y cada bin queda separado por el doble de hercios.
+
+La regla para retener es:
+
+> Más $N$ con el mismo $f_s$: más tiempo de observación y bins más juntos. Más $f_s$ con el mismo $N$: más ancho de banda, menos tiempo de observación y bins más separados.
 
 ??? question "Predicción antes de tocar el programa"
     Un Frequency Sink utiliza $f_s=1$ MS/s y $N=2\,000$. ¿Qué intervalo muestra con muestras complejas? ¿Cuál es la separación entre bins?
