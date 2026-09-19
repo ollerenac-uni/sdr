@@ -14,11 +14,11 @@ Materiales, en la misma carpeta `sdr/` de la Sesión 01:
 | Archivo | Dónde va | Qué es |
 |---|---|---|
 | [`gen_tono.py`](https://github.com/ollerenac-uni/sdr/blob/main/samples/gen_tono.py) | `sdr/samples/` | Genera `tono_1kHz_32kSps.cu8`. Sección 1 |
-| [`calentamiento_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/calentamiento_32k.grc) | `sdr/gnuradio-flowgraphs/`, porque lee `../samples/` | Grafo de la sección 1 |
+| [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/warmup_32k.grc) | `sdr/gnuradio-flowgraphs/`, porque lee `../samples/` | Grafo de la sección 1 |
 | [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc) | `sdr/gnuradio-flowgraphs/`, ya lo tienes de la Sesión 01 | Solución de referencia de la Parte C. Sección 2 |
 | `fm_99p1MHz_2p4Msps_g30.cu8` | `sdr/samples/` | La grabación de la Sesión 01. Secciones 2, 4 y 6 |
 
-## 1. Calentamiento: el milisegundo que se puede contar
+## 1. Warm-up: el milisegundo que se puede contar
 
 La grabación de la Sesión 01 tiene 24 millones de muestras y nadie puede mirarlas una a una. Esta sección usa un archivo tan simple que sí se puede: un tono de 1 kHz muestreado a 32 kS/s, donde un milisegundo cabe en 32 líneas de terminal.
 
@@ -26,7 +26,7 @@ La grabación de la Sesión 01 tiene 24 millones de muestras y nadie puede mirar
 
 1. A 32 kS/s, ¿cuántas muestras hay en 1 ms?
 2. ¿Y en 1 s?
-3. El archivo que vas a generar ocupa 6400 bytes en formato `.cu8`. ¿Cuánto dura?
+3. El archivo que vamos a generar ocupa 6400 bytes en formato `.cu8`. ¿Cuánto dura?
 
 Basta una regla: el número de muestras es la tasa por la duración,
 
@@ -34,7 +34,7 @@ $$
 N = f_s \cdot T.
 $$
 
-Tiene un atajo que conviene retener: **en 1 ms hay tantas muestras como kS/s tenga $f_s$**, porque 1 ms es 1/1000 s y «kS/s» significa miles de muestras por segundo.
+<!-- Tiene un atajo que conviene retener: **en 1 ms hay tantas muestras como kS/s tenga $f_s$**, porque 1 ms es 1/1000 s y «kS/s» significa miles de muestras por segundo. -->
 
 ??? question "1.1. ¿Cuántas muestras y cuánto tiempo?"
     En 1 ms hay $32\,000 \cdot 0.001 = 32$ muestras. Es el atajo: 32 kS/s, 32 muestras por milisegundo.
@@ -128,7 +128,7 @@ La primera línea empieza por `0000000 344 200 342 223`. Es el mismo archivo, as
 
     Cada muestra ocupa dos líneas: arriba en octal y debajo en decimal.
 
-**1.3. Los mismos bytes en GNU Radio.** Abre [`calentamiento_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/calentamiento_32k.grc). La cadena es la de la Parte C de la Sesión 01, con estos cambios:
+**1.3. Los mismos bytes en GNU Radio.** Abre [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/calentamiento_32k.grc). La cadena es la de la Parte C de la Sesión 01, con estos cambios:
 
 - `samp_rate` vale `32000` y el `File Source` lee `tono_1kHz_32kSps.cu8`.
 - El `File Source` tiene `Repeat` en `No` y `Length` en 64. `Length` cuenta elementos del tipo de salida, que aquí es `Byte`: son los 64 bytes que pediste a `od` con `-N64`. Forman 32 muestras complejas, cada una un par (I, Q) del mismo instante; no son 64 muestras, ni 32 valores de I seguidos de 32 de Q.

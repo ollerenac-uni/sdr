@@ -545,10 +545,10 @@ Fuera de alcance: Wi-Fi y Bluetooth (2.4 GHz, fuera del rango del tuner y con 20
 
 La recepción técnica no autoriza el acceso a cualquier comunicación. La legislación peruana protege la inviolabilidad de las telecomunicaciones:
 
-- El [TUO de la Ley de Telecomunicaciones](https://www.osiptel.gob.pe/media/kbejkkkk/ds013-93-tcc-tuo-ley-de-telecomunicaciones.pdf), DS 013-93-TCC, art. 4, declara inviolable el secreto de las telecomunicaciones.
+- El [TUO de la Ley de Telecomunicaciones](https://www.osiptel.gob.pe/media/kbejkkkk/ds013-93-tcc-tuo-ley-de-telecomunicaciones.pdf), DS 013-93-TCC, art. 4, declara inviolable el secreto de las telecomunicaciones. También tipifica como infracción muy grave la interceptación de servicios no destinados al uso libre del público y la divulgación de su contenido.
 
-  También tipifica como infracción muy grave la interceptación de servicios no destinados al uso libre del público y la divulgación de su contenido.
 - El [Reglamento General](https://www.osiptel.gob.pe/media/wvidghyb/ds06-94-tcc-reg-general-ley-de-telecomunicaciones.pdf), DS 06-94-TCC, art. 10, considera violación intentar conocer una comunicación ajena.
+
 - El Código Penal (art. 162 y 162-A) sanciona la interceptación de comunicaciones telefónicas o similares y la posesión de equipos destinados a interceptarlas.
 
 La recepción de radiodifusión, señales de navegación y emisiones destinadas al público no requiere una licencia de receptor. De este marco se derivan las reglas del curso:
