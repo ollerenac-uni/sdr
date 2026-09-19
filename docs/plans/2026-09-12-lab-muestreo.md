@@ -1525,16 +1525,7 @@ rtl_sdr -f 99.1e6 -s 1200000 -g 30 -n 12000000 samples/fm_99p1MHz_1p2Msps_g30.cu
 rtl_sdr -f 99.1e6 -s 300000  -g 30 -n 3000000  samples/fm_99p1MHz_0p3Msps_g30.cu8
 ```
 
-**Step 2: La tasa prohibida, en vivo**
-
-```bash
-rtl_sdr -f 99.1e6 -s 600000 -g 30 -n 6000000 /tmp/prueba_600k.cu8 2>&1 | tee /tmp/prueba_600k.log
-ls -l /tmp/prueba_600k.cu8
-```
-
-Por el binario se sabe que `librtlsdr` imprime `Invalid sample rate: 600000 Hz` y devuelve error. **Lo que no está verificado es qué hace `rtl_sdr` después**: si aborta, o si avisa y graba igualmente a otra tasa. Copiar el log completo y el tamaño del archivo, si existe. La sección 3 contará lo que ocurra de verdad.
-
-**Step 3: Comprobar y publicar**
+**Step 2: Comprobar y publicar**
 
 ```bash
 stat -c %s samples/fm_99p1MHz_1p2Msps_g30.cu8 samples/fm_99p1MHz_0p3Msps_g30.cu8
@@ -1547,7 +1538,7 @@ Subir ambas a la carpeta `samples` de Drive y entregar, de cada una: nombre, `fc
 
 ---
 
-### Task 15: Sección 3 — La escalera con hardware real
+### Task 15: Sección 3 — Tres tasas de muestreo reales
 
 **Bloqueada por la Tarea 14.**
 
@@ -1558,19 +1549,14 @@ Subir ambas a la carpeta `samples` de Drive y entregar, de cada una: nombre, `fc
 
 **Step 1: Escribir el test que falla**
 
-Sustituir `<sha_1p2>`, `<sha_0p3>` y `<mensaje_600k>` por lo entregado en la Tarea 14:
+Sustituir `<sha_1p2>` y `<sha_0p3>` por lo entregado en la Tarea 14:
 
 ```python
-class TestEscalera(unittest.TestCase):
+class TestTresTasas(unittest.TestCase):
     def test_metadatos_de_las_grabaciones(self):
         pagina = texto()
         for dato in ("fm_99p1MHz_1p2Msps_g30.cu8", "24000000", "<sha_1p2>",
                      "fm_99p1MHz_0p3Msps_g30.cu8", "6000000", "<sha_0p3>"):
-            self.assertIn(dato, pagina)
-
-    def test_la_tasa_prohibida(self):
-        pagina = texto()
-        for dato in ("225 001", "300 000", "900 001", "3 200 000", "<mensaje_600k>"):
             self.assertIn(dato, pagina)
 
     def test_quita_el_aviso_de_pendiente(self):
@@ -1587,7 +1573,7 @@ Expected: FAIL en `TestEscalera`.
 
 Hechos:
 - Tabla de las tres grabaciones: nombre, `fs`, tamaño, duración, SHA-256, con la descarga y la comprobación de hash igual que en la Sesión 01.
-- La escalera 2.4 → 1.2 → 0.6 → 0.3 y el peldaño prohibido. Rangos válidos de `librtlsdr`: 225 001–300 000 y 900 001–3 200 000 Hz. Comando de la Tarea 14, Step 2, y su salida real.
+- Las tres tasas 2.4 → 1.2 → 0.3 MS/s, con los demás parámetros de captura constantes.
 - Con la regla de las secciones 1 y 2: a igual `fftsize = 1024`, separación entre bins de 2343.75, 1171.875 y 292.97 Hz; banda visible de ±1.2 MHz, ±600 kHz y ±150 kHz; tamaño del archivo proporcional a `fs`.
 - Ejercicio: abrir cada grabación en `test2.grc` cambiando `samp_rate` y el archivo, y contar cuántas emisoras se ven.
 - Quitar el aviso `!!! warning "Pendiente"`.
@@ -1600,7 +1586,7 @@ Run: `/usr/bin/python3 -m pytest -q tests/ && mkdocs build --strict`
 
 ```bash
 git add docs/sessions/01-introduccion-sdr/laboratorio-muestreo.md tests/test_laboratorio_muestreo.py AGENTS.md
-git commit -m "Laboratorio de muestreo §3: tres grabaciones reales y la tasa que el driver rechaza"
+git commit -m "Laboratorio de muestreo §3: tres grabaciones reales a distintas tasas"
 ```
 
 ---

@@ -321,10 +321,25 @@ Las cuentas son las de la sección 1; solo cambió la escala.
 
 2400 vale como `Number of Points`, pero no como `FFT Size`.
 
-## 3. La escalera con hardware real
+## 3. Tres tasas de muestreo reales
 
 !!! warning "Pendiente"
     Esta parte necesita dos grabaciones nuevas, a 1.2 MS/s y a 300 kS/s, que todavía no están publicadas.
+
+Cuando estén disponibles, se compararán con la grabación oficial de 2.4 MS/s. La frecuencia central, la ganancia, la antena y la duración se mantendrán iguales; solo cambiará la tasa de muestreo.
+
+Con el entorno `(base)` activo y desde la raíz `sdr/`, crea las dos capturas de diez segundos:
+
+```bash
+rtl_sdr -f 99.1e6 -s 1200000 -g 30 -n 12000000 samples/fm_99p1MHz_1p2Msps_g30.cu8
+rtl_sdr -f 99.1e6 -s 300000 -g 30 -n 3000000 samples/fm_99p1MHz_0p3Msps_g30.cu8
+```
+
+La primera debe ocupar 24 000 000 bytes y la segunda 6 000 000 bytes. Conserva los mismos datos de antena y ubicación que en la captura oficial; después comparte ambas desde la carpeta `samples` del curso, con su SHA-256 y metadatos.
+
+- La ventana visible se estrecha a ±1.2 MHz y ±150 kHz: cada captura contiene menos banda alrededor de la emisora central.
+- Los archivos de diez segundos pesan 24 y 6 MB, porque el número de muestras es proporcional a $f_s$.
+- Abre cada archivo en `test2.grc`, cambia `samp_rate`.
 
 ## 4. Decimación en software
 

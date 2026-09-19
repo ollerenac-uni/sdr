@@ -104,15 +104,14 @@ Las hace el profesor con el dongle. Todo idéntico salvo `fs`: `fc` 99.1 MHz, ga
 |---|---|---|---|---|
 | 2 400 000 | ÷1 | acepta | 48 MB | ya existe en `samples/` |
 | 1 200 000 | ÷2 exacto | acepta | 24 MB | **grabar** |
-| 600 000 | ÷4 exacto | **rechaza** | — | no es un archivo: es un comando que falla |
 | 300 000 | ÷8 exacto | acepta | 6 MB | **grabar** |
 
 Se eligen por dar cociente entero con 2.4 Msps. Con cocientes no enteros (1.8 M, 1.024 M,
 250 k) haría falta un *rational resampler* para comparar real contra decimado, lo que
 ensucia la lección.
 
-La escalera obvia divide por dos cada vez —2.4, 1.2, 0.6, 0.3— y el hardware prohíbe
-exactamente el peldaño del medio. El alumno lo descubre ejecutando un comando que falla.
+Las tres tasas elegidas permiten comparar directamente la grabación de 2.4 Msps con
+versiones a la mitad y a un octavo de su tasa.
 
 ## Estructura
 
@@ -157,10 +156,10 @@ La grabación real de 2.4 Msps. Un milisegundo son 2400 muestras y el conteo a m
 ser viable: la fórmula sustituye al conteo. Con FFT de 1024, RBW 2343.75 Hz y una ventana
 que dura 426.7 µs.
 
-### §3 La escalera con hardware real
+### §3 Tres tasas de muestreo reales
 
-2.4 → 1.2 → *(600 k rechazado en vivo)* → 300 k. A igual tamaño de FFT, qué cambia: ancho
-de banda visible, RBW y peso del archivo.
+2.4 → 1.2 → 0.3 Msps. A igual tamaño de FFT, qué cambia: ancho de banda visible, RBW y
+peso del archivo.
 
 ### §4 Decimación en software
 
@@ -194,7 +193,6 @@ vacío. Interpolar no inventa información.
 | Sin bloques nuevos en el calentamiento | La dificultad es aritmética, no de conexión de bloques |
 | fs = 32 kSps | Único orden de magnitud donde 1 ms cabe en una pantalla de `od` |
 | Grabar 1.2 Msps y 300 kSps | Únicos cocientes enteros de 2.4 Msps que el driver acepta |
-| 600 kSps como fallo deliberado | Mismo patrón que `test.grc`: el error diagnosticado es contenido |
 | La fuga espectral se queda en S02 §5 | Ya está explicada ahí; repetirla duplica |
 
 ## Trabajo que depende del profesor
