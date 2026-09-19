@@ -12,7 +12,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: test2
+    id: test3
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -145,7 +145,7 @@ blocks:
     begin_tag: pmt.PMT_NIL
     comment: Fuente predeterminada sin hardware. Usa una muestra convertida de CU8
       a complex64.
-    file: /home/researcher/Teaching/uni/2026/sdr/samples/tono_1kHz_32kSps.cu8
+    file: ../samples/tono_1kHz_32kSps.cu8
     length: '64'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -199,8 +199,8 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    comment: "Limita la reproducci\xF3n del archivo a samp_rate. Desactivar junto\
-      \ con File Source cuando se use el dongle."
+    comment: "Limita la reproducci\xF3n a 2*samp_rate bytes por segundo, dos por muestra\
+      \ compleja. Desactivar junto con File Source cuando se use el dongle."
     ignoretag: 'True'
     limit: auto
     maximum: '0.1'

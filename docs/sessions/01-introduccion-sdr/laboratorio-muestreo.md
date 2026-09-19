@@ -128,7 +128,7 @@ La primera línea empieza por `0000000 344 200 342 223`. Es el mismo archivo, as
 
     Cada muestra ocupa dos líneas: arriba en octal y debajo en decimal.
 
-**1.3. Los mismos bytes en GNU Radio.** Abre [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/calentamiento_32k.grc). La cadena es la de la Parte C de la Sesión 01, con estos cambios:
+**1.3. Los mismos bytes en GNU Radio.** Abre [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/warmup_32k.grc). La cadena es la de la Parte C de la Sesión 01, con estos cambios:
 
 - `samp_rate` vale `32000` y el `File Source` lee `tono_1kHz_32kSps.cu8`.
 - El `File Source` tiene `Repeat` en `No` y `Length` en 64. `Length` cuenta elementos del tipo de salida, que aquí es `Byte`: son los 64 bytes que pediste a `od` con `-N64`. Forman 32 muestras complejas, cada una un par (I, Q) del mismo instante; no son 64 muestras, ni 32 valores de I seguidos de 32 de Q.

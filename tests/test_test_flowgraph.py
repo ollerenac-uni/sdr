@@ -115,12 +115,21 @@ class TestContratoComun(unittest.TestCase):
                     self.assertIn(("soapy_rtlsdr_source_0", "0", sumidero, "0"), conexiones)
 
     def test_la_ruta_del_archivo_es_relativa(self):
-        """Ruta relativa al .grc: GRC ejecuta el grafo desde la carpeta del .grc."""
-        for nombre in ("test.grc", "test2.grc"):
+        """Todo File Source usa una ruta relativa: una ruta local no existe en la máquina del alumno."""
+        for ruta_grafo in sorted((ROOT / "gnuradio-flowgraphs").glob("*.grc")):
+            nombre = ruta_grafo.name
             with self.subTest(grafo=nombre):
                 _, bloques, _ = cargar(nombre)
-                ruta = bloques["blocks_file_source_0"]["parameters"]["file"]
-                self.assertEqual(ruta, MUESTRA)
+                for bloque in bloques.values():
+                    if bloque["id"] != "blocks_file_source":
+                        continue
+                    ruta = Path(bloque["parameters"]["file"])
+                    self.assertFalse(ruta.is_absolute(), f"{nombre}: ruta absoluta {ruta}")
+
+        for nombre in ("test.grc", "test2.grc"):
+            with self.subTest(grafo=nombre, muestra="oficial"):
+                _, bloques, _ = cargar(nombre)
+                self.assertEqual(bloques["blocks_file_source_0"]["parameters"]["file"], MUESTRA)
 
     def test_los_identificadores_no_colisionan(self):
         """Con el mismo id, grcc genera el mismo .py y un grafo pisa al otro."""

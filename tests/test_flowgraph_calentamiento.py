@@ -19,13 +19,13 @@ def cargar(nombre):
 class TestCalentamiento(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.grafo, cls.b, cls.c = cargar("calentamiento_32k.grc")
+        cls.grafo, cls.b, cls.c = cargar("warmup_32k.grc")
 
     def p(self, nombre):
         return self.b[nombre]["parameters"]
 
     def test_identidad_y_tasa(self):
-        self.assertEqual(self.grafo["options"]["parameters"]["id"], "calentamiento_32k")
+        self.assertEqual(self.grafo["options"]["parameters"]["id"], "warmup_32k")
         self.assertEqual(self.p("samp_rate")["value"], "32000")
 
     def test_lee_el_tono_como_bytes(self):

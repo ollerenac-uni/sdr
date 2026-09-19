@@ -101,7 +101,7 @@ class TestCalentamiento(unittest.TestCase):
     def test_enlaza_el_generador_y_el_grafo(self):
         pagina = texto()
         self.assertIn(GITHUB + "samples/gen_tono.py", pagina)
-        self.assertIn(GITHUB + "gnuradio-flowgraphs/calentamiento_32k.grc", pagina)
+        self.assertIn(GITHUB + "gnuradio-flowgraphs/warmup_32k.grc", pagina)
 
     def test_cita_los_numeros_que_sostienen_el_ejercicio(self):
         pagina = texto()

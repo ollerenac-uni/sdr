@@ -145,7 +145,7 @@ blocks:
     begin_tag: pmt.PMT_NIL
     comment: Fuente predeterminada sin hardware. Usa una muestra convertida de CU8
       a complex64.
-    file: /home/researcher/Teaching/uni/2026/sdr/samples/fm_99p1MHz_2p4Msps_g30.cu8
+    file: ../samples/fm_99p1MHz_2p4Msps_g30.cu8
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -199,14 +199,14 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    comment: "Limita la reproducci\xF3n del archivo a samp_rate. Desactivar junto\
-      \ con File Source cuando se use el dongle."
+    comment: "Limita la reproducci\xF3n a 2*samp_rate bytes por segundo, dos por muestra\
+      \ compleja. Desactivar junto con File Source cuando se use el dongle."
     ignoretag: 'True'
     limit: auto
     maximum: '0.1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: samp_rate
+    samples_per_second: 2*samp_rate
     type: byte
     vlen: '1'
   states:

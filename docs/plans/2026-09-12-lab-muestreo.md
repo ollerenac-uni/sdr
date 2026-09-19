@@ -361,7 +361,7 @@ git commit -m "Generador del tono de 1 kHz a 32 kS/s para el calentamiento del l
 ### Task 4: Grafo del calentamiento
 
 **Files:**
-- Create: `gnuradio-flowgraphs/calentamiento_32k.grc`
+- Create: `gnuradio-flowgraphs/warmup_32k.grc`
 - Test: `tests/test_flowgraph_calentamiento.py`
 - Modify: `tests/test_test_flowgraph.py`, método `test_los_identificadores_no_colisionan`
 - Test: `tests/test_grafos_compilan.py`
@@ -392,13 +392,13 @@ def cargar(nombre):
 class TestCalentamiento(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.grafo, cls.b, cls.c = cargar("calentamiento_32k.grc")
+        cls.grafo, cls.b, cls.c = cargar("warmup_32k.grc")
 
     def p(self, nombre):
         return self.b[nombre]["parameters"]
 
     def test_identidad_y_tasa(self):
-        self.assertEqual(self.grafo["options"]["parameters"]["id"], "calentamiento_32k")
+        self.assertEqual(self.grafo["options"]["parameters"]["id"], "warmup_32k")
         self.assertEqual(self.p("samp_rate")["value"], "32000")
 
     def test_lee_el_tono_como_bytes(self):
@@ -485,7 +485,7 @@ Hoy pasa con los tres grafos existentes (`RTL_SDR_rcv.grc`, `test.grc`, `test2.g
 **Step 2: Ejecutar y ver el fallo**
 
 Run: `/usr/bin/python3 -m pytest -q tests/test_flowgraph_calentamiento.py`
-Expected: FAIL con `FileNotFoundError` sobre `calentamiento_32k.grc`.
+Expected: FAIL con `FileNotFoundError` sobre `warmup_32k.grc`.
 
 **Step 3: Derivar el grafo de `test2.grc`**
 
@@ -500,7 +500,7 @@ g = yaml.safe_load((d / "test2.grc").read_text(encoding="utf-8"))
 fuera = {"soapy_rtlsdr_source_0", "freq", "rfGain", "M"}
 g["blocks"] = [b for b in g["blocks"] if b["name"] not in fuera]
 g["connections"] = [c for c in g["connections"] if c[0] not in fuera and c[2] not in fuera]
-g["options"]["parameters"]["id"] = "calentamiento_32k"
+g["options"]["parameters"]["id"] = "warmup_32k"
 g["options"]["parameters"]["title"] = "Laboratorio de muestreo - Calentamiento a 32 kS/s"
 b = {x["name"]: x["parameters"] for x in g["blocks"]}
 b["samp_rate"]["value"] = "32000"
@@ -508,7 +508,7 @@ b["blocks_file_source_0"]["file"] = "../samples/tono_1kHz_32kSps.cu8"
 b["qtgui_time_sink_x_0"].update(size="32", tr_mode="qtgui.TRIG_MODE_NORM",
     tr_slope="qtgui.TRIG_SLOPE_POS", tr_level="0.78", tr_chan="0", tr_delay="0")
 b["qtgui_freq_sink_x_0"].update(fftsize="32", fc="0", wintype="window.WIN_RECTANGULAR")
-(d / "calentamiento_32k.grc").write_text(
+(d / "warmup_32k.grc").write_text(
     yaml.safe_dump(g, sort_keys=False, allow_unicode=True), encoding="utf-8")
 PYEOF
 ```
@@ -519,14 +519,14 @@ Por qué 0.78: normalizadas, la muestra n=−1 vale 0.7725 y la n=0 vale 0.7882.
 
 Run:
 ```bash
-D=$(mktemp -d) && ~/radioconda/bin/grcc -o "$D" gnuradio-flowgraphs/calentamiento_32k.grc; echo "exit=$?"; rm -rf "$D"
+D=$(mktemp -d) && ~/radioconda/bin/grcc -o "$D" gnuradio-flowgraphs/warmup_32k.grc; echo "exit=$?"; rm -rf "$D"
 /usr/bin/python3 -m pytest -q tests/
 ```
 Expected: `exit=0`; todo en verde.
 
 **Step 5: Comprobación visual (con el profesor)**
 
-Abrir `gnuradio-flowgraphs/calentamiento_32k.grc` en GRC y ejecutar con F6, tras generar el tono en la Tarea 3.
+Abrir `gnuradio-flowgraphs/warmup_32k.grc` en GRC y ejecutar con F6, tras generar el tono en la Tarea 3.
 
 Expected:
 - Time Sink: un ciclo completo de ancho 1 ms, **quieto**; la curva real empieza arriba, en 0.788.
@@ -539,7 +539,7 @@ Si el trazo no empieza en el máximo, el parámetro a ajustar es `tr_delay`. Ano
 **Step 6: Commit**
 
 ```bash
-git add gnuradio-flowgraphs/calentamiento_32k.grc tests/test_flowgraph_calentamiento.py tests/test_test_flowgraph.py
+git add gnuradio-flowgraphs/warmup_32k.grc tests/test_flowgraph_calentamiento.py tests/test_test_flowgraph.py
 git commit -m "Grafo del calentamiento a 32 kS/s y comprobación de ids en todos los .grc"
 ```
 
@@ -727,7 +727,7 @@ class TestCalentamiento(unittest.TestCase):
     def test_enlaza_el_generador_y_el_grafo(self):
         pagina = texto()
         self.assertIn(GITHUB + "samples/gen_tono.py", pagina)
-        self.assertIn(GITHUB + "gnuradio-flowgraphs/calentamiento_32k.grc", pagina)
+        self.assertIn(GITHUB + "gnuradio-flowgraphs/warmup_32k.grc", pagina)
 
     def test_cita_los_numeros_que_sostienen_el_ejercicio(self):
         pagina = texto()
@@ -752,7 +752,7 @@ Antes de `## 1.`, añadir una introducción breve que diga para quién es (quien
 | Archivo | Qué es |
 |---|---|
 | [`gen_tono.py`](https://github.com/ollerenac-uni/sdr/blob/main/samples/gen_tono.py) | Genera `tono_1kHz_32kSps.cu8`. Secciones 1 |
-| [`calentamiento_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/calentamiento_32k.grc) | Grafo de la sección 1 |
+| [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/warmup_32k.grc) | Grafo de la sección 1 |
 | `fm_99p1MHz_2p4Msps_g30.cu8` | La grabación de la Sesión 01. Secciones 2, 4 y 6 |
 
 Bajo `## 1.`, cinco subsecciones con estos hechos exactos. La prosa es libre; los números, no.
@@ -784,7 +784,7 @@ Seguida de lectura guiada: la línea discontinua es el cero (127.5, lo que A6 de
 
 Añadir un aviso `!!! info` sobre el redondeo: en n=8 `od` da I=128 y en n=24 da 127, aunque el coseno vale cero en ambos. El cero del formato es 127.5, a medio camino entre dos enteros. Cuando la cuenta da **exactamente** 127.5 (n=0 en Q, n=8 en I), NumPy redondea al par: 128. Cuando la coma flotante deja un residuo del orden de 1e-14 que mueve la suma (n=16, 24, 32), el signo del residuo decide: n=24 da −1.8e-14 y sale 127. Por eso ciclos sucesivos pueden diferir en ±1 justo en esos valores. No es un error del archivo. Hechos medidos: residuo en n=8 = +6.1e-15, menor que medio paso de coma flotante en 127.5 (7.1e-15), así que la suma queda en 127.5 exacto.
 
-**1.4 El mismo milisegundo en GNU Radio.** Abrir `calentamiento_32k.grc`, F6. Es la cadena de la Parte C de la Sesión 01 con dos cambios: `samp_rate = 32000` y el archivo. Hechos:
+**1.4 El mismo milisegundo en GNU Radio.** Abrir `warmup_32k.grc`, F6. Es la cadena de la Parte C de la Sesión 01 con dos cambios: `samp_rate = 32000` y el archivo. Hechos:
 - Time Sink con `size = 32` → dibuja 32 muestras = 1 ms. Leyenda `I` (azul) y `Q` (rojo), con rejilla. Tiene un disparo (*trigger*) en 0.78 sobre la parte real, flanco de subida, para que la imagen quede quieta empezando en n=0: I arranca en 0.788 y Q en 0.
 - La altura inicial de la curva real es 0.788 y no 228: (228 − 127.5) / 127.5 = 0.788. Los bloques `Add Const` y `Multiply Const` hacen esa cuenta. Pedir al alumno que calcule la altura en n=8 para Q y la compruebe.
 
