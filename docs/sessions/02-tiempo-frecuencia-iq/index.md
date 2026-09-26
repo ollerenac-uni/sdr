@@ -277,10 +277,12 @@ Se dispone de un bloque de 400 muestras con $f_s=20000$ S/s.
 
 ??? example "Solución del ejercicio 1A"
 
-    - **Intervalo:** $T_s=1/20000=50$ µs. La tasa indica cuántas muestras corresponden a un segundo; su inversa indica cuánto tiempo separa dos muestras.
-    - **Duración nominal:** $N/f_s=400/20000=20$ ms.
-    - **Última muestra:** su índice es 399, no 400. Su instante es $399/20000=19.95$ ms.
-    - **Muestra 50:** corresponde a $50/20000=2.5$ ms. El índice cuenta posiciones desde cero; no es una cantidad de segundos por sí mismo.
+    - **Punto de partida:** el apartado 1.3 relaciona el sample rate con el tiempo mediante $T_s=1/f_s$ y $t_n=n/f_s$. El apartado 1.5 añade la duración nominal $T_{\mathrm{bloque}}=N/f_s$. En este ejercicio, $N=400$ y $f_s=20000$ S/s; se asigna $t=0$ a la primera muestra.
+    - **Paso 1 — intervalo entre muestras:** $T_s=1/20000=0.00005$ s. Como $1$ s contiene $10^6$ µs, se obtiene $0.00005\times10^6=50$ µs. Esta cantidad separa cualquier pareja de muestras consecutivas; no es la duración del bloque completo.
+    - **Paso 2 — duración nominal:** $T_{\mathrm{bloque}}=400/20000=0.020$ s, es decir, 20 ms. Se cuentan 400 intervalos de muestreo para describir el bloque; la muestra siguiente de una secuencia que continúa llegaría justo a ese límite.
+    - **Paso 3 — índice de la última muestra:** al comenzar en cero, los índices son $0,1,\ldots,399$. Por eso se utiliza $N-1=399$, no 400, en la fórmula del instante: $t_{399}=399/20000=0.01995$ s, es decir, 19.95 ms.
+    - **Paso 4 — muestra de índice 50:** $t_{50}=50/20000=0.0025$ s, es decir, 2.5 ms. Es la muestra número 51 al contar desde la primera; el número 50 es su índice, no un tiempo expresado directamente en milisegundos.
+    - **Comprobación e interpretación:** la diferencia entre el límite nominal y la última muestra es $20-19.95=0.05$ ms, exactamente $T_s=50$ µs. Así se comprueba que 20 ms de duración nominal y 19.95 ms para la última muestra son resultados compatibles, no contradictorios.
 
 ##### Ejercicio 1B — calcular valores de una senoide
 
@@ -291,10 +293,12 @@ Se considera $x[n]=0.8\cos(2\pi\,1000\,n/8000+\pi/2)$.
 
 ??? example "Solución del ejercicio 1B"
 
-    - **Parámetros:** $A=0.8$, $f_0=1000$ Hz, $\phi=\pi/2$ rad y $f_s=8000$ S/s. La frecuencia del tono y el sample rate describen cosas distintas.
-    - **Período y muestras por ciclo:** $T_0=1/1000=1$ ms y $f_s/f_0=8$ muestras por ciclo.
-    - **Primera muestra:** $x[0]=0.8\cos(\pi/2)=0$.
-    - **Muestra 2:** su fase es $2\pi(1000)(2)/8000+\pi/2=\pi$, de modo que $x[2]=-0.8$. Su instante es $2/8000=0.25$ ms.
+    - **Punto de partida:** el apartado 1.4 define $x[n]=A\cos(2\pi f_0n/f_s+\phi)$. Se compara cada término de esa expresión con el enunciado: $A=0.8$, $f_0=1000$ Hz, $f_s=8000$ S/s y $\phi=\pi/2$ rad, equivalente a 90°. La amplitud es la del ejemplo matemático; no se le asigna una unidad de voltios que el enunciado no proporciona.
+    - **Paso 1 — período:** el tono completa 1000 ciclos por segundo. Por tanto, $T_0=1/f_0=1/1000=0.001$ s, es decir, 1 ms por ciclo. No se utiliza $1/f_s$ para este cálculo: esa inversa daría el intervalo entre muestras, no el período del tono.
+    - **Paso 2 — muestras por ciclo:** en el tiempo $T_0$ se toman $f_sT_0=f_s/f_0=8000/1000=8$ muestras. Equivalentemente, $T_s=1/8000=0.125$ ms y ocho intervalos de ese tamaño completan 1 ms.
+    - **Paso 3 — primera muestra:** al sustituir $n=0$, el término que depende del tiempo vale cero. Queda $x[0]=0.8\cos(\pi/2)=0$. La amplitud del tono sigue siendo 0.8, aunque esta muestra particular sea cero: amplitud y valor instantáneo son conceptos diferentes.
+    - **Paso 4 — muestra de índice 2:** el ángulo debido al tiempo es $2\pi(1000)(2)/8000=\pi/2$. Se suma la fase inicial, de modo que el ángulo total es $\pi/2+\pi/2=\pi$ rad. Como $\cos\pi=-1$, se obtiene $x[2]=-0.8$.
+    - **Ubicación temporal del resultado:** usando el apartado 1.3, $t_2=2/8000=0.00025$ s, es decir, 0.25 ms. Entre $n=0$ y $n=2$ transcurre un cuarto del período; el tono avanza desde el cruce por cero de fase 90° hasta el mínimo de fase 180°.
 
 ##### Ejercicio 1C — cambiar una etiqueta no adquiere otras muestras
 
@@ -305,10 +309,12 @@ Un bloque de 32 muestras contiene un tono conocido de 1 kHz, adquirido a 8 kS/s.
 
 ??? example "Solución del ejercicio 1C"
 
-    - **Con la tasa correcta:** el bloque representa $32/8000=4$ ms y el intervalo es 0.125 ms.
-    - **Con la etiqueta errónea:** representa $32/16000=2$ ms y el intervalo se interpreta como 0.0625 ms.
-    - **Frecuencia atribuida:** la secuencia conserva ocho muestras por ciclo. Si se interpreta a 16 kS/s, se le atribuyen $16000/8=2000$ Hz.
-    - **Qué ocurrió:** no se adquirió un tono nuevo de 2 kHz. Se interpretaron los mismos valores sobre un eje temporal incorrecto; para describir la adquisición se debe utilizar su tasa real.
+    - **Punto de partida:** los apartados 1.3 y 1.5 utilizan $T_s=1/f_s$ y $T_{\mathrm{bloque}}=N/f_s$. La comprobación del apartado 1.5 muestra que cambiar la tasa declarada cambia el tiempo asignado al arreglo, no sus valores. Aquí se mantienen las mismas $N=32$ muestras.
+    - **Paso 1 — tasa real de adquisición:** con $f_s=8000$ S/s, $T_s=1/8000=0.125$ ms y $T_{\mathrm{bloque}}=32/8000=4$ ms. Estos tiempos describen cómo se obtuvieron realmente las muestras.
+    - **Paso 2 — interpretación errónea:** al declarar 16000 S/s, se asigna $T_s'=1/16000=0.0625$ ms y $T_{\mathrm{bloque}}'=32/16000=2$ ms. Todos los índices reciben tiempos iguales a la mitad de los correctos: $t_n'=n/16000=t_n/2$.
+    - **Paso 3 — conservar el ciclo de la secuencia:** el tono adquirido a 1 kHz tenía $8000/1000=8$ muestras por ciclo, según el apartado 1.4. Cambiar una etiqueta no inserta ni elimina muestras; ese patrón de ocho muestras por ciclo permanece en el arreglo.
+    - **Paso 4 — frecuencia atribuida:** con la tasa errónea, ocho intervalos se interpretan como $8/16000=0.0005$ s por ciclo. Su inversa es 2000 Hz; también se obtiene directamente $16000/8=2000$ Hz. La mitad del tiempo asignado hace que los mismos ciclos parezcan ocurrir al doble de frecuencia.
+    - **Conclusión:** no se adquirió una señal nueva ni se cambió físicamente el tono de 1 kHz. Se construyó un eje temporal incorrecto para los mismos datos. La interpretación de la captura debe recuperar el metadato de 8 kS/s, no aceptar los 2 kHz como una nueva medición de la señal original.
 
 ##### Ejercicio 1D — explicar los tres cambios de la Figura 2
 
@@ -319,10 +325,12 @@ Se toma como referencia el tono de amplitud 1, frecuencia 1 kHz y fase inicial c
 
 ??? example "Solución del ejercicio 1D"
 
-    - **Cambio de amplitud:** los valores se reducen a la mitad, pero el período sigue siendo 1 ms.
-    - **Cambio de frecuencia:** el período pasa a 0.5 ms. La señal completa los ciclos en menos tiempo y, a 8 kS/s, tiene cuatro muestras por ciclo.
-    - **Cambio de fase:** el valor inicial pasa de 1 a 0. La amplitud y el período no cambian; cambia la posición del tono dentro de su ciclo en cada instante.
-    - **Instantes de muestreo:** no cambian en ninguno de los tres casos, porque el sample rate se mantuvo fijo. Cambiar los valores no equivale a cambiar el eje temporal.
+    - **Punto de partida:** los apartados 1.4 y 1.6 separan los parámetros de $x[n]=A\cos(2\pi f_0n/f_s+\phi)$. La Figura 2 conserva $f_s=8000$ S/s y $N=16$; cada panel modifica un solo parámetro respecto a $x_{\mathrm{ref}}[n]=\cos(2\pi\,1000\,n/8000)$.
+    - **Panel de amplitud — sustitución:** al elegir $A=0.5$, queda $x_A[n]=0.5\cos(2\pi\,1000\,n/8000)=0.5x_{\mathrm{ref}}[n]$. Cada valor se reduce a la mitad: por ejemplo, la primera muestra pasa de 1 a 0.5 y el mínimo de −1 a −0.5.
+    - **Panel de amplitud — qué se conserva:** no cambia el argumento del coseno. Los máximos, mínimos y cruces por cero ocurren en los mismos instantes; el período continúa siendo $1/1000=1$ ms. El cambio es vertical, no temporal.
+    - **Panel de frecuencia — sustitución y efecto:** con $f_0=2000$ Hz, $T_0=1/2000=0.5$ ms y hay $f_s/f_0=8000/2000=4$ muestras por ciclo. En los 2 ms nominales del bloque caben cuatro ciclos en lugar de dos. La amplitud sigue siendo 1 y la fase inicial sigue siendo cero.
+    - **Panel de fase — sustitución y efecto:** con $\phi=\pi/2$, $x_\phi[n]=\cos(2\pi\,1000\,n/8000+\pi/2)$. En $n=0$ se obtiene $\cos(\pi/2)=0$, en lugar de 1. Cambia la posición dentro del ciclo en cada instante, pero $A=1$ y $T_0=1$ ms se mantienen.
+    - **Eje temporal común:** en los tres paneles, el apartado 1.3 da $t_n=n/8000$ y $T_s=0.125$ ms. Los marcadores no se separan más ni menos en el tiempo; cambian sus valores. Incluso cuando hay menos muestras por ciclo, siguen estando espaciadas igual: es el ciclo el que dura menos.
 
 ### 2. Señales reales y señales complejas I/Q
 
@@ -617,10 +625,12 @@ Una muestra tiene $I=-3$ y $Q=4$.
 
 ??? example "Solución del ejercicio 2A"
 
-    - **Muestra compleja:** $z=-3+j4$. Su punto está en el segundo cuadrante: I es negativa y Q es positiva.
-    - **Magnitud:** $|z|=\sqrt{(-3)^2+4^2}=5$.
-    - **Fase:** $\operatorname{atan2}(4,-3)\approx126.87^\circ$. Se mide desde el eje I positivo en sentido antihorario.
-    - **Cuadrante:** usar únicamente $\arctan(Q/I)$ puede dar un ángulo que no ubica correctamente el punto. `atan2` utiliza los signos de las dos componentes.
+    - **Punto de partida:** el apartado 2.1 representa una muestra como $z=I+jQ$ y el apartado 2.2 calcula $|z|=\sqrt{I^2+Q^2}$ y $\theta=\operatorname{atan2}(Q,I)$. Se utilizan ambas coordenadas de una misma muestra; no se trata de dos instantes distintos.
+    - **Paso 1 — número complejo y posición:** al sustituir $I=-3$ y $Q=4$, queda $z=-3+j4$. El punto está tres unidades a la izquierda del origen y cuatro hacia arriba. Como $I<0$ y $Q>0$, pertenece al segundo cuadrante; su fase debe estar entre 90° y 180°.
+    - **Paso 2 — magnitud:** $|z|=\sqrt{(-3)^2+4^2}=\sqrt{9+16}=\sqrt{25}=5$. El signo negativo de I se eleva al cuadrado; la distancia al origen no puede ser negativa.
+    - **Paso 3 — fase:** $\theta=\operatorname{atan2}(4,-3)\approx2.2143$ rad. Para pasar a grados se multiplica por $180/\pi$, obteniendo aproximadamente 126.87°. El ángulo se mide desde el eje I positivo en sentido antihorario y coincide con el cuadrante identificado.
+    - **Por qué no basta el cociente:** $Q/I=-4/3$ y el valor principal de $\arctan(-4/3)$ es aproximadamente −53.13°. Ese ángulo señalaría el cuarto cuadrante, no el punto $(-3,4)$. El cociente también sería −4/3 para $(3,-4)$, por lo que perdió la información que distingue ambos puntos.
+    - **Comprobación geométrica:** con $z=5e^{j\theta}$, Euler da $I=5\cos\theta\approx-3$ y $Q=5\sin\theta\approx4$. Esta sustitución comprueba simultáneamente magnitud, fase y signos. `atan2` evita tener que corregir el cuadrante manualmente.
 
 ##### Ejercicio 2B — reconocer el giro a partir de dos muestras
 
@@ -631,10 +641,12 @@ Se genera $z[n]=0.5e^{j(-2\pi\,1000\,n/8000+\pi/4)}$.
 
 ??? example "Solución del ejercicio 2B"
 
-    - **Muestra inicial:** $z[0]=0.5e^{j\pi/4}\approx0.3536+j0.3536$.
-    - **Muestra siguiente:** la fase pasa de $\pi/4$ a cero, por lo que $z[1]=0.5+j0$.
-    - **Cambio de fase:** $\Delta\theta=-2\pi(1000/8000)=-\pi/4=-45^\circ$ por muestra. El giro es horario y corresponde a −1 kHz.
-    - **Radio:** es 0.5 y permanece constante para este tono ideal. No representa la frecuencia ni el tiempo; representa la magnitud de cada muestra.
+    - **Punto de partida:** el apartado 2.3 define $z[n]=Ae^{j\theta[n]}$ con $\theta[n]=2\pi f_0n/f_s+\phi$, y Euler permite calcular $I=A\cos\theta$ y $Q=A\sin\theta$. El apartado 2.4 relaciona el signo del avance de fase con el sentido de giro. Aquí $A=0.5$, $f_0=-1000$ Hz y $\phi=\pi/4$.
+    - **Paso 1 — fase en la primera muestra:** con $n=0$, $\theta[0]=\pi/4=45^\circ$. Por tanto, $z[0]=0.5[\cos(\pi/4)+j\sin(\pi/4)]=0.5(\sqrt{2}/2+j\sqrt{2}/2)\approx0.3536+j0.3536$.
+    - **Paso 2 — fase en la segunda muestra:** con $n=1$, $\theta[1]=-2\pi(1000/8000)+\pi/4=-\pi/4+\pi/4=0$. Así, $z[1]=0.5(\cos0+j\sin0)=0.5+j0$. El punto se mueve desde el primer cuadrante hasta el eje I positivo.
+    - **Paso 3 — avance entre muestras:** $\Delta\theta=\theta[1]-\theta[0]=-\pi/4=-45^\circ$. Es un avance negativo, por lo que el giro es horario con la convención de esta sesión. La fase inicial positiva de 45° no contradice ese giro: señala dónde empieza el punto, no hacia dónde se mueve.
+    - **Paso 4 — relación con el tiempo:** las muestras están separadas $T_s=1/8000=0.125$ ms. Ocho avances de −45° completan una vuelta en 1 ms, coherente con la magnitud de frecuencia de 1 kHz. El signo negativo indica el sentido, no una duración negativa.
+    - **Interpretación del radio:** $|z[n]|=0.5|e^{j\theta[n]}|=0.5$ para todo $n$, porque $|e^{j\theta}|=1$. El radio no mide tiempo ni frecuencia; es la magnitud de la muestra. I y Q cambian durante el giro, aunque esa magnitud permanezca constante.
 
 ##### Ejercicio 2C — contar muestras I/Q sin duplicar el tiempo
 
@@ -645,9 +657,12 @@ Un bloque contiene 40 parejas I/Q y su sample rate es 8 kS/s de muestras complej
 
 ??? example "Solución del ejercicio 2C"
 
-    - **Conteo:** hay 40 muestras complejas, 40 valores I y 40 valores Q. En total se almacenan 80 valores reales.
-    - **Duración:** se utiliza $N=40$, de modo que $40/8000=5$ ms.
-    - **Organización temporal:** I y Q de cada pareja corresponden al mismo instante. Contar sus componentes como muestras consecutivas duplicaría incorrectamente el número de instantes.
+    - **Punto de partida:** al inicio de la subsección 2 se establece $z[n]=I[n]+jQ[n]$: una pareja I/Q constituye una muestra compleja. La duración sigue calculándose con $T_{\mathrm{bloque}}=N/f_s$, como en el apartado 1.5, pero $N$ cuenta parejas completas cuando la tasa corresponde a muestras complejas.
+    - **Paso 1 — contar por tipo de valor:** 40 parejas contienen 40 muestras complejas. Cada pareja aporta un valor I y uno Q; hay, por tanto, 40 valores I y 40 valores Q, o $40+40=80$ valores reales almacenados.
+    - **Paso 2 — identificar el número de instantes:** las parejas corresponden a los índices $n=0,1,\ldots,39$. En cada índice están disponibles I y Q conjuntamente. Hay 40 instantes de muestreo, no 80, aunque el almacenamiento requiera dos componentes por instante.
+    - **Paso 3 — duración nominal:** con $N=40$ y $f_s=8000$ muestras complejas por segundo, $T_{\mathrm{bloque}}=40/8000=5$ ms. Entre instantes consecutivos hay $T_s=1/8000=0.125$ ms, y la última pareja está en $t_{39}=39/8000=4.875$ ms.
+    - **Comprobación del error de conteo:** utilizar $80/8000=10$ ms trataría I y Q como muestras consecutivas de una sola secuencia real. Eso asignaría tiempos diferentes a componentes que pertenecen al mismo instante y duplicaría incorrectamente la duración.
+    - **Conclusión:** el número de valores almacenados y el número de muestras temporales no son intercambiables. Antes de aplicar $N/f_s$, se identifica qué constituye una muestra en el formato utilizado y a qué tipo de muestra se refiere el sample rate.
 
 ##### Ejercicio 2D — descomponer un coseno sin perder de vista I/Q
 
@@ -658,10 +673,12 @@ Se considera $x[n]=1.2\cos(2\pi\,500\,n/8000)$.
 
 ??? example "Solución del ejercicio 2D"
 
-    - **Descomposición:** $x[n]=0.6e^{j2\pi\,500\,n/8000}+0.6e^{-j2\pi\,500\,n/8000}$.
-    - **Dos giros:** tienen frecuencias +500 y −500 Hz y magnitud 0.6 cada uno. Al sumar, sus partes imaginarias se cancelan y queda el coseno real.
-    - **Solo I:** los tonos complejos de signos opuestos, con igual magnitud y fase inicial cero, tienen el mismo coseno como parte real. Para distinguir el sentido de giro también hace falta Q.
-    - **Q artificialmente nula:** añadir $j0$ a la secuencia real no recupera la componente Q que se descartó de un tono complejo.
+    - **Punto de partida:** el apartado 2.5 utiliza $A\cos\theta=(A/2)e^{j\theta}+(A/2)e^{-j\theta}$. En este ejercicio, $A=1.2$ y $\theta[n]=2\pi\,500\,n/8000$; por eso cada término recibe amplitud $A/2=0.6$, no 1.2.
+    - **Paso 1 — escribir los dos términos:** $x[n]=0.6e^{j2\pi\,500\,n/8000}+0.6e^{-j2\pi\,500\,n/8000}$. El primero tiene frecuencia +500 Hz y el segundo −500 Hz. Ambos tienen magnitud constante 0.6 y fase inicial cero.
+    - **Paso 2 — comprobar la suma con Euler:** el primer término es $0.6\cos\theta+j0.6\sin\theta$ y el segundo es $0.6\cos\theta-j0.6\sin\theta$. Al sumarlos, Q vale cero y las partes reales dan $0.6\cos\theta+0.6\cos\theta=1.2\cos\theta$. El resultado real no conserva un solo giro: reúne los dos giros opuestos.
+    - **Paso 3 — observar únicamente I:** para tonos complejos de igual magnitud $B$, $\operatorname{Re}\{Be^{j\theta}\}=B\cos\theta$ y $\operatorname{Re}\{Be^{-j\theta}\}=B\cos\theta$, porque el coseno es par. Así, los valores I son idénticos y no permiten decidir entre +500 y −500 Hz.
+    - **Paso 4 — identificar la información de Q:** en cambio, $Q_+[n]=B\sin\theta[n]$ y $Q_-[n]=-B\sin\theta[n]$. Por ejemplo, en $n=4$ se tiene $\theta=\pi/2$: ambos tonos dan I igual a cero, pero sus Q son $+B$ y $-B$. La pareja I/Q permite distinguir el sentido de giro que I por sí sola no muestra.
+    - **Qué no resuelve añadir ceros:** escribir los datos reales como $x[n]+j0$ solo crea una secuencia con Q nula. No reconstruye los valores $\pm B\sin\theta[n]$ que se descartaron. Por eso un coseno real de amplitud 1.2 y un tono complejo de magnitud 1.2 no son la misma señal.
 
 ### 3. Una señal, dos representaciones: tiempo y frecuencia
 
@@ -918,10 +935,12 @@ Se considera $z[n]=0.8e^{j2\pi\,1000\,n/8000}+0.3e^{-j2\pi\,2000\,n/8000}$, en u
 
 ??? example "Solución del ejercicio 3A"
 
-    - **Primera componente:** aparece en +1 kHz con magnitud 0.8.
-    - **Segunda componente:** aparece en −2 kHz con magnitud 0.3.
-    - **Sin copias obligatorias:** la señal es compleja y no tiene que presentar simetría de magnitud entre frecuencias positivas y negativas. No se añade un pico en −1 kHz ni en +2 kHz por el hecho de dibujar ambos lados del eje.
-    - **Lectura temporal:** cada muestra contiene la suma de las dos contribuciones; no se almacenan en dos intervalos de tiempo separados.
+    - **Punto de partida:** el apartado 3.2 asocia un tono $Ae^{j2\pi f_0n/f_s}$ con una componente de frecuencia $f_0$ y magnitud $A$. El apartado 3.3 muestra que, al sumar tonos de frecuencias distintas, sus contribuciones aparecen en sus posiciones respectivas. Se utiliza la escala por componente del visor, no la suma sin normalizar de una FFT.
+    - **Paso 1 — primer término:** $0.8e^{j2\pi\,1000\,n/8000}$ tiene $f_0=+1000$ Hz y magnitud 0.8. Su componente se ubica en +1 kHz; el signo positivo del exponente corresponde al giro antihorario de la subsección 2.
+    - **Paso 2 — segundo término:** $0.3e^{-j2\pi\,2000\,n/8000}$ equivale a utilizar $f_0=-2000$ Hz. Su componente se ubica en −2 kHz con magnitud 0.3. No se elimina el signo negativo al leer la frecuencia de una señal compleja.
+    - **Paso 3 — comprobar el bloque elegido:** las 64 muestras representan $64/8000=0.008$ s. En ese intervalo los tonos completan 8 ciclos y 16 ciclos en sentido opuesto, respectivamente. Se cumple la condición de ciclos enteros indicada antes del ejercicio; las magnitudes se leen como 0.8 y 0.3 en estos ejemplos ideales.
+    - **Por qué no aparecen copias obligatorias:** cada término ya es un tono complejo completo, no un coseno real. La descomposición en dos componentes de magnitud $A/2$ del apartado 2.5 se aplica al coseno; no obliga a añadir −1 kHz ni +2 kHz a esta suma. Una señal compleja no tiene que ser simétrica entre ambos signos de frecuencia.
+    - **Interpretación temporal:** las contribuciones se suman en cada índice. Por ejemplo, $z[0]=0.8+0.3=1.1$, aunque no haya una componente espectral de magnitud 1.1. Ese valor es una muestra de la suma, no un tercer tono ni la magnitud individual de uno de los dos tonos.
 
 ##### Ejercicio 3B — sumar coeficientes, no solo magnitudes
 
@@ -932,9 +951,12 @@ Dos tonos ocupan la misma frecuencia de +1 kHz. El primero tiene magnitud 2 y fa
 
 ??? example "Solución del ejercicio 3B"
 
-    - **Coeficientes complejos:** se suman $2e^{j0}+1e^{j\pi}=2-1=1$.
-    - **Resultado:** queda un tono de +1 kHz con magnitud 1 y fase cero. No tiene magnitud 3: las fases hacen que las contribuciones se opongan.
-    - **Magnitudes iguales:** $1e^{j0}+1e^{j\pi}=0$. Los tonos se cancelan en este modelo ideal y la fase de una componente nula no tiene una interpretación útil.
+    - **Punto de partida:** el apartado 3.4 explica que cada componente tiene un coeficiente complejo, no solo una magnitud. Un tono puede escribirse $Ae^{j\phi}e^{j2\pi f_0n/f_s}$: $Ae^{j\phi}$ contiene su magnitud y fase inicial. Como ambos tonos tienen el mismo $f_0$, se suman esos coeficientes.
+    - **Paso 1 — factor común:** la señal total es $z[n]=(2e^{j0}+1e^{j\pi})e^{j2\pi\,1000\,n/f_s}$. Ambos términos comparten el mismo giro; no aparecen dos frecuencias diferentes por haber dos términos en la expresión.
+    - **Paso 2 — evaluar las fases:** Euler da $e^{j0}=1$ y $e^{j\pi}=\cos\pi+j\sin\pi=-1$. Por tanto, el coeficiente resultante es $C=2-1=1$, un número real positivo. Las contribuciones están separadas 180° y apuntan en sentidos opuestos en el plano complejo.
+    - **Paso 3 — magnitud y fase del resultado:** $|C|=|1|=1$ y $\arg C=0$. Queda un tono de +1 kHz con magnitud 1 y fase cero. Sumar $2+1=3$ ignoraría la orientación de los coeficientes; 3 sería el resultado si los dos estuvieran en fase, no en este caso.
+    - **Paso 4 — caso de magnitudes iguales:** si la primera magnitud también fuera 1, $C=1e^{j0}+1e^{j\pi}=1-1=0$. La señal total sería cero en todos los índices del modelo ideal. No se trata de dos picos visibles de magnitud 1: la suma se cancela antes de calcular la transformada.
+    - **Fase de la componente nula:** el punto cero no tiene una dirección en el plano complejo. Aunque una función de software devuelva algún valor para su ángulo, no representa una fase física determinada de un tono presente. La conclusión útil es magnitud cero y ausencia de esa componente en la suma ideal.
 
 ##### Ejercicio 3C — reconocer lo que una pantalla de magnitud omite
 
@@ -945,10 +967,12 @@ Se comparan los cosenos $x_0[n]=\cos(2\pi\,1000\,n/8000)$ y $x_{90}[n]=\cos(2\pi
 
 ??? example "Solución del ejercicio 3C"
 
-    - **Magnitudes:** ambos tienen componentes en ±1 kHz de magnitud 0.5. Una pantalla de magnitud no distingue estos dos casos.
-    - **Muestras:** no son iguales; por ejemplo, $x_0[0]=1$ y $x_{90}[0]=0$.
-    - **Fases:** en $x_0$ son cero en ambas componentes. En $x_{90}$ son $+\pi/2$ en +1 kHz y $-\pi/2$ en −1 kHz.
-    - **Recuperación:** se requieren los coeficientes complejos completos, con sus fases y el orden correcto. La inversa de solo sus magnitudes no recupera en general el bloque original.
+    - **Punto de partida:** el apartado 3.4 conserva la fase al descomponer el coseno: $\cos(\theta+\phi)=(1/2)e^{j\phi}e^{j\theta}+(1/2)e^{-j\phi}e^{-j\theta}$. El apartado 3.5 distingue guardar la transformada compleja completa de guardar únicamente su magnitud. Aquí $\theta[n]=2\pi\,1000\,n/8000$.
+    - **Paso 1 — coseno de fase cero:** al poner $\phi=0$, los coeficientes en +1 kHz y −1 kHz son $C_+=0.5$ y $C_-=0.5$. Ambos tienen magnitud 0.5 y fase cero.
+    - **Paso 2 — coseno de fase 90°:** al poner $\phi=\pi/2$, $C_+=0.5e^{j\pi/2}=j0.5$ y $C_-=0.5e^{-j\pi/2}=-j0.5$. Sus magnitudes siguen siendo 0.5, pero sus fases son $+\pi/2$ y $-\pi/2$, respectivamente. El cambio no mueve las componentes a otras frecuencias.
+    - **Paso 3 — comparar las muestras:** en $n=0$, $x_0[0]=\cos0=1$, mientras que $x_{90}[0]=\cos(\pi/2)=0$. También se comprueba con los coeficientes: $0.5+0.5=1$ y $j0.5-j0.5=0$. Las magnitudes espectrales coinciden, pero las fases permiten construir valores temporales diferentes.
+    - **Condición de la comparación:** los bloques de 64 muestras a 8 kS/s contienen $1000(64/8000)=8$ ciclos completos. Con la escala de esta subsección, las dos componentes se observan en ±1 kHz con magnitud 0.5 en ambos casos; una pantalla de magnitud no distingue cuál de los dos cosenos se analizó.
+    - **Paso 4 — recuperar con la inversa:** se conservan todos los coeficientes complejos de la DFT en su orden original y con la escala correspondiente a la inversa. Si se sustituyen por sus valores absolutos, $j0.5$ y $-j0.5$ se convierten ambos en $0.5$: se borran las fases y, en este ejemplo, se reconstruye el coseno de fase cero en lugar del de 90°. Si antes se reordenó o normalizó la salida para el visor, también se deshacen esas operaciones antes de usar la inversa como en el apartado 3.5.
 
 ##### Ejercicio 3D — interpretar la Figura 7 sin inventar otro tono
 
@@ -959,9 +983,13 @@ En la Figura 7, la suma de un tono de +1 kHz y magnitud 1 con otro de −2 kHz y
 
 ??? example "Solución del ejercicio 3D"
 
-    - **Valor instantáneo:** en $t=0$, las dos partes reales valen 1 y 0.5 y se suman. El valor 1.5 corresponde a esa muestra, no a una componente frecuencial nueva.
-    - **Lectura de los tonos:** los paneles derechos permiten reconocer +1 y −2 kHz con sus magnitudes respectivas. Los izquierdos muestran sus valores temporales y la secuencia resultante.
-    - **Cambio de fase:** modifica las muestras de la suma. Como los tonos están en frecuencias distintas, conserva sus posiciones y magnitudes espectrales en estos bloques coherentes, aunque cambie la fase de un coeficiente.
+    - **Punto de partida:** el apartado 3.3 y la Figura 7 comparan $z[n]=e^{j2\pi\,1000\,n/f_s}+0.5e^{-j2\pi\,2000\,n/f_s}$ en tiempo y frecuencia. El apartado 3.1 indica que una representación responde por los valores instantáneos y la otra, por las componentes que contribuyen a esos valores.
+    - **Paso 1 — evaluar el instante inicial:** en $n=0$, ambos exponentes valen cero y $e^{j0}=1$. Así, $z[0]=1+0.5=1.5+j0$; su componente I es 1.5 y su componente Q es cero. Las dos contribuciones están alineadas en ese instante.
+    - **Paso 2 — evitar confundir suma y componente:** para otros índices, los tonos giran a velocidades y en sentidos distintos. El valor total no conserva necesariamente magnitud 1.5. La expresión sigue teniendo dos frecuencias, +1 y −2 kHz; sumar sus valores en un instante no añade un término de una frecuencia nueva.
+    - **Paneles izquierdos — lectura temporal:** permiten comparar las componentes I y Q de cada tono y de la suma. El valor 1.5 se explica allí como una coincidencia instantánea de las partes reales. No se interpreta como la altura de un pico del espectro.
+    - **Paneles derechos — lectura frecuencial:** permiten reconocer una componente en +1 kHz de magnitud 1 y otra en −2 kHz de magnitud 0.5. La fila de la suma reúne esas dos contribuciones en el mismo espectro; no muestra una tercera componente de magnitud 1.5.
+    - **Paso 3 — cambiar solo una fase:** si al segundo tono se le añade $\phi$, su coeficiente pasa de $0.5$ a $0.5e^{j\phi}$. Su magnitud sigue siendo 0.5 y su frecuencia sigue siendo −2 kHz, pero las muestras de la suma cambian. Por ejemplo, con $\phi=\pi$, la primera muestra pasa a $z[0]=1-0.5=0.5$.
+    - **Alcance de la conclusión:** en los bloques con ciclos enteros utilizados aquí, el cambio de fase conserva las magnitudes de las dos componentes separadas. No significa que la transformada completa sea idéntica: cambia la fase del coeficiente correspondiente, información que la pantalla de magnitud del apartado 3.4 omite.
 
 ### 4. Muestreo y aliasing
 
@@ -1443,10 +1471,12 @@ Se utiliza $f_s=8000$ S/s y el intervalo representativo $[-4,+4)$ kHz.
 
 ??? example "Solución del ejercicio 4A"
 
-    - **+13 kHz:** $13-2(8)=-3$ kHz, que pertenece al intervalo.
-    - **−10 kHz:** $-10+8=-2$ kHz.
-    - **+4 kHz:** se representa en −4 kHz, porque $4-8=-4$ y el extremo derecho no se incluye.
-    - **Signo y extremos:** el signo conserva el sentido de giro de la secuencia representativa. +4 y −4 kHz son equivalentes a esta tasa; no son dos posiciones independientes.
+    - **Punto de partida:** el apartado 4.3 demuestra que $f_0+kf_s$, con $k$ entero, produce las mismas muestras de un tono complejo con igual magnitud y fase inicial. El apartado 4.4 elige un único representante en $[-f_s/2,f_s/2)$ y da $f_a=((f_0+f_s/2)\bmod f_s)-f_s/2$. Aquí la repetición es cada 8 kHz y el intervalo es $[-4,+4)$ kHz.
+    - **Paso 1 — representar +13 kHz:** restar una tasa da $13-8=5$ kHz, todavía fuera del intervalo. Restar otra da $13-2(8)=-3$ kHz, que sí pertenece a él. Así, +13, +5 y −3 kHz son posiciones equivalentes para esa secuencia; se muestra −3 kHz por la convención elegida.
+    - **Paso 2 — representar −10 kHz:** se suma una tasa: $-10+8=-2$ kHz. Como $-4\leq-2<4$, no hace falta otra operación. La diferencia respecto a la frecuencia original es exactamente un múltiplo de $f_s$.
+    - **Paso 3 — tratar el extremo +4 kHz:** el intervalo excluye +4 kHz, por lo que se resta una tasa: $4-8=-4$ kHz. El extremo izquierdo sí se incluye. Esta decisión evita dibujar dos veces la misma posición discreta; no significa que se haya eliminado una componente diferente.
+    - **Por qué se conserva el signo:** −3 kHz y +3 kHz no son representantes equivalentes a 8 kS/s: difieren en 6 kHz, no en un múltiplo de 8 kHz. Tomar el valor absoluto cambiaría la secuencia compleja y perdería el sentido de giro que se estudió en la subsección 2. La equivalencia con +13 kHz es con −3 kHz, no con +3 kHz.
+    - **Comprobación del borde:** $e^{j2\pi\,4000\,n/8000}=e^{j\pi n}=(-1)^n$ y $e^{-j2\pi\,4000\,n/8000}=e^{-j\pi n}=(-1)^n$ para todo índice entero. En ese borde particular, los signos opuestos no se distinguen por las muestras; se utiliza una sola posición, −4 kHz, como representante.
 
 ##### Ejercicio 4B — demostrar una equivalencia muestra por muestra
 
@@ -1457,10 +1487,12 @@ Se comparan $z_7[n]=e^{j2\pi\,7000\,n/8000}$ y $z_{-1}[n]=e^{-j2\pi\,1000\,n/800
 
 ??? example "Solución del ejercicio 4B"
 
-    - **Separación:** $z_7[n]=e^{-j2\pi\,1000\,n/8000}e^{j2\pi n}$.
-    - **Índice entero:** $e^{j2\pi n}=1$, por lo que $z_7[n]=z_{-1}[n]$ para cualquier muestra.
-    - **Muestra 1:** los ángulos son 315° y −45°, que llegan al mismo punto: aproximadamente $0.7071-j0.7071$.
-    - **Más muestras:** no resuelven la equivalencia al mantener 8 kS/s. Haría falta información adicional sobre la banda original o una adquisición apropiada diferente, no una FFT que intente decidir entre secuencias iguales.
+    - **Punto de partida:** los apartados 4.1 y 4.3 relacionan frecuencia y avance de fase, $\Delta\theta=2\pi f_0/f_s$, y explican la periodicidad de $e^{j\theta}$. La demostración se hace sobre las muestras, antes de calcular una FFT; no depende de la apariencia de un gráfico.
+    - **Paso 1 — separar la frecuencia:** como $7000=-1000+8000$, se escribe $z_7[n]=e^{j2\pi(-1000+8000)n/8000}$. La propiedad $e^{a+b}=e^ae^b$ permite separar $z_7[n]=e^{-j2\pi\,1000\,n/8000}e^{j2\pi n}$.
+    - **Paso 2 — evaluar la vuelta adicional:** el índice $n$ es entero. Por Euler, $e^{j2\pi n}=\cos(2\pi n)+j\sin(2\pi n)=1+j0$. Por tanto, $z_7[n]=z_{-1}[n]$ para $n=0,1,2,\ldots$. La igualdad incluye tanto I como Q, no solo sus magnitudes.
+    - **Paso 3 — comprobar la muestra 1:** para +7 kHz, el ángulo es $2\pi(7000/8000)=7\pi/4=315^\circ$; para −1 kHz es $-2\pi(1000/8000)=-\pi/4=-45^\circ$. Difieren en 360° y llegan al mismo punto: $\cos(-\pi/4)+j\sin(-\pi/4)\approx0.7071-j0.7071$.
+    - **Interpretación entre instantes:** el tono de +7 kHz avanza una vuelta completa más que el de −1 kHz entre muestras. Esa vuelta no deja una marca adicional en los valores observados: las muestras indican dónde terminó el giro, no cuántas vueltas completas ocurrieron entre ellas.
+    - **Por qué más muestras no resuelven el problema:** la demostración vale para cualquier $n$ entero, no solo para un bloque corto. Un bloque más largo a 8 kS/s y cualquier FFT de ese bloque reciben secuencias idénticas. Para decidir sobre la frecuencia original hace falta información adicional sobre la banda seleccionada o una adquisición diferente que evite esa ambigüedad; aumentar solo la longitud de análisis no la elimina.
 
 ##### Ejercicio 4C — predecir la superposición antes de reducir la tasa
 
@@ -1471,11 +1503,13 @@ A 24 kS/s se tiene $z[n]=e^{j2\pi\,1000\,n/24000}+0.4e^{j2\pi\,9000\,n/24000}$. 
 
 ??? example "Solución del ejercicio 4C"
 
-    - **Tasa final:** $24000/3=8000$ S/s.
-    - **Representantes:** +1 kHz permanece en +1 kHz y +9 kHz también aparece allí, porque $9-8=1$ kHz.
-    - **Magnitud resultante:** las dos contribuciones tienen fase inicial cero y se suman como $(1+0.4)e^{j2\pi\,1000\,m/8000}$. Queda magnitud 1.4; $m$ es el índice de la secuencia de salida.
-    - **Filtrado previo:** el tono de +9 kHz debe atenuarse antes de descartar muestras. Después de la reducción, un filtro que deje pasar +1 kHz deja pasar también su contribución aliased; ya no están en frecuencias separadas.
-    - **Dependencia de fase:** el valor 1.4 corresponde a las fases elegidas. No es una regla general para cualquier interferente ni una corrección aplicable a una captura desconocida.
+    - **Punto de partida:** el apartado 4.7 conserva una de cada tres muestras y muestra que el filtrado debe preceder a la reducción. El apartado 4.4 permite llevar cada frecuencia al intervalo de la tasa final. Se llama $m$ al índice de salida para no confundirlo con el índice $n$ de la entrada.
+    - **Paso 1 — calcular la tasa final:** las muestras elegidas son $n=0,3,6,\ldots$, de modo que $n=3m$. Su separación temporal es $3/24000$ s y la tasa correspondiente es $f_s'=24000/3=8000$ S/s. El nuevo intervalo representativo es $[-4,+4)$ kHz.
+    - **Paso 2 — sustituir los índices:** la salida es $y[m]=z[3m]=e^{j2\pi\,1000\,(3m)/24000}+0.4e^{j2\pi\,9000\,(3m)/24000}$. Simplificando $3/24000=1/8000$, ambos términos quedan expresados con la tasa final: $y[m]=e^{j2\pi\,1000\,m/8000}+0.4e^{j2\pi\,9000\,m/8000}$.
+    - **Paso 3 — obtener las frecuencias representativas:** +1 kHz ya está dentro del intervalo. Para +9 kHz se resta 8 kHz y se obtiene $9-8=1$ kHz. Algebraicamente, $e^{j2\pi\,9000\,m/8000}=e^{j2\pi\,1000\,m/8000}e^{j2\pi m}=e^{j2\pi\,1000\,m/8000}$ para cualquier $m$ entero.
+    - **Paso 4 — sumar los coeficientes:** queda $y[m]=(1+0.4)e^{j2\pi\,1000\,m/8000}=1.4e^{j2\pi\,1000\,m/8000}$. La salida tiene una componente de +1 kHz con magnitud 1.4. Ambas fases iniciales son cero y la selección comienza en $n=0$; por eso las contribuciones se suman en fase en este ejemplo.
+    - **Dónde actúa el filtro:** antes de conservar una de cada tres muestras, cuando +1 y +9 kHz aún son posiciones separadas a 24 kS/s. Un filtro que deje pasar el tono deseado y atenúe el de +9 kHz evita o reduce su contribución aliased. En el modelo ideal del apartado 4.7, retirar completamente el segundo tono deja magnitud 1 en la salida.
+    - **Por qué después es demasiado tarde:** una vez reducida la tasa, ambas contribuciones ocupan +1 kHz. Un filtro de salida que conserve esa frecuencia conserva su suma; no identifica qué parte provenía de +9 kHz. Tampoco existe una regla general de restar 0.4: con otras fases, el coeficiente sería $e^{j\phi_1}+0.4e^{j\phi_9}$ y su magnitud no sería necesariamente 1.4.
 
 ##### Ejercicio 4D — explicar el caso límite de la Figura 13
 
@@ -1486,10 +1520,13 @@ Se muestrea un coseno real de 4 kHz a 8 kS/s, primero con fase inicial cero y de
 
 ??? example "Solución del ejercicio 4D"
 
-    - **Fase cero:** $x[n]=\cos(\pi n)=(-1)^n$. Las muestras alternan entre +1 y −1.
-    - **Fase de 90°:** $x[n]=\cos(\pi n+\pi/2)=0$ para todos los índices enteros. La onda continua no desapareció, pero las muestras caen en sus cruces por cero.
-    - **Condición real low-pass:** la igualdad en el borde no garantiza conservar cualquier fase. La condición utilizada en esta sesión es $f_s>2f_{\max}$, junto con una banda de entrada adecuadamente limitada.
-    - **Tono complejo:** $e^{j(\pi n+\phi)}=(-1)^n e^{j\phi}$ conserva su magnitud. Aun así, +4 y −4 kHz producen la misma secuencia compleja; el borde requiere una interpretación cuidadosa.
+    - **Punto de partida:** el apartado 4.6 estudia el borde de Nyquist mediante $x[n]=\cos(2\pi f_0n/f_s+\phi)$. Con $f_0=4000$ Hz y $f_s=8000$ S/s, el avance es $2\pi(4000/8000)=\pi$ rad, o 180°, entre muestras. Dos intervalos de muestreo completan un ciclo.
+    - **Paso 1 — coseno de fase cero:** $x_0[n]=\cos(\pi n)=(-1)^n$. En los índices pares vale +1 y en los impares −1. Las muestras caen alternativamente en un máximo y un mínimo del coseno continuo.
+    - **Paso 2 — coseno de fase 90°:** $x_{90}[n]=\cos(\pi n+\pi/2)=-\sin(\pi n)=0$ para todo $n$ entero. Las muestras caen ahora en cruces por cero; el coseno continuo sigue teniendo amplitud 1, pero la secuencia no la muestra.
+    - **Paso 3 — identificar lo que se pierde:** para una fase cualquiera, $\cos(\pi n+\phi)=(-1)^n\cos\phi$, porque $\sin(\pi n)=0$. La secuencia depende de $\cos\phi$ y no conserva toda la información de fase del coseno. La frase «dos muestras por ciclo» por sí sola no garantiza recuperar cualquier fase en ese borde.
+    - **Condición usada para una señal real low-pass:** el apartado 4.6 utiliza $f_s>2f_{\max}$, además de limitar adecuadamente la banda de entrada. La desigualdad es estricta en la regla empleada aquí; elegir exactamente $f_s=2f_0$ deja el caso límite que acaba de demostrarse. No basta comprobar solo el número de muestras por ciclo sin revisar la banda y el borde.
+    - **Paso 4 — tono complejo en el borde:** Euler permite escribir $z[n]=e^{j(\pi n+\phi)}=e^{j\pi n}e^{j\phi}=(-1)^ne^{j\phi}$. Su magnitud es $|z[n]|=1$ para cualquier fase. Si $\phi=\pi/2$, la secuencia es $j(-1)^n$: I es cero, pero Q alterna entre +1 y −1, por lo que la muestra compleja no desaparece.
+    - **Precaución que sigue siendo necesaria:** $e^{j\pi n}=e^{-j\pi n}$ para índices enteros. Con la misma fase inicial, +4 y −4 kHz siguen produciendo las mismas muestras complejas. Conservar magnitud en I/Q no convierte ambos bordes en frecuencias independientes ni elimina la ambigüedad de su signo.
 
 ### 5. Qué calcula una FFT de un bloque finito
 
@@ -2077,11 +2114,13 @@ Un bloque contiene $N=960$ muestras a $f_s=48000$ S/s. Se compara una FFT de $M=
 
 ??? example "Solución del ejercicio 5A"
 
-    - **Tiempo observado:** $N/f_s=960/48000=20$ ms en ambos casos.
-    - **Ceros añadidos:** $3840-960=2880$. No son muestras adquiridas durante otros instantes.
-    - **Separación de salida:** $48000/960=50$ Hz sin padding y $48000/3840=12.5$ Hz con padding.
-    - **Interpretación de los 80 ms:** $3840/48000=80$ ms es la duración que tendrían 3840 muestras adquiridas a esa tasa, pero aquí solo se adquirieron 960. No es el tiempo observado.
-    - **Nyquist frequency:** $f_s/2=24000$ Hz. No es ninguna de las dos separaciones entre bins.
+    - **Punto de partida:** el apartado 5.5 distingue $N$, muestras adquiridas, de $M$, longitud de la FFT después de añadir ceros. Las relaciones son $T_{\mathrm{obs}}=N/f_s$, ceros añadidos $=M-N$ y $\Delta f_{\mathrm{FFT}}=f_s/M$. El apartado 5.1 recuerda que la Nyquist frequency es $f_s/2$.
+    - **Paso 1 — tiempo realmente observado:** en ambas FFT se utilizan las mismas 960 muestras adquiridas a 48000 S/s. Por tanto, $T_{\mathrm{obs}}=960/48000=0.020$ s, o 20 ms. Este tiempo depende de $N$ y de $f_s$, que no cambiaron.
+    - **Paso 2 — contar los ceros:** para $M=960$, $M-N=0$. Para $M=3840$, $3840-960=2880$. Los ceros completan un arreglo de cálculo; no son mediciones adicionales de la entrada ni pruebas de que la señal valiera cero después de los 20 ms.
+    - **Paso 3 — separación entre bins:** sin padding, $\Delta f_{\mathrm{FFT}}=48000/960=50$ Hz; con padding, $\Delta f_{\mathrm{FFT}}=48000/3840=12.5$ Hz. La rejilla se vuelve cuatro veces más densa porque $M$ aumentó por un factor de cuatro.
+    - **Paso 4 — por qué no se observaron 80 ms:** $3840/48000=0.080$ s sería la duración nominal de 3840 muestras realmente adquiridas. Aquí 2880 posiciones contienen ceros añadidos por software, no datos de nuevos instantes. Utilizar $M/f_s$ como tiempo observado confundiría el arreglo entregado a la FFT con la adquisición.
+    - **Paso 5 — Nyquist frequency:** $f_s/2=48000/2=24000$ Hz, o 24 kHz. La tasa no cambió, por lo que tampoco cambia el intervalo nominal centrado $[-24,+24)$ kHz. Los valores 50 y 12.5 Hz son separaciones entre puntos del eje, no frecuencias de Nyquist.
+    - **Interpretación del cambio:** el padding evalúa más puntos sobre la forma espectral del mismo bloque. No aumenta el tiempo observado ni estrecha por sí solo el main lobe, como muestra el apartado 5.5. Una separación menor entre bins de salida no demuestra una mejor capacidad para distinguir dos tonos próximos.
 
 ##### Ejercicio 5B — distinguir un tono alineado de otro entre bins
 
@@ -2092,10 +2131,13 @@ Se analizan por separado tonos complejos de magnitud 1 y fase inicial cero, con 
 
 ??? example "Solución del ejercicio 5B"
 
-    - **Rejilla:** la separación es $8000/64=125$ Hz.
-    - **Tono de 1125 Hz:** completa $1125(64/8000)=9$ ciclos. Coincide con el bin de 1125 Hz y, en este ejemplo ideal, muestra magnitud 1 allí y ceros numéricos en los demás.
-    - **Tono de 1100 Hz:** completa $1100(64/8000)=8.8$ ciclos y queda entre los bins de 1000 y 1125 Hz. Contribuye a varios bins por spectral leakage.
-    - **Frecuencia original:** sigue siendo 1100 Hz. Los bins son puntos donde se evalúa la transformada; el bin de mayor magnitud no redefine la frecuencia con la que se generó la señal.
+    - **Punto de partida:** el apartado 5.2 define los bins mediante $f_k=kf_s/N$ y la DFT $X[k]=\sum_{n=0}^{N-1}x[n]e^{-j2\pi kn/N}$. El apartado 5.4 compara un tono alineado con otro entre bins. Como no hay padding, $M=N=64$, y la ventana rectangular conserva todos los valores del bloque.
+    - **Paso 1 — duración y rejilla:** $T_{\mathrm{obs}}=64/8000=0.008$ s y $\Delta f=8000/64=125$ Hz. Los bins positivos cercanos son $f_8=8(125)=1000$ Hz y $f_9=9(125)=1125$ Hz.
+    - **Paso 2 — tono de 1125 Hz:** completa $f_0T_{\mathrm{obs}}=1125(64/8000)=9$ ciclos. También se verifica $f_0/\Delta f=1125/125=9$, un índice entero. En el bin 9, el tono y el conjugado de referencia se cancelan muestra por muestra, de modo que la DFT suma 64 valores iguales a 1.
+    - **Lectura de su magnitud:** la escala del visor divide $X[k]$ entre $N=64$. Por eso el bin 9 muestra $64/64=1$, la magnitud del tono. En los demás bins, las rotaciones suman cero en el modelo ideal; los pequeños residuos que pueda mostrar el cálculo son de precisión numérica.
+    - **Paso 3 — tono de 1100 Hz:** completa $1100(64/8000)=8.8$ ciclos y requeriría el índice $1100/125=8.8$, que no es entero. Ningún bin de esta FFT coincide exactamente con su frecuencia. El tono queda entre los bins de 1000 y 1125 Hz y aporta valores a varios bins: ese es el spectral leakage estudiado en los apartados 5.4 y 5.5.
+    - **Paso 4 — interpretar el máximo:** el bin 9 está a 25 Hz del tono, mientras que el bin 8 está a 100 Hz. El máximo de esta rejilla aparece cerca de 1125 Hz, pero el exponente de la señal sigue utilizando 1100 Hz. La posición del mayor valor entre los bins disponibles no modifica la frecuencia de generación.
+    - **Qué no debe concluirse:** varios bins no significan varios tonos originales ni aliasing en este ejemplo. Un único tono dentro del intervalo representativo puede tener leakage por el bloque finito. Añadir padding permitiría evaluar más puntos de esa misma forma espectral, pero no convertiría las 64 muestras en una observación más larga.
 
 ##### Ejercicio 5C — elegir una modificación de análisis con un propósito
 
@@ -2106,10 +2148,13 @@ Se retoman los paneles de la Figura 30.
 
 ??? example "Solución del ejercicio 5C"
 
-    - **Más puntos:** el padding del panel B densifica la rejilla y conserva el tiempo observado. No estrecha por sí solo el main lobe.
-    - **Sidelobes menores:** Hann, en el panel C, reduce los sidelobes respecto a rectangular, pero ensancha el main lobe. El compromiso importa al buscar una señal débil o separar componentes próximas.
-    - **Dos tonos separados:** el panel D utiliza más muestras adquiridas, de 64 a 512, y aumenta la observación de 8 a 64 ms. Las dos curvas mantienen la misma longitud de FFT; la diferencia no proviene de más puntos de salida.
-    - **Límites:** una ventana no es siempre la mejor y una observación más larga puede mezclar cambios temporales. La elección depende de lo que se necesita observar, las amplitudes, el ruido y la estabilidad de la señal.
+    - **Punto de partida:** los apartados 5.5, 5.6 y 5.7 separan tres decisiones: variar $M$ mediante padding, cambiar los pesos $w[n]$ y adquirir más muestras $N$. La Figura 30 las reúne, pero no todos sus paneles tienen la misma entrada: A, B y C usan un tono; D usa dos tonos próximos.
+    - **Paneles A y B — más puntos del mismo bloque:** se mantienen $N=64$, $f_s=8000$ S/s y la ventana rectangular. Solo cambia $M$, de 64 a 512. Así, $T_{\mathrm{obs}}=N/f_s=8$ ms permanece fijo y $\Delta f_{\mathrm{FFT}}=f_s/M$ pasa de 125 a 15.625 Hz. El padding permite dibujar más puntos sobre la misma forma espectral; no estrecha su main lobe.
+    - **Panel C — reducir sidelobes:** se mantienen las mismas 64 muestras y $M=4096$ para ambas curvas, pero se sustituye rectangular por Hann periódica. Según el apartado 5.6, $x_w[n]=x[n]w[n]$ modifica los pesos del bloque, no el tiempo ni la tasa de adquisición. La curva de Hann presenta sidelobes menores y un main lobe más ancho.
+    - **Compromiso del panel C:** sidelobes menores pueden evitar que la contribución alejada de un tono fuerte oculte otro débil. Un main lobe más ancho puede dificultar separar tonos muy próximos. Por eso la elección de Hann responde a un propósito; no es una mejora de todos los aspectos del espectro simultáneamente. Las alturas se comparan después de normalizar por $\sum w[n]$, como en el apartado 5.6.
+    - **Panel D — observar más datos reales:** ahora se analizan dos tonos de 1000 y 1062.5 Hz. Se aumenta $N$ de 64 a 512 manteniendo $f_s=8000$ S/s; el tiempo pasa de $64/8000=8$ ms a $512/8000=64$ ms. En ambas curvas se utiliza Hann y $M=8192$, por lo que la rejilla de salida es idéntica: $8000/8192=0.9765625$ Hz.
+    - **Por qué D permite separar los tonos:** con más tiempo observado, la contribución espectral de cada tono estable es más estrecha para la misma familia de ventana. La separación física sigue siendo $1062.5-1000=62.5$ Hz, pero el bloque largo permite reconocer dos máximos donde el corto presenta uno combinado. La diferencia no puede atribuirse a una rejilla más densa, porque $M$ es el mismo.
+    - **Límite de las tres decisiones:** padding cambia los puntos evaluados; ventana cambia la forma espectral; más datos cambian el intervalo observado. Una observación más larga puede mezclar estados si la señal varía durante el bloque. La decisión depende de si se busca ubicar un máximo, ver un tono débil, separar tonos estables o seguir cambios en el tiempo; ni una ventana ni un valor grande de $N$ o $M$ es universalmente superior.
 
 ##### Ejercicio 5D — recuperar el bloque que recibió la transformada
 
@@ -2120,10 +2165,13 @@ Se conservan las muestras originales $x[n]$ y se calcula $X_w[k]=\operatorname{D
 
 ??? example "Solución del ejercicio 5D"
 
-    - **Inversa completa:** recupera $x[n]w[n]$, porque ese fue el bloque entregado a la DFT. No recupera automáticamente $x[n]$ sin ventana.
-    - **Solo magnitudes:** no conservan las fases de los coeficientes. En general, su inversa no reconstruye ni siquiera el mismo bloque con ventana.
-    - **Corrección de escala:** dividir por la suma de pesos permite una determinada lectura de magnitudes de tonos, pero no deshace la multiplicación muestra por muestra.
-    - **Datos originales:** se mantienen aparte para otros análisis. Cambiar ventana o representación no debe confundirse con haber conservado una copia inalterada de la entrada.
+    - **Punto de partida:** el apartado 5.6 define el bloque con ventana como $x_w[n]=x[n]w[n]$. El apartado 3.5 explica que la DFT completa y su inversa permiten recuperar las muestras que recibió la transformada. Aquí se conserva $X_w[k]$ sin normalizar ni reordenar, por lo que la inversa puede aplicarse directamente con la convención usada en la sesión.
+    - **Paso 1 — identificar la entrada efectiva:** aunque se hayan guardado también los datos originales, la DFT del enunciado no recibió $x[n]$ sino $x_w[n]$. Por tanto, $\operatorname{IDFT}\{X_w[k]\}=x_w[n]$; la inversa completa recupera $x[n]w[n]$, no automáticamente las muestras originales sin ventana.
+    - **Paso 2 — conservar la fase:** cada coeficiente puede escribirse $X_w[k]=|X_w[k]|e^{j\psi_k}$. Guardar solo $|X_w[k]|$ elimina $\psi_k$. Al entregar las magnitudes a la inversa, se está usando fase cero para cada coeficiente; en general se obtiene otra secuencia, no el mismo bloque con ventana. El contraejemplo de los cosenos del apartado 3.4 muestra por qué magnitudes iguales no garantizan muestras iguales.
+    - **Paso 3 — distinguir normalización de inversión de la ventana:** el visor del apartado 5.6 utiliza $C_w[k]=X_w[k]/\sum w[n]$ para comparar magnitudes de tonos. Ese divisor es un único factor para todo el espectro. Deshacerlo mediante $X_w[k]=C_w[k]\sum w[n]$ recupera los coeficientes de la DFT del bloque con ventana, no elimina los pesos individuales $w[n]$.
+    - **Comprobación en el tiempo:** si se aplica la inversa directamente a $C_w[k]$, se obtiene $x[n]w[n]/\sum w[n]$. Multiplicar luego por $\sum w[n]$ devuelve $x[n]w[n]$, que sigue teniendo los pesos. Una corrección global de altura no equivale a dividir cada muestra por su peso particular.
+    - **Por qué no se propone dividir ciegamente por Hann:** con la Hann periódica de la sesión, $w[0]=0.5-0.5\cos0=0$. La primera muestra del bloque con ventana es cero independientemente de $x[0]$; ese valor original no se determina dividiendo por cero. Además, dividir por pesos pequeños amplificaría cualquier error numérico. La conservación de los datos originales evita depender de esa operación.
+    - **Conclusión práctica:** se mantienen $x[n]$ y los metadatos aparte, y se calcula $x_w[n]$ como una entrada de análisis. La DFT no perdió información de ese bloque con ventana si se conservan todos sus coeficientes; la multiplicación previa por la ventana sí cambió el bloque respecto a la entrada original.
 
 ### 6. De baseband a RF: interpretar una captura SDR
 
@@ -2619,10 +2667,12 @@ Una captura I/Q tiene $f_c=433.92$ MHz y $f_s=2$ MS/s. Se consideran componentes
 
 ??? example "Solución del ejercicio 6A"
 
-    - **Componente negativa:** $433.92-0.350=433.57$ MHz.
-    - **Componente positiva:** $433.92+0.125=434.045$ MHz.
-    - **Intervalo nominal:** $f_s/2=1$ MHz, por lo que corresponde a $[432.92,434.92)$ MHz. No garantiza una respuesta plana ni toda esa anchura como banda útil del equipo.
-    - **Signo:** −350 kHz indica una posición por debajo de la referencia RF de 433.92 MHz. No representa una RF física negativa.
+    - **Punto de partida:** el apartado 6.1 utiliza $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$ y el intervalo nominal $[f_c-f_s/2,f_c+f_s/2)$. La suma requiere expresar las frecuencias en unidades compatibles. Se conserva la convención del enunciado: sin inversión del espectro ni aliasing de la banda seleccionada.
+    - **Paso 1 — convertir los desplazamientos:** −350 kHz equivale a −0.350 MHz y +125 kHz equivale a +0.125 MHz. No se suman directamente los números 433.92 y 125 sin esta conversión, porque sus unidades originales son diferentes.
+    - **Paso 2 — componente por debajo de la referencia:** $f_{\mathrm{RF},1}=433.92+(-0.350)=433.57$ MHz. El desplazamiento negativo se resta de la frecuencia central; la RF resultante sigue siendo positiva.
+    - **Paso 3 — componente por encima de la referencia:** $f_{\mathrm{RF},2}=433.92+0.125=434.045$ MHz. El signo positivo indica que está a la derecha del cero de baseband, 125 kHz por encima de la referencia.
+    - **Paso 4 — construir el intervalo nominal:** $f_s=2$ MS/s da un semiancho de representación $f_s/2=1$ MHz. Baseband se representa en $[-1,+1)$ MHz; al sumar 433.92 MHz a ambos extremos, RF se representa en $[432.92,434.92)$ MHz. Se incluye el extremo izquierdo y se excluye el derecho, conforme a la convención de la subsección 4.
+    - **Interpretación de los signos y del ancho:** −350 kHz es una frecuencia relativa, no una RF física de valor negativo. El intervalo nominal tiene ancho 2 MHz por el sample rate complejo, pero no certifica respuesta plana ni 2 MHz de banda útil del hardware. La FFT y los metadatos permiten etiquetar el eje; no reemplazan la caracterización del receptor.
 
 ##### Ejercicio 6B — centrar una componente que está a la izquierda
 
@@ -2633,11 +2683,13 @@ La captura tiene $f_c=99.1$ MHz y $f_s=2.4$ MS/s. Se desea centrar un objetivo e
 
 ??? example "Solución del ejercicio 6B"
 
-    - **Posición inicial:** $98.7-99.1=-0.4$ MHz, es decir, −400 kHz.
-    - **Multiplicador:** se utiliza +400 kHz, porque $-400+400=0$. Con la convención de esta sesión, $y[n]=x[n]e^{j2\pi\,400000\,n/f_s}$.
-    - **Nueva referencia:** $f_c'=99.1-0.4=98.7$ MHz. Para el objetivo, ese es el nuevo cero de baseband.
-    - **Otras componentes:** 99.1 MHz pasa de 0 a +400 kHz; 99.5 MHz pasa de +400 a +800 kHz. Ninguna cruza el borde de este ejemplo y sus etiquetas RF originales se conservan con la nueva referencia.
-    - **Selección del canal:** no quedaron eliminadas. La mezcla centró el objetivo, pero no filtró la banda ni redujo la tasa.
+    - **Punto de partida:** el apartado 6.1 calcula $f_{\mathrm{BB}}=f_{\mathrm{RF}}-f_c$. El apartado 6.3 define la mezcla $y[n]=x[n]e^{j2\pi f_{\mathrm{mix}}n/f_s}$ y demuestra que cada componente pasa de $f_0$ a $f_0+f_{\mathrm{mix}}$. Para conservar la interpretación RF después de esta operación, se utiliza la nueva referencia $f_c'=f_c-f_{\mathrm{mix}}$ del apartado 6.4.
+    - **Paso 1 — posición inicial del objetivo:** $f_{\mathrm{BB,obj}}=98.7-99.1=-0.4$ MHz, o −400 kHz. Está a la izquierda del cero inicial porque su RF es menor que 99.1 MHz.
+    - **Paso 2 — elegir el signo del multiplicador:** se resuelve $f_{\mathrm{BB,obj}}+f_{\mathrm{mix}}=0$. Así, $f_{\mathrm{mix}}=+400$ kHz, y $y[n]=x[n]e^{j2\pi\,400000\,n/2400000}$. La frecuencia positiva del multiplicador desplaza el espectro hacia la derecha; el objetivo pasa de −400 a 0 kHz.
+    - **Paso 3 — nueva referencia RF:** convirtiendo $f_{\mathrm{mix}}$ a MHz, $f_c'=99.1-0.4=98.7$ MHz. Se comprueba con el objetivo: $f_c'+f_{\mathrm{BB,obj}}'=98.7+0=98.7$ MHz. La RF original no cambió; cambió qué RF corresponde al cero de la secuencia de salida.
+    - **Paso 4 — seguir las otras componentes:** 99.1 MHz tenía baseband $99.1-99.1=0$ y pasa a +400 kHz. La componente de 99.5 MHz tenía baseband $99.5-99.1=+0.4$ MHz y pasa a +800 kHz. La misma suma de +400 kHz se aplica a todas las componentes, no únicamente al objetivo.
+    - **Comprobación de banda y etiquetas:** el intervalo de salida sigue siendo $[-1.2,+1.2)$ MHz porque $f_s$ no cambió. Las posiciones 0, +400 y +800 kHz están dentro de él, sin cruce de borde. Además, $98.7+0.4=99.1$ MHz y $98.7+0.8=99.5$ MHz recuperan las RF originales de las otras componentes.
+    - **Qué operación falta para seleccionarlo:** la mezcla no elimina las otras componentes, no reduce el sample rate y no demodula. Solo centra el objetivo. El multiplicador tiene magnitud 1; no es un filtro que atenúe frecuencias no deseadas. La selección de una banda alrededor del nuevo cero requiere una operación de filtrado adicional.
 
 ##### Ejercicio 6C — detectar una etiqueta RF incorrecta
 
@@ -2648,10 +2700,13 @@ En la captura original centrada en 99.1 MHz, una componente aparece en +250 kHz.
 
 ??? example "Solución del ejercicio 6C"
 
-    - **RF correcta:** $99.1+0.250=99.35$ MHz.
-    - **Etiqueta errónea:** el visor sumaría $99.5+0.250=99.75$ MHz. La componente sigue en +250 kHz de la secuencia original; no se trasladó al cero.
-    - **Mezcla necesaria:** se multiplica por un tono complejo de −250 kHz. La componente pasa a $250-250=0$ kHz.
-    - **Referencia después de mezclar:** $f_c'=99.1-(-0.250)=99.35$ MHz. Cambiar solo la etiqueta no realiza esa operación ni vuelve a sintonizar el hardware.
+    - **Punto de partida:** el apartado 6.4 distingue reetiquetar un visor de transformar las muestras. Para una captura sin transformar, el apartado 6.1 exige utilizar su referencia real en $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$. Cambiar Center Frequency del visor no modifica por sí solo los valores I/Q del archivo.
+    - **Paso 1 — RF correcta:** la posición +250 kHz equivale a +0.250 MHz. Con la referencia documentada de 99.1 MHz, $f_{\mathrm{RF}}=99.1+0.250=99.35$ MHz. Ese es el valor que corresponde a la componente original bajo las condiciones de esta sesión.
+    - **Paso 2 — etiqueta con la configuración errónea:** el visor usaría 99.5 MHz como nuevo cero del dibujo y sumaría $99.5+0.250=99.75$ MHz. La diferencia respecto a la RF correcta es $99.75-99.35=0.4$ MHz: exactamente el error introducido al cambiar la referencia de 99.1 a 99.5 MHz.
+    - **Qué no sucedió:** la componente continúa en +250 kHz dentro de la secuencia original. No se adquirió otra banda, no se trasladó el objetivo al cero y no cambió su RF física. El mismo espectro recibió etiquetas que no corresponden a sus muestras.
+    - **Paso 3 — mezcla que sí centra la componente:** el apartado 6.3 exige $f_0+f_{\mathrm{mix}}=0$. Con $f_0=+250$ kHz se elige $f_{\mathrm{mix}}=-250$ kHz y se calcula $y[n]=x[n]e^{-j2\pi\,250000\,n/f_s}$. Ahora sí cambian las muestras y el objetivo pasa de +250 a 0 kHz.
+    - **Paso 4 — referencia después de la mezcla:** $f_c'=f_c-f_{\mathrm{mix}}=99.1-(-0.250)=99.35$ MHz. La comprobación es $f_c'+0=99.35$ MHz, la RF original del objetivo. Cambiar las etiquetas a 99.35 MHz solo es coherente con esta salida transformada, no con la captura original aún sin mezclar.
+    - **Conclusión:** para corregir únicamente la visualización de la captura original, se restablece la referencia de 99.1 MHz. Para centrar el objetivo, se hace la mezcla de −250 kHz y se documenta la nueva referencia de 99.35 MHz. Son acciones diferentes; ninguna equivale por sí sola a volver a sintonizar el hardware.
 
 ##### Ejercicio 6D — relacionar bytes, tiempo y metadatos
 
@@ -2662,10 +2717,13 @@ Un bloque de la grabación oficial contiene 48000 bytes `.cu8`, intercalados I, 
 
 ??? example "Solución del ejercicio 6D"
 
-    - **Muestras complejas:** cada pareja ocupa dos bytes, de modo que hay $48000/2=24000$ muestras. No hay 48000 instantes distintos.
-    - **Tiempo observado:** $24000/2400000=0.01$ s, es decir, 10 ms.
-    - **Posición RF:** $99.1-1=98.1$ MHz, utilizando la convención y la referencia documentadas para esta captura.
-    - **Metadatos:** el archivo raw no contiene un encabezado que determine por sí solo $f_s$ y $f_c$. Sin esos datos, los bytes no bastan para construir un eje temporal correcto ni asignar frecuencias RF absolutas.
+    - **Punto de partida:** el apartado 6.7 documenta el formato `.cu8` de esta grabación: un byte sin signo para I y otro para Q, intercalados por pareja. La subsección 2 establece que cada pareja corresponde a una sola muestra compleja. El tiempo se calcula con $T_{\mathrm{obs}}=N/f_s$ y RF con $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$.
+    - **Paso 1 — contar parejas:** los primeros dos bytes contienen I y Q de $n=0$; los siguientes dos contienen I y Q de $n=1$, y así sucesivamente. Como cada muestra compleja ocupa dos bytes en este formato, $N=48000/2=24000$. No se utilizan 48000 como número de instantes temporales.
+    - **Paso 2 — convertir la tasa:** $2.4$ MS/s equivale a $2400000$ muestras complejas por segundo. Por tanto, $T_{\mathrm{obs}}=24000/2400000=0.01$ s, es decir, 10 ms. Utilizar los bytes como si fueran muestras complejas daría 20 ms y duplicaría incorrectamente el tiempo.
+    - **Paso 3 — construir la lectura RF:** la componente de −1 MHz se encuentra por debajo del centro. Así, $f_{\mathrm{RF}}=99.1+(-1)=98.1$ MHz. También está dentro del intervalo nominal de baseband $[-1.2,+1.2)$ MHz correspondiente a esta tasa.
+    - **Qué aporta cada metadato:** el formato permite agrupar e interpretar los bytes; $f_s$ permite asignar tiempos y convertir el eje de frecuencia a Hz; $f_c$ permite pasar de los desplazamientos en baseband a las etiquetas RF absolutas. Ninguno de esos papeles se reemplaza simplemente conociendo el tamaño del archivo.
+    - **Por qué no basta el contenido raw:** esta grabación no tiene un encabezado que declare esos metadatos. Los mismos bytes, interpretados con otra tasa o referencia, recibirían otro eje temporal y otras etiquetas RF, sin cambiar sus valores. El nombre del archivo y la documentación pueden acompañar esos datos, pero la FFT no descubre por sí sola la frecuencia central.
+    - **Alcance del cálculo:** la relación de dos bytes por muestra se aplica al `.cu8` descrito, no a cualquier archivo I/Q. Primero se identifica el formato y después se cuentan las muestras. En esta captura se preservan, junto al archivo, el formato, la tasa, la referencia RF y la convención I/Q utilizados para interpretarlo.
 
 ## Síntesis visual — de las muestras a la interpretación del espectro
 

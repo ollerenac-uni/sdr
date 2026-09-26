@@ -93,6 +93,10 @@ La subsección construye las herramientas temporales que esos temas necesitan.
   subsecciones teóricas, no en un bloque acumulado al final. Los enunciados
   son visibles y las soluciones se despliegan en bloques `??? example`, con
   explicaciones itemizadas; las comprobaciones breves de la teoría se conservan.
+- Cada solución remite a los apartados y fórmulas que utiliza, desarrolla la
+  sustitución de los datos paso a paso y explica el resultado con sus unidades.
+  Incluye una comprobación o una advertencia sobre el error conceptual que
+  permite detectar; no se limita a entregar la respuesta numérica.
 
 ## Límites y decisiones de estilo
 

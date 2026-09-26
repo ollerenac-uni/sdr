@@ -47,6 +47,19 @@ def test_sin_grupo_de_ejercicios_acumulado_despues_de_la_sintesis():
     assert "##### Ejercicio" not in texto.split("## Síntesis visual", 1)[1]
 
 
+@pytest.mark.parametrize("identificador", [f"{numero}{letra}" for numero in range(1, 7) for letra in "ABCD"])
+def test_soluciones_explican_su_base_teorica_y_desarrollo_en_items(identificador):
+    marcador = f'??? example "Solución del ejercicio {identificador}"'
+    solucion = ejercicio(identificador).split(marcador, 1)[1]
+    items = re.findall(r"^    - \*\*(.+?)\*\* (.+)$", solucion, flags=re.MULTILINE)
+    assert items[0][0] == "Punto de partida:"
+    assert re.search(r"(?:apartados?|subsección) \d", items[0][1], flags=re.IGNORECASE)
+    assert len(items) >= 5
+    assert any(titulo.startswith(("Paso ", "Panel")) for titulo, _ in items)
+    assert "$" in items[0][1]
+    assert any("$" in contenido for _, contenido in items[1:])
+
+
 def test_calculos_de_tiempo_y_tono():
     assert 1 / 20000 * 1e6 == 50
     assert 400 / 20000 * 1000 == 20
@@ -60,6 +73,19 @@ def test_calculos_de_tiempo_y_tono():
     assert 32 / 16000 * 1000 == 2
     assert 16000 / 8 == 2000
     assert "16000/8=2000" in ejercicio("1C")
+
+
+def test_comprobaciones_de_limites_temporales_y_cambios_de_parametros():
+    assert 400 / 20000 - 399 / 20000 == pytest.approx(1 / 20000)
+    assert 40 / 8000 - 39 / 8000 == pytest.approx(1 / 8000)
+    assert 39 / 8000 * 1000 == pytest.approx(4.875)
+    n = np.arange(16)
+    referencia = np.cos(2 * np.pi * 1000 * n / 8000)
+    menor_amplitud = 0.5 * np.cos(2 * np.pi * 1000 * n / 8000)
+    np.testing.assert_allclose(menor_amplitud, 0.5 * referencia)
+    assert 8000 / 2000 == 4
+    assert 0.5 * np.sin(2 * np.pi * 500 * 4 / 8000) == pytest.approx(0.5)
+    assert 1 + 0.5 * np.exp(1j * np.pi) == pytest.approx(0.5)
 
 
 def test_calculos_iq_y_giro():
@@ -133,6 +159,35 @@ def test_datos_padding_coherencia_y_ventana():
     w = 0.5 - 0.5 * np.cos(2 * np.pi * n / 64)
     np.testing.assert_allclose(np.fft.ifft(np.fft.fft(x * w)), x * w, atol=1e-12)
     assert "recupera $x[n]w[n]$" in ejercicio("5D")
+
+
+def test_normalizacion_global_no_deshace_los_pesos_de_hann():
+    n = np.arange(64)
+    x = np.exp(1j * (2 * np.pi * 1100 * n / 8000 + 0.7))
+    w = 0.5 - 0.5 * np.cos(2 * np.pi * n / len(n))
+    Xw = np.fft.fft(x * w)
+    Cw = Xw / np.sum(w)
+    np.testing.assert_allclose(np.fft.ifft(Cw), x * w / np.sum(w), atol=1e-12)
+    np.testing.assert_allclose(np.fft.ifft(Cw) * np.sum(w), x * w, atol=1e-12)
+    assert not np.allclose(np.fft.ifft(Cw) * np.sum(w), x)
+    assert w[0] == 0
+    otro_original = x.copy()
+    otro_original[0] = -10 + 3j
+    np.testing.assert_allclose(np.fft.fft(otro_original * w), Xw, atol=1e-12)
+
+
+def test_referencia_rf_preserva_etiquetas_despues_de_mezcla_sin_cruce():
+    fc = 99.1e6
+    fs = 2.4e6
+    rf = np.array([98.7e6, 99.1e6, 99.5e6])
+    bb = rf - fc
+    mezcla = 400e3
+    bb_salida = bb + mezcla
+    nueva_referencia = fc - mezcla
+    assert np.all((-fs / 2 <= bb_salida) & (bb_salida < fs / 2))
+    np.testing.assert_array_equal(nueva_referencia + bb_salida, rf)
+    assert 99.1e6 - (-250e3) == 99.35e6
+    assert 8000 / 8192 == 0.9765625
 
 
 def test_rf_mezcla_y_bytes():
