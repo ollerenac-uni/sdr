@@ -1,0 +1,16 @@
+/* WIP badge override — makes "En desarrollo" more visible */
+.md-status {
+  opacity: 1;
+}
+
+/* Wider session tables */
+.md-typeset table {
+  display: table;
+  width: 100%;
+}
+
+/* Colab badge alignment */
+.md-typeset img[alt="Open In Colab"] {
+  vertical-align: middle;
+  margin-bottom: 0;
+}

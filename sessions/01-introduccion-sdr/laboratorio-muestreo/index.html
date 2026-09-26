@@ -1,0 +1,1522 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Relación entre frecuencia de muestreo, tiempo, número de muestras y tamaño de FFT, y cómo la decimación y la interpolación cambian el espectro.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/01-introduccion-sdr/laboratorio-muestreo/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../../02-tiempo-frecuencia-iq/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Laboratorio: muestreo, FFT, decimación e interpolación - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#laboratorio-muestreo-fft-decimacion-e-interpolacion" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Laboratorio: muestreo, FFT, decimación e interpolación
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción a SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 — Introducción a SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio de muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio de muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-warm-up-el-milisegundo-que-se-puede-contar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Warm-up: el milisegundo que se puede contar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-las-mismas-reglas-donde-no-se-pueden-contar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Las mismas reglas donde no se pueden contar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-tres-tasas-de-muestreo-reales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tres tasas de muestreo reales
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-decimacion-en-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Decimación en software
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../02-tiempo-frecuencia-iq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Señales y espectro en SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 — Señales y espectro en SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-warm-up-el-milisegundo-que-se-puede-contar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Warm-up: el milisegundo que se puede contar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-las-mismas-reglas-donde-no-se-pueden-contar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Las mismas reglas donde no se pueden contar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-tres-tasas-de-muestreo-reales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tres tasas de muestreo reales
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-decimacion-en-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Decimación en software
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="laboratorio-muestreo-fft-decimacion-e-interpolacion">Laboratorio: muestreo, FFT, decimación e interpolación</h1>
+<p>Esta guía es para quien ya conecta bloques en GNU Radio pero todavía no domina la relación entre la frecuencia de muestreo <span class="arithmatex">\(f_s\)</span>, el tiempo, el número de muestras y el tamaño de la FFT. Continúa la <a href="../#parte-a-el-archivo-por-dentro-sin-gnu-radio">Parte A de la Sesión 01</a>, donde contaste bytes y muestras, y le añade el eje que allí faltaba: cada muestra ocupa además un instante.</p>
+<p>Materiales, en la misma carpeta <code>sdr/</code> de la Sesión 01:</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Dónde va</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/ollerenac-uni/sdr/blob/main/samples/gen_tono.py"><code>gen_tono.py</code></a></td>
+<td><code>sdr/samples/</code></td>
+<td>Genera <code>tono_1kHz_32kSps.cu8</code>. Sección 1</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/warmup_32k.grc"><code>warmup_32k.grc</code></a></td>
+<td><code>sdr/gnuradio-flowgraphs/</code>, porque lee <code>../samples/</code></td>
+<td>Grafo de la sección 1</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc"><code>test2.grc</code></a></td>
+<td><code>sdr/gnuradio-flowgraphs/</code>, ya lo tienes de la Sesión 01</td>
+<td>Solución de referencia de la Parte C. Sección 2</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/decimacion.grc"><code>decimacion.grc</code></a></td>
+<td><code>sdr/gnuradio-flowgraphs/</code>, porque lee <code>../samples/</code></td>
+<td>Comparación de decimación con y sin filtro. Sección 4</td>
+</tr>
+<tr>
+<td><code>fm_99p1MHz_2p4Msps_g30.cu8</code></td>
+<td><code>sdr/samples/</code></td>
+<td>La grabación de la Sesión 01. Secciones 2, 4 y 6</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-warm-up-el-milisegundo-que-se-puede-contar">1. Warm-up: el milisegundo que se puede contar</h2>
+<p>La grabación de la Sesión 01 tiene 24 millones de muestras y nadie puede mirarlas una a una. Esta sección usa un archivo tan simple que sí se puede: un tono de 1 kHz muestreado a 32 kS/s, donde un milisegundo cabe en 32 líneas de terminal.</p>
+<p><strong>1.1. Predecir con papel.</strong> Antes de ejecutar nada, responde:</p>
+<ol>
+<li>A 32 kS/s, ¿cuántas muestras hay en 1 ms?</li>
+<li>¿Y en 1 s?</li>
+<li>El archivo que vamos a generar ocupa 6400 bytes en formato <code>.cu8</code>. ¿Cuánto dura?</li>
+</ol>
+<p>Basta una regla: el número de muestras es la tasa por la duración,</p>
+<div class="arithmatex">\[
+N = f_s \cdot T.
+\]</div>
+<!-- Tiene un atajo que conviene retener: **en 1 ms hay tantas muestras como kS/s tenga $f_s$**, porque 1 ms es 1/1000 s y «kS/s» significa miles de muestras por segundo. -->
+
+<details class="question">
+<summary>1.1. ¿Cuántas muestras y cuánto tiempo?</summary>
+<p>En 1 ms hay <span class="arithmatex">\(32\,000 \cdot 0.001 = 32\)</span> muestras. Es el atajo: 32 kS/s, 32 muestras por milisegundo.</p>
+<p>En 1 s hay 32 000.</p>
+<p>Cada muestra compleja ocupa dos bytes, uno para I y otro para Q, así que 6400 bytes son 3200 muestras. Despejando la regla, <span class="arithmatex">\(T = N / f_s = 3200 / 32\,000 = 0.1\)</span> s.</p>
+</details>
+<p><strong>1.2. Generar y contar.</strong> Con el entorno <code>(base)</code> de radioconda activo y desde la carpeta <code>sdr/</code>, genera el archivo y pide a <code>od</code> sus primeros 64 bytes, dos por línea:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>samples/gen_tono.py
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>od<span class="w"> </span>-Ad<span class="w"> </span>-tu1<span class="w"> </span>-w2<span class="w"> </span>-N64<span class="w"> </span>-v<span class="w"> </span>samples/tono_1kHz_32kSps.cu8
+</code></pre></div>
+<p>El primer comando responde <code>tono_1kHz_32kSps.cu8: 6400 bytes</code>, la cifra que usaste en 1.1. El segundo imprime esto:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>0000000 228 128
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>0000002 226 147
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>0000004 220 166
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>0000006 211 183
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>0000008 198 198
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>0000010 183 211
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>0000012 166 220
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>0000014 147 226
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>0000016 128 228
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>0000018 108 226
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>0000020  89 220
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>0000022  72 211
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>0000024  57 198
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>0000026  44 183
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>0000028  35 166
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>0000030  29 147
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>0000032  28 128
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>0000034  29 108
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>0000036  35  89
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>0000038  44  72
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>0000040  57  57
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>0000042  72  44
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>0000044  89  35
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>0000046 108  29
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>0000048 127  28
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>0000050 147  29
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>0000052 166  35
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>0000054 183  44
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>0000056 198  57
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>0000058 211  72
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>0000060 220  89
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>0000062 226 108
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>0000064
+</code></pre></div>
+<p>Cómo leerlo:</p>
+<ul>
+<li><code>-N64</code> pide 64 bytes. A dos bytes por muestra son 32 muestras, y a 32 kS/s eso es exactamente el milisegundo de 1.1.</li>
+<li>Salen 33 líneas. Las 32 primeras son muestras. La última, <code>0000064</code>, no trae valores: es la dirección donde terminó la lectura.</li>
+<li>La primera columna es la dirección, la posición en decimal del primer byte de la línea. Avanza de dos en dos, así que el índice de la muestra es n = dirección / 2: la línea <code>0000016</code> es la muestra 8.</li>
+<li>Tras la dirección vienen los dos bytes de la muestra, primero I y después Q, como en A2 y A5 de la Sesión 01.</li>
+</ul>
+<p>Prueba ahora <code>od -b</code>, una opción que aparece en muchos tutoriales, sobre los mismos bytes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>od<span class="w"> </span>-b<span class="w"> </span>-N32<span class="w"> </span>samples/tono_1kHz_32kSps.cu8
+</code></pre></div>
+<p>La primera línea empieza por <code>0000000 344 200 342 223</code>. Es el mismo archivo, así que ¿de dónde sale ese 344?</p>
+<details class="question">
+<summary>1.2. ¿Por qué <code>od -b</code> da 344?</summary>
+<p>Porque <code>-b</code> es la abreviatura de <code>-t o1</code>: escribe cada byte en octal, base 8. Los ocho bits son los mismos que escribe <code>-tu1</code>; solo cambia la base, como en el aviso de A4 de la Sesión 01. <span class="arithmatex">\(344_8 = 3 \cdot 64 + 4 \cdot 8 + 4 = 228\)</span> y <span class="arithmatex">\(200_8 = 2 \cdot 64 = 128\)</span>: la primera muestra de la salida anterior.</p>
+<p>Sin <code>-A</code>, también las direcciones salen en octal. La segunda línea, <code>0000020</code>, es el byte <span class="arithmatex">\(2 \cdot 8 = 16\)</span>, la muestra 8, y empieza por <code>200 344</code>: el (128, 228) de la línea <code>0000016</code>. La última, <code>0000040</code>, es 32, donde terminó la lectura.</p>
+<p>Para ver las dos bases juntas, pide los dos formatos a la vez:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>od<span class="w"> </span>-Ad<span class="w"> </span>-to1<span class="w"> </span>-tu1<span class="w"> </span>-w2<span class="w"> </span>-N8<span class="w"> </span>samples/tono_1kHz_32kSps.cu8
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>0000000 344 200
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>        228 128
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>0000002 342 223
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>        226 147
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>0000004 334 246
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>        220 166
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>0000006 323 267
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        211 183
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>0000008
+</code></pre></div>
+<p>Cada muestra ocupa dos líneas: arriba en octal y debajo en decimal.</p>
+</details>
+<p><strong>1.3. Los mismos bytes en GNU Radio.</strong> Abre <a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/warmup_32k.grc"><code>warmup_32k.grc</code></a>. La cadena es la de la Parte C de la Sesión 01, con estos cambios:</p>
+<ul>
+<li><code>samp_rate</code> vale <code>32000</code> y el <code>File Source</code> lee <code>tono_1kHz_32kSps.cu8</code>.</li>
+<li>El <code>File Source</code> tiene <code>Repeat</code> en <code>No</code> y <code>Length</code> en 64. <code>Length</code> cuenta elementos del tipo de salida, que aquí es <code>Byte</code>: son los 64 bytes que pediste a <code>od</code> con <code>-N64</code>. Forman 32 muestras complejas, cada una un par (I, Q) del mismo instante; no son 64 muestras, ni 32 valores de I seguidos de 32 de Q.</li>
+<li><code>Add Const</code> y <code>Multiply Const</code> están en <em>bypass</em>: el bloque deja pasar la señal sin tocarla, como un cable, y GRC lo pinta de amarillo claro para distinguirlo. Al Time Sink llegan los bytes del archivo, pasados a número real por <code>UChar To Float</code>, pero sin centrar ni escalar.</li>
+<li>El Time Sink tiene <code>Number of Points</code> en 32, así que dibuja 32 muestras, con <code>Y min</code> en 0 y <code>Y max</code> en 256, la escala del byte. Marca cada muestra con un círculo azul para I y un cuadrado rojo para Q, como en la Figura 1 de más abajo.</li>
+</ul>
+<p>Ejecútalo con <strong>F6</strong>. El Time Sink dibuja las 32 muestras y la imagen se queda quieta: tras 64 bytes el <code>File Source</code> deja de entregar datos, el flujo termina y el visor conserva lo último que recibió. Para volver a dibujarla, cierra la ventana y ejecuta otra vez.</p>
+<p>El Frequency Sink también se abre, y con los bytes sin centrar su línea se sale por encima del eje alrededor de 0 kHz. Su lectura queda para 1.6.</p>
+<p>Con el eje de 0 a 256, a ojo no se distingue 226 de 228. Para leer valores, pasa el cursor sobre la gráfica: junto a él aparecen su tiempo y su altura, por ejemplo <code>0.9770 ms, 172.4082</code>. Son las coordenadas del cursor, no las de la muestra más cercana, así que hay que ponerlo encima del marcador. Para acercarte, arrastra con el botón izquierdo un rectángulo alrededor de los marcadores que te interesen y el visor ampliará esa zona. El botón derecho deshace un paso de zoom, y Ctrl más el botón derecho vuelve a la vista completa.</p>
+<p>Compara la pantalla con la salida de <code>od</code> de 1.2, línea a línea. La línea de dirección 2n es la muestra n, y el Time Sink la coloca en <span class="arithmatex">\(t = n / f_s\)</span>. Busca las líneas <code>0000000</code>, <code>0000016</code> y la última con valores. ¿Dónde está <code>0000064</code>?</p>
+<details class="question">
+<summary>1.3. Cada línea de <code>od</code> en la pantalla</summary>
+<p>La línea <code>0000000</code> es n = 0, en 0 ms: el círculo de I está en 228 y el cuadrado de Q en 128.</p>
+<p>La línea <code>0000016</code> es n = 8, en <span class="arithmatex">\(8 / 32\,000\)</span> s = 0.25 ms: I ha bajado a 128 y Q ha subido a 228.</p>
+<p>La última con valores, <code>0000062</code>, es n = 31, en <span class="arithmatex">\(31 / 32\,000\)</span> s = 0.96875 ms, el último punto de la pantalla, cerca de 0.97 ms: I en 226 y Q en 108.</p>
+<p><code>0000064</code> no está: no trae muestra, solo marca dónde terminó la lectura. Por eso el último punto queda antes de la marca de 1 ms.</p>
+</details>
+<p><strong>1.4. Encontrar los 90°.</strong> Busca el valor más alto de I y el valor más alto de Q, en la salida de <code>od</code> o en la imagen quieta del Time Sink. Anota en qué muestra está cada uno y cuántas muestras los separan.</p>
+<details class="question">
+<summary>1.4. ¿Dónde están los máximos?</summary>
+<p>I alcanza su máximo, 228, en la primera línea: dirección <code>0000000</code>, muestra n = 0.</p>
+<p>Q alcanza el mismo 228 en la dirección <code>0000016</code>, muestra n = 8.</p>
+<p>Los separan ocho muestras. Un tono de 1 kHz tiene período <span class="arithmatex">\(T = 1/f_0 = 1\)</span> ms, y por la regla de 1.1 eso son <span class="arithmatex">\(f_s / f_0 = 32\)</span> muestras por ciclo. Ocho son un cuarto de ciclo: 90°. Q hace lo mismo que I con un cuarto de ciclo de retraso. Son las dos proyecciones de una flecha que gira, la hélice que dibuja la <a href="../#24-punto-4-del-voltaje-real-a-las-muestras-complejas-iq">Sesión 01 en 2.4</a>.</p>
+</details>
+<p><img alt="Treinta y tres muestras del tono de 1 kHz a 32 kS/s: bytes de I y Q contra el índice n y contra el tiempo en milisegundos" src="../figures/muestreo-un-milisegundo.png" /></p>
+<p><strong>Figura 1.</strong> Un milisegundo del tono, muestra a muestra: en cada posición n están los dos bytes de una línea de <code>od</code>, I y Q del mismo instante.</p>
+<p>La línea discontinua es el cero de la señal, 127.5, el mismo que A6 de la Sesión 01 dedujo del promedio de la grabación. Cada tallo nace en ella y sube o baja hasta el valor del byte. Los puntos son los que dibujó el Time Sink en 1.3, que en lugar de tallos los une con líneas.</p>
+<p>El círculo azul relleno es I y el cuadrado rojo hueco es Q. Comparten posición horizontal porque son los dos bytes de una misma línea de <code>od</code>, es decir, el mismo instante.</p>
+<p>El eje inferior cuenta muestras y el superior, milisegundos. Las etiquetas de n = 0, 8, 16, 24 y 32 dan el índice, la dirección que imprime <code>od</code>, que es siempre 2n, y el par (I, Q).</p>
+<p>Sigue los extremos: I arriba en n = 0, Q arriba en n = 8, I abajo en n = 16, Q abajo en n = 24. Q repite cada gesto de I un cuarto de ciclo después.</p>
+<p>La muestra 32 ya pertenece al ciclo siguiente y vuelve al máximo de I. No aparece en la salida de 1.2, donde <code>0000064</code> sale sola, ni en el Time Sink de 1.3; para ver sus bytes pide dos más con <code>-N66</code>. Su Q vale 127 y no 128 como en n = 0, por el redondeo que explica el aviso siguiente.</p>
+<details class="info">
+<summary>Por qué el cero sale unas veces 128 y otras 127</summary>
+<p>En n = 8 el coseno vale cero y <code>od</code> da I = 128. En n = 24 también vale cero y da 127. El archivo no está mal: el cero del formato es 127.5, justo a medio camino entre dos enteros, y el byte tiene que caer a un lado.</p>
+<p>Cuando la cuenta da <strong>exactamente</strong> 127.5, como en Q para n = 0 o en I para n = 8, NumPy redondea al entero par: 128. Cuando la aritmética de coma flotante deja un residuo diminuto, del orden de <span class="arithmatex">\(10^{-14}\)</span>, decide el signo de ese residuo. En n = 24 el residuo es <span class="arithmatex">\(-1.8 \times 10^{-14}\)</span>, la suma queda apenas por debajo de 127.5 y sale 127.</p>
+<p>Por eso ciclos sucesivos pueden diferir en ±1 justo en esos valores.</p>
+<details class="note">
+<summary>Si en n = 8 también hay residuo, ¿por qué la suma queda en 127.5?</summary>
+<p>Porque es demasiado pequeño. En n = 8 el residuo vale <span class="arithmatex">\(+6.1 \times 10^{-15}\)</span>. Cerca de 127.5 la coma flotante solo distingue pasos de <span class="arithmatex">\(1.4 \times 10^{-14}\)</span>, y un residuo menor que medio paso, <span class="arithmatex">\(7.1 \times 10^{-15}\)</span>, se pierde al sumar. La suma queda en 127.5 exacto y se aplica el redondeo al par. El residuo de n = 24 supera ese medio paso y sí mueve la suma.</p>
+</details>
+</details>
+<p><strong>1.5. Centrar y escalar.</strong> Vuelve a GRC. Haz clic en <code>Add Const</code>, añade <code>Multiply Const</code> con Ctrl+clic y pulsa <strong>E</strong>, que es <code>Enable</code> y también está en el menú <code>Edit</code> y en el clic derecho. Los dos bloques deben perder el amarillo. <code>Bypass</code>, la <strong>B</strong>, pone el bypass pero no lo quita. En las propiedades del Time Sink pon <code>Y min</code> en <code>-1</code> y <code>Y max</code> en <code>1</code>, y ejecuta otra vez con <strong>F6</strong>.</p>
+<p>La forma es la de 1.3, pero la curva azul arranca ahora en 0.788 y no en 228: los dos bloques hacen la cuenta de C2 de la Sesión 01, <span class="arithmatex">\((228 - 127.5) / 127.5 = 0.788\)</span>.</p>
+<p>En el Frequency Sink ya no se sale nada por arriba. Con los bytes sin centrar se salían dos componentes: la constante 127.5, que es frecuencia 0, y el tono, todavía sin escalar. <code>Add Const</code> quitó la constante y <code>Multiply Const</code> bajó el tono a unos −2 dB.</p>
+<p>Calcula qué altura deben tener Q e I en n = 8, que en el eje de tiempo es 0.25 ms, y compruébalo en la pantalla.</p>
+<details class="question">
+<summary>1.5. Las alturas en n = 8</summary>
+<p>Q vale 228, así que su altura es la misma que la de I en n = 0: <span class="arithmatex">\((228 - 127.5) / 127.5 = 0.788\)</span>.</p>
+<p>I vale 128, así que su altura es <span class="arithmatex">\((128 - 127.5) / 127.5 = 0.0039\)</span>. En pantalla parece cero, pero no lo es: es el redondeo del aviso de 1.4.</p>
+<p>Eso en el primer periodo, que es el que ves. En 14 de los 100 periodos del archivo ese byte es 127 y la altura, <span class="arithmatex">\(-0.0039\)</span>.</p>
+</details>
+<p><strong>1.6. El tamaño de la FFT.</strong> Pasa al Frequency Sink. Tiene <code>FFT Size</code> en 32, <code>Bandwidth (Hz)</code> en <code>samp_rate</code>, <code>Center Frequency (Hz)</code> en 0 y <code>Window Type</code> en <code>Rectangular</code>.</p>
+<ul>
+<li><code>FFT Size</code> es cuántas muestras junta el visor para calcular cada espectro, y también cuántos bins —las casillas de frecuencia de la FFT— devuelve. Con 32 junta 32 muestras: el mismo milisegundo congelado que imprimió <code>od</code> y que dibuja el Time Sink.</li>
+<li><code>Bandwidth (Hz)</code> va en hercios: <code>samp_rate</code> son 32 000 Hz, que GRC abrevia <code>32k</code> en el bloque. El eje del visor, en cambio, está rotulado en kHz.</li>
+<li>El eje va de −16 a +16 kHz porque el centro es 0 y el ancho es <code>samp_rate</code>: la FFT de una señal compleja muestra de <span class="arithmatex">\(-f_s/2\)</span> a <span class="arithmatex">\(+f_s/2\)</span>, el ancho <span class="arithmatex">\(f_s\)</span> entero y no <span class="arithmatex">\(f_s/2\)</span>, como ya apareció en C3 de la Sesión 01.</li>
+<li>Los 32 bins se reparten esos 32 kHz, así que quedan separados 1000 Hz, de −16 a +15 kHz. No hay bin en +16 kHz porque +16 sería otra vez −16, igual que <code>0000064</code> no trae muestra.</li>
+<li>El tono cae exacto en el bin de +1 kHz y marca unos −2 dB, <span class="arithmatex">\(20 \log_{10}(0.79)\)</span>: su amplitud en decibelios.</li>
+<li>Sale en +1 kHz y no en −1 kHz por el orden de I y Q. En 1.4 viste que Q repite a I un cuarto de ciclo después: I es un coseno y Q un seno, y en la <a href="../#24-punto-4-del-voltaje-real-a-las-muestras-complejas-iq">hélice de la Sesión 01</a> las copias de ese par se suman en <span class="arithmatex">\(+f_0\)</span> y se cancelan en <span class="arithmatex">\(-f_0\)</span>. Si Q fuera por delante de I, la raya estaría en −1 kHz. Puedes comprobarlo cruzando las dos salidas del <code>Deinterleave</code>.</li>
+</ul>
+<p>La línea une los bins y sugiere valores entre ellos que la FFT no calculó. Para ver solo los 32 bins, haz clic con el botón central del ratón, la rueda, sobre el espectro; en estos visores el derecho no abre el menú, sino que deshace el zoom. Entra en <code>Espectro</code>, el menú de la línea, y elige ahí <code>Line Style</code> → <code>None</code> y <code>Line Marker</code> → <code>Circle</code>. Quedan 32 puntos sueltos: el tono arriba y los otros 31 abajo, entre unos −72 y −58 dB. Es un ajuste de la ventana y no del grafo, así que se pierde al volver a ejecutar.</p>
+<details class="note">
+<summary>¿De dónde salen los 31 puntos de abajo, y por qué no subir <code>Y min</code> para quitarlos?</summary>
+<p>En n = 1 la cuenta da 225.58, pero un byte solo admite enteros y guarda 226. Esa diferencia, repetida en cada muestra, es una señal pequeña que viaja sumada al tono, y la FFT la dibuja como a cualquier otra. Es el precio de los 256 niveles que definieron «ADC de 8 bits» en la <a href="../#parte-a-el-archivo-por-dentro-sin-gnu-radio">Parte A de la Sesión 01</a>.</p>
+<p>El error del redondeo queda 47.8 dB por debajo del tono. Son los 49.9 dB que la <a href="../#3-los-cuatro-parametros-y-sus-limites">Sesión 01</a> calcula para 8 bits, menos 2.1 dB porque el tono no usa todo el rango del byte: su amplitud es de 100 niveles y no de 127.5. Sumados, los 31 puntos quedan algo más abajo, a 48.8 dB, porque una parte de ese error cae en el mismo bin que el tono.</p>
+<p>Subir <code>Y min</code> sacaría esos puntos de la pantalla, pero no de los datos.</p>
+</details>
+<p>Ahora cambia <code>Offset</code> del <code>File Source</code> a 64 y ejecuta otra vez. <code>Offset</code> cuenta bytes, igual que <code>Length</code>, así que el visor recibe las muestras 32 a 63: el segundo periodo del tono. Repite el ajuste de los puntos. ¿Es igual que el primero?</p>
+<details class="question">
+<summary>1.6. El segundo periodo</summary>
+<p>El tono sigue en +1 kHz y a unos −2 dB, pero faltan ocho puntos, los de −13, −9, −5, −1, +3, +7, +11 y +15 kHz. Esos bins caen por debajo de −140 dB, el borde inferior del eje, y sus marcadores no se ven. Con la línea continua aparecen como huecos que bajan hasta el fondo.</p>
+<p>No todos los periodos del archivo son idénticos: difieren en ±1 justo donde la cuenta da 127.5, como explica el aviso de 1.4. Ese ±1 cambia el error del redondeo y, con él, los bins de abajo. Solo 26 de los 100 periodos se ven sin huecos, como el primero. Con <code>Offset</code> en <span class="arithmatex">\(64 k\)</span> ves el periodo <span class="arithmatex">\(k + 1\)</span>.</p>
+</details>
+<p>Vuelve a poner <code>Offset</code> en 0 y cambia <code>FFT Size</code> a 1024. GRC solo acepta potencias de dos entre 32 y 32768: con otro valor, el nombre del bloque se pinta en rojo y GRC no deja generar ni ejecutar el grafo. Predice qué dibujará el Frequency Sink y ejecuta. Después, ¿qué <code>Length</code> hace falta para que llegue justo una FFT de 1024 muestras? Ponlo, predice cuánto se separan los bins, cuánto tiempo abarca la FFT y dónde estará la raya, y ejecuta.</p>
+<details class="question">
+<summary>1.6. ¿Qué cambió con 1024?</summary>
+<p>Con <code>Length</code> en 64 el espectro queda en blanco. El flujo trae 32 muestras y termina, y el visor necesita juntar 1024 para calcular un solo espectro.</p>
+<p>Hace falta <code>Length</code> en 2048: <code>Length</code> cuenta bytes, y 1024 muestras de dos bytes cada una son 2048. Llegan 32 periodos del tono, justo una FFT. La separación entre bins baja a 32 000 / 1024 = 31.25 Hz.</p>
+<p>Esa FFT abarca 1024 / 32 000 s = 32 ms: treinta y dos ciclos del tono en lugar de uno.</p>
+<p>La raya sigue en 1 kHz y a unos −2 dB, ahora mucho más fina.</p>
+<p>El Time Sink sigue dibujando 32 puntos, 1 ms: su <code>Number of Points</code> no cambió. El espectro mira ahora 32 veces más tiempo del que enseña el Time Sink.</p>
+</details>
+<details class="note">
+<summary>¿Y el rizado entre las rayas?</summary>
+<p>Con 1024, el error del redondeo sigue dejando rayas en múltiplos de 1 kHz, y entre ellas, donde la FFT de 32 no tenía bins, aparece un rizado entre unos −85 y −113 dB.</p>
+<p>Lo que se repite idéntico cada milisegundo solo tiene componentes en múltiplos de 1 kHz. El ±1 del redondeo, en cambio, cambia de un ciclo a otro. Con 32 muestras cada espectro ve un solo ciclo, así que ese cambio solo puede alterar la altura de los bins de 1 kHz: es lo que viste al pasar al segundo periodo. Con 1024 la FFT ve 32 ciclos distintos y tiene bins cada 31.25 Hz para mostrarlo.</p>
+</details>
+<p>Las dos cuentas salen de la regla de 1.1. Una FFT de <span class="arithmatex">\(N\)</span> muestras abarca <span class="arithmatex">\(T = N / f_s\)</span>. Sus <span class="arithmatex">\(N\)</span> bins se reparten el ancho <span class="arithmatex">\(f_s\)</span>, así que quedan a <span class="arithmatex">\(\Delta f = f_s / N\)</span>. Juntas, <span class="arithmatex">\(\Delta f = 1/T\)</span>: más resolución en frecuencia cuesta más tiempo de observación.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;"><code>FFT Size</code> <span class="arithmatex">\(N\)</span></th>
+<th style="text-align: right;">Tiempo que abarca, <span class="arithmatex">\(T = N / f_s\)</span></th>
+<th style="text-align: right;">Separación entre bins, <span class="arithmatex">\(\Delta f = f_s / N\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">1 ms</td>
+<td style="text-align: right;">1000 Hz</td>
+</tr>
+<tr>
+<td style="text-align: right;">1024</td>
+<td style="text-align: right;">32 ms</td>
+<td style="text-align: right;">31.25 Hz</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">La ventana es rectangular a propósito</p>
+<p>Con la Blackman-Harris que trae <code>test2.grc</code>, la misma raya se ensancha varios bins. El efecto de la ventana se estudiará en la <a href="../../02-tiempo-frecuencia-iq/">Sesión 02</a>. Aquí se usa la rectangular para que el tono ocupe un solo bin.</p>
+</div>
+<h2 id="2-las-mismas-reglas-donde-no-se-pueden-contar">2. Las mismas reglas donde no se pueden contar</h2>
+<p>La grabación de la Sesión 01 obedece a la misma regla que el tono, <span class="arithmatex">\(N = f_s \cdot T\)</span>, pero a 2.4 MS/s. A esa tasa un milisegundo ya no cabe en una pantalla de terminal. Aquí las muestras no se miran: se cuentan con comandos, y lo que dibujan los visores se calcula antes de ejecutar.</p>
+<p><strong>2.1. Predecir con papel.</strong> Desde la carpeta <code>sdr/</code>, pide el tamaño de la grabación:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>wc<span class="w"> </span>-c<span class="w"> </span>&lt;<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8
+</code></pre></div>
+<p><code>wc -c</code> cuenta bytes. Con <code>&lt;</code> es la terminal la que abre el archivo y se lo pasa a <code>wc</code> por su entrada; <code>wc</code> no llega a conocer el nombre y por eso imprime solo el número. Responde <code>48000000</code>. Con eso, y antes de ejecutar nada más:</p>
+<ol>
+<li>A 2.4 MS/s, ¿cuántas muestras hay en 1 ms? ¿Cuántos bytes ocupan?</li>
+<li>¿Cuánto dura la grabación?</li>
+</ol>
+<details class="question">
+<summary>2.1. ¿Cuántas muestras y cuánto dura?</summary>
+<p>2.4 MS/s son 2400 kS/s, así que por el atajo de 1.1 en 1 ms hay 2400 muestras. A dos bytes por muestra ocupan 4800 bytes.</p>
+<p>Los 48 000 000 bytes son 24 000 000 muestras, y <span class="arithmatex">\(T = N / f_s = 24\,000\,000 / 2\,400\,000 = 10\)</span> s: los diez segundos de la grabación.</p>
+</details>
+<p><strong>2.2. Contar sin mirar.</strong> Pide a <code>od</code> ese milisegundo, 4800 bytes con una muestra por línea, pero en lugar de leer las líneas, cuéntalas con <code>wc -l</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>od<span class="w"> </span>-An<span class="w"> </span>-tu1<span class="w"> </span>-w2<span class="w"> </span>-N4800<span class="w"> </span>-v<span class="w"> </span>samples/fm_99p1MHz_2p4Msps_g30.cu8<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
+</code></pre></div>
+<p>Responde <code>2400</code>: una línea por muestra, el milisegundo entero. El comando cambia una opción respecto a 1.2: <code>-An</code> en lugar de <code>-Ad</code>. ¿Cuántas líneas contaría <code>wc -l</code> con <code>-Ad</code>, y por qué?</p>
+<details class="question">
+<summary>2.2. ¿Por qué <code>-An</code>?</summary>
+<p>Con <code>-Ad</code> salen 2401. La línea de más es <code>0004800</code>, la dirección donde terminó la lectura, sin valores, igual que <code>0000064</code> en 1.2.</p>
+<p><code>-An</code> es la opción de A4 de la Sesión 01: quita la columna de direcciones y, con ella, esa última línea. Así <code>wc -l</code> cuenta solo muestras.</p>
+</details>
+<p><strong>2.3. Lo que dibuja <code>test2.grc</code>.</strong> Abre <a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc"><code>test2.grc</code></a>, la solución de referencia de la Parte C de la Sesión 01, y ejecútalo con <strong>F6</strong> sin cambiar nada, tampoco el deslizador <code>Frequency</code>. Con una grabación como fuente, ese deslizador solo cambia el centro del Frequency Sink, <code>freq*M</code>: reetiqueta el eje, no sintoniza nada. Su Time Sink tiene <code>Number of Points</code> en 1024 y su Frequency Sink, <code>FFT Size</code> también en 1024. Antes de mirar la pantalla, calcula con las cuentas de 1.6 cuánto tiempo abarca cada imagen y cuánto se separan los bins.</p>
+<p>En pantalla comprueba lo que está rotulado: el tiempo en el eje del Time Sink y los 2.4 MHz que abarca el eje del Frequency Sink. La separación entre bins no aparece en ningún eje; sale de dividir ese ancho entre el número de bins.</p>
+<p>El Time Sink dibuja dos trazas, <code>Signal 1</code> en azul y <code>Signal 2</code> en rojo: este grafo no las renombró como el de 1.3. <code>Signal 1</code> es I, la parte real, y <code>Signal 2</code> es Q, pero ya no se leen como el tono: cada muestra es la suma, en ese instante, de todo lo que cabe en los 2.4 MHz —las emisoras, fuertes y débiles, y el ruido—, y en pantalla parece ruido.</p>
+<p>El Frequency Sink usa la ventana Blackman-Harris y no la rectangular de 1.6: cambia cuánto se derrama cada componente sobre los bins vecinos, como avisa la nota del final de la sección 1, pero no dónde están los bins, que siguen separados <span class="arithmatex">\(f_s / N\)</span>.</p>
+<details class="question">
+<summary>2.3. ¿Cuánto tiempo y cuántos hercios?</summary>
+<p>El Time Sink dibuja 1024 / 2 400 000 s = 426.7 µs, menos de medio milisegundo. Su eje, rotulado <code>Time (us)</code>, va de 0 a unos 427: GNU Radio escribe <code>us</code> por µs.</p>
+<p>En el Frequency Sink los bins quedan a 2 400 000 / 1024 = 2343.75 Hz. Los 1024 bins se reparten un eje de 2.4 MHz, de 97.9 a 100.3 MHz, el intervalo de C3 de la Sesión 01.</p>
+<p>Cada espectro sale también de 426.7 µs de señal: el mismo <span class="arithmatex">\(N\)</span> y la misma <span class="arithmatex">\(f_s\)</span> que el Time Sink dan el mismo <span class="arithmatex">\(T = N / f_s\)</span>.</p>
+</details>
+<p><strong>2.4. Ajustar los visores.</strong> ¿Qué <code>Number of Points</code> hay que poner al Time Sink para ver exactamente 1 ms? ¿Qué <code>FFT Size</code> daría bins de 1 kHz, como los de 1.6? ¿Acepta GRC los dos valores?</p>
+<details class="question">
+<summary>2.4. 1 ms y 1 kHz a 2.4 MS/s</summary>
+<p>Por el atajo de 1.1, 1 ms son 2400 muestras. <code>Number of Points</code> no exige potencia de dos, así que con 2400 el eje del Time Sink llega a 1000 us.</p>
+<p>Bins de 1 kHz piden <span class="arithmatex">\(N = f_s / \Delta f = 2\,400\,000 / 1000 = 2400\)</span>. Pero 2400 no es potencia de dos, y como avisa 1.6, GRC no deja generar el grafo con ese <code>FFT Size</code>. La potencia de dos más cercana es 2048: bins a 2 400 000 / 2048 = 1171.875 Hz, y cada espectro abarca 2048 / 2 400 000 s = 853.3 µs.</p>
+<p>Si hace falta separar al menos 1 kHz, sirve 4096: bins a 585.9 Hz, a cambio de 1.7 ms por espectro.</p>
+</details>
+<p>Las cuentas son las de la sección 1; solo cambió la escala.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;"><span class="arithmatex">\(N\)</span> a 2.4 MS/s</th>
+<th style="text-align: right;">Tiempo que abarca, <span class="arithmatex">\(T = N / f_s\)</span></th>
+<th style="text-align: right;">Separación entre bins, <span class="arithmatex">\(\Delta f = f_s / N\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1024</td>
+<td style="text-align: right;">426.7 µs</td>
+<td style="text-align: right;">2343.75 Hz</td>
+</tr>
+<tr>
+<td style="text-align: right;">2048</td>
+<td style="text-align: right;">853.3 µs</td>
+<td style="text-align: right;">1171.875 Hz</td>
+</tr>
+<tr>
+<td style="text-align: right;">2400</td>
+<td style="text-align: right;">1 ms</td>
+<td style="text-align: right;">1000 Hz</td>
+</tr>
+<tr>
+<td style="text-align: right;">4096</td>
+<td style="text-align: right;">1.7 ms</td>
+<td style="text-align: right;">585.9 Hz</td>
+</tr>
+</tbody>
+</table>
+<p>2400 vale como <code>Number of Points</code>, pero no como <code>FFT Size</code>.</p>
+<h2 id="3-tres-tasas-de-muestreo-reales">3. Tres tasas de muestreo reales</h2>
+<div class="admonition warning">
+<p class="admonition-title">Pendiente</p>
+<p>Esta parte necesita dos grabaciones nuevas, a 1.2 MS/s y a 300 kS/s, que todavía no están publicadas.</p>
+</div>
+<p>Cuando estén disponibles, se compararán con la grabación oficial de 2.4 MS/s. La frecuencia central, la ganancia, la antena y la duración se mantendrán iguales; solo cambiará la tasa de muestreo.</p>
+<p>Con el entorno <code>(base)</code> activo y desde la raíz <code>sdr/</code>, crea las dos capturas de diez segundos:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>rtl_sdr<span class="w"> </span>-f<span class="w"> </span><span class="m">99</span>.1e6<span class="w"> </span>-s<span class="w"> </span><span class="m">1200000</span><span class="w"> </span>-g<span class="w"> </span><span class="m">30</span><span class="w"> </span>-n<span class="w"> </span><span class="m">12000000</span><span class="w"> </span>samples/fm_99p1MHz_1p2Msps_g30.cu8
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>rtl_sdr<span class="w"> </span>-f<span class="w"> </span><span class="m">99</span>.1e6<span class="w"> </span>-s<span class="w"> </span><span class="m">300000</span><span class="w"> </span>-g<span class="w"> </span><span class="m">30</span><span class="w"> </span>-n<span class="w"> </span><span class="m">3000000</span><span class="w"> </span>samples/fm_99p1MHz_0p3Msps_g30.cu8
+</code></pre></div>
+<p>La primera debe ocupar 24 000 000 bytes y la segunda 6 000 000 bytes. Conserva los mismos datos de antena y ubicación que en la captura oficial; después comparte ambas desde la carpeta <code>samples</code> del curso, con su SHA-256 y metadatos.</p>
+<ul>
+<li>La ventana visible se estrecha a ±1.2 MHz y ±150 kHz: cada captura contiene menos banda alrededor de la emisora central.</li>
+<li>Los archivos de diez segundos pesan 24 y 6 MB, porque el número de muestras es proporcional a <span class="arithmatex">\(f_s\)</span>.</li>
+<li>Abre cada archivo en <code>test2.grc</code>, cambia <code>samp_rate</code>.</li>
+</ul>
+<h2 id="4-decimacion-en-software">4. Decimación en software</h2>
+<p>La grabación original contiene muestras complejas a 2.4 MS/s. En esta sección se construyen dos versiones de ella a 300 kS/s, sin usar de nuevo el dongle. Las dos reducen la tasa por el mismo factor,</p>
+<div class="arithmatex">\[
+f_{s,\mathrm{salida}} = \frac{f_{s,\mathrm{entrada}}}{D}
+= \frac{2.4\ \mathrm{MS/s}}{8} = 300\ \mathrm{kS/s}.
+\]</div>
+<p>Una señal compleja a 300 kS/s ocupa una ventana de frecuencia de −150 a +150 kHz alrededor de 0 Hz. La emisora sintonizada a 99.1 MHz sigue en 0 Hz; lo que cambia es cuánto contenido vecino puede sobrevivir alrededor de ella.</p>
+<p>La comparación sirve para separar dos ideas que suelen confundirse:</p>
+<ul>
+<li><strong>Reducir la tasa</strong> significa entregar menos muestras por segundo. Aquí se conservará una de cada ocho.</li>
+<li><strong>Reducir el espectro correctamente</strong> exige preparar la señal antes de retirar muestras. El contenido que no cabe en la nueva ventana debe ser atenuado primero.</li>
+</ul>
+<p><strong>4.1. Preparar la comparación.</strong> El estudiante abre <a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/decimacion.grc"><code>decimacion.grc</code></a> en GNU Radio Companion y lo ejecuta con <strong>F6</strong>. El grafo lee la grabación oficial, centra y escala sus bytes como <code>test2.grc</code>, y a partir de esa señal compleja crea tres caminos:</p>
+<table>
+<thead>
+<tr>
+<th>Camino</th>
+<th>Bloque principal</th>
+<th style="text-align: right;">Tasa de salida</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Referencia</td>
+<td>—</td>
+<td style="text-align: right;">2.4 MS/s</td>
+<td>Conserva la grabación original.</td>
+</tr>
+<tr>
+<td>Descarte directo</td>
+<td><code>Keep 1 in N</code>, con <code>N = D = 8</code></td>
+<td style="text-align: right;">300 kS/s</td>
+<td>Conserva una muestra y elimina las siete siguientes.</td>
+</tr>
+<tr>
+<td>Decimación correcta</td>
+<td><code>Decimating FIR Filter</code>, con <code>D = 8</code></td>
+<td style="text-align: right;">300 kS/s</td>
+<td>Filtra primero y después conserva una muestra de cada ocho.</td>
+</tr>
+</tbody>
+</table>
+<p>Los tres visores muestran la misma zona central de la grabación, pero sus ejes no cubren lo mismo. El visor de referencia llega de −1.2 a +1.2 MHz. Los otros dos llegan de −150 a +150 kHz. Por eso no basta con ampliar o reducir el eje de una gráfica: se ha cambiado la señal que llega al visor.</p>
+<p><strong>4.2. Qué falla al solo retirar muestras.</strong> <code>Keep 1 in N</code> es útil para demostrar el problema, pero no es un decimador completo. No pregunta qué frecuencias se están eliminando; simplemente toma las muestras 0, 8, 16, 24 y así sucesivamente.</p>
+<p>Una componente que estaba fuera de la nueva ventana no desaparece al hacer esto. Sus valores, vistos ahora con menos instantes por segundo, pueden parecer una componente distinta dentro de la ventana. Ese desplazamiento se llama <em>aliasing</em> o plegamiento espectral.</p>
+<p>En la grabación usada aquí aparece contenido intenso alrededor de −1.00 MHz relativo a 99.1 MHz, aproximadamente 98.10 MHz en frecuencia absoluta. Al descartar una de cada ocho muestras sin filtrar, aparece alrededor de −100 kHz dentro de la nueva ventana. No es una nueva señal en −100 kHz: es contenido lejano que se ha plegado allí.</p>
+<p><strong>4.3. Filtrar antes de retirar.</strong> La tercera rama evita ese error. Su bloque <code>Decimating FIR Filter</code> usa este filtro:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">firdes</span><span class="o">.</span><span class="n">low_pass</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">samp_rate</span><span class="p">,</span> <span class="mf">0.4</span><span class="o">*</span><span class="n">samp_rate</span><span class="o">/</span><span class="n">D</span><span class="p">,</span> <span class="mf">0.1</span><span class="o">*</span><span class="n">samp_rate</span><span class="o">/</span><span class="n">D</span><span class="p">)</span>
+</code></pre></div>
+<p>Con <code>samp_rate = 2400000</code> y <code>D = 8</code>, el filtro deja pasar con comodidad hasta 120 kHz, hace la transición entre 120 y 150 kHz y atenúa lo que queda fuera. Tiene 193 coeficientes y usa la ventana Hamming predeterminada de GNU Radio. Solo después de esa preparación el bloque toma una muestra de cada ocho.</p>
+<p><img alt="Tres espectros de la grabación de 99.1 MHz: el original a 2.4 MS/s, el resultado de descartar siete de cada ocho muestras y el resultado de filtrar antes de descartar" src="../figures/decimacion-con-y-sin-filtro.png" /></p>
+<p><strong>Figura 2.</strong> Decimación por ocho de la grabación oficial: sin filtro las señales fuera de la nueva banda se pliegan; con un filtro FIR previo solo se conserva la banda central.</p>
+<p>En (a), el eje completo permite ver contenido hasta ±1.2 MHz. En particular, hay actividad importante cerca de −1 MHz y +1 MHz que no cabe en una señal a 300 kS/s.</p>
+<p>En (b), el eje ya termina en ±150 kHz, pero aparecen picos y una banda ancha cerca de −100 kHz y +100 kHz. Vienen de posiciones alejadas del panel (a); no pertenecían originalmente a esa parte central del espectro. Es la huella visible del plegamiento.</p>
+<p>En (c), la línea verde conserva la región alrededor de 0 Hz y cae con fuerza al acercarse a los bordes. Los picos plegados que se veían en (b) ya no llegan al resultado porque el filtro los atenuó antes de retirar las muestras. La caída no es vertical: entre 120 y 150 kHz está la banda de transición necesaria para que un filtro real pase suavemente de «dejar pasar» a «atenuar».</p>
+<p>El proceso que realiza esta tercera rama es la misma idea que ya aparece dentro del receptor de la <a href="../">Sesión 01</a>: tras convertir la señal a I/Q, el receptor filtra y reduce la tasa antes de enviar las muestras por USB. Aquí la operación se observa después de grabar, con tres visores que permiten comparar sus consecuencias.</p>
+<p><strong>4.4. Comprobar una reducción menor.</strong> El estudiante cambia <code>D</code> de 8 a 2 y ejecuta de nuevo. La tasa de salida pasa a 1.2 MS/s y cada uno de los dos visores inferiores debe configurarse automáticamente para un ancho de <code>samp_rate/D</code>: de −600 a +600 kHz.</p>
+<p>Antes de mirar los visores, el estudiante debe anotar una predicción: ¿qué contenido de la captura original queda fuera de ±600 kHz?, ¿podría aparecer dentro de ese intervalo si se usa solo <code>Keep 1 in N</code>? Después debe comparar las dos ramas y describir únicamente lo observado: qué picos aparecen sin filtro, cuáles desaparecen con el FIR y si la diferencia es menor o mayor que con <code>D = 8</code>.</p>
+<details class="question">
+<summary>4.4. ¿Qué representa la señal de −100 kHz?</summary>
+<p>No representa necesariamente una señal que estuviera a −100 kHz de la emisora central. En la comparación de <code>D = 8</code>, el contenido próximo a −1 MHz de la grabación original se reubica cerca de −100 kHz cuando se retiran muestras sin filtro. Es una copia plegada por el cambio de tasa.</p>
+<p>La rama FIR no «borra una emisora en −100 kHz»: impide que el contenido de fuera de ±150 kHz llegue a plegarse allí. Por eso el orden importa: primero filtrar y después descartar.</p>
+</details>
+<!-- ## 5. El careo: grabado contra decimado
+
+!!! warning "Pendiente"
+    Esta parte necesita la grabación a 300 kS/s, que todavía no está publicada.
+
+## 6. Interpolación -->
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
