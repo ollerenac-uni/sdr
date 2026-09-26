@@ -252,7 +252,7 @@ Las dos cuentas salen de la regla de 1.1. Una FFT de $N$ muestras abarca $T = N 
 | 1024 | 32 ms | 31.25 Hz |
 
 !!! note "La ventana es rectangular a propósito"
-    Con la Blackman-Harris que trae `test2.grc`, la misma raya se ensancha varios bins. Por qué, lo explica la [Sesión 02, §5](../02-tiempo-frecuencia-iq/index.md#5-por-que-aparece-la-fuga-espectral). Aquí se usa la rectangular para que el tono ocupe un solo bin.
+    Con la Blackman-Harris que trae `test2.grc`, la misma raya se ensancha varios bins. El efecto de la ventana se estudiará en la [Sesión 02](../02-tiempo-frecuencia-iq/index.md). Aquí se usa la rectangular para que el tono ocupe un solo bin.
 
 ## 2. Las mismas reglas donde no se pueden contar
 
