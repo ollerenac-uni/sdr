@@ -35,7 +35,11 @@ gnuradio-flowgraphs/*.py
 # PDFs de referencia y notas locales de investigación
 referencia/
 /sdr-reference-courses/**/*.pdf
-.planning/research/
+
+# Contexto interno: historial Git independiente, solo en esta computadora
+/AGENTS.md
+/.planning/
+/.git-context-local/
 
 # Documentos personales de contratación: nunca al repositorio público
 /burocracia/

@@ -36,6 +36,10 @@ es la variante independiente para un USRP; no sustituye esa solución.
 Git. En particular, `burocracia/` contiene documentos personales de contratación
 que no deben publicarse. El sitio web se genera desde `docs/`, no desde estas carpetas.
 
+`AGENTS.md` y `.planning/` son archivos internos de trabajo. Conservan un historial
+Git separado, solo en la computadora de trabajo, y no se incluyen en los nuevos
+commits del repositorio público.
+
 ---
 
 ## Uso local

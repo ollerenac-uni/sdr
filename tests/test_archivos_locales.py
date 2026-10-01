@@ -3,6 +3,8 @@
 from pathlib import Path
 import subprocess
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -19,6 +21,11 @@ def test_gitignore_protege_archivos_locales_sin_ocultar_los_flowgraphs(tmp_path)
         "backups/sesion-anterior.md",
         "samples/grabacion.cu8",
         "gnuradio-flowgraphs/generado.py",
+        "AGENTS.md",
+        ".planning/HANDOFF.json",
+        ".planning/fase-nueva/PLAN.md",
+        ".git-context-local/config",
+        ".git-context-local/objects/archivo",
     }
     publicables = {
         "sdr-reference-courses/sdr-course/Lesson_1/ejercicio.grc",
@@ -29,3 +36,11 @@ def test_gitignore_protege_archivos_locales_sin_ocultar_los_flowgraphs(tmp_path)
     resultado = subprocess.run(["git", "-C", str(tmp_path), "-c", "core.excludesFile=/dev/null", "check-ignore", "--no-index", "--stdin"], input="\n".join(sorted(excluidos | publicables)) + "\n", capture_output=True, text=True)
     assert resultado.returncode == 0, resultado.stderr
     assert set(resultado.stdout.splitlines()) == excluidos
+
+
+def test_el_contexto_interno_no_esta_en_el_indice_del_repositorio_publico():
+    if not (ROOT / ".git").exists():
+        pytest.skip("La copia no tiene el índice Git del repositorio público")
+    resultado = subprocess.run(["git", "-C", str(ROOT), "ls-files", "--", "AGENTS.md", ".planning", ".git-context-local"], capture_output=True, text=True)
+    assert resultado.returncode == 0, resultado.stderr
+    assert not resultado.stdout, f"Archivos internos incluidos en el índice público:\n{resultado.stdout}"
