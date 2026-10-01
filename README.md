@@ -28,6 +28,10 @@ Los flowgraphs del curso están en `gnuradio-flowgraphs/`. Los laboratorios de
 referencia se organizan en `sdr-reference-courses/sdr-course/`; sus `.grc` y los
 archivos de texto auxiliares se versionan, pero sus PDFs permanecen locales.
 
+[`test2.grc`](gnuradio-flowgraphs/test2.grc) conserva la solución del laboratorio
+sin hardware. [`visualizador_usrp.grc`](gnuradio-flowgraphs/visualizador_usrp.grc)
+es la variante independiente para un USRP; no sustituye esa solución.
+
 `backups/`, `burocracia/` y las grabaciones I/Q son archivos locales excluidos de
 Git. En particular, `burocracia/` contiene documentos personales de contratación
 que no deben publicarse. El sitio web se genera desde `docs/`, no desde estas carpetas.
