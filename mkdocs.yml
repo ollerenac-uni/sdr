@@ -75,7 +75,7 @@ nav:
       - sessions/index.md
       - "01 — Introducción a SDR":
           - sessions/01-introduccion-sdr/index.md
-          - "Laboratorio de muestreo": sessions/01-introduccion-sdr/laboratorio-muestreo.md
+          - "Laboratorio #1: muestreo": sessions/01-introduccion-sdr/laboratorio-muestreo.md
       - "02 — Señales y espectro en SDR":
           - sessions/02-tiempo-frecuencia-iq/index.md
           - "Laboratorio #2: demodulador FM": sessions/02-tiempo-frecuencia-iq/laboratorio-receptor-fm.md

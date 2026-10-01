@@ -1,11 +1,11 @@
 ---
-title: "Laboratorio: muestreo, FFT, decimación e interpolación"
+title: "Laboratorio #1 — Muestreo, FFT, decimación e interpolación"
 session: 1
 description: "Relación entre frecuencia de muestreo, tiempo, número de muestras y tamaño de FFT, y cómo la decimación y la interpolación cambian el espectro."
 status: draft
 ---
 
-# Laboratorio: muestreo, FFT, decimación e interpolación
+# Laboratorio #1 — Muestreo, FFT, decimación e interpolación
 
 Esta guía es para quien ya conecta bloques en GNU Radio pero todavía no domina la relación entre la frecuencia de muestreo $f_s$, el tiempo, el número de muestras y el tamaño de la FFT. Continúa la [Parte A de la Sesión 01](index.md#parte-a-el-archivo-por-dentro-sin-gnu-radio), donde contaste bytes y muestras, y le añade el eje que allí faltaba: cada muestra ocupa además un instante.
 

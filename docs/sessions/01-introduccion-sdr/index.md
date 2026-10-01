@@ -692,7 +692,7 @@ Se debe planificar una grabación de 30 s: seleccionar $f_s$, ganancia y nombre 
 
 ---
 
-## Laboratorio
+## Laboratorio #1 — muestreo
 
 El laboratorio recorre una sola grabación desde los bits del disco hasta el espectro en pantalla. Tiene cuatro partes: la primera no necesita GNU Radio, la segunda muestra un fallo deliberado, la tercera lo repara y la cuarta es opcional para quien tenga dongle.
 
