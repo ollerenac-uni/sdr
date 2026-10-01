@@ -29,14 +29,18 @@ def texto_plano(texto):
 
 def leer_syllabus(ruta):
     texto = ruta.read_text(encoding="utf-8").split("---", 2)[2].strip()
-    introduccion = texto.split("| Sesión |", 1)[0]
-    parrafos = []
+    introduccion = texto.split("## Sesiones y laboratorios", 1)[0]
+    bloques = []
     for bloque in re.split(r"\n\s*\n", introduccion):
         bloque = " ".join(bloque.split())
         if bloque.startswith("# ") or re.fullmatch(r"\[[^\]]+\]\([^\)]+\)", bloque):
             continue
-        if bloque:
-            parrafos.append(texto_plano(bloque))
+        encabezado = re.fullmatch(r"(#{2,3})\s+(.+)", bloque)
+        if encabezado:
+            nivel, titulo = encabezado.groups()
+            bloques.append(("seccion" if len(nivel) == 2 else "grupo", texto_plano(titulo)))
+        elif bloque:
+            bloques.append(("cuerpo", texto_plano(bloque)))
 
     sesiones = []
     for linea in texto.splitlines():
@@ -52,7 +56,7 @@ def leer_syllabus(ruta):
         sesiones.append((int(numero), *campos))
     if [sesion[0] for sesion in sesiones] != list(range(1, TOTAL_SESIONES + 1)):
         raise ValueError(f"El syllabus debe contener las sesiones 1 a {TOTAL_SESIONES}, en orden.")
-    return parrafos, sesiones
+    return bloques, sesiones
 
 
 def numero_pagina(canvas, documento):
@@ -63,15 +67,19 @@ def numero_pagina(canvas, documento):
 
 
 def generar_pdf(origen=SOURCE, destino=OUTPUT):
-    parrafos, sesiones = leer_syllabus(origen)
+    bloques, sesiones = leer_syllabus(origen)
     estilos = {
         "titulo": ParagraphStyle("titulo", fontName="Helvetica-Bold", fontSize=16, leading=20, spaceAfter=12),
+        "seccion": ParagraphStyle("seccion", fontName="Helvetica-Bold", fontSize=12, leading=16, spaceBefore=10, spaceAfter=6, keepWithNext=True),
+        "grupo": ParagraphStyle("grupo", fontName="Helvetica-Bold", fontSize=11, leading=15, spaceBefore=8, spaceAfter=4, keepWithNext=True),
         "sesion": ParagraphStyle("sesion", fontName="Helvetica-Bold", fontSize=11.5, leading=15, spaceAfter=4),
         "cuerpo": ParagraphStyle("cuerpo", fontName="Helvetica", fontSize=10.5, leading=14, spaceAfter=4),
         "laboratorio": ParagraphStyle("laboratorio", fontName="Helvetica-Bold", fontSize=10.5, leading=14, spaceBefore=3, spaceAfter=3),
     }
     contenido = [Paragraph("Syllabus — Radio Definida por Software", estilos["titulo"])]
-    contenido.extend(Paragraph(escape(parrafo), estilos["cuerpo"]) for parrafo in parrafos)
+    contenido.extend(Paragraph(escape(texto), estilos[estilo]) for estilo, texto in bloques)
+    contenido.append(PageBreak())
+    contenido.append(Paragraph("Sesiones y laboratorios", estilos["seccion"]))
     contenido.append(Spacer(1, 8))
 
     for numero, tema, descripcion, laboratorio, practica in sesiones:

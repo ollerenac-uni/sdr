@@ -22,12 +22,23 @@ def paginas_pdf(ruta):
 
 def verificar_contenido(ruta):
     paginas = paginas_pdf(ruta)
-    assert len(paginas) == 4
-    for pagina, inicio in zip(paginas, (1, 5, 9, 13)):
+    primera_sesion = next(i for i, pagina in enumerate(paginas) if "Sesión 01 —" in pagina)
+    assert primera_sesion > 0
+    paginas_sesiones = paginas[primera_sesion:]
+    assert len(paginas_sesiones) == 4
+    for pagina, inicio in zip(paginas_sesiones, (1, 5, 9, 13)):
         assert [int(numero) for numero in re.findall(r"Sesión (\d{2}) —", pagina)] == list(range(inicio, inicio + 4))
         assert [int(numero) for numero in re.findall(r"Laboratorio #(\d+):", pagina)] == list(range(inicio, inicio + 4))
     texto_pdf = re.sub(r"\s+", "", " ".join(paginas))
     syllabus = (ROOT / "docs/syllabus.md").read_text(encoding="utf-8")
+    introduccion = syllabus.split("---", 2)[2].split("## Sesiones y laboratorios", 1)[0]
+    texto_intro = re.sub(r"\s+", "", " ".join(paginas[:primera_sesion]))
+    for bloque in re.split(r"\n\s*\n", introduccion.strip()):
+        if re.fullmatch(r"\[[^\]]+\]\([^\)]+\)", bloque.strip()):
+            continue
+        bloque = re.sub(r"^#{1,3}\s+", "", bloque)
+        bloque = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", bloque)
+        assert re.sub(r"\s+", "", bloque.replace("`", "").replace("**", "")) in texto_intro
     for linea in syllabus.splitlines():
         if re.match(r"^\| \d{2} \|", linea):
             for celda in linea.strip("|").split("|")[1:]:

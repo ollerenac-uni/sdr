@@ -28,6 +28,82 @@ como temas complementarios, fuera del programa obligatorio.
 El temario presenta el programa previsto. Los apuntes y las guías de laboratorio se
 publicarán progresivamente en el [índice de sesiones](sessions/index.md).
 
+## Por qué se sigue esta secuencia
+
+El curso sigue un recorrido sencillo: pasar de observar muestras a recuperar un
+mensaje. Cada etapa utiliza lo aprendido en la anterior. Primero se trabaja con
+ejemplos controlados y después se incorporan dificultades, una a la vez, utilizando
+código y bloques preparados.
+
+### Sesiones 1 y 2 — Entender qué entrega el receptor
+
+Se conoce el equipo y se aprende qué representan las muestras I/Q, cómo se
+relacionan con el tiempo y cómo se observa su espectro. Esta base permite
+interpretar una captura antes de procesarla. El laboratorio FM ofrece un primer
+ejemplo de recuperación de información desde un archivo de muestras.
+
+### Sesiones 3 y 4 — Preparar la señal
+
+Una captura puede contener varios canales. Se aprende a filtrar, seleccionar el
+canal deseado y reducir su sampling rate. Estas herramientas se estudian primero
+porque se reutilizan en el receptor digital de las sesiones siguientes.
+
+### Sesiones 5 y 6 — Convertir bits en una señal
+
+Se relacionan bits, símbolos y constelaciones BPSK/QPSK. Después se observa cómo
+los pulsos y los filtros convierten esos símbolos en una señal de muestras.
+Los ejemplos preparados permiten comprender cada etapa sin tener que construir
+todavía un receptor completo.
+
+### Sesión 7 — Hacer funcionar un enlace ideal
+
+Se reúnen las etapas anteriores en un Tx y un Rx QPSK, sin ruido ni offsets y con
+las referencias de recepción conocidas. Se comprueba que los bits recuperados
+coincidan con los transmitidos. Esta sesión deja una base que funciona antes de
+añadir dificultades y da tiempo para consolidar lo aprendido.
+
+### Sesión 8 — Observar el efecto del ruido
+
+Se añade ruido al enlace que ya funciona y se observa cómo cambia la constelación
+y cuántos errores de bit aparecen. Así, SNR y BER se relacionan con un experimento
+concreto. Se prioriza medir y comparar resultados, sin desarrollar todas las
+expresiones teóricas de desempeño.
+
+### Sesiones 9 a 11 — Comprender y corregir los desajustes
+
+Se observa primero qué ocurre cuando las referencias de frecuencia, fase o timing
+del receptor no coinciden con las del transmisor. Después se utilizan un
+estimador de CFO, un Costas loop y un bloque de timing recovery preparados para
+corregir esos desajustes. Cada problema se estudia por separado, manteniendo las
+otras referencias controladas. El objetivo es entender qué hace cada bloque y
+comparar la señal antes y después de la corrección, no programar todos sus
+algoritmos desde cero. El orden de aprendizaje no obliga a conectar los bloques
+en ese mismo orden en el receptor integrado.
+
+### Sesión 12 — Pasar de símbolos a un mensaje
+
+Recuperar símbolos no basta para identificar dónde comienza el mensaje. Se
+introduce un preamble conocido para localizar el inicio de la trama y resolver la
+ambigüedad de fase de QPSK. Se compara el mensaje recuperado con una referencia,
+sin construir un protocolo de comunicación completo.
+
+### Sesión 13 — Integrar y comprobar el receptor
+
+Se conectan las etapas ya trabajadas y se comprueba el receptor completo con
+señales simuladas. No se añade un algoritmo nuevo: se reserva tiempo para resolver
+dificultades de integración y reconocer qué aporta cada bloque.
+
+### Sesiones 14 a 16 — Trabajar con capturas y consolidar
+
+Se pasa del enlace simulado a capturas QPSK preparadas por el profesor, con
+parámetros conocidos y datos de referencia. Se practican la recuperación del
+mensaje, el diagnóstico de fallas y la comparación de resultados. El cierre se
+dedica a explicar y reproducir el receptor construido, sin añadir otro sistema de
+comunicación. No se espera recibir cualquier señal QPSK desconocida; multipath,
+equalization adaptativa y OFDM quedan fuera del programa obligatorio.
+
+## Sesiones y laboratorios
+
 | Sesión | Clase: tema principal y descripción | Laboratorio: tema principal y descripción |
 |:------:|---|---|
 | 01 | **Introducción.** Se presenta la Radio Definida por Software, la arquitectura del receptor RTL-SDR y sus parámetros de adquisición. | **Laboratorio #1: muestreo y lectura de I/Q.** Se interpreta un archivo `.cu8` y se observan sus muestras y su espectro. |

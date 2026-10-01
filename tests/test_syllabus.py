@@ -63,3 +63,14 @@ def test_alcance_prioriza_practica_guiada_y_consolidacion():
 def test_syllabus_esta_en_la_navegacion():
     config = yaml.load((ROOT / "mkdocs.yml").read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
     assert {"Syllabus": "syllabus.md"} in config["nav"]
+
+
+def test_explicacion_precede_la_tabla_y_cubre_todas_las_sesiones():
+    texto = (ROOT / "docs/syllabus.md").read_text(encoding="utf-8")
+    assert texto.index("## Por qué se sigue esta secuencia") < texto.index("## Sesiones y laboratorios") < texto.index("| Sesión |")
+    explicacion = texto.split("## Por qué se sigue esta secuencia", 1)[1].split("## Sesiones y laboratorios", 1)[0]
+    grupos = re.findall(r"^### Sesi(?:ón|ones) (\d+)(?: (?:y|a) (\d+))? —", explicacion, re.MULTILINE)
+    cubiertas = [numero for inicio, fin in grupos for numero in range(int(inicio), int(fin or inicio) + 1)]
+    assert cubiertas == list(range(1, 17))
+    assert "No se añade un algoritmo nuevo" in explicacion
+    assert "parámetros conocidos y datos de referencia" in explicacion
