@@ -79,8 +79,11 @@ La subsección construye las herramientas temporales que esos temas necesitan.
 
 - Cada subsección introduce una idea, incluye una comprobación breve y
   reutiliza lo aprendido. Las ecuaciones permiten predecir algo observable.
-- El laboratorio empieza con señales sintéticas conocidas y termina con la
-  grabación oficial de la sesión 1; el dongle no es requisito.
+- Las demostraciones de teoría empiezan con señales sintéticas conocidas y
+  terminan con la captura a 2.4 MS/s. Por solicitud del profesor del 2026-10-01,
+  el laboratorio #2 recupera el demodulador FM del backup, con entrada de
+  archivo a 2.048 MS/s y dongle opcional. No se diseña un laboratorio nuevo
+  de señales en sustitución de ese receptor.
 - Experimentos previstos: tono real frente a complejo; cambios de frecuencia
   y fase; tono alineado y no alineado con un bin y comparación de ventanas;
   variaciones de N y tasa de muestreo; ubicación de una señal en la captura.
@@ -111,7 +114,10 @@ La subsección construye las herramientas temporales que esos temas necesitan.
   impulso, convolución, respuesta en frecuencia y FIR se reservan para ella.
 - El diagnóstico detallado de AGC, saturación, DC y ppm se distribuye después;
   no desplaza el objetivo principal de interpretar señales.
-- El receptor FM completo se pospone hasta explicar filtrado y cambios de tasa.
+- Decisión actualizada el 2026-10-01: se recupera la implementación FM como
+  laboratorio de integración. Se explican las tasas y la demodulación a
+  partir del avance de fase. El diseño detallado de filtros y los decoders
+  stereo/RDS quedan fuera del alcance; no se da por dominado el tema de filtros.
 - Toda figura nueva respeta la numeración, el pie y la lectura guiada del
   repositorio. Las figuras por código conservan su script reproducible.
 - Desde la subsección 4, las lecturas guiadas se presentan en listas: cada
@@ -216,8 +222,23 @@ La subsección construye las herramientas temporales que esos temas necesitan.
   por subsección, con identificadores 1A–6D. Combinan cálculo, predicción,
   interpretación de figuras y explicación de errores; no anticipan conceptos
   de subsecciones posteriores ni añaden nuevas celdas al recorrido de Colab.
-- Pendiente: introducción, laboratorio y lecturas.
-  El desarrollo continúa por partes con el profesor; la sesión sigue en borrador.
+- Verificación del 2026-10-01: revisados conceptos de las seis subsecciones,
+  24 soluciones y las 36 celdas publicadas. Se precisaron los ángulos ±180°,
+  la Hann periódica y la lectura de los paneles del ejercicio 3D. El registro
+  de resultados y fuentes está en `2026-10-01-sesion-02-verificacion.md`.
+- Recuperado: laboratorio #2 FM en `laboratorio-receptor-fm.md`, enlazado desde
+  la sesión y la navegación. Conserva resampler 3/32 y audio mono a 48 kS/s.
+  Se distingue la captura a 2.048 MS/s de la de teoría a 2.4 MS/s; la variante
+  de esta última requiere resampler 2/25, no un cambio de etiqueta.
+- Verificado: el .grc compila y su cadena DSP recupera una moduladora conocida
+  de 1 kHz en ambas variantes. También procesa la captura original con salida
+  finita no nula. La variante Soapy compila; no se ha probado recepción física
+  ni audición. La ruta absoluta del receptor FM se volvió relativa, sin
+  modificar las posiciones de bloques ajustadas por el profesor.
+- Añadidas lecturas primarias en la página de teoría y en el laboratorio.
+- Pendiente: introducción general y revisión/aprobación del profesor.
+  La sesión y el laboratorio conservan `status: draft`.
 
 Al avanzar, se actualiza este estado y se registran aquí los cambios de alcance
-acordados. El contenido del backup no se reincorpora automáticamente.
+acordados. Del backup solo se recupera contenido cuando el profesor lo solicita;
+en esta revisión se recuperó específicamente el laboratorio FM.

@@ -35,3 +35,6 @@ gnuradio-flowgraphs/*.py
 # PDFs de referencia y notas locales de investigación
 referencia/
 .planning/research/
+
+# Backups locales
+/backups/

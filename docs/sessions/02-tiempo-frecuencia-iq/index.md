@@ -483,7 +483,7 @@ $$
 
 Ocho avances de 45° completan una vuelta. La muestra de índice 8 vuelve a la posición inicial, 1 ms después de la primera.
 
-`np.angle` expresa el ángulo principal en el intervalo $(-180^\circ,180^\circ]$. Por eso puede mostrar 180° y después −135°: −135° y 225° indican la misma dirección. Ese cambio de representación no significa que el punto haya invertido su giro.
+`np.angle(..., deg=True)` expresa el ángulo principal entre −180° y +180°. Por eso puede mostrar 180° y después −135°: −135° y 225° indican la misma dirección. Ese cambio de representación no significa que el punto haya invertido su giro. En el eje I negativo puede devolver +180° o −180°, según el signo numérico de Q; ambos representan la misma dirección. La [documentación de NumPy](https://numpy.org/doc/stable/reference/generated/numpy.angle.html) incluye los casos de cero con signo.
 
 **Colab — Celda 3: observar las componentes y la rotación.**
 
@@ -986,7 +986,7 @@ En la Figura 7, la suma de un tono de +1 kHz y magnitud 1 con otro de −2 kHz y
     - **Punto de partida:** el apartado 3.3 y la Figura 7 comparan $z[n]=e^{j2\pi\,1000\,n/f_s}+0.5e^{-j2\pi\,2000\,n/f_s}$ en tiempo y frecuencia. El apartado 3.1 indica que una representación responde por los valores instantáneos y la otra, por las componentes que contribuyen a esos valores.
     - **Paso 1 — evaluar el instante inicial:** en $n=0$, ambos exponentes valen cero y $e^{j0}=1$. Así, $z[0]=1+0.5=1.5+j0$; su componente I es 1.5 y su componente Q es cero. Las dos contribuciones están alineadas en ese instante.
     - **Paso 2 — evitar confundir suma y componente:** para otros índices, los tonos giran a velocidades y en sentidos distintos. El valor total no conserva necesariamente magnitud 1.5. La expresión sigue teniendo dos frecuencias, +1 y −2 kHz; sumar sus valores en un instante no añade un término de una frecuencia nueva.
-    - **Paneles izquierdos — lectura temporal:** permiten comparar las componentes I y Q de cada tono y de la suma. El valor 1.5 se explica allí como una coincidencia instantánea de las partes reales. No se interpreta como la altura de un pico del espectro.
+    - **Paneles izquierdos — lectura temporal:** el panel superior compara solo las componentes I de los dos tonos; el inferior muestra I y Q de la suma. El valor 1.5 se explica como una coincidencia instantánea de las partes reales. No se interpreta como la altura de un pico del espectro, ni se atribuyen al panel superior curvas Q que no aparecen allí.
     - **Paneles derechos — lectura frecuencial:** permiten reconocer una componente en +1 kHz de magnitud 1 y otra en −2 kHz de magnitud 0.5. La fila de la suma reúne esas dos contribuciones en el mismo espectro; no muestra una tercera componente de magnitud 1.5.
     - **Paso 3 — cambiar solo una fase:** si al segundo tono se le añade $\phi$, su coeficiente pasa de $0.5$ a $0.5e^{j\phi}$. Su magnitud sigue siendo 0.5 y su frecuencia sigue siendo −2 kHz, pero las muestras de la suma cambian. Por ejemplo, con $\phi=\pi$, la primera muestra pasa a $z[0]=1-0.5=0.5$.
     - **Alcance de la conclusión:** en los bloques con ciclos enteros utilizados aquí, el cambio de fase conserva las magnitudes de las dos componentes separadas. No significa que la transformada completa sea idéntica: cambia la fase del coeficiente correspondiente, información que la pantalla de magnitud del apartado 3.4 omite.
@@ -1938,7 +1938,7 @@ Para comprobar su efecto se utilizan dos tonos complejos de igual amplitud, en 1
 
 Aquí **resolución** se refiere a la capacidad de distinguir componentes cercanas en la gráfica de este análisis. Depende del tiempo observado, la ventana, las amplitudes relativas, las fases, el ruido y el criterio de separación. No equivale únicamente a la distancia entre puntos dibujados.
 
-La relación $1/T_{\mathrm{obs}}$ da una escala natural de separación en frecuencia. No es una garantía universal de que dos señales separadas por un bin se puedan distinguir. Para estas ventanas ideales y un tono aislado, el ancho del main lobe entre sus primeros ceros es $2f_s/N$ con rectangular y $4f_s/N$ con Hann. Al aumentar $N$ manteniendo $f_s$, esos anchos disminuyen.
+La relación $1/T_{\mathrm{obs}}$ da una escala natural de separación en frecuencia. No es una garantía universal de que dos señales separadas por un bin se puedan distinguir. Para las ventanas usadas aquí y un tono aislado, el ancho del main lobe entre sus primeros ceros es $2f_s/N$ con rectangular y $4f_s/N$ con Hann periódica. Al aumentar $N$ manteniendo $f_s$, esos anchos disminuyen; la fórmula de Hann corresponde a la definición periódica de esta sesión, no a cualquier variante de la ventana.
 
 **Qué se varía:** número de muestras adquiridas, de 64 a 512. **Qué permanece fijo:** dos tonos de 1000 y 1062.5 Hz, amplitudes 1, fases iniciales 0, sample rate de 8 kS/s y tipo de ventana Hann. Se usa la misma FFT de 8192 puntos en ambos casos. **Qué se debe notar:** aunque los puntos de salida tengan la misma separación, solo el bloque largo permite distinguir los dos máximos en este experimento.
 
@@ -2654,7 +2654,7 @@ La interpretación de una captura se puede organizar así:
 5. Seguir la referencia de las muestras transformadas y comprobar si alguna componente cruza el borde.
 6. Distinguir centrar, filtrar, reducir la tasa y demodular: son operaciones diferentes.
 
-Con esta subsección se completa el recorrido teórico de la sesión: las muestras tienen un eje temporal, su carácter I/Q permite distinguir el signo de las frecuencias, la FFT describe un bloque finito y los metadatos permiten relacionar baseband con RF. La selección de un canal mediante filtros queda como puente hacia el siguiente tema; no se construye todavía un receptor FM completo.
+Con esta subsección se completa el recorrido teórico de la sesión: las muestras tienen un eje temporal, su carácter I/Q permite distinguir el signo de las frecuencias, la FFT describe un bloque finito y los metadatos permiten relacionar baseband con RF. La selección de un canal mediante filtros queda como puente hacia el siguiente tema. El laboratorio #2 aplica estas ideas en una cadena FM con bloques de GNU Radio; el diseño detallado de filtros no se desarrolla todavía.
 
 #### 6.9. Ejercicios de refuerzo
 
@@ -2819,5 +2819,22 @@ Un bloque de la grabación oficial contiene 48000 bytes `.cu8`, intercalados I, 
 - **4. Configuración del análisis:** se identifica $M$, la ventana y la escala vertical. Una rejilla más densa, otra ventana y más tiempo de adquisición no deben presentarse como si fueran la misma modificación.
 - **5. Interpretación prudente del espectro:** no se cuenta cada bin como un transmisor ni se concluye que un pico limpio descarta aliasing. Se consideran la banda seleccionada y el procesamiento previo, además de la duración y la ventana del bloque.
 - **6. Referencia RF:** se conoce $f_c$ y se relaciona con las posiciones en baseband. Si se mezclaron las muestras, se sigue la nueva referencia y se comprueban posibles cruces del borde; no se asume que toda etiqueta del visor sea automáticamente correcta.
-- **7. Operación que se necesita:** se distingue entre mostrar otro eje, centrar una señal, aislar su banda, reducir su tasa y recuperar información. Esa distinción prepara el trabajo con sistemas y filtros sin adelantar todavía un receptor completo.
+- **7. Operación que se necesita:** se distingue entre mostrar otro eje, centrar una señal, aislar su banda, reducir su tasa y recuperar información. Esa distinción permite seguir el receptor del laboratorio #2; el diseño interno de sus filtros queda para el desarrollo de sistemas y filtros.
 - **Conclusión de la sesión:** una captura SDR no se interpreta solo mirando picos. Se interpreta relacionando las muestras con sus metadatos, el bloque observado, la configuración de FFT y las operaciones aplicadas a la señal.
+
+## Laboratorio #2 — demodulador FM en GNU Radio
+
+La [guía del laboratorio #2](laboratorio-receptor-fm.md) recupera el receptor FM basado en un archivo I/Q y una entrada RTL-SDR opcional. El estudiante sigue las tasas, interpreta ambos visores y obtiene audio mono mediante `WBFM Receive`.
+
+- **Conexión con la teoría:** la cadena aplica la representación I/Q, el eje baseband/RF y el cuidado con el aliasing al reducir la tasa. La demodulación utiliza el cambio de fase entre muestras, una idea relacionada con el giro de la subsección 2.
+- **Archivo de este laboratorio:** `fm_99p1MHz_2p048Msps_g30.cu8`, a **2.048 MS/s**. Es una captura distinta de `fm_99p1MHz_2p4Msps_g30.cu8`, a **2.4 MS/s**, utilizada en la subsección 6.7. No se intercambian sin ajustar la fuente y el resampler como explica la guía.
+- **Alcance:** se implementa una cadena de recepción y se justifican sus parámetros. No se supone que el estudiante ya domine el diseño de filtros, la decodificación stereo ni RDS.
+
+## Lecturas y referencias
+
+- [MIT — Sampling and quantization](https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/95b4b245722073e5d0c4ea95b384446e_MIT6_003F11_lec22.pdf): distinción entre tiempo discreto y niveles de amplitud; relación entre tasa y muestreo.
+- [TU Eindhoven — Sampling of sinusoidal signals](https://spseducation.tue.nl/disciplines/discrete/discretesignalprocessing_sampling_sampling/): muestreo de senoides y frecuencias que producen las mismas muestras.
+- [NumPy — Discrete Fourier Transform](https://numpy.org/doc/stable/reference/routines.fft.html): definición de DFT, orden de bins, inversa y simetría para entradas reales.
+- [SciPy — Spectral Analysis](https://docs.scipy.org/doc/scipy/tutorial/signal.html#spectral-analysis): bloques finitos, leakage, padding, ventanas y diferencia entre escalas espectrales.
+- [MathWorks — Standards and Conventions](https://www.mathworks.com/help/phased/gs/standards-and-conventions.html): convención de señal compleja I/Q y relación con una señal física real.
+- Las fuentes primarias de los bloques GNU Radio se indican en la [guía del laboratorio](laboratorio-receptor-fm.md#lecturas-y-referencias).
