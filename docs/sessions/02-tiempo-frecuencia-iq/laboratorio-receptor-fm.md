@@ -2,7 +2,6 @@
 title: "Laboratorio #2 — Demodulador FM en GNU Radio"
 session: 2
 description: "Implementación de un receptor FM mono, con una captura CU8 a 2.048 MS/s y una fuente RTL-SDR opcional."
-status: draft
 ---
 
 # Laboratorio #2 — Demodulador FM en GNU Radio

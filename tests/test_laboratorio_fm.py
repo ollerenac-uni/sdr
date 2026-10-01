@@ -98,7 +98,7 @@ print(json.dumps({'version': m.gr.version(), 'muestras': len(y),
 
 def test_guia_y_navegacion_restauradas_con_fuentes_y_metadatos():
     guia = GUIA.read_text(encoding="utf-8")
-    assert "status: draft" in guia
+    assert "status: draft" not in guia  # Sesión 2 aprobada por el profesor.
     assert "laboratorio-receptor-fm.md" in (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
     assert "laboratorio-receptor-fm.md" in GUIA.with_name("index.md").read_text(encoding="utf-8")
     for expresion in ("2.048 MS/s", "2.4 MS/s", "Quadrature Rate = 192000", "Audio Decimation = 4", "audio mono", "underruns", "±76.8 kHz"):

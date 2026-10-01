@@ -2,7 +2,6 @@
 title: "Sesión 02 — Señales y espectro en SDR"
 session: 2
 description: "Muestras I/Q, representaciones en tiempo y frecuencia, muestreo, FFT e interpretación de una captura SDR."
-status: draft
 ---
 
 # Sesión 02 — Señales y espectro en SDR

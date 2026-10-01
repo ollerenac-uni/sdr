@@ -80,6 +80,9 @@ nav:
       - "02 — Señales y espectro en SDR":
           - sessions/02-tiempo-frecuencia-iq/index.md
           - "Laboratorio #2: demodulador FM": sessions/02-tiempo-frecuencia-iq/laboratorio-receptor-fm.md
+      - "03 — Sistemas y filtros digitales":
+          - sessions/03-sistemas-filtros-digitales/index.md
+          - "Laboratorio #3: filtros FIR": sessions/03-sistemas-filtros-digitales/laboratorio-filtrado.md
   - Guías:
       - setup/index.md
       - "Instalar GNU Radio": setup/instalacion.md
