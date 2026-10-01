@@ -1,0 +1,1525 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Temario de las 16 sesiones del curso SDR y sus laboratorios guiados.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/syllabus/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../sessions/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Syllabus - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#syllabus-radio-definida-por-software" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href=".." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Syllabus
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Syllabus
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sessions/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Syllabus
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Syllabus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-se-sigue-esta-secuencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por qué se sigue esta secuencia
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Por qué se sigue esta secuencia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-1-y-2-entender-que-entrega-el-receptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 1 y 2 — Entender qué entrega el receptor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-3-y-4-preparar-la-senal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 3 y 4 — Preparar la señal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-5-y-6-convertir-bits-en-una-senal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 5 y 6 — Convertir bits en una señal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesion-7-hacer-funcionar-un-enlace-ideal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesión 7 — Hacer funcionar un enlace ideal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesion-8-observar-el-efecto-del-ruido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesión 8 — Observar el efecto del ruido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-9-a-11-comprender-y-corregir-los-desajustes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 9 a 11 — Comprender y corregir los desajustes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesion-12-pasar-de-simbolos-a-un-mensaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesión 12 — Pasar de símbolos a un mensaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesion-13-integrar-y-comprobar-el-receptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesión 13 — Integrar y comprobar el receptor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-14-a-16-trabajar-con-capturas-y-consolidar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 14 a 16 — Trabajar con capturas y consolidar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sesiones-y-laboratorios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones y laboratorios
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../sessions/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../sessions/01-introduccion-sdr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 — Introducción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sessions/01-introduccion-sdr/laboratorio-muestreo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #1: muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../sessions/02-tiempo-frecuencia-iq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Señales y espectro en SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 — Señales y espectro en SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sessions/02-tiempo-frecuencia-iq/laboratorio-receptor-fm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #2: demodulador FM
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#por-que-se-sigue-esta-secuencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por qué se sigue esta secuencia
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Por qué se sigue esta secuencia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-1-y-2-entender-que-entrega-el-receptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 1 y 2 — Entender qué entrega el receptor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-3-y-4-preparar-la-senal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 3 y 4 — Preparar la señal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-5-y-6-convertir-bits-en-una-senal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 5 y 6 — Convertir bits en una señal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesion-7-hacer-funcionar-un-enlace-ideal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesión 7 — Hacer funcionar un enlace ideal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesion-8-observar-el-efecto-del-ruido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesión 8 — Observar el efecto del ruido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-9-a-11-comprender-y-corregir-los-desajustes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 9 a 11 — Comprender y corregir los desajustes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesion-12-pasar-de-simbolos-a-un-mensaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesión 12 — Pasar de símbolos a un mensaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesion-13-integrar-y-comprobar-el-receptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesión 13 — Integrar y comprobar el receptor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sesiones-14-a-16-trabajar-con-capturas-y-consolidar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones 14 a 16 — Trabajar con capturas y consolidar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sesiones-y-laboratorios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sesiones y laboratorios
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="syllabus-radio-definida-por-software">Syllabus — Radio Definida por Software</h1>
+<p><a href="../downloads/syllabus-sdr.pdf">Descargar syllabus en PDF</a></p>
+<p>El curso comprende 16 sesiones de 2 h de clase y 2 h de laboratorio. Cuando un
+tema lo requiera, parte del tiempo de laboratorio podrá dedicarse a la explicación
+teórica.</p>
+<p>Los laboratorios utilizan archivos de muestras I/Q <code>.cu8</code> y señales generadas en
+Python o GNU Radio. No requieren hardware SDR individual, pero sí una computadora
+con GNU Radio; los ejemplos de Python pueden ejecutarse en Google Colab. El
+profesor podrá realizar demostraciones Tx–Rx con el USRP B210 y el RTL-SDR, y
+distribuir las capturas para su análisis. El enlace QPSK se construye por etapas
+desde la sesión 5.</p>
+<p>El objetivo es comprender y configurar un receptor QPSK sencillo. Los apuntes se
+concentran en pocas ideas clave y un experimento principal por sesión. Los
+laboratorios son guiados y utilizan código y flowgraphs preparados; no se exige
+implementar desde cero todos los algoritmos de sincronización. Se incluyen sesiones
+de integración y consolidación. Multipath, equalization adaptativa y OFDM quedan
+como temas complementarios, fuera del programa obligatorio.</p>
+<p>El temario presenta el programa previsto. Los apuntes y las guías de laboratorio se
+publicarán progresivamente en el <a href="../sessions/">índice de sesiones</a>.</p>
+<h2 id="por-que-se-sigue-esta-secuencia">Por qué se sigue esta secuencia</h2>
+<p>El curso sigue un recorrido sencillo: pasar de observar muestras a recuperar un
+mensaje. Cada etapa utiliza lo aprendido en la anterior. Primero se trabaja con
+ejemplos controlados y después se incorporan dificultades, una a la vez, utilizando
+código y bloques preparados.</p>
+<h3 id="sesiones-1-y-2-entender-que-entrega-el-receptor">Sesiones 1 y 2 — Entender qué entrega el receptor</h3>
+<p>Se conoce el equipo y se aprende qué representan las muestras I/Q, cómo se
+relacionan con el tiempo y cómo se observa su espectro. Esta base permite
+interpretar una captura antes de procesarla. El laboratorio FM ofrece un primer
+ejemplo de recuperación de información desde un archivo de muestras.</p>
+<h3 id="sesiones-3-y-4-preparar-la-senal">Sesiones 3 y 4 — Preparar la señal</h3>
+<p>Una captura puede contener varios canales. Se aprende a filtrar, seleccionar el
+canal deseado y reducir su sampling rate. Estas herramientas se estudian primero
+porque se reutilizan en el receptor digital de las sesiones siguientes.</p>
+<h3 id="sesiones-5-y-6-convertir-bits-en-una-senal">Sesiones 5 y 6 — Convertir bits en una señal</h3>
+<p>Se relacionan bits, símbolos y constelaciones BPSK/QPSK. Después se observa cómo
+los pulsos y los filtros convierten esos símbolos en una señal de muestras.
+Los ejemplos preparados permiten comprender cada etapa sin tener que construir
+todavía un receptor completo.</p>
+<h3 id="sesion-7-hacer-funcionar-un-enlace-ideal">Sesión 7 — Hacer funcionar un enlace ideal</h3>
+<p>Se reúnen las etapas anteriores en un Tx y un Rx QPSK, sin ruido ni offsets y con
+las referencias de recepción conocidas. Se comprueba que los bits recuperados
+coincidan con los transmitidos. Esta sesión deja una base que funciona antes de
+añadir dificultades y da tiempo para consolidar lo aprendido.</p>
+<h3 id="sesion-8-observar-el-efecto-del-ruido">Sesión 8 — Observar el efecto del ruido</h3>
+<p>Se añade ruido al enlace que ya funciona y se observa cómo cambia la constelación
+y cuántos errores de bit aparecen. Así, SNR y BER se relacionan con un experimento
+concreto. Se prioriza medir y comparar resultados, sin desarrollar todas las
+expresiones teóricas de desempeño.</p>
+<h3 id="sesiones-9-a-11-comprender-y-corregir-los-desajustes">Sesiones 9 a 11 — Comprender y corregir los desajustes</h3>
+<p>Se observa primero qué ocurre cuando las referencias de frecuencia, fase o timing
+del receptor no coinciden con las del transmisor. Después se utilizan un
+estimador de CFO, un Costas loop y un bloque de timing recovery preparados para
+corregir esos desajustes. Cada problema se estudia por separado, manteniendo las
+otras referencias controladas. El objetivo es entender qué hace cada bloque y
+comparar la señal antes y después de la corrección, no programar todos sus
+algoritmos desde cero. El orden de aprendizaje no obliga a conectar los bloques
+en ese mismo orden en el receptor integrado.</p>
+<h3 id="sesion-12-pasar-de-simbolos-a-un-mensaje">Sesión 12 — Pasar de símbolos a un mensaje</h3>
+<p>Recuperar símbolos no basta para identificar dónde comienza el mensaje. Se
+introduce un preamble conocido para localizar el inicio de la trama y resolver la
+ambigüedad de fase de QPSK. Se compara el mensaje recuperado con una referencia,
+sin construir un protocolo de comunicación completo.</p>
+<h3 id="sesion-13-integrar-y-comprobar-el-receptor">Sesión 13 — Integrar y comprobar el receptor</h3>
+<p>Se conectan las etapas ya trabajadas y se comprueba el receptor completo con
+señales simuladas. No se añade un algoritmo nuevo: se reserva tiempo para resolver
+dificultades de integración y reconocer qué aporta cada bloque.</p>
+<h3 id="sesiones-14-a-16-trabajar-con-capturas-y-consolidar">Sesiones 14 a 16 — Trabajar con capturas y consolidar</h3>
+<p>Se pasa del enlace simulado a capturas QPSK preparadas por el profesor, con
+parámetros conocidos y datos de referencia. Se practican la recuperación del
+mensaje, el diagnóstico de fallas y la comparación de resultados. El cierre se
+dedica a explicar y reproducir el receptor construido, sin añadir otro sistema de
+comunicación. No se espera recibir cualquier señal QPSK desconocida; multipath,
+equalization adaptativa y OFDM quedan fuera del programa obligatorio.</p>
+<h2 id="sesiones-y-laboratorios">Sesiones y laboratorios</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Sesión</th>
+<th>Clase: tema principal y descripción</th>
+<th>Laboratorio: tema principal y descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">01</td>
+<td><strong>Introducción.</strong> Se presenta la Radio Definida por Software, la arquitectura del receptor RTL-SDR y sus parámetros de adquisición.</td>
+<td><strong>Laboratorio #1: muestreo y lectura de I/Q.</strong> Se interpreta un archivo <code>.cu8</code> y se observan sus muestras y su espectro.</td>
+</tr>
+<tr>
+<td style="text-align: center;">02</td>
+<td><strong>Señales y espectro en SDR.</strong> Se estudian las muestras I/Q, el muestreo, la FFT y la relación entre baseband y RF.</td>
+<td><strong>Laboratorio #2: demodulador FM.</strong> Se construye un receptor FM en GNU Radio para recuperar audio desde una captura <code>.cu8</code>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">03</td>
+<td><strong>Sistemas y filtros digitales.</strong> Se explica la respuesta al impulso y la convolución mediante filtros sencillos y ejemplos de entrada y salida.</td>
+<td><strong>Laboratorio #3: filtrado digital.</strong> Se modifica un ejemplo preparado en Python y GNU Radio para comparar una señal antes y después del filtrado.</td>
+</tr>
+<tr>
+<td style="text-align: center;">04</td>
+<td><strong>Selección de canal y decimación.</strong> Se explica cómo la mezcla compleja y el filtrado permiten seleccionar un canal y reducir su sampling rate.</td>
+<td><strong>Laboratorio #4: selección de un canal.</strong> Se configura un flowgraph preparado para aislar un canal de una captura y observar el efecto de decimar con y sin filtro.</td>
+</tr>
+<tr>
+<td style="text-align: center;">05</td>
+<td><strong>De bits a símbolos: BPSK y QPSK.</strong> Se relacionan bits, símbolos y constelaciones, y se distinguen bit rate, symbol rate y sampling rate.</td>
+<td><strong>Laboratorio #5: bits y constelaciones.</strong> Se utiliza código preparado para representar bits como símbolos BPSK/QPSK y recuperar los bits de símbolos ideales.</td>
+</tr>
+<tr>
+<td style="text-align: center;">06</td>
+<td><strong>Pulse shaping y matched filtering.</strong> Se explica cómo los símbolos forman una señal, qué hacen los filtros RRC y cómo se observa la interferencia entre símbolos (ISI).</td>
+<td><strong>Laboratorio #6: pulsos y eye diagram.</strong> Se modifican los parámetros de filtros root-raised cosine en un ejemplo preparado y se observan los pulsos, el espectro y el diagrama de ojo.</td>
+</tr>
+<tr>
+<td style="text-align: center;">07</td>
+<td><strong>Enlace digital ideal.</strong> Se reúne lo aprendido para explicar un Tx y un Rx QPSK sin ruido ni offsets, con las referencias de recepción conocidas.</td>
+<td><strong>Laboratorio #7: enlace QPSK guiado.</strong> Se completa un flowgraph con bloques preparados y se comparan los bits transmitidos y recuperados, considerando los retardos de los filtros.</td>
+</tr>
+<tr>
+<td style="text-align: center;">08</td>
+<td><strong>Ruido y medición de errores.</strong> Se explica la relación señal a ruido (SNR) y la tasa de errores de bit (BER) mediante el enlace digital ya construido.</td>
+<td><strong>Laboratorio #8: ruido y BER.</strong> Se añade ruido controlado al enlace ideal y se compara la constelación y la BER para distintos niveles de ruido.</td>
+</tr>
+<tr>
+<td style="text-align: center;">09</td>
+<td><strong>Offset de frecuencia y fase.</strong> Se explica el carrier frequency offset (CFO) y se distingue su efecto del de un offset de fase constante.</td>
+<td><strong>Laboratorio #9: observación de offsets.</strong> Se añaden offsets por separado a un enlace preparado y se observan sus efectos en el espectro y la constelación.</td>
+</tr>
+<tr>
+<td style="text-align: center;">10</td>
+<td><strong>Corrección de frecuencia y fase.</strong> Se explica la corrección inicial de CFO y el seguimiento de fase mediante un Costas loop, sin desarrollar sus algoritmos desde cero.</td>
+<td><strong>Laboratorio #10: corrección de offsets.</strong> Se configura un estimador de CFO preparado y un Costas loop, y se compara la señal antes y después de la corrección, observando la ambigüedad de fase de QPSK.</td>
+</tr>
+<tr>
+<td style="text-align: center;">11</td>
+<td><strong>Symbol timing recovery.</strong> Se explica por qué debe recuperarse el instante de decisión y cómo afecta una diferencia entre los relojes de muestreo.</td>
+<td><strong>Laboratorio #11: recuperación de timing.</strong> Se utiliza un bloque de sincronización preparado y se compara la recepción con y sin corrección de timing.</td>
+</tr>
+<tr>
+<td style="text-align: center;">12</td>
+<td><strong>Tramas y recuperación del mensaje.</strong> Se explica cómo un preamble permite localizar el inicio de un mensaje y resolver la ambigüedad de fase de QPSK.</td>
+<td><strong>Laboratorio #12: detección de tramas.</strong> Se utiliza un ejemplo preparado de correlación para localizar el preamble, resolver la ambigüedad de fase y comparar el mensaje recibido con el original.</td>
+</tr>
+<tr>
+<td style="text-align: center;">13</td>
+<td><strong>Integración del receptor QPSK.</strong> Se revisa cómo se conectan las etapas de filtrado, sincronización y recuperación del mensaje, sin introducir un algoritmo nuevo.</td>
+<td><strong>Laboratorio #13: receptor integrado.</strong> Se reúnen los bloques trabajados en un flowgraph guiado y se comprueba su funcionamiento con señales simuladas.</td>
+</tr>
+<tr>
+<td style="text-align: center;">14</td>
+<td><strong>Recepción desde una captura I/Q.</strong> Se explica cómo trasladar el receptor simulado a una captura con parámetros conocidos, preparada por el profesor.</td>
+<td><strong>Laboratorio #14: receptor desde un archivo <code>.cu8</code>.</strong> Se utiliza el receptor integrado para recuperar un mensaje de una captura QPSK y contrastarlo con la referencia entregada.</td>
+</tr>
+<tr>
+<td style="text-align: center;">15</td>
+<td><strong>Evaluación y diagnóstico del receptor.</strong> Se revisan fallas comunes del receptor mediante el espectro, las constelaciones y la comparación de los datos recuperados.</td>
+<td><strong>Laboratorio #15: diagnóstico guiado.</strong> Se analizan capturas preparadas con dificultades acotadas y se documentan los ajustes del receptor y los errores de bit respecto de una referencia.</td>
+</tr>
+<tr>
+<td style="text-align: center;">16</td>
+<td><strong>Síntesis y demostración del enlace.</strong> Se consolida el recorrido desde los bits transmitidos hasta el mensaje recuperado y se reconocen los límites del receptor estudiado.</td>
+<td><strong>Laboratorio #16: demostración y cierre.</strong> Se reproduce el receptor con una captura de referencia y se explican sus etapas y resultados; la demostración Tx–Rx del profesor es opcional.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

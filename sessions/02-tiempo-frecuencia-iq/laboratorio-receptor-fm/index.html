@@ -1,0 +1,1817 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Implementación de un receptor FM mono, con una captura CU8 a 2.048 MS/s y una fuente RTL-SDR opcional.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/02-tiempo-frecuencia-iq/laboratorio-receptor-fm/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../../../setup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Laboratorio #2 — Demodulador FM en GNU Radio - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#laboratorio-2-demodulador-fm-en-gnu-radio" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Laboratorio #2 — Demodulador FM en GNU Radio
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../syllabus/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Syllabus
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../syllabus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Syllabus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01-introduccion-sdr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 — Introducción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-introduccion-sdr/laboratorio-muestreo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #1: muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Señales y espectro en SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 — Señales y espectro en SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #2: demodulador FM
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #2: demodulador FM
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#archivos-y-requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archivos y requisitos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-seguir-las-tasas-antes-de-conectar-bloques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Seguir las tasas antes de conectar bloques
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-reconstruir-iq-desde-cu8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Reconstruir I/Q desde CU8
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-reducir-la-tasa-y-observar-el-canal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Reducir la tasa y observar el canal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-del-cambio-de-fase-al-audio-fm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Del cambio de fase al audio FM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-ejecutar-y-registrar-observaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Ejecutar y registrar observaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Ejecutar y registrar observaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#si-solo-se-dispone-de-la-captura-a-24-mss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Si solo se dispone de la captura a 2.4 MS/s
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-extension-opcional-con-rtl-sdr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Extensión opcional con RTL-SDR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-diagnostico-breve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Diagnóstico breve
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entrega" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entrega
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lecturas-y-referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lecturas y referencias
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#archivos-y-requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archivos y requisitos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-seguir-las-tasas-antes-de-conectar-bloques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Seguir las tasas antes de conectar bloques
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-reconstruir-iq-desde-cu8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Reconstruir I/Q desde CU8
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-reducir-la-tasa-y-observar-el-canal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Reducir la tasa y observar el canal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-del-cambio-de-fase-al-audio-fm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Del cambio de fase al audio FM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-ejecutar-y-registrar-observaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Ejecutar y registrar observaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Ejecutar y registrar observaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#si-solo-se-dispone-de-la-captura-a-24-mss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Si solo se dispone de la captura a 2.4 MS/s
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-extension-opcional-con-rtl-sdr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Extensión opcional con RTL-SDR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-diagnostico-breve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Diagnóstico breve
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entrega" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entrega
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lecturas-y-referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lecturas y referencias
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="laboratorio-2-demodulador-fm-en-gnu-radio">Laboratorio #2 — Demodulador FM en GNU Radio</h1>
+<p>Esta guía recupera el laboratorio de receptor FM que acompañaba la versión anterior de la sesión. Conserva su cadena principal: captura I/Q a 2.048 MS/s, resampler 3/32, <code>WBFM Receive</code> a 192 kS/s y audio mono a 48 kS/s.</p>
+<h2 id="objetivos">Objetivos</h2>
+<p>Al finalizar, el estudiante será capaz de:</p>
+<ol>
+<li>Reconstruir muestras complejas a partir de un archivo CU8, sin confundir bytes con muestras I/Q.</li>
+<li>Calcular y configurar las tasas de las etapas de recepción y de audio.</li>
+<li>Relacionar los ejes de los visores con la frecuencia central y con la tasa de cada etapa.</li>
+<li>Explicar cómo el cambio de fase entre muestras permite demodular FM.</li>
+<li>Implementar la cadena en GNU Radio Companion y distinguir qué operaciones realiza cada bloque.</li>
+</ol>
+<p>La construcción no requiere diseñar los taps de los filtros desde cero. Los bloques se utilizan como sistemas cuyas entradas, salidas y parámetros deben entenderse. El análisis detallado de sus filtros queda para el tema de sistemas y filtrado.</p>
+<h2 id="archivos-y-requisitos">Archivos y requisitos</h2>
+<table>
+<thead>
+<tr>
+<th>Recurso</th>
+<th>Ubicación</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/receptor_fm_99p1_2p048Msps.grc">Grafo de referencia</a></td>
+<td><code>sdr/gnuradio-flowgraphs/receptor_fm_99p1_2p048Msps.grc</code></td>
+<td>Comparar parámetros y conexiones.</td>
+</tr>
+<tr>
+<td><code>fm_99p1MHz_2p048Msps_g30.cu8</code></td>
+<td><code>sdr/samples/</code></td>
+<td>Captura I/Q centrada en 99.1 MHz a 2.048 MS/s.</td>
+</tr>
+<tr>
+<td>GNU Radio Companion</td>
+<td>Equipo local</td>
+<td>Construir y ejecutar el flowgraph.</td>
+</tr>
+<tr>
+<td>Parlantes o audífonos</td>
+<td>Equipo local</td>
+<td>Escuchar la salida a 48 kS/s.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Distribución:</strong> las grabaciones se entregan fuera de Git, en la <a href="https://drive.google.com/drive/folders/1tP8u1tQZDnvi_-ZAxZ3J8tehdKwi92an?usp=drive_link">carpeta de muestras del curso</a>. Se consulta también la <a href="../../01-introduccion-sdr/#descargar-la-grabacion">descarga de muestras de la sesión 1</a>.</li>
+<li><strong>Ruta del archivo:</strong> el <code>.grc</code> espera <code>../samples/fm_99p1MHz_2p048Msps_g30.cu8</code>. La ruta se interpreta desde <code>gnuradio-flowgraphs/</code>, donde se ejecuta el grafo. Una ruta absoluta del equipo del profesor no sirve en otro equipo.</li>
+<li><strong>Dos capturas diferentes:</strong> la subsección 6.7 de la teoría utiliza una captura a <strong>2.4 MS/s</strong>. Este laboratorio conserva la de <strong>2.048 MS/s</strong>. El sample rate correcto procede de los metadatos, no del valor que se escriba en el visor ni de renombrar el archivo.</li>
+<li><strong>Sin hardware obligatorio:</strong> la ruta principal utiliza el archivo. El dongle se reserva para una extensión opcional.</li>
+</ul>
+<h2 id="1-seguir-las-tasas-antes-de-conectar-bloques">1. Seguir las tasas antes de conectar bloques</h2>
+<p>La cadena principal es:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Archivo CU8: bytes I,Q alternados
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        ↓  4 096 000 bytes/s
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Conversión CU8 → I+jQ
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        ↓  2.048 MS/s complejas
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Rational Resampler: interpolación 3, decimación 32
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        ↓  192 kS/s complejas
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>WBFM Receive: audio decimation 4
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        ↓  48 kS/s reales, audio mono
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>Control de volumen → Audio Sink
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Punto de la cadena</th>
+<th>Tipo de un item</th>
+<th style="text-align: right;">Tasa de items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>File Source</code> y <code>Throttle</code></td>
+<td>Un byte I o Q</td>
+<td style="text-align: right;">4 096 000 items/s</td>
+</tr>
+<tr>
+<td>Después de <code>UChar to Float</code>, antes de <code>Deinterleave</code></td>
+<td>Un float I o Q</td>
+<td style="text-align: right;">4 096 000 items/s</td>
+</tr>
+<tr>
+<td>Cada salida de <code>Deinterleave</code></td>
+<td>Un float I o un float Q</td>
+<td style="text-align: right;">2 048 000 items/s</td>
+</tr>
+<tr>
+<td><code>Float to Complex</code></td>
+<td>Una muestra I+jQ</td>
+<td style="text-align: right;">2.048 MS/s</td>
+</tr>
+<tr>
+<td>Salida del <code>Rational Resampler</code></td>
+<td>Una muestra compleja</td>
+<td style="text-align: right;">192 kS/s</td>
+</tr>
+<tr>
+<td>Salida de <code>WBFM Receive</code></td>
+<td>Una muestra real de audio</td>
+<td style="text-align: right;">48 kS/s</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Pareja, no dos instantes:</strong> I y Q de una muestra corresponden al mismo índice. Dos bytes CU8 forman una muestra compleja, como se explicó en las subsecciones 2 y 6.7.</li>
+<li><strong>Ritmo de reproducción:</strong> el <code>Throttle</code> es de tipo <code>Byte</code>, con <code>Sample Rate = 2*samp_rate</code>. Así permite pasar aproximadamente <span class="arithmatex">\(2(2048000)=4096000\)</span> bytes por segundo de reloj. No convierte el formato, no interpola y no filtra.</li>
+<li><strong>Tasa de señal frente a reloj del computador:</strong> <span class="arithmatex">\(f_s\)</span> describe el tiempo que representan las muestras. <code>Throttle</code> limita cuánto tarda el programa en entregarlas; no modifica los valores ni convierte una captura a otro sample rate. En esta ruta, <code>Audio Sink</code> tiene <code>OK to Block = No</code>, como en el grafo de referencia.</li>
+</ul>
+<p>El resampler establece la relación entre las tasas complejas:</p>
+<div class="arithmatex">\[
+f_{s,\mathrm{canal}}=f_{s,\mathrm{entrada}}\frac{L}{D}
+=2048000\frac{3}{32}=192000\ \text{S/s}.
+\]</div>
+<p>El bloque de recepción entrega audio con otra decimación:</p>
+<div class="arithmatex">\[
+f_{s,\mathrm{audio}}=\frac{f_{s,\mathrm{canal}}}{D_a}
+=\frac{192000}{4}=48000\ \text{S/s}.
+\]</div>
+<details class="example">
+<summary>Comprobación 1.1 — Throttle a samp_rate en una ruta Byte</summary>
+<ul>
+<li><strong>Cálculo:</strong> <span class="arithmatex">\(2048000\)</span> bytes/s permiten formar <span class="arithmatex">\(2048000/2=1024000\)</span> muestras I/Q por segundo de reloj, la mitad de la tasa necesaria para reproducir esta captura en tiempo real.</li>
+<li><strong>Qué no cambia:</strong> la secuencia almacenada sigue representando muestras tomadas a 2.048 MS/s. La división anterior describe el suministro al programa, no una nueva adquisición.</li>
+<li><strong>Consecuencia posible:</strong> al mantenerse <code>Audio Sink</code> a 48 kS/s, llega audio insuficiente para su reloj; pueden aparecer underruns, cortes o pausas. No se garantiza que la tarjeta reproduzca un tono a la mitad de su frecuencia: su tasa de audio sigue configurada a 48 kS/s.</li>
+</ul>
+</details>
+<details class="example">
+<summary>Comprobación 1.2 — tamaño de un segundo de captura</summary>
+<ul>
+<li><strong>Muestras:</strong> en un segundo hay <span class="arithmatex">\(N=f_sT=2048000(1)=2048000\)</span> parejas I/Q.</li>
+<li><strong>Bytes:</strong> cada pareja ocupa dos bytes; por tanto, <span class="arithmatex">\(2N=4096000\)</span> bytes. No se aplica este cálculo a un archivo <code>complex64</code>, que utiliza otro tamaño de item.</li>
+<li><strong>Duración:</strong> una captura CU8 de 40960000 bytes contiene <span class="arithmatex">\(40960000/2=20480000\)</span> muestras. Con estos metadatos, <span class="arithmatex">\(T=N/f_s=10\)</span> s. El tamaño por sí solo no permite descubrir <span class="arithmatex">\(f_s\)</span>.</li>
+</ul>
+</details>
+<h2 id="2-reconstruir-iq-desde-cu8">2. Reconstruir I/Q desde CU8</h2>
+<p>El estudiante crea un flowgraph con salida <code>QT GUI</code>, lo guarda en <code>gnuradio-flowgraphs/</code> y asigna un <code>ID</code> propio, por ejemplo <code>lab02_fm_estudiante</code>. Se definen <code>samp_rate = 2048000</code>, <code>freq = 99.1e6</code> y <code>volume = 0.2</code>.</p>
+<p>La primera parte se construye en este orden:</p>
+<table>
+<thead>
+<tr>
+<th>Bloque</th>
+<th>Parámetro principal</th>
+<th>Operación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>File Source</code></td>
+<td>Output Type: <code>Byte</code>; Repeat: <code>Yes</code>; ruta relativa indicada arriba</td>
+<td>Leer I,Q,I,Q,... sin interpretar los bytes como floats.</td>
+</tr>
+<tr>
+<td><code>Throttle</code></td>
+<td>Type: <code>Byte</code>; Sample Rate: <code>2*samp_rate</code></td>
+<td>Limitar el suministro del archivo.</td>
+</tr>
+<tr>
+<td><code>UChar to Float</code></td>
+<td>Valor por defecto</td>
+<td>Representar cada byte unsigned como float.</td>
+</tr>
+<tr>
+<td><code>Add Const</code></td>
+<td>Type: <code>Float</code>; Constant: <code>-127.5</code></td>
+<td>Desplazar el centro del formato a cero.</td>
+</tr>
+<tr>
+<td><code>Multiply Const</code></td>
+<td>Type: <code>Float</code>; Constant: <code>1/127.5</code></td>
+<td>Normalizar cada componente.</td>
+</tr>
+<tr>
+<td><code>Deinterleave</code></td>
+<td>Type: <code>Float</code>; Number of Streams: <code>2</code>; Block Size: <code>1</code></td>
+<td>Separar items alternados en I y Q.</td>
+</tr>
+<tr>
+<td><code>Float to Complex</code></td>
+<td>Vector Length: <code>1</code></td>
+<td>Unir ambas componentes en una muestra compleja.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Conexiones iniciales:</strong> los primeros cinco bloques se conectan en cadena a <code>Deinterleave</code>.</li>
+<li><strong>Puerto I:</strong> la salida 0 de <code>Deinterleave</code> se conecta a la entrada real 0 de <code>Float to Complex</code>.</li>
+<li><strong>Puerto Q:</strong> la salida 1 se conecta a la entrada imaginaria 1. No se conectan ambos flujos al mismo puerto.</li>
+<li><strong>Conversión:</strong> si los bytes son <span class="arithmatex">\(u_I[n]\)</span> y <span class="arithmatex">\(u_Q[n]\)</span>, se obtiene</li>
+</ul>
+<div class="arithmatex">\[
+z[n]=\frac{u_I[n]-127.5}{127.5}+j\frac{u_Q[n]-127.5}{127.5}.
+\]</div>
+<ul>
+<li><strong>Extremos:</strong> un byte 0 se representa como −1 y uno 255 como +1. Como el centro 127.5 queda entre dos códigos enteros, 127 y 128 producen valores pequeños de signos opuestos, no cero exacto.</li>
+<li><strong>Magnitud compleja:</strong> que I y Q estén entre −1 y +1 no implica <span class="arithmatex">\(|z|\leq1\)</span>. Por ejemplo, <span class="arithmatex">\(-1+j\)</span> tiene magnitud <span class="arithmatex">\(\sqrt{2}\)</span>. La magnitud se calcula con <span class="arithmatex">\(\sqrt{I^2+Q^2}\)</span>, como en la subsección 2.2.</li>
+</ul>
+<details class="example">
+<summary>Comprobación 2.1 — por qué no se declara Complex el File Source</summary>
+<ul>
+<li><strong>Formato esperado por ese tipo:</strong> <code>Complex</code> en esta ruta de GNU Radio corresponde a dos float32, con ocho bytes por muestra compleja.</li>
+<li><strong>Formato disponible:</strong> CU8 utiliza dos bytes, uno unsigned para I y otro para Q. No contiene floats almacenados.</li>
+<li><strong>Error:</strong> escoger <code>Complex</code> no ejecuta la conversión anterior; reinterpreta grupos de ocho bytes con un formato equivocado. La reconstrucción requiere leer bytes y aplicar los bloques de la tabla.</li>
+</ul>
+</details>
+<details class="example">
+<summary>Comprobación 2.2 — qué información conserva la conversión</summary>
+<ul>
+<li><strong>Valores disponibles:</strong> cada componente de CU8 tiene 256 códigos posibles. La transformación asigna a cada código un valor float distinto, con el redondeo numérico habitual.</li>
+<li><strong>Qué no se recupera:</strong> se conservan los códigos de la captura, pero no se crean niveles de amplitud que el archivo nunca tuvo. Los bits perdidos por cuantización o clipping previo no reaparecen al normalizar.</li>
+<li><strong>Tiempo y referencia:</strong> estos bloques tampoco incorporan una frecuencia central ni un sample rate al archivo raw. Esos datos siguen dependiendo de la documentación de la captura.</li>
+</ul>
+</details>
+<h2 id="3-reducir-la-tasa-y-observar-el-canal">3. Reducir la tasa y observar el canal</h2>
+<p>Se añade <code>Rational Resampler</code>, con entrada y salida <code>Complex</code>, <code>Interpolation = 3</code>, <code>Decimation = 32</code>, <code>Taps = []</code> y <code>Fractional BW = 0</code>. Su entrada se conecta a <code>Float to Complex</code>.</p>
+<ul>
+<li><strong>No es tomar una de cada 32 muestras:</strong> el bloque realiza resampling con filtrado y relación 3/32. El filtro es necesario para controlar el aliasing al reducir la tasa, como mostró la subsección 4.7.</li>
+<li><strong>Configuración automática:</strong> en GNU Radio 3.10.12, taps vacíos y <code>Fractional BW = 0</code> solicitan el filtro predeterminado, con ancho fraccional 0.4. Para esta reducción, su banda de paso de diseño llega aproximadamente a ±76.8 kHz y la transición hasta ±96 kHz. No es un filtro ideal de corte abrupto. <a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/lib/rational_resampler_impl.cc">Implementación del resampler</a>.</li>
+<li><strong>Límite del ejemplo:</strong> 192 kS/s dan un intervalo nominal de 192 kHz, no una garantía de conservar todo el espectro de cualquier emisión FM. Este montaje es una práctica de recepción mono; no certifica fidelidad de una señal de radiodifusión completa.</li>
+</ul>
+<p>Se conectan dos <code>QT GUI Frequency Sink</code>, ambos de tipo <code>Complex</code>, FFT de 1024 puntos y <code>Center Frequency = freq</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Visor</th>
+<th>Entrada</th>
+<th style="text-align: right;">Bandwidth</th>
+<th>Intervalo RF nominal con <span class="arithmatex">\(f_c=99.1\)</span> MHz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RF</td>
+<td>Antes del resampler</td>
+<td style="text-align: right;"><code>samp_rate</code></td>
+<td>98.076 a 100.124 MHz</td>
+</tr>
+<tr>
+<td>Canal</td>
+<td>Después del resampler</td>
+<td style="text-align: right;"><code>192000</code></td>
+<td>99.004 a 99.196 MHz</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Qué se debe observar en RF:</strong> el cero de baseband corresponde a 99.1 MHz. Los desplazamientos a izquierda y derecha se interpretan con <span class="arithmatex">\(f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}\)</span>.</li>
+<li><strong>Qué se debe observar en Canal:</strong> cambia el ancho del eje porque cambia el sample rate. También se modificó la señal mediante el filtro; no se trata solo de ampliar una zona del dibujo original.</li>
+<li><strong>Extremos del eje:</strong> los valores de la tabla son bordes nominales. Los bins representan <span class="arithmatex">\([-f_s/2,f_s/2)\)</span>; no hay dos frecuencias discretas independientes en los dos extremos de Nyquist.</li>
+<li><strong>Separación entre bins:</strong> con 1024 puntos resulta <span class="arithmatex">\(2048000/1024=2000\)</span> Hz antes del resampler y <span class="arithmatex">\(192000/1024=187.5\)</span> Hz después. No equivale por sí sola a la capacidad de separar emisoras, como explicó la subsección 5.</li>
+<li><strong>Escala vertical:</strong> los visores del grafo de referencia utilizan Blackman-Harris y no tienen calibración de potencia RF. No se exige que sus alturas coincidan con las figuras Colab, que utilizan otras ventanas y normalizaciones; los dB del visor no se presentan como dBm.</li>
+</ul>
+<details class="example">
+<summary>Comprobación 3.1 — cambiar freq durante la reproducción</summary>
+<ul>
+<li><strong>Ejemplo:</strong> una componente a +250 kHz en la captura corresponde a <span class="arithmatex">\(99.1+0.250=99.35\)</span> MHz.</li>
+<li><strong>Reetiquetado erróneo:</strong> si se cambia <code>freq</code> a 99.5 MHz sin transformar las muestras, el visor la etiquetaría como <span class="arithmatex">\(99.5+0.250=99.75\)</span> MHz. El dato físico no cambió.</li>
+<li><strong>Operación necesaria:</strong> para centrar esa componente se utilizaría una mezcla de −250 kHz y se seguiría la nueva referencia, como en las subsecciones 6.3 y 6.4. Esa mezcla no forma parte de la ruta principal: aquí el canal de interés ya está centrado.</li>
+</ul>
+</details>
+<h2 id="4-del-cambio-de-fase-al-audio-fm">4. Del cambio de fase al audio FM</h2>
+<p>Las subsecciones 2.3 y 4.1 relacionaron frecuencia y avance de fase. Para un tono complejo, <span class="arithmatex">\(\Delta\theta=2\pi f_0/f_s\)</span>. En FM ese avance no es constante: cambia con la información moduladora.</p>
+<p>Si <span class="arithmatex">\(z[n]=Ae^{j\theta[n]}\)</span> y <span class="arithmatex">\(A\)</span> es constante y no nula, el producto de dos muestras consecutivas, conjugando la anterior, es</p>
+<div class="arithmatex">\[
+z[n]z^*[n-1]=A^2e^{j(\theta[n]-\theta[n-1])}.
+\]</div>
+<p>Su argumento entrega la diferencia de fase, módulo <span class="arithmatex">\(2\pi\)</span>. Bajo un avance sin ambigüedad, <span class="arithmatex">\(|\Delta\theta[n]|&lt;\pi\)</span>, se estima la frecuencia media durante ese intervalo:</p>
+<div class="arithmatex">\[
+\widehat f[n]=\frac{f_s}{2\pi}\operatorname{arg}\left(z[n]z^*[n-1]\right).
+\]</div>
+<ul>
+<li><strong>Relación con el tono:</strong> si el avance es constante, esta operación recupera su frecuencia. Si cambia, la salida sigue ese cambio.</li>
+<li><strong>Relación con FM centrada:</strong> en un modelo de frecuencia <span class="arithmatex">\(f[n]=\Delta f\,m[n]\)</span>, con <span class="arithmatex">\(m[n]\)</span> normalizada y sin offset de portadora, dividir <span class="arithmatex">\(\widehat f[n]\)</span> entre <span class="arithmatex">\(\Delta f\)</span> recupera una estimación de <span class="arithmatex">\(m[n]\)</span> antes del filtrado de audio.</li>
+<li><strong>Límite de fase:</strong> el argumento es un ángulo principal. No distingue avances que difieran en vueltas completas, igual que en el aliasing de la subsección 4. No se interpreta una muestra de magnitud nula como si tuviera fase fiable.</li>
+<li><strong>Bloque utilizado:</strong> <code>Quadrature Demod</code> implementa el producto conjugado y el argumento multiplicado por una ganancia. <a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/lib/quadrature_demod_cf_impl.cc">Fuente de GNU Radio</a>.</li>
+</ul>
+<p>El estudiante conecta <code>WBFM Receive</code> a la salida del resampler, con <strong><code>Quadrature Rate = 192000</code></strong> y <strong><code>Audio Decimation = 4</code></strong>. Se utiliza el nombre del parámetro mostrado por GNU Radio Companion 3.10.12.</p>
+<ul>
+<li><strong>Entrada y salida:</strong> el bloque recibe muestras complejas y entrega muestras reales de audio mono.</li>
+<li><strong>Operaciones internas:</strong> incluye demodulación de fase, filtrado de audio y decimación. No basta cambiar el tipo de <code>Complex</code> a <code>Float</code> para obtener el audio.</li>
+<li><strong>Escala interna:</strong> la implementación utiliza una desviación de referencia de 75 kHz y ganancia <span class="arithmatex">\(G=f_s/(2\pi\,75000)\)</span>. A 192 kS/s, <span class="arithmatex">\(G\approx0.4074\)</span>. Esa referencia del bloque no demuestra por sí sola la desviación real de la emisora. <a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/wfm_rcv.py">Implementación de WBFM Receive</a>.</li>
+<li><strong>De-emphasis:</strong> también incluye este filtrado, que modifica la respuesta del audio; su constante predeterminada es 75 µs. Se documenta como una elección de la implementación, sin asumir que coincida automáticamente con la del transmisor local. <a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/fm_emph.py">Implementación de de-emphasis</a>.</li>
+<li><strong>Alcance:</strong> no se añade un decoder stereo ni un decoder RDS. Escuchar audio no demuestra que todas esas partes de una emisión se hayan recuperado.</li>
+</ul>
+<p>Después se conectan <code>Multiply Const</code> de tipo <code>Float</code>, con constante <code>volume</code>, y <code>Audio Sink</code> con una entrada, <code>Sample Rate = 48000</code> y <code>OK to Block = No</code>. Para disponer de un control visible, <code>volume</code> puede definirse mediante <code>QT GUI Range</code>, entre 0 y 1, paso 0.05 y valor inicial 0.2, como en la referencia.</p>
+<details class="example">
+<summary>Comprobación 4.1 — por qué Audio Sink debe quedar a 48000</summary>
+<ul>
+<li><strong>Tasa recibida:</strong> el resampler entrega 192000 muestras complejas/s y <code>Audio Decimation = 4</code> produce <span class="arithmatex">\(192000/4=48000\)</span> muestras reales/s.</li>
+<li><strong>Tipo:</strong> estas muestras son valores de audio; no contienen una pareja I/Q que deba dividirse nuevamente entre dos.</li>
+<li><strong>Correspondencia:</strong> <code>Audio Sink</code> debe reproducirlas a la tasa que representan. Una configuración diferente cambia la interpretación temporal del audio o causa problemas de suministro; no corrige un archivo de entrada con metadatos equivocados.</li>
+</ul>
+</details>
+<h2 id="5-ejecutar-y-registrar-observaciones">5. Ejecutar y registrar observaciones</h2>
+<ol>
+<li>Se verifica que la captura correcta está en <code>samples/</code> y que la ruta del <code>File Source</code> es relativa.</li>
+<li>Se comparan las conexiones y tipos del montaje del estudiante con el grafo de referencia. El <code>ID</code> del estudiante se mantiene distinto del de la referencia.</li>
+<li>En la referencia, <code>File Source</code> y toda la cadena CU8 están activos; <code>Soapy RTLSDR Source</code> está desactivado. No se mezclan las dos rutas.</li>
+<li>Se ejecuta desde GNU Radio Companion con <strong>F6</strong> y se aumenta el volumen gradualmente. El contenido de la grabación y la salida de audio del equipo determinan lo que se escucha.</li>
+<li>
+<p>Se registra cada visor con su eje de frecuencia y se explica la diferencia entre las dos etapas mediante los ítems de la sección 3.</p>
+</li>
+<li>
+<p><strong>Repetición:</strong> <code>Repeat = Yes</code> vuelve al inicio al terminar el archivo. Puede haber una discontinuidad en ese retorno; no representa una nueva observación del entorno RF.</p>
+</li>
+<li><strong>Archivo fijo:</strong> cambiar <code>freq</code> solo modifica etiquetas en esta ruta. No se recibe otra emisora ni se reescribe la frecuencia central de adquisición.</li>
+<li><strong>Expectativa verificable:</strong> debe haber muestras en ambas etapas complejas y una salida real a 48 kS/s. La interpretación de la captura y la audición se documentan por separado; no se presume una calidad determinada solo porque el grafo compile.</li>
+</ol>
+<h3 id="si-solo-se-dispone-de-la-captura-a-24-mss">Si solo se dispone de la captura a 2.4 MS/s</h3>
+<p>No se renombra el archivo para hacerlo pasar por la captura de 2.048 MS/s. Se guarda una variante con otro <code>ID</code> y se cambian <strong>conjuntamente</strong> estos parámetros:</p>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Valor para la variante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>File Source</code></td>
+<td><code>../samples/fm_99p1MHz_2p4Msps_g30.cu8</code></td>
+</tr>
+<tr>
+<td><code>samp_rate</code></td>
+<td><code>2400000</code></td>
+</tr>
+<tr>
+<td><code>Throttle</code>, Byte</td>
+<td><code>2*samp_rate</code>, equivalente a 4800000 bytes/s</td>
+</tr>
+<tr>
+<td><code>Rational Resampler</code></td>
+<td>Interpolation: <code>2</code>; Decimation: <code>25</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Comprobación:</strong> <span class="arithmatex">\(2400000(2/25)=192000\)</span> S/s. <code>WBFM Receive</code>, el visor de canal y <code>Audio Sink</code> conservan 192000, decimación 4 y 48000, respectivamente.</li>
+<li><strong>Primer visor:</strong> su <code>Bandwidth = samp_rate</code> pasa a 2.4 MHz. Con la misma referencia de 99.1 MHz, los bordes nominales son 97.9 y 100.3 MHz.</li>
+<li><strong>Contenido:</strong> aunque ambas capturas documenten 99.1 MHz, no se supone que contengan el mismo instante ni las mismas amplitudes. Ajustar la cadena conserva una interpretación temporal correcta; no convierte una grabación en la otra.</li>
+</ul>
+<h2 id="6-extension-opcional-con-rtl-sdr">6. Extensión opcional con RTL-SDR</h2>
+<p>Para recibir en vivo se detiene el grafo y se selecciona una sola ruta:</p>
+<ol>
+<li>Se desactivan los <strong>siete bloques de la ruta CU8</strong>: <code>File Source</code>, <code>Throttle</code>, <code>UChar to Float</code>, <code>Add Const</code>, el <code>Multiply Const</code> de normalización, <code>Deinterleave</code> y <code>Float to Complex</code>. No se desactiva el control de volumen de la salida de audio.</li>
+<li>Se activa <code>Soapy RTLSDR Source</code>, que en la referencia está desactivado.</li>
+<li>Se mantiene su salida <code>Complex Float32</code>, <code>Sample Rate = samp_rate</code>, <code>Center Frequency = freq</code>, ganancia manual 30 dB y AGC desactivado, como en el grafo.</li>
+<li>Se conecta directamente al resampler y al visor RF; el hardware ya entrega muestras complejas. No se aplica la conversión CU8 a esa salida.</li>
+<li>
+<p>Se ejecuta nuevamente. Los requisitos del dispositivo se revisan en la <a href="../../../setup/rtl-sdr/">guía de configuración del RTL-SDR</a>.</p>
+</li>
+<li>
+<p><strong>Clock de adquisición:</strong> la fuente de hardware proporciona el ritmo de las muestras. No se añade el <code>Throttle</code> de archivo a esa ruta.</p>
+</li>
+<li><strong>Sintonización real:</strong> en esta variante, <code>freq</code> sí configura la frecuencia central de la fuente Soapy. La variable tiene una función distinta de la que tenía con un archivo fijo.</li>
+<li><strong>Comparación válida:</strong> pueden variar la señal, la interferencia, el nivel y el ruido respecto a la captura. Se distingue cambiar de fuente de cambiar el procesamiento digital.</li>
+</ol>
+<details class="example">
+<summary>Comprobación 6.1 — por qué no quedan activas ambas fuentes</summary>
+<ul>
+<li><strong>Entrada del resampler:</strong> espera un solo flujo complejo. Dos fuentes no constituyen automáticamente una suma ni una selección entre ellas.</li>
+<li><strong>Selección:</strong> en la ruta de archivo la entrada procede de <code>Float to Complex</code>; en la ruta de hardware procede de Soapy. Se desactiva completamente la ruta que no se utiliza.</li>
+<li><strong>Misma tasa declarada:</strong> ambas rutas de esta referencia proporcionan 2.048 MS/s complejas; se mantiene el resampler 3/32. Esa coincidencia no implica que los valores de las muestras sean iguales.</li>
+</ul>
+</details>
+<h2 id="7-diagnostico-breve">7. Diagnóstico breve</h2>
+<table>
+<thead>
+<tr>
+<th>Síntoma</th>
+<th>Revisión inicial</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>El grafo no abre el archivo</td>
+<td>Se comprueban el nombre, la ruta relativa y la presencia de la captura en <code>samples/</code>.</td>
+</tr>
+<tr>
+<td>Hay underruns o cortes de audio</td>
+<td>Se revisan captura, <code>Throttle = 2*samp_rate</code> en Byte, carga del equipo y tasas de las etapas.</td>
+</tr>
+<tr>
+<td>Los tiempos o el audio no corresponden</td>
+<td>Se revisa el sample rate documentado; una captura a 2.4 MS/s no se declara a 2.048 MS/s.</td>
+</tr>
+<tr>
+<td>Hay espectro, pero no audio</td>
+<td>Se verifican <code>Quadrature Rate = 192000</code>, decimación 4, salida a 48000 y volumen; también la salida de audio del sistema.</td>
+</tr>
+<tr>
+<td>La señal parece ruido</td>
+<td>Se revisan formato Byte, normalización CU8 y orden de las entradas I y Q.</td>
+</tr>
+<tr>
+<td>Las frecuencias RF parecen desplazadas</td>
+<td>Se comprueba que <code>freq</code> corresponde a los metadatos; cambiar etiquetas no mezcla muestras.</td>
+</tr>
+<tr>
+<td>Soapy no abre el dongle</td>
+<td>Se vuelve a la ruta de archivo y se revisan driver y configuración del dispositivo por separado.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="entrega">Entrega</h2>
+<p>El estudiante entrega:</p>
+<ol>
+<li>El <code>.grc</code> construido, con un <code>ID</code> propio y sin rutas absolutas ni archivos I/Q dentro de Git.</li>
+<li>La tabla de tasas completada: bytes de entrada, flujos I y Q, flujo complejo, salida del resampler y audio. Cada número se acompaña de su cálculo.</li>
+<li>Una captura de cada visor, identificando la tasa, los bordes nominales, la referencia RF y la posición del canal objetivo.</li>
+<li>Una explicación itemizada de qué hacen la conversión CU8, el resampling, la demodulación y el control de volumen. Se identifica qué etapa deja de tener una salida I/Q.</li>
+<li>Una justificación de por qué cambiar <code>freq</code> no sintoniza otra señal del archivo. Si se utiliza la variante a 2.4 MS/s o el dongle, se documentan los cambios por separado.</li>
+</ol>
+<h2 id="lecturas-y-referencias">Lecturas y referencias</h2>
+<ul>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/lib/rational_resampler_impl.cc">GNU Radio 3.10.12 — Rational Resampler</a>: relación entre tasas y filtro automático.</li>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/lib/quadrature_demod_cf_impl.cc">GNU Radio 3.10.12 — Quadrature Demod</a>: producto conjugado y cálculo del argumento.</li>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/wfm_rcv.py">GNU Radio 3.10.12 — WBFM Receive</a>: parámetros de entrada, demodulación y salida mono.</li>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/fm_emph.py">GNU Radio 3.10.12 — FM de-emphasis</a>: constante predeterminada del filtro de audio.</li>
+</ul>
+<p>La estructura procede del laboratorio respaldado del curso. Los parámetros anteriores se verifican contra GNU Radio 3.10.12; no se atribuye a sus valores predeterminados una garantía de calibración o de compatibilidad con toda emisora.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
