@@ -24,6 +24,14 @@ docs/
 
 Cada sesión nueva se añade al `nav` de `mkdocs.yml` bajo `Sesiones`.
 
+Los flowgraphs del curso están en `gnuradio-flowgraphs/`. Los laboratorios de
+referencia se organizan en `sdr-reference-courses/sdr-course/`; sus `.grc` y los
+archivos de texto auxiliares se versionan, pero sus PDFs permanecen locales.
+
+`backups/`, `burocracia/` y las grabaciones I/Q son archivos locales excluidos de
+Git. En particular, `burocracia/` contiene documentos personales de contratación
+que no deben publicarse. El sitio web se genera desde `docs/`, no desde estas carpetas.
+
 ---
 
 ## Uso local

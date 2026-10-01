@@ -34,7 +34,11 @@ gnuradio-flowgraphs/*.py
 
 # PDFs de referencia y notas locales de investigación
 referencia/
+/sdr-reference-courses/**/*.pdf
 .planning/research/
+
+# Documentos personales de contratación: nunca al repositorio público
+/burocracia/
 
 # Backups locales
 /backups/

@@ -36,7 +36,8 @@ inexistentes. Ejecutar `mkdocs` desde una subcarpeta falla con `exit 1` sin expl
 ## Datos y archivos pesados
 
 Las grabaciones I/Q se distribuyen por Google Drive, nunca por Git. `.gitignore` cubre `*.cu8`,
-`*.cfile`, `gnuradio-flowgraphs/*.py`, `referencia/` y `.planning/research/`.
+`*.cfile`, `gnuradio-flowgraphs/*.py`, `referencia/`, los PDFs de `sdr-reference-courses/`
+y `.planning/research/`. `burocracia/` contiene documentos personales y nunca se publica.
 
 La grabación oficial de la Sesión 01 vive en `samples/` y se referencia así:
 

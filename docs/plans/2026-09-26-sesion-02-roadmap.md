@@ -131,9 +131,9 @@ La subsección construye las herramientas temporales que esos temas necesitan.
 
 ## Referencias y estado
 
-- Libro: `referencia/SDR4Engineers.pdf`. Solo se revisó el índice; el capítulo 2
+- Libro: `sdr-reference-courses/SDR4Engineers.pdf`. Solo se revisó el índice; el capítulo 2
   sirve como mapa de fundamentos, no como contenido para una sola sesión.
-- Laboratorios: `gnuradio-labs-referencia/Lesson_1` para señales y `Lesson_2`
+- Laboratorios: `sdr-reference-courses/sdr-course/Lesson_1` para señales y `Lesson_2`
   para sistemas. Los flowgraphs se revisaron como referencias; todavía no se
   ha verificado su ejecución para la nueva sesión.
 - La secuencia posterior propuesta es representar señales, seleccionar
