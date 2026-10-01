@@ -2,9 +2,10 @@
 
 ### Curso de Pregrado · Acceso Abierto · CC BY 4.0
 
-Un curso práctico de radio definida por software (SDR): desde las señales IQ y el procesamiento digital en banda base hasta la recepción y transmisión de sistemas de comunicación reales con GNU Radio y hardware de bajo costo. Cada sesión combina teoría con un laboratorio ejecutable en Google Colab o en GNU Radio Companion.
+Un curso práctico de radio definida por software (SDR): desde las muestras I/Q y el procesamiento digital hasta la construcción de un receptor QPSK y una introducción a OFDM. Cada sesión combina teoría con un laboratorio en Python o GNU Radio. No se requiere hardware individual: se utilizan archivos de muestras `.cu8` y señales generadas en software.
 
-[Ver sesiones](sessions/index.md){ .md-button .md-button--primary }
+[Ver syllabus](syllabus.md){ .md-button .md-button--primary }
+[Ver sesiones](sessions/index.md){ .md-button }
 [Guías de instalación](setup/index.md){ .md-button }
 [Exámenes](exams/index.md){ .md-button }
 [Repositorio GitHub](https://github.com/ollerenac-uni/sdr){ .md-button }
@@ -15,29 +16,29 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 
 <div class="grid cards" markdown>
 
--   :material-sine-wave:{ .lg .middle } **Fundamentos y hardware real**
+-   :material-sine-wave:{ .lg .middle } **Fundamentos y procesamiento de muestras**
 
     ---
 
     Sesiones 1–4
 
-    Arquitectura de un receptor SDR y el RTL-SDR por dentro, señales IQ, ganancia y saturación a 8 bits, filtros y decimación, GNU Radio Companion a fondo.
+    Arquitectura SDR, muestras I/Q, espectro, sistemas, filtros y cambios de sampling rate.
 
--   :material-radio-tower:{ .lg .middle } **Señales reales: analógicas y digitales**
-
-    ---
-
-    Sesiones 5–10
-
-    Receptor FM estéreo, presupuesto de enlace, modulación digital y sincronización, decodificación de RDS y ADS-B desde muestras reales.
-
--   :material-access-point-network:{ .lg .middle } **Espectro, sistemas y proyecto**
+-   :material-radio-tower:{ .lg .middle } **Enlace digital y sincronización**
 
     ---
 
-    Sesiones 11–16
+    Sesiones 5–11
 
-    Sensado de espectro con el PNAF, OFDM e ISDB-Tb, IoT y LoRa en 915 MHz, satélites Meteor, proyecto final por hitos.
+    BPSK/QPSK, pulse shaping, ruido, recuperación de fase, frecuencia y timing, y recuperación de tramas.
+
+-   :material-access-point-network:{ .lg .middle } **Canal, equalization e integración**
+
+    ---
+
+    Sesiones 12–15
+
+    Multipath, channel estimation, equalization adaptativa, introducción a OFDM y evaluación del receptor QPSK.
 
 </div>
 
@@ -45,25 +46,26 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 
 ## Sesiones del Curso
 
+El [syllabus](syllabus.md) describe el tema principal y el laboratorio de cada sesión.
+
 | # | Título | Estado |
 |---|--------|:------:|
 | 00 | [Pre-lab: instalar el entorno](setup/index.md) | Disponible |
 | 01 | [Introducción a la Radio Definida por Software](sessions/01-introduccion-sdr/index.md) | En desarrollo |
 | 02 | [Señales y espectro en SDR](sessions/02-tiempo-frecuencia-iq/index.md) | En desarrollo |
-| 03 | DSP para SDR: filtros FIR, decimación, PSD y SNR | Próximamente |
-| 04 | GNU Radio Companion a fondo | Próximamente |
-| 05 | Modulación analógica: AM/FM, presupuesto de enlace, figura de ruido | Próximamente |
-| 06 | Modulación digital I: símbolos, RRC, ISI, diagrama de ojo | Próximamente |
-| 07 | Sincronización: reloj de símbolo, portadora, RDS real | Próximamente |
-| 08 | Examen parcial | — |
-| 09 | Modulación digital II: QAM, Eb/N0, BER | Próximamente |
-| 10 | Trama y paquetes: RDS completo, ADS-B | Próximamente |
-| 11 | Sensado de espectro, PNAF y RNF | Próximamente |
-| 12 | OFDM en SDR e ISDB-Tb | Próximamente |
-| 13 | IoT en banda ICM 915 MHz: sensores y LoRa | Próximamente |
-| 14 | Satélites Meteor LRPT y panorama de SDR con transmisión | Próximamente |
-| 15 | Integración y ensayo de demo | Próximamente |
-| 16 | Presentaciones de proyecto | — |
+| 03 | Sistemas y filtros digitales | Próximamente |
+| 04 | Selección de canal y cambios de sampling rate | Próximamente |
+| 05 | De bits a señales: BPSK y QPSK | Próximamente |
+| 06 | Pulse shaping y matched filtering | Próximamente |
+| 07 | Ruido y desempeño del enlace | Próximamente |
+| 08 | PLL y sincronización de fase | Próximamente |
+| 09 | Sincronización de frecuencia | Próximamente |
+| 10 | Symbol timing recovery | Próximamente |
+| 11 | Frame synchronization y recuperación del mensaje | Próximamente |
+| 12 | Canal multipath y channel estimation | Próximamente |
+| 13 | Equalization adaptativa | Próximamente |
+| 14 | Introducción a OFDM | Próximamente |
+| 15 | Integración y evaluación de un receptor SDR | Próximamente |
 
 ---
 
@@ -82,9 +84,9 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 | Herramienta | Uso en el curso |
 |-------------|-----------------|
 | radioconda 2025.03.14 (GNU Radio 3.10.12) | Flowgraphs de recepción en GNU Radio Companion; misma versión para todos |
-| RTL-SDR Blog V4 o V3 (opcional) | Receptor de bajo costo; todo lab funciona también con archivos IQ oficiales |
+| Archivos I/Q `.cu8` | Capturas para los laboratorios; no se requiere un dongle propio |
+| USRP B210 y RTL-SDR del profesor | Demostraciones Tx–Rx y generación de capturas para el curso |
 | Python (NumPy, SciPy, Matplotlib) | Análisis y prototipos en Google Colab |
-| rtl_433, SatDump | Herramientas externas para sensores ICM y satélites |
 
 ---
 
@@ -92,7 +94,7 @@ Un curso práctico de radio definida por software (SDR): desde las señales IQ y
 
 === "Sitio web"
 
-    Navega las sesiones directamente desde este sitio. Cada página incluye apuntes de teoría, ejercicios con soluciones desplegables y un botón **Abrir en Colab** para ejecutar el laboratorio sin instalar nada.
+    El [syllabus](syllabus.md) presenta el programa. Las sesiones disponibles incluyen teoría, ejercicios con soluciones desplegables y enlaces a sus laboratorios. Los snippets de Python pueden ejecutarse en Google Colab; los flowgraphs se utilizan en GNU Radio Companion.
 
 === "Clonar el repositorio"
 

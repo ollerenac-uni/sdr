@@ -1,23 +1,28 @@
 # Sesiones
 
-Cada sesión tiene 2 h de teoría y 2 h de laboratorio. Todo laboratorio se califica con archivos IQ oficiales; el dongle RTL-SDR es la variante en vivo, opcional.
+El curso comprende 15 sesiones, normalmente con 2 h de clase y 2 h de laboratorio.
+Los laboratorios utilizan archivos de muestras `.cu8` y señales generadas en
+software, sin requerir hardware individual.
 
-| # | Título | Entrega | Estado |
-|---|--------|---------|:------:|
-| 00 | [Pre-lab: instalar el entorno](../setup/index.md) | — | Disponible |
-| 01 | [Introducción a la Radio Definida por Software](01-introduccion-sdr/index.md) | R0 | En desarrollo |
-| 02 | [Señales y espectro en SDR](02-tiempo-frecuencia-iq/index.md) | R1 | En desarrollo |
-| 03 | DSP para SDR: filtros FIR, decimación, PSD y SNR | — | Próximamente |
-| 04 | GNU Radio Companion a fondo | R2 | Próximamente |
-| 05 | Modulación analógica: AM/FM, presupuesto de enlace, figura de ruido | — | Próximamente |
-| 06 | Modulación digital I: símbolos, RRC, ISI, diagrama de ojo | R3 | Próximamente |
-| 07 | Sincronización: reloj de símbolo, portadora, RDS real | — | Próximamente |
-| 08 | Examen parcial (S01–S07) | — | — |
-| 09 | Modulación digital II: QAM, Eb/N0, BER | Propuesta de proyecto | Próximamente |
-| 10 | Trama y paquetes: RDS completo, ADS-B | R4 | Próximamente |
-| 11 | Sensado de espectro, PNAF y RNF | R5 | Próximamente |
-| 12 | OFDM en SDR e ISDB-Tb | Hito 1 | Próximamente |
-| 13 | IoT en banda ICM 915 MHz: sensores y LoRa | — | Próximamente |
-| 14 | Satélites Meteor LRPT y panorama de SDR con transmisión | Hito 2 | Próximamente |
-| 15 | Integración y ensayo de demo | — | Próximamente |
-| 16 | Presentaciones de proyecto | Proyecto | — |
+El [syllabus](../syllabus.md) presenta el tema principal, una breve descripción y
+el laboratorio de cada sesión. El pre-lab corresponde a la preparación del entorno
+y no forma parte de las 15 sesiones.
+
+| # | Título | Estado |
+|---|--------|:------:|
+| 00 | [Pre-lab: instalar el entorno](../setup/index.md) | Disponible |
+| 01 | [Introducción a la Radio Definida por Software](01-introduccion-sdr/index.md) | En desarrollo |
+| 02 | [Señales y espectro en SDR](02-tiempo-frecuencia-iq/index.md) | En desarrollo |
+| 03 | Sistemas y filtros digitales | Próximamente |
+| 04 | Selección de canal y cambios de sampling rate | Próximamente |
+| 05 | De bits a señales: BPSK y QPSK | Próximamente |
+| 06 | Pulse shaping y matched filtering | Próximamente |
+| 07 | Ruido y desempeño del enlace | Próximamente |
+| 08 | PLL y sincronización de fase | Próximamente |
+| 09 | Sincronización de frecuencia | Próximamente |
+| 10 | Symbol timing recovery | Próximamente |
+| 11 | Frame synchronization y recuperación del mensaje | Próximamente |
+| 12 | Canal multipath y channel estimation | Próximamente |
+| 13 | Equalization adaptativa | Próximamente |
+| 14 | Introducción a OFDM | Próximamente |
+| 15 | Integración y evaluación de un receptor SDR | Próximamente |

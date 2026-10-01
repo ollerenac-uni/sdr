@@ -71,6 +71,7 @@ extra_css:
 
 nav:
   - Inicio: index.md
+  - Syllabus: syllabus.md
   - Sesiones:
       - sessions/index.md
       - "01 — Introducción a SDR":

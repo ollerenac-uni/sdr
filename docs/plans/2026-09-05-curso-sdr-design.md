@@ -2,6 +2,11 @@
 
 Fecha: 2026-09-05. Estado: aprobado por el profesor tras dos rondas de revisión adversaria.
 
+**Nota de vigencia:** El temario de este diseño fue sustituido por el
+[syllabus de 15 sesiones](../syllabus.md), acordado con el profesor. La secuencia,
+los temas y el calendario de evaluación de este documento se conservan como
+antecedente, no como programa vigente.
+
 ## Contexto
 
 - Curso de pregrado, Universidad Nacional de Ingeniería (Lima). 16 semanas, 4 h académicas/semana (2 h teoría + 2 h lab en aula).

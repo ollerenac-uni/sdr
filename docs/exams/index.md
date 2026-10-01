@@ -1,9 +1,12 @@
 # Exámenes
 
+Las fechas, los contenidos y el formato de las evaluaciones se definirán por
+separado del [syllabus](../syllabus.md).
+
 ## Examen Parcial
 
-**Sesión:** 08
-**Sesiones cubiertas:** 01–07
+**Fecha:** Por definir
+**Contenidos:** Por definir
 **Formato:** Por definir
 
 !!! info "Próximamente"
@@ -13,8 +16,8 @@
 
 ## Examen Final
 
-**Sesión:** 16
-**Sesiones cubiertas:** 09–15
+**Fecha:** Por definir
+**Contenidos:** Por definir
 **Formato:** Por definir
 
 !!! info "Próximamente"
