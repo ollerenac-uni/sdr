@@ -1,28 +1,32 @@
 # Sesiones
 
-El curso comprende 15 sesiones, normalmente con 2 h de clase y 2 h de laboratorio.
+El curso comprende 16 sesiones, normalmente con 2 h de clase y 2 h de laboratorio.
 Los laboratorios utilizan archivos de muestras `.cu8` y señales generadas en
-software, sin requerir hardware individual.
+software, sin requerir hardware SDR individual.
 
 El [syllabus](../syllabus.md) presenta el tema principal, una breve descripción y
-el laboratorio de cada sesión. El pre-lab corresponde a la preparación del entorno
-y no forma parte de las 15 sesiones.
+el laboratorio guiado de cada sesión. Se prioriza un receptor QPSK sencillo, con
+tiempo de integración y consolidación. Multipath, equalization adaptativa y OFDM
+quedan como temas complementarios.
+
+El [pre-lab: instalar el entorno](../setup/index.md) es una preparación previa y
+no forma parte de las 16 sesiones.
 
 | # | Título | Estado |
 |---|--------|:------:|
-| 00 | [Pre-lab: instalar el entorno](../setup/index.md) | Disponible |
-| 01 | [Introducción a la Radio Definida por Software](01-introduccion-sdr/index.md) | En desarrollo |
+| 01 | [Introducción](01-introduccion-sdr/index.md) | En desarrollo |
 | 02 | [Señales y espectro en SDR](02-tiempo-frecuencia-iq/index.md) | En desarrollo |
 | 03 | Sistemas y filtros digitales | Próximamente |
-| 04 | Selección de canal y cambios de sampling rate | Próximamente |
-| 05 | De bits a señales: BPSK y QPSK | Próximamente |
+| 04 | Selección de canal y decimación | Próximamente |
+| 05 | De bits a símbolos: BPSK y QPSK | Próximamente |
 | 06 | Pulse shaping y matched filtering | Próximamente |
-| 07 | Ruido y desempeño del enlace | Próximamente |
-| 08 | PLL y sincronización de fase | Próximamente |
-| 09 | Sincronización de frecuencia | Próximamente |
-| 10 | Symbol timing recovery | Próximamente |
-| 11 | Frame synchronization y recuperación del mensaje | Próximamente |
-| 12 | Canal multipath y channel estimation | Próximamente |
-| 13 | Equalization adaptativa | Próximamente |
-| 14 | Introducción a OFDM | Próximamente |
-| 15 | Integración y evaluación de un receptor SDR | Próximamente |
+| 07 | Enlace digital ideal | Próximamente |
+| 08 | Ruido y medición de errores | Próximamente |
+| 09 | Offset de frecuencia y fase | Próximamente |
+| 10 | Corrección de frecuencia y fase | Próximamente |
+| 11 | Symbol timing recovery | Próximamente |
+| 12 | Tramas y recuperación del mensaje | Próximamente |
+| 13 | Integración del receptor QPSK | Próximamente |
+| 14 | Recepción desde una captura I/Q | Próximamente |
+| 15 | Evaluación y diagnóstico del receptor | Próximamente |
+| 16 | Síntesis y demostración del enlace | Próximamente |

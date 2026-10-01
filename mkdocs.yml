@@ -74,7 +74,7 @@ nav:
   - Syllabus: syllabus.md
   - Sesiones:
       - sessions/index.md
-      - "01 — Introducción a SDR":
+      - "01 — Introducción":
           - sessions/01-introduccion-sdr/index.md
           - "Laboratorio #1: muestreo": sessions/01-introduccion-sdr/laboratorio-muestreo.md
       - "02 — Señales y espectro en SDR":

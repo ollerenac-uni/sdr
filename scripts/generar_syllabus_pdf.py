@@ -18,6 +18,8 @@ from reportlab.platypus import KeepTogether, PageBreak, Paragraph, SimpleDocTemp
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs/syllabus.md"
 OUTPUT = ROOT / "docs/downloads/syllabus-sdr.pdf"
+TOTAL_SESIONES = 16
+SESIONES_POR_PAGINA = 4
 
 
 def texto_plano(texto):
@@ -48,8 +50,8 @@ def leer_syllabus(ruta):
                 raise ValueError(f"Formato inesperado en la sesión {numero}: {celda}")
             campos.extend(texto_plano(valor) for valor in campo.groups())
         sesiones.append((int(numero), *campos))
-    if [sesion[0] for sesion in sesiones] != list(range(1, 16)):
-        raise ValueError("El syllabus debe contener las sesiones 1 a 15, en orden.")
+    if [sesion[0] for sesion in sesiones] != list(range(1, TOTAL_SESIONES + 1)):
+        raise ValueError(f"El syllabus debe contener las sesiones 1 a {TOTAL_SESIONES}, en orden.")
     return parrafos, sesiones
 
 
@@ -73,7 +75,7 @@ def generar_pdf(origen=SOURCE, destino=OUTPUT):
     contenido.append(Spacer(1, 8))
 
     for numero, tema, descripcion, laboratorio, practica in sesiones:
-        if numero > 1 and (numero - 1) % 5 == 0:
+        if numero > 1 and (numero - 1) % SESIONES_POR_PAGINA == 0:
             contenido.append(PageBreak())
         contenido.append(KeepTogether([
             Paragraph(escape(f"Sesión {numero:02d} — {tema}"), estilos["sesion"]),

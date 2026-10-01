@@ -2,7 +2,7 @@
 
 ### Curso de Pregrado · Acceso Abierto · CC BY 4.0
 
-Un curso práctico de radio definida por software (SDR): desde las muestras I/Q y el procesamiento digital hasta la construcción de un receptor QPSK y una introducción a OFDM. Cada sesión combina teoría con un laboratorio en Python o GNU Radio. No se requiere hardware individual: se utilizan archivos de muestras `.cu8` y señales generadas en software.
+Un curso práctico de radio definida por software (SDR): desde las muestras I/Q y el procesamiento digital hasta la construcción guiada de un receptor QPSK sencillo. El curso comprende 16 sesiones, con tiempo de integración y consolidación. No se requiere hardware SDR individual: se utilizan archivos de muestras `.cu8` y señales generadas en Python o GNU Radio.
 
 [Ver syllabus](syllabus.md){ .md-button .md-button--primary }
 [Ver sesiones](sessions/index.md){ .md-button }
@@ -30,15 +30,15 @@ Un curso práctico de radio definida por software (SDR): desde las muestras I/Q 
 
     Sesiones 5–11
 
-    BPSK/QPSK, pulse shaping, ruido, recuperación de fase, frecuencia y timing, y recuperación de tramas.
+    BPSK/QPSK, pulse shaping, enlace ideal, ruido y recuperación de frecuencia, fase y timing con bloques preparados.
 
--   :material-access-point-network:{ .lg .middle } **Canal, equalization e integración**
+-   :material-access-point-network:{ .lg .middle } **Mensaje, integración y práctica**
 
     ---
 
-    Sesiones 12–15
+    Sesiones 12–16
 
-    Multipath, channel estimation, equalization adaptativa, introducción a OFDM y evaluación del receptor QPSK.
+    Recuperación de tramas, integración del receptor QPSK, capturas reales, diagnóstico y consolidación. Multipath, equalization adaptativa y OFDM quedan como temas complementarios.
 
 </div>
 
@@ -47,25 +47,26 @@ Un curso práctico de radio definida por software (SDR): desde las muestras I/Q 
 ## Sesiones del Curso
 
 El [syllabus](syllabus.md) describe el tema principal y el laboratorio de cada sesión.
+El [pre-lab: instalar el entorno](setup/index.md) es una preparación previa, fuera de las 16 sesiones.
 
 | # | Título | Estado |
 |---|--------|:------:|
-| 00 | [Pre-lab: instalar el entorno](setup/index.md) | Disponible |
-| 01 | [Introducción a la Radio Definida por Software](sessions/01-introduccion-sdr/index.md) | En desarrollo |
+| 01 | [Introducción](sessions/01-introduccion-sdr/index.md) | En desarrollo |
 | 02 | [Señales y espectro en SDR](sessions/02-tiempo-frecuencia-iq/index.md) | En desarrollo |
 | 03 | Sistemas y filtros digitales | Próximamente |
-| 04 | Selección de canal y cambios de sampling rate | Próximamente |
-| 05 | De bits a señales: BPSK y QPSK | Próximamente |
+| 04 | Selección de canal y decimación | Próximamente |
+| 05 | De bits a símbolos: BPSK y QPSK | Próximamente |
 | 06 | Pulse shaping y matched filtering | Próximamente |
-| 07 | Ruido y desempeño del enlace | Próximamente |
-| 08 | PLL y sincronización de fase | Próximamente |
-| 09 | Sincronización de frecuencia | Próximamente |
-| 10 | Symbol timing recovery | Próximamente |
-| 11 | Frame synchronization y recuperación del mensaje | Próximamente |
-| 12 | Canal multipath y channel estimation | Próximamente |
-| 13 | Equalization adaptativa | Próximamente |
-| 14 | Introducción a OFDM | Próximamente |
-| 15 | Integración y evaluación de un receptor SDR | Próximamente |
+| 07 | Enlace digital ideal | Próximamente |
+| 08 | Ruido y medición de errores | Próximamente |
+| 09 | Offset de frecuencia y fase | Próximamente |
+| 10 | Corrección de frecuencia y fase | Próximamente |
+| 11 | Symbol timing recovery | Próximamente |
+| 12 | Tramas y recuperación del mensaje | Próximamente |
+| 13 | Integración del receptor QPSK | Próximamente |
+| 14 | Recepción desde una captura I/Q | Próximamente |
+| 15 | Evaluación y diagnóstico del receptor | Próximamente |
+| 16 | Síntesis y demostración del enlace | Próximamente |
 
 ---
 

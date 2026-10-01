@@ -22,10 +22,10 @@ def paginas_pdf(ruta):
 
 def verificar_contenido(ruta):
     paginas = paginas_pdf(ruta)
-    assert len(paginas) == 3
-    for pagina, inicio in zip(paginas, (1, 6, 11)):
-        assert [int(numero) for numero in re.findall(r"Sesión (\d{2}) —", pagina)] == list(range(inicio, inicio + 5))
-        assert [int(numero) for numero in re.findall(r"Laboratorio #(\d+):", pagina)] == list(range(inicio, inicio + 5))
+    assert len(paginas) == 4
+    for pagina, inicio in zip(paginas, (1, 5, 9, 13)):
+        assert [int(numero) for numero in re.findall(r"Sesión (\d{2}) —", pagina)] == list(range(inicio, inicio + 4))
+        assert [int(numero) for numero in re.findall(r"Laboratorio #(\d+):", pagina)] == list(range(inicio, inicio + 4))
     texto_pdf = re.sub(r"\s+", "", " ".join(paginas))
     syllabus = (ROOT / "docs/syllabus.md").read_text(encoding="utf-8")
     for linea in syllabus.splitlines():

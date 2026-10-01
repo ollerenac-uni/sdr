@@ -1,11 +1,11 @@
 ---
-title: "Sesión 01 — Introducción a la Radio Definida por Software"
+title: "Sesión 01 — Introducción"
 session: 1
 description: "Qué es un SDR, cómo funciona un receptor RTL-SDR por dentro, qué limita su desempeño y qué se puede recibir legalmente en Perú."
 status: draft
 ---
 
-# Sesión 01 — Introducción a la Radio Definida por Software
+# Sesión 01 — Introducción
 
 ## Objetivos de aprendizaje
 
