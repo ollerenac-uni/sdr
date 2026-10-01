@@ -26,7 +26,11 @@ Cada sesión nueva se añade al `nav` de `mkdocs.yml` bajo `Sesiones`.
 
 Los flowgraphs del curso están en `gnuradio-flowgraphs/`. Los laboratorios de
 referencia se organizan en `sdr-reference-courses/sdr-course/`; sus `.grc` y los
-archivos de texto auxiliares se versionan, pero sus PDFs permanecen locales.
+archivos de texto auxiliares se versionan junto con sus PDFs. El libro
+[`SDR4Engineers.pdf`](sdr-reference-courses/SDR4Engineers.pdf) y las demás
+referencias están disponibles en [`sdr-reference-courses/`](sdr-reference-courses/).
+Estos archivos se publican en el repositorio de GitHub; no se copian al sitio
+MkDocs, que se construye desde `docs/`.
 
 [`test2.grc`](gnuradio-flowgraphs/test2.grc) conserva la solución del laboratorio
 sin hardware. [`visualizador_usrp.grc`](gnuradio-flowgraphs/visualizador_usrp.grc)
@@ -57,7 +61,9 @@ El sitio se publica automáticamente en GitHub Pages con cada push a `main` (ver
 
 ## Licencia y atribución
 
-Todo el contenido se publica bajo [Creative Commons Atribución 4.0 Internacional (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+El material original del curso se publica bajo [Creative Commons Atribución 4.0 Internacional (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+Los materiales de referencia de terceros conservan sus atribuciones y licencias
+originales; no se incluyen en la licencia del material original del curso.
 
 > *Radio Definida por Software* por ollerenac-uni
 > https://github.com/ollerenac-uni/sdr

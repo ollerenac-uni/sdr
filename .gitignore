@@ -32,9 +32,8 @@ exams/**/notas*
 # Python generado por GNU Radio Companion a partir de los .grc
 gnuradio-flowgraphs/*.py
 
-# PDFs de referencia y notas locales de investigación
+# Referencias locales no distribuidas con el curso
 referencia/
-/sdr-reference-courses/**/*.pdf
 
 # Contexto interno: historial Git independiente, solo en esta computadora
 /AGENTS.md
