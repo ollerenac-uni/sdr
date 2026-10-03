@@ -2312,15 +2312,19 @@ $$
 x_0[n]=A e^{j(2\pi f_0 n/f_s+\phi)}.
 $$
 
-Al multiplicar, los exponentes se suman:
+Primero se escribe la mezcla aplicada a $x_0[n]$. Después se sustituye esa componente por su expresión y se suman los exponentes:
 
 $$
 \begin{aligned}
 y_0[n]
+&=x_0[n]e^{j2\pi f_{\mathrm{mix}}n/f_s}\\
 &=A e^{j(2\pi f_0 n/f_s+\phi)}e^{j2\pi f_{\mathrm{mix}}n/f_s}\\
 &=A e^{j[2\pi(f_0+f_{\mathrm{mix}})n/f_s+\phi]}.
 \end{aligned}
 $$
+
+- **Primera igualdad:** se multiplica la componente de entrada $x_0[n]$ por el tono de mezcla.
+- **Segunda igualdad:** $x_0[n]$ no desaparece; se escribe como $A e^{j(2\pi f_0 n/f_s+\phi)}$. El factor $A$ es su amplitud, no un reemplazo de toda la señal.
 
 Por tanto, la frecuencia de salida es $f_0+f_{\mathrm{mix}}$, interpretada módulo $f_s$ si cruza el borde del intervalo. Para centrar $f_0=+400$ kHz se elige **$f_{\mathrm{mix}}=-400$ kHz**.
 
