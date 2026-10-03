@@ -2214,7 +2214,7 @@ $$
 x[n]=A e^{j(2\pi\,400000\,n/2400000+\phi)}.
 $$
 
-El receptor realiza la conversión y selecciona la banda antes de entregar estas muestras. No se está afirmando que la antena se muestree directamente a 2.4 MS/s ni que una FFT por sí sola pueda descubrir $f_c$.
+Los 2.4 MS/s corresponden a las muestras I/Q de salida del receptor. Su FFT muestra frecuencias relativas al centro de la captura; para convertirlas a RF, debe conocerse por separado la frecuencia central $f_c$.
 
 Para el intervalo centrado utilizado en la sesión:
 
