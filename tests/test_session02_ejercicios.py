@@ -22,13 +22,13 @@ def ejercicio(identificador):
 
 
 @pytest.mark.parametrize("numero", range(1, 7))
-def test_cada_subseccion_termina_con_cuatro_ejercicios_y_soluciones(numero):
+def test_cada_subseccion_termina_con_ejercicios_y_soluciones(numero):
     seccion = re.split(rf"^### {numero}\. ", teoria(), maxsplit=1, flags=re.MULTILINE)[1]
     seccion = re.split(r"^### \d+\. ", seccion, maxsplit=1, flags=re.MULTILINE)[0]
     assert "Ejercicios de refuerzo" in seccion
     grupo = seccion.split("Ejercicios de refuerzo", 1)[1]
-    ids = re.findall(r"^##### Ejercicio (\d+[A-D]) —", grupo, flags=re.MULTILINE)
-    assert ids == [f"{numero}{letra}" for letra in "ABCD"]
+    ids = re.findall(r"^##### Ejercicio (\d+[A-E]) —", grupo, flags=re.MULTILINE)
+    assert ids == [f"{numero}{letra}" for letra in ("ABCDE" if numero == 5 else "ABCD")]
     for identificador in ids:
         contenido = ejercicio(identificador)
         marcador = f'??? example "Solución del ejercicio {identificador}"'
@@ -36,18 +36,19 @@ def test_cada_subseccion_termina_con_cuatro_ejercicios_y_soluciones(numero):
         enunciado, solucion = contenido.split(marcador)
         assert re.search(r"^- ", enunciado, flags=re.MULTILINE)
         assert solucion.lstrip().startswith("- **")
-        lineas = [linea for linea in solucion.splitlines() if linea.strip()]
+        solo_solucion = solucion.split('\n??? note', 1)[0]
+        lineas = [linea for linea in solo_solucion.splitlines() if linea.strip()]
         assert all(linea.startswith("    - **") for linea in lineas)
     assert not re.search(r"^#### (?!.*Ejercicios de refuerzo)", grupo, flags=re.MULTILINE)
 
 
 def test_sin_grupo_de_ejercicios_acumulado_despues_de_la_sintesis():
     texto = PAGINA.read_text(encoding="utf-8")
-    assert len(re.findall(r"^##### Ejercicio \d+[A-D] —", texto, flags=re.MULTILINE)) == 24
+    assert len(re.findall(r"^##### Ejercicio \d+[A-E] —", texto, flags=re.MULTILINE)) == 25
     assert "##### Ejercicio" not in texto.split("## Síntesis visual", 1)[1]
 
 
-@pytest.mark.parametrize("identificador", [f"{numero}{letra}" for numero in range(1, 7) for letra in "ABCD"])
+@pytest.mark.parametrize("identificador", [f"{numero}{letra}" for numero in range(1, 7) for letra in ("ABCDE" if numero == 5 else "ABCD")])
 def test_soluciones_explican_su_base_teorica_y_desarrollo_en_items(identificador):
     marcador = f'??? example "Solución del ejercicio {identificador}"'
     solucion = ejercicio(identificador).split(marcador, 1)[1]
@@ -197,10 +198,21 @@ def test_rf_mezcla_y_bytes():
     assert 98.7e6 - 99.1e6 == -400e3
     assert 99.1e6 - 400e3 == 98.7e6
     np.testing.assert_array_equal(np.array([0, 400e3]) + 400e3, [400e3, 800e3])
-    assert "+800 kHz" in ejercicio("6B")
     assert (99.1e6 + 250e3) / 1e6 == pytest.approx(99.35)
     assert (99.5e6 + 250e3) / 1e6 == pytest.approx(99.75)
-    assert "99.75" in ejercicio("6C")
     assert 48000 / 2 == 24000
     assert 24000 / 2.4e6 * 1000 == 10
-    assert "24000/2400000=0.01" in ejercicio("6D")
+    assert "24000/2400000=0.01" in ejercicio("6B")
+    assert "98.1-99.1=-1" in ejercicio("6C")
+    assert "98.076" in ejercicio("6D")
+
+
+def test_ejercicio_5e_vueltas_y_sumas():
+    n = np.arange(100)
+    x = np.exp(1j * 2 * np.pi * 2030 * n / 10000)
+    pruebas = np.array([2000, 2100, 2500])
+    np.testing.assert_allclose((2030 - pruebas) * 100 / 10000, [0.3, -0.7, -4.7])
+    barras = [abs(np.sum(x * np.exp(-1j * 2 * np.pi * f * n / 10000))) / 100 for f in pruebas]
+    np.testing.assert_allclose(barras, [0.858406, 0.367913, 0.054991], atol=5e-7)
+    assert barras[0] > barras[1] > barras[2]
+    assert "0.858406" in ejercicio("5E")

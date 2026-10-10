@@ -106,15 +106,27 @@ def test_rf_y_mezcla_coherentes_con_la_referencia(modulo):
     assert not np.allclose(d["y"], d["x"])
 
 
-def test_laminas_con_lectura_itemizada_y_enlace_independiente(modulo):
+def test_lamina_y_mermaid_con_lectura_y_enlace_independiente(modulo):
     texto = (SESSION / "index.md").read_text(encoding="utf-8").split("## Síntesis visual", 1)[1]
-    assert texto.count('target="_blank"') == 4
-    for numero, nombre in zip(range(29, 33), modulo.NOMBRES):
+    assert texto.count('target="_blank"') == 1
+    for numero, nombre in zip([30], modulo.NOMBRES):
         assert f"](figures/{nombre})" in texto
         despues = texto.split(f"**Figura {numero}.**", 1)[1].split("\n", 1)[1]
-        assert despues.lstrip().startswith("- **A1. Panel A"), numero
+        assert despues.lstrip().startswith("**Panel A"), numero
         assert (SESSION / "figures" / nombre).is_file()
-    assert "**D1. Panel D — aquí la entrada es otra:**" in texto
+    assert "**Panel D — FFT de solo I:**" in texto
+    assert "**Figura 31.**" in texto
+    assert "### Siete preguntas de cierre" in texto
+    import re
+    assert len(re.findall(r"^\d\. \[¿", texto, re.MULTILINE)) == 7
+    spec = importlib.util.spec_from_file_location("cadena", SESSION / "figures/gen_sintesis_cadena.py")
+    cadena = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cadena)
+    fuente = re.findall(r"```mermaid\n(.*?)```", texto, re.DOTALL)[0].strip()
+    assert fuente == cadena.generar()
+    assert 'B --> C[' in fuente and 'B --> I[' in fuente
+    assert 'D --> E["Magnitud al cuadrado"]' in fuente
+    assert 'I --> J["Medir giro entre muestras"]' in fuente
 
 
 def test_ploteos_sin_lineas_partidas():
@@ -124,8 +136,9 @@ def test_ploteos_sin_lineas_partidas():
             assert nodo.lineno == nodo.end_lineno, nodo.func.attr
 
 
-def test_generador_reproduce_cuatro_png_sin_archivo_iq(modulo, tmp_path):
+def test_generador_reproduce_un_png_sin_archivo_iq(modulo, tmp_path):
     paths = modulo.generar(tmp_path)
+    assert len(paths) == 1
     assert [path.name for path in paths] == modulo.NOMBRES
     for path in paths:
         assert path.parent == tmp_path

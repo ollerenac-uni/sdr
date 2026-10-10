@@ -15,7 +15,8 @@ Al finalizar esta sesión, el estudiante será capaz de:
 3. Relacionar las representaciones en tiempo y frecuencia, y predecir el espectro de un tono real, un tono complejo y una suma de tonos.
 4. Interpretar el eje de frecuencias de una FFT y explicar cómo el número de muestras y la ventana afectan el espectro observado.
 5. Distinguir aliasing y spectral leakage, y comprobar sus efectos con señales conocidas.
-6. Relacionar las frecuencias en baseband con las frecuencias RF de una captura SDR y predecir el desplazamiento producido por una mezcla compleja.
+6. Relacionar el eje de una captura con RF e interpretar bandas, líneas y cambios temporales mediante el promedio y el waterfall.
+7. Explicar cómo el giro entre muestras permite demodular FM y qué procesamiento adicional entrega audio mono.
 
 ## Teoría
 
@@ -1577,79 +1578,81 @@ $$T_{\mathrm{obs}}=\frac{N}{f_s}.$$
 - **Precisión temporal:** la última muestra está en $(N-1)/f_s=7.875$ ms. La siguiente muestra correspondería a 8 ms.
 - **DFT y FFT:** la DFT es la transformación matemática. La FFT es un algoritmo eficiente para calcularla, como `np.fft.fft`.
 
-#### 5.2. Cada bin compara las muestras con un tono conocido
+#### 5.2. Cada bin prueba una frecuencia: girar hacia atrás y sumar
 
-- **Propósito:** entender qué calcula cada coeficiente de la DFT.
-- **Bin:** es una posición $k$ de la salida. Cada bin evalúa la relación entre el bloque completo y una frecuencia de referencia.
-- **Índices:** $n$ identifica una muestra de entrada. $k$ identifica un bin de salida. Ambos recorren $0,1,\ldots,N-1$ en esta FFT sin padding.
-- **Tono de referencia:** se llama $r_k[n]$ al tono complejo asociado al bin $k$:
+- **Propósito:** ver cómo las muestras producen una barra del espectro.
+- Cada muestra compleja es una flecha en el plano I/Q, como en 2.3.
+- Un **bin** es una posición de salida asociada a una frecuencia de prueba.
+- Para probarla, el cálculo gira cada flecha en sentido contrario al giro de prueba. Después suma las flechas **punta con cola**.
+- La flecha desde el inicio hasta el final del recorrido representa la suma. La barra muestra su longitud dividida entre las muestras utilizadas.
+- **Datos fijos:** ocho muestras, $f_s=8000$ S/s, amplitud 1 y fase inicial 0. Primero se mantiene el tono de entrada en 1 kHz.
+
+**La misma entrada se prueba a dos frecuencias. A 1 kHz, las flechas se suman en línea; a 2 kHz, el recorrido se cierra.**
+
+![Entrada de ocho muestras de 1 kHz, flechas después de probar 1 y 2 kHz y sus sumas punta con cola](figures/fft-pruebas-flechas.png)
+
+**Figura 15.** Las mismas ocho muestras producen una suma de longitud 8 al probar 1 kHz y una suma cero al probar 2 kHz.
+
+- **A — Entrada:** cada flecha azul representa una muestra. El eje horizontal muestra I; el vertical muestra Q.
+    - Los números indican el orden de las muestras. Cada flecha avanza 45° respecto a la anterior.
+- **B — Prueba de 1 kHz:** se resta $45^\circ n$ a la dirección de la muestra $n$. Las ocho flechas quedan superpuestas hacia la derecha.
+    - En la muestra 0 se resta 0°. En la muestra 1 se resta 45°; en la muestra 2, 90°.
+- **C — Suma de la prueba de 1 kHz:** cada flecha empieza donde termina la anterior. Ninguna cambia de longitud al trasladarla.
+    - La resultante roja une 0 con 8. Su longitud dividida entre ocho produce una barra de altura 1.
+- **D — Prueba de 2 kHz:** ahora se resta $90^\circ n$. Las flechas resultantes retroceden 45° entre muestras.
+    - Las flechas opuestas se cancelan al sumarlas.
+- **E — Suma de la prueba de 2 kHz:** el recorrido vuelve al inicio. La suma vale cero y la barra también.
+    - C y E usan la misma escala. Los ejes representan la parte real e imaginaria de la suma acumulada, no tiempo.
+
+**El espectro reúne todas las pruebas. Cada barra indica cuánto mide la suma correspondiente, dividida entre ocho.**
+
+![Espectro del tono de 1 kHz con ocho frecuencias de prueba y una sola barra de altura uno](figures/fft-pruebas-espectro.png)
+
+**Figura 16.** Las ocho pruebas del tono de 1 kHz dan una barra de altura 1 y siete resultados cero.
+
+- El eje horizontal muestra las frecuencias de prueba. El vertical muestra la longitud de cada suma dividida entre ocho.
+- La línea naranja marca el tono generado. La barra coincidente vale 1; las demás sumas se cancelan.
+- Las frecuencias negativas indican el sentido contrario de giro. El apartado 5.3 explica cómo se ordena este eje.
+
+**Ahora cambia solo la entrada, a 1.5 kHz. La prueba de 1 kHz deja flechas que todavía giran; su suma ya no mide ocho.**
+
+![Tono de 1.5 kHz antes y después del giro de prueba, suma abierta y espectro con varias barras](figures/fft-tono-intermedio-flechas.png)
+
+**Figura 17.** Un tono de 1.5 kHz produce una suma de longitud aproximada 5.126 al probar 1 kHz; su barra mide aproximadamente 0.641.
+
+- **A — Nueva entrada:** las ocho flechas azules avanzan 67.5° entre muestras. Los ejes siguen siendo I y Q.
+- **B — Prueba de 1 kHz:** se resta $45^\circ n$. Las flechas resultantes avanzan 22.5° entre muestras.
+- **C — Suma:** el recorrido no se cierra. La resultante roja mide aproximadamente 5.126; al dividir entre ocho, queda 0.641.
+    - Se mide la resultante, no el recorrido azul. El recorrido sigue formado por ocho flechas de longitud 1.
+- **D — Espectro:** las pruebas de 1 y 2 kHz dan barras de aproximadamente 0.641. Otras pruebas también producen sumas distintas de cero.
+    - La entrada sigue teniendo un solo tono. El apartado 5.4 explica por qué aparecen varias barras.
+
+??? note "Para profundizar"
+
+    - «Girar hacia atrás» significa girar en sentido contrario a la frecuencia de prueba. No significa invertir el tiempo ni reproducir muestras al revés.
+    - Para una frecuencia de prueba negativa, el giro aplicado es positivo.
+    - La cancelación exacta entre bins diferentes requiere el caso alineado y pesos iguales. No ocurre para cualquier frecuencia de entrada.
+    - Las sumas teóricas cero pueden dejar residuos pequeños por redondeo numérico.
+    - La suma es compleja: conserva longitud y dirección. Una gráfica de magnitud no muestra su dirección.
+    - Con amplitud $A\geq0$ y fase inicial $\phi$, una prueba coincidente produce $NAe^{j\phi}$. La magnitud dividida entre $N$ vale $A$.
+    - Por eso, una coincidencia no exige que la resultante apunte hacia la derecha. Esa dirección corresponde a la fase inicial elegida aquí.
+
+**La misma operación escrita con símbolos**
+
+- $n$ identifica la muestra y $k$ identifica el bin. Ambos recorren desde $0$ hasta $N-1$, sin zero padding.
+- La referencia del bin es $r_k[n]=e^{+j2\pi kn/N}$. Su conjugado, $r_k^*[n]=e^{-j2\pi kn/N}$, aplica el giro contrario.
+- El símbolo $^*$ cambia el signo de la parte imaginaria: $(a+jb)^*=a-jb$.
+- La [convención de NumPy](https://numpy.org/doc/stable/reference/routines.fft.html) escribe la suma así:
 
 $$
-r_k[n]=e^{+j2\pi kn/N}.
-$$
-
-- Su frecuencia es $f_k=kf_s/N$, interpretada módulo $f_s$. El apartado 5.3 explica cómo se presenta en un eje centrado.
-- **Conjugado de la referencia:** el símbolo $^{*}$ cambia el signo de la parte imaginaria: si $z=a+jb$, entonces $z^*=a-jb$.
-- En esta exponencial, la conjugación cambia el signo del exponente:
-
-$$
-r_k^*[n]=e^{-j2\pi kn/N}.
-$$
-
-- **Factor usado en la DFT:** la entrada se multiplica por $r_k^*[n]$, no por $r_k[n]$.
-- **Fórmula:** el coeficiente complejo $X[k]$ es la suma de esos productos, con la convención de [NumPy](https://numpy.org/doc/stable/reference/routines.fft.html):
-
-$$
-X[k]=\sum_{n=0}^{N-1}x[n]r_k^*[n]
+X[k]=\underbrace{\sum_{n=0}^{N-1}}_{\text{sumar punta con cola}}
+\underbrace{x[n]r_k^*[n]}_{\text{girar cada muestra}}
 =\sum_{n=0}^{N-1}x[n]e^{-j2\pi kn/N}.
 $$
 
-- **Por qué aparecen signos opuestos:** si la entrada coincide con la referencia, $x[n]=r_k[n]$, cada producto vale $r_k[n]r_k^*[n]=1$.
-- La suma vale entonces $X[k]=N$. La referencia y su conjugado son objetos distintos, no dos versiones contradictorias de la fórmula.
-- El cálculo sigue tres pasos:
+- La figura muestra $|X[k]|/N$. El código comprueba que sumar los productos y ejecutar la FFT da el mismo resultado.
 
-1. Elegir el bin $k$ y construir su tono de referencia $r_k[n]$.
-2. Multiplicar **todas** las muestras por el conjugado $r_k^*[n]$.
-3. Sumar los productos complejos para obtener $X[k]$.
-
-- **Coeficiente y magnitud no son lo mismo:** $X[k]$ conserva magnitud y fase. La figura muestra $|X[k]|/N$, no el coeficiente complejo completo.
-- **Ejemplo con otra fase:** si $x[n]=A e^{j\phi}r_k[n]$, entonces $X[k]=NAe^{j\phi}$. Su magnitud normalizada es $|X[k]|/N=A$ para $A\geq0$.
-
-- **Qué cambia en la figura:** arriba cambia la referencia del bin; abajo cambia la frecuencia del tono de entrada.
-- **Qué permanece fijo:** ocho muestras a 8 kS/s, amplitud 1, fase inicial 0 y ningún peso adicional.
-- **Qué se observa:** coincidencia, cancelación y contribución de un solo tono a varios bins.
-- **Lectura de los paneles superiores:** muestran los productos usados en la suma, no las muestras originales de entrada.
-
-![Productos complejos para dos referencias de la DFT y magnitudes de los bins de un tono alineado y otro intermedio](figures/fft-comparacion-bins.png)
-
-**Figura 15.** Cada bin suma productos de todas las muestras; un solo tono puede producir varios coeficientes distintos de cero.
-
-- **1. Una referencia coincidente produce una suma grande.**
-    - **Concepto:** para el tono $x[n]=e^{j2\pi n/8}$, el bin 1 multiplica por $e^{-j2\pi n/8}$. Cada producto vale $1+j0$.
-    - **Ejemplo:** $X[1]=1+1+\cdots+1=8$. Al dividir entre $N=8$, la magnitud mostrada es 1.
-    - **Panel A — qué mirar:** el eje horizontal es el índice $n$. La parte real azul vale 1 en las ocho muestras.
-    - **Panel A — qué concluir:** la parte imaginaria naranja vale 0. Se suman ocho productos iguales, no una sola muestra.
-    - **Panel C — resultado:** el eje horizontal ahora es el bin $k$. La barra en $k=1$ tiene magnitud $8/8=1$.
-
-- **2. Una referencia distinta puede producir cancelación.**
-    - **Concepto:** para el mismo tono de 1 kHz, el bin 2 usa la referencia de 2 kHz. Los productos ya no son constantes.
-    - **Ejemplo:** los productos en $n=0$ y $n=4$ son $+1$ y $-1$. Los productos en $n=2$ y $n=6$ son $-j$ y $+j$.
-    - **Panel B — qué mirar:** las partes reales e imaginarias toman valores positivos y negativos. Cada contribución tiene otra opuesta en este ejemplo.
-    - **Panel B — qué concluir:** la suma completa vale cero, salvo redondeo numérico. Por eso el panel C no presenta una barra apreciable en $k=2$.
-    - **Límite:** esta cancelación exacta corresponde a tonos de la rejilla y a bins diferentes. No se debe suponer para cualquier frecuencia.
-
-- **3. Un bin no es un canal de radio ni un transmisor.**
-    - **Concepto:** un coeficiente distinto de cero indica una contribución a esa evaluación. No demuestra que exista un transmisor en esa frecuencia.
-    - **Ejemplo:** un tono de 1500 Hz requeriría $k=1500/(8000/8)=1.5$. Ese índice no existe entre los bins enteros.
-    - **Panel D — qué mirar:** las barras mayores aparecen en $k=1$ y $k=2$, con magnitud aproximada de 0.641. También hay barras menores.
-    - **Panel D — qué concluir:** la entrada contiene **un solo tono**. El apartado 5.4 explica esta distribución mediante spectral leakage.
-
-- **Uso del código:** las ocho celdas de la sección se ejecutan en orden. Se puede comenzar en un notebook nuevo.
-- La función `espectro_bloque` prepara el eje y los coeficientes de los siguientes experimentos.
-- Sin ventana explícita, divide entre $N$. Los argumentos `ventana` y `nfft` se explican en 5.6 y 5.5.
-- La función `magnitud_db` permite mostrar valores pequeños en una escala logarítmica. Su escala se explica en 5.6.
-
-**Colab — Celda 1: comparar un tono con las referencias de dos bins.**
+**Colab — Celda 1: entrada, pruebas y sumas. Se puede ejecutar en un notebook nuevo.**
 
 ```python
 import numpy as np
@@ -1659,1367 +1662,1280 @@ fs = 8000
 n8 = np.arange(8)
 tono8 = np.exp(1j * 2 * np.pi * 1000 * n8 / fs)
 referencias = {k: np.exp(1j * 2 * np.pi * k * n8 / 8) for k in [1, 2]}
-for k in [1, 2]:
-    productos = tono8 * np.conj(referencias[k])
-    print(f"Bin k={k}; frecuencia={k * fs / 8:g} Hz; suma={np.sum(productos):.6f}")
-print("La FFT devuelve las mismas sumas:", np.round(np.fft.fft(tono8)[[1, 2]], 6))
+productos_bin1 = tono8 * np.conj(referencias[1])
+productos_bin2 = tono8 * np.conj(referencias[2])
+
+def flechas(ax, valores, titulo):
+    origen = np.zeros(len(valores))
+    ax.quiver(origen, origen, valores.real, valores.imag, angles="xy", scale_units="xy", scale=1, color="tab:blue", width=0.012)
+    for n, z in enumerate(valores):
+        if np.allclose(valores, valores[0]):
+            break
+        ax.text(1.18 * z.real, 1.18 * z.imag, str(n), ha="center", va="center", fontsize=9)
+    if np.allclose(valores, valores[0]):
+        ax.text(0, -0.6, f"{len(valores)} flechas superpuestas", ha="center", fontsize=9)
+    ax.set(title=titulo, xlabel="Parte real", ylabel="Parte imaginaria", xlim=(-1.45, 1.45), ylim=(-1.45, 1.45))
+    ax.set_aspect("equal")
+    ax.axhline(0, color="0.8", linewidth=0.7)
+    ax.axvline(0, color="0.8", linewidth=0.7)
+    ax.grid(alpha=0.2)
+
+def suma_flechas(ax, valores, titulo):
+    camino = np.r_[0j, np.cumsum(valores)]
+    ax.quiver(camino[:-1].real, camino[:-1].imag, valores.real, valores.imag, angles="xy", scale_units="xy", scale=1, color="tab:blue", width=0.008)
+    ax.plot(camino.real, camino.imag, ".", color="tab:blue")
+    ax.annotate("", xy=(camino[-1].real, camino[-1].imag), xytext=(0, 0), arrowprops={"arrowstyle": "->", "color": "tab:red", "lw": 2.5})
+    ax.plot(0, 0, "ko", markersize=4)
+    ax.set(title=f"{titulo}\nLongitud de la suma = {abs(camino[-1]):.3f}", xlabel="Suma acumulada: parte real", ylabel="Suma acumulada: parte imaginaria", xlim=(-1, 9), ylim=(-4, 6))
+    ax.set_aspect("equal")
+    ax.grid(alpha=0.2)
+    return camino
+
+fig = plt.figure(figsize=(13, 8), layout="constrained")
+gs = fig.add_gridspec(2, 3)
+ax_entrada = fig.add_subplot(gs[0, 0])
+flechas(ax_entrada, tono8, "A. Entrada: tono de 1 kHz")
+ax_entrada.set(xlabel="I", ylabel="Q")
+ax_instruccion = fig.add_subplot(gs[1, 0])
+ax_instruccion.axis("off")
+ax_instruccion.text(0.05, 0.85, "Misma entrada en ambas pruebas\n\n1. Girar cada muestra hacia atrás.\n2. Sumar punta con cola.\n3. Medir la resultante roja.\n4. Dividir esa longitud entre ocho.", va="top", fontsize=11, linespacing=1.8)
+flechas(fig.add_subplot(gs[0, 1]), productos_bin1, "B. Prueba de 1 kHz: restar 45° × n")
+camino_bin1 = suma_flechas(fig.add_subplot(gs[0, 2]), productos_bin1, "C. Punta con cola: prueba de 1 kHz")
+flechas(fig.add_subplot(gs[1, 1]), productos_bin2, "D. Prueba de 2 kHz: restar 90° × n")
+camino_bin2 = suma_flechas(fig.add_subplot(gs[1, 2]), productos_bin2, "E. Punta con cola: prueba de 2 kHz")
+plt.show()
+
+frecuencias8 = np.fft.fftshift(np.fft.fftfreq(8, d=1 / fs))
+C_bin_alineado = np.fft.fft(tono8) / 8
+sumas_directas = np.array([np.sum(tono8 * np.exp(-1j * 2 * np.pi * f * n8 / fs)) for f in frecuencias8])
+np.testing.assert_allclose(sumas_directas, np.fft.fftshift(np.fft.fft(tono8)), atol=1e-12)
+fig, ax = plt.subplots(figsize=(10, 4), layout="constrained")
+ax.stem(frecuencias8 / 1000, np.abs(sumas_directas) / 8, basefmt=" ")
+ax.axvline(1, color="tab:orange", linestyle="--", label="Frecuencia del tono generado: 1 kHz")
+ax.set(xlabel="Frecuencia de prueba (kHz)", ylabel="Longitud de la suma / 8", xticks=np.arange(-4, 4), ylim=(-0.03, 1.2))
+ax.legend()
+ax.grid(alpha=0.2)
+plt.show()
+
+tono_entre_bins = np.exp(1j * 2 * np.pi * 1500 * n8 / fs)
+productos_intermedio = tono_entre_bins * np.conj(referencias[1])
+C_bin_intermedio = np.fft.fft(tono_entre_bins) / 8
+fig, axes = plt.subplots(2, 2, figsize=(11, 9), layout="constrained")
+flechas(axes[0, 0], tono_entre_bins, "A. Entrada: tono de 1.5 kHz")
+axes[0, 0].set(xlabel="I", ylabel="Q")
+flechas(axes[0, 1], productos_intermedio, "B. Prueba de 1 kHz: restar 45° × n")
+camino_intermedio = suma_flechas(axes[1, 0], productos_intermedio, "C. Punta con cola")
+axes[1, 1].stem(frecuencias8 / 1000, np.abs(np.fft.fftshift(C_bin_intermedio)), basefmt=" ")
+axes[1, 1].axvline(1.5, color="tab:orange", linestyle="--", label="Frecuencia del tono generado")
+axes[1, 1].set(title="D. La misma entrada en todas las pruebas", xlabel="Frecuencia de prueba (kHz)", ylabel="Longitud de la suma / 8", xticks=np.arange(-4, 4), ylim=(-0.03, 1.2))
+axes[1, 1].legend(fontsize=8)
+axes[1, 1].grid(alpha=0.2)
+plt.show()
+
+for etiqueta, productos in [("1 kHz / prueba 1 kHz", productos_bin1), ("1 kHz / prueba 2 kHz", productos_bin2), ("1.5 kHz / prueba 1 kHz", productos_intermedio)]:
+    print(f"{etiqueta}: longitud={abs(np.sum(productos)):.6f}; barra={abs(np.sum(productos)) / 8:.6f}")
+```
+
+#### 5.3. Experimento A: poner la frecuencia correcta en cada barra
+
+- **Propósito:** relacionar cada bin con su frecuencia y ordenar las barras sin modificar las muestras.
+- Se llaman **vueltas sobrantes** a las vueltas del tono menos las vueltas de prueba durante la duración nominal del bloque:
+
+$$
+\text{vueltas sobrantes}=(f_{\mathrm{tono}}-f_{\mathrm{prueba}})T_{\mathrm{obs}}.
+$$
+
+- Las frecuencias se expresan en Hz y $T_{\mathrm{obs}}$ en segundos. El signo indica el sentido del giro que queda.
+- **Ejemplo:** tono de 1.5 kHz y prueba de 1 kHz durante 1 ms: $(1500-1000)(0.001)=0.5$ vueltas sobrantes.
+- **Datos de esta figura:** un tono de −2 kHz, ocho muestras a 8000 S/s, amplitud 1 y fase inicial 0.
+- Las pruebas están separadas por $\Delta f=f_s/N=1000$ Hz. Solo cambia el orden de presentación.
+
+**Avanzar 270° deja la flecha donde quedaría al retroceder 90°. Por eso el bin 6 aparece en −2 kHz.**
+
+![Giros equivalentes de 270 y menos 90 grados, bin 6 de la FFT y el mismo pico presentado en menos 2 kHz](figures/fft-orden-bins.png)
+
+**Figura 18.** El bin 6 representa −2 kHz en este ejemplo; ordenar las barras no cambia las muestras ni la altura del pico.
+
+- **A — Giros equivalentes:** los ejes son I y Q. Ambas rutas llevan la flecha desde la derecha hasta abajo.
+    - $6(1000)=6000$ Hz y $6000-8000=-2000$ Hz producen las mismas muestras, como en la sección 4.
+    - A 6000 Hz, cada muestra avanza $360^\circ(6000/8000)=270^\circ$. A −2000 Hz, retrocede 90°.
+- **B — Orden por índice:** la FFT coloca el pico en $k=6$. Las etiquetas indican la frecuencia de cada bin.
+    - La función [`fftfreq`](https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html) entrega esas frecuencias en el mismo orden que la FFT.
+- **C — Orden por frecuencia:** el mismo pico aparece en −2 kHz, con altura 1. El eje crece de izquierda a derecha.
+    - [`fftshift`](https://numpy.org/doc/stable/reference/generated/numpy.fft.fftshift.html) reordena las frecuencias y sus coeficientes. No desplaza la señal.
+
+??? note "Para profundizar"
+
+    - Sin padding, la referencia del bin $k$ tiene frecuencia $kf_s/N$, interpretada módulo $f_s$.
+    - Con $N=8$, el eje original es $[0,1,2,3,-4,-3,-2,-1]$ kHz.
+    - DC significa frecuencia cero. Al ordenar un eje de longitud par, DC queda en el centro.
+    - +4 kHz y −4 kHz representan el mismo tono discreto. No se añaden como dos puntos independientes.
+    - El mismo índice no siempre significa la misma frecuencia. Con $N=64$, el bin 8 representa +1 kHz a este sampling rate.
+    - Las ocho muestras facilitan leer cada bin. No son un tamaño recomendado para analizar cualquier captura.
+    - Una captura I/Q genérica necesita la FFT compleja de ambos lados. `rfft` corresponde a entradas reales.
+    - Las vueltas sobrantes utilizan $T_{\mathrm{obs}}=N/f_s$, no el intervalo entre la primera y la última muestra.
+    - Para ocho muestras, ese intervalo contiene siete pasos. En el ejemplo de 0.5 vueltas sobrantes, sus direcciones abarcan 157.5°, no 180°.
+
+**Colab — Celda 2: un tono, dos órdenes. Se puede ejecutar por separado.**
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+fs = 8000
+n8 = np.arange(8)
+z8 = np.exp(-1j * 2 * np.pi * 2000 * n8 / fs)
+f_sin_ordenar = np.fft.fftfreq(len(z8), d=1 / fs)
+C_sin_ordenar = np.fft.fft(z8) / len(z8)
+f_ordenado = np.fft.fftshift(f_sin_ordenar)
+C_ordenado = np.fft.fftshift(C_sin_ordenar)
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 4.4), layout="constrained")
+for grados, radio, color in [(270, 1.0, "tab:blue"), (-90, 1.0, "tab:orange")]:
+    angulos = np.linspace(0, np.deg2rad(grados), 200)
+    axes[0].plot(radio * np.cos(angulos), radio * np.sin(angulos), color=color, label=f"{grados:+d}° entre muestras")
+    axes[0].annotate("", xy=(radio * np.cos(angulos[-1]), radio * np.sin(angulos[-1])), xytext=(radio * np.cos(angulos[-8]), radio * np.sin(angulos[-8])), arrowprops={"arrowstyle": "->", "color": color, "lw": 2})
+axes[0].quiver([0, 0], [0, 0], [1, 0], [0, -1], angles="xy", scale_units="xy", scale=1, color=["0.5", "tab:green"], width=0.015)
+axes[0].set(title="A. Mismo destino para ambas rutas", xlabel="I", ylabel="Q", xlim=(-1.4, 1.4), ylim=(-1.4, 1.4))
+axes[0].set_aspect("equal")
+axes[0].legend(fontsize=8, loc="upper center")
+axes[1].stem(np.arange(8), np.abs(C_sin_ordenar), basefmt=" ")
+axes[1].set(title="B. Orden original de fft", xlabel="Índice k", ylabel="Longitud de la suma / 8", xticks=np.arange(8), ylim=(-0.03, 1.3))
+for k, frecuencia in enumerate(f_sin_ordenar):
+    axes[1].text(k, abs(C_sin_ordenar[k]) + 0.07, f"{frecuencia / 1000:g}", ha="center", fontsize=9)
+axes[1].text(0.02, 0.9, "Etiquetas en kHz", transform=axes[1].transAxes)
+axes[2].stem(f_ordenado / 1000, np.abs(C_ordenado), basefmt=" ")
+axes[2].set(title="C. Eje y coeficientes con fftshift", xlabel="Frecuencia (kHz)", ylabel="Longitud de la suma / 8", xticks=np.arange(-4, 4), ylim=(-0.03, 1.3))
+for ax in axes:
+    ax.grid(alpha=0.2)
+plt.show()
+print("Frecuencias originales (Hz):", f_sin_ordenar)
+print("Frecuencias ordenadas (Hz):", f_ordenado)
+np.testing.assert_allclose(z8, np.exp(1j * 2 * np.pi * 6000 * n8 / fs), atol=1e-12)
+```
+
+#### 5.4. Experimento B: un tono puede producir varias barras
+
+- **Propósito:** explicar las barras del tono intermedio mediante las vueltas sobrantes.
+- **Spectral leakage**, o dispersión espectral por observar un bloque finito, permite que un tono contribuya a varios bins.
+- **Datos fijos:** tono de 1062.5 Hz, $N=64$, $f_s=8000$ S/s, amplitud 1 y fase inicial 0.
+- La **ventana rectangular** asigna peso 1 a cada muestra. Se observan 8 ms y las pruebas están separadas por 125 Hz.
+
+**Regla de lectura: con ventana rectangular y $|\text{vueltas}|<N$.** La barra representa la longitud de la suma dividida entre $N$, para un tono de amplitud 1.
+
+| Vueltas sobrantes | Altura de la barra |
+|---|---|
+| 0 | 1 |
+| Enteras distintas de cero | 0 |
+| 0.5 | ≈0.64, con las cantidades de muestras usadas aquí |
+
+**La entrada no cambia. Cada prueba deja distintas vueltas sobrantes y produce otra suma; los colores relacionan esas sumas con sus barras.**
+
+![Cuatro sumas punta con cola del mismo tono de 1062.5 Hz y las cuatro barras correspondientes en el espectro](figures/fft-bloque-leakage.png)
+
+**Figura 19.** Cuatro pruebas del mismo tono producen cuatro sumas distintas de cero; varias barras no significan varios transmisores.
+
+- **A — Prueba de 875 Hz:** deja +1.5 vueltas sobrantes. La resultante roja mide 13.594; su barra mide aproximadamente 0.212.
+- **B — Prueba de 1000 Hz:** deja +0.5 vueltas sobrantes. La resultante mide 40.748; su barra mide aproximadamente 0.637.
+- **C — Prueba de 1125 Hz:** deja −0.5 vueltas sobrantes. Cambia el sentido del giro, pero la barra también mide aproximadamente 0.637.
+- **D — Prueba de 1250 Hz:** deja −1.5 vueltas sobrantes. La barra vuelve a medir aproximadamente 0.212.
+- **En A–D**, cada segmento representa una muestra después del giro de prueba. Los ejes muestran la suma acumulada y conservan la misma escala.
+    - El punto negro marca el inicio; el cuadrado rojo marca el final. Con 1.5 vueltas sobrantes, parte del recorrido se superpone.
+- **E — Espectro:** la línea gris indica 1062.5 Hz. Ninguna prueba coincide con esa frecuencia; las barras coloreadas corresponden a A–D.
+    - Las otras barras también provienen del mismo tono. No representan tonos adicionales generados en la entrada.
+- Con 64 flechas, media vuelta da 0.637. Con las ocho flechas de 5.2, da 0.641; ambos valores se redondean a 0.64.
+
+??? note "Para profundizar"
+
+    - La tabla requiere pesos iguales. Con Hann, una ventana de pesos diferentes, las mismas vueltas sobrantes pueden producir otras alturas.
+    - Con $N=64$, una vuelta sobrante da cero con rectangular. Con Hann periódica, da 0.5 después de normalizar por la suma de pesos.
+    - Más vueltas sobrantes no garantizan una barra menor. Una vuelta da cero, pero 1.5 vueltas dan aproximadamente 0.212 con rectangular.
+    - La condición $|\text{vueltas}|<N$ excluye diferencias equivalentes por aliasing.
+    - Por ejemplo, con $N=64$, 64 vueltas sobrantes producen magnitud normalizada 1, no cero.
+    - El valor para 0.5 vueltas depende de $N$. La aproximación 0.64 corresponde a los bloques usados aquí, no a cualquier bloque pequeño.
+    - Si $v$ representa las vueltas sobrantes, la magnitud rectangular normalizada es:
+
+    $$
+    B(v)=\frac{|\sin(\pi v)|}{N|\sin(\pi v/N)|}.
+    $$
+
+    - En $v=0$, se utiliza el límite $B(0)=1$. En los demás casos indicados, la fórmula permite comprobar la tabla.
+    - Aquí $f_0$ indica la frecuencia del tono. Sustituir ese tono de amplitud 1 en la DFT de 5.2 da:
+
+    $$
+    X[k]=\sum_{n=0}^{N-1}e^{j2\pi(f_0/f_s-k/N)n}.
+    $$
+
+    - Para 1000 Hz y $k=8$, el exponente es cero. La suma vale 64 y la barra vale 1.
+    - Para 1062.5 Hz, ninguna prueba de esta rejilla deja cero vueltas sobrantes. Sus sumas no se cancelan por completo.
+    - Un tono alineado también tiene una forma espectral entre bins. El apartado 5.5 muestra esos puntos intermedios.
+    - Con Hann, incluso un tono alineado puede ocupar varios bins. «Ninguna prueba coincide» no define todos los casos de leakage.
+    - La DFT completa conserva las 64 muestras. Mostrar solo magnitudes sí oculta la fase.
+    - Otra interpretación consiste en repetir el bloque. No significa que el receptor repita físicamente el archivo.
+    - El tono de 1000 Hz completa ocho ciclos en 8 ms. Repetir el bloque coincide con continuar ese tono.
+    - El tono de 1062.5 Hz completa 8.5 ciclos. Al repetir el bloque, I vuelve a +1; la continuación del tono llega a −1.
+    - Esa comparación utiliza la siguiente muestra, $n=64$, frente al reinicio, $n=0$. No compara directamente la primera muestra con la última.
+    - Las líneas entre muestras facilitan la lectura. No representan una reconstrucción continua.
+    - El [análisis espectral de SciPy](https://docs.scipy.org/doc/scipy/tutorial/signal.html#spectral-analysis) describe el efecto de observar un bloque finito.
+
+**Colab — Celda 3: cuatro pruebas del mismo tono. Se puede ejecutar por separado.**
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+fs = 8000
+N = 64
+n = np.arange(N)
+t = n / fs
+T_obs = N / fs
+f0 = 1062.5
+tono = np.exp(1j * 2 * np.pi * f0 * t)
+pruebas = np.array([875, 1000, 1125, 1250])
+vueltas_sobrantes = (f0 - pruebas) * T_obs
+productos_pruebas = tono[None, :] * np.exp(-1j * 2 * np.pi * pruebas[:, None] * t)
+sumas_pruebas = np.sum(productos_pruebas, axis=1)
+barras_pruebas = np.abs(sumas_pruebas) / N
+frecuencias = np.fft.fftshift(np.fft.fftfreq(N, d=1 / fs))
+C_leakage = np.fft.fftshift(np.fft.fft(tono)) / N
+colores = ["tab:purple", "tab:blue", "tab:orange", "tab:green"]
+
+fig = plt.figure(figsize=(13, 8), layout="constrained")
+gs = fig.add_gridspec(2, 4)
+for i, (prueba, productos, vueltas, color) in enumerate(zip(pruebas, productos_pruebas, vueltas_sobrantes, colores)):
+    ax = fig.add_subplot(gs[0, i])
+    camino = np.r_[0j, np.cumsum(productos)]
+    ax.quiver(camino[:-1].real, camino[:-1].imag, productos.real, productos.imag, angles="xy", scale_units="xy", scale=1, color=color, width=0.008)
+    ax.annotate("", xy=(camino[-1].real, camino[-1].imag), xytext=(0, 0), arrowprops={"arrowstyle": "->", "color": "tab:red", "lw": 2})
+    ax.plot(0, 0, "ko", markersize=4)
+    ax.plot(camino[-1].real, camino[-1].imag, "s", color="tab:red", markersize=4)
+    ax.annotate("Final", xy=(camino[-1].real, camino[-1].imag), xytext=(7, 0), textcoords="offset points", color="tab:red", fontsize=8)
+    ax.set(title=f"{'ABCD'[i]}. Prueba: {prueba:g} Hz\n{vueltas:+g} vueltas sobrantes\nBarra = {barras_pruebas[i]:.3f}", xlabel="Suma: parte real", ylabel="Suma: parte imaginaria", xlim=(-24, 24), ylim=(-44, 44))
+    ax.set_aspect("equal")
+    ax.grid(alpha=0.2)
+ax = fig.add_subplot(gs[1, :])
+ax.stem(frecuencias, np.abs(C_leakage), linefmt="0.6", markerfmt=".", basefmt=" ")
+for prueba, barra, color, letra in zip(pruebas, barras_pruebas, colores, "ABCD"):
+    ax.vlines(prueba, 0, barra, color=color, linewidth=3)
+    ax.plot(prueba, barra, "o", color=color)
+    ax.text(prueba, barra + 0.025, letra, ha="center", color=color, weight="bold")
+ax.axvline(f0, color="0.4", linestyle="--", label="Tono generado: 1062.5 Hz")
+ax.set(title="E. Las barras pertenecen al mismo tono", xlabel="Frecuencia de prueba (Hz)", ylabel="Longitud de la suma / 64", xlim=(650, 1475), ylim=(-0.02, 0.85))
+ax.legend(loc="upper right")
+ax.grid(alpha=0.2)
+plt.show()
+for prueba, vueltas, barra in zip(pruebas, vueltas_sobrantes, barras_pruebas):
+    print(f"Prueba {prueba:g} Hz: {vueltas:+g} vueltas sobrantes; barra={barra:.6f}")
+```
+
+#### 5.5. Zero padding: más pruebas, las mismas muestras
+
+- **Zero padding:** añadir ceros al bloque para calcular más puntos de FFT, sin adquirir muestras nuevas.
+- **Qué cambia:** la longitud de FFT, $M$, pasa de 64 a 512.
+- **Qué permanece fijo:** 64 muestras del tono de 1062.5 Hz, ventana rectangular y $f_s=8000$ S/s.
+
+El zero padding añade pruebas entre las anteriores. Con las mismas muestras, ahora se puede probar exactamente la frecuencia del tono.
+
+![Barra que distingue las 64 muestras adquiridas de los 448 ceros y comparación de puntos espectrales antes y después del padding](figures/fft-zero-padding.png)
+
+**Figura 20.** Los ceros completan el arreglo de cálculo; los puntos nuevos describen la misma forma espectral sin aumentar los 8 ms observados.
+
+**Panel A — entrada al cálculo:**
+
+- La barra azul representa 64 muestras adquiridas. La zona rayada representa 448 ceros añadidos, no mediciones posteriores.
+- El eje cuenta posiciones del arreglo. No representa 512 instantes observados de la señal física.
+
+**Panel B — resultado:**
+
+- Los cuadrados naranjas muestran las pruebas originales, separadas 125 Hz. Los puntos azules añaden pruebas cada 15.625 Hz.
+- Los cuadrados coinciden con puntos azules. Las muestras originales y su contribución no cambiaron.
+- La prueba de 1062.5 Hz deja cero vueltas sobrantes y alcanza magnitud 1. Leer mejor ese máximo no estrecha la curva.
+
+!!! info "Idea clave"
+
+    El padding ayuda a leer el máximo. No añade tiempo observado, no estrecha la forma espectral y no elimina el leakage.
+
+??? note "Para profundizar"
+
+    - $N$ cuenta muestras adquiridas; $M$ cuenta puntos de FFT. Aquí $T_{\mathrm{obs}}=N/f_s=8$ ms y $M-N=448$.
+    - La separación de pruebas es $f_s/M$: 125 Hz sin padding y 15.625 Hz con padding.
+    - Los ceros no contribuyen a la suma. Para $M\geq N$:
+
+    $$X_M[k]=\sum_{n=0}^{N-1}x[n]e^{-j2\pi kn/M},\qquad 0\leq k<M.$$
+
+    - La referencia es $r_{k,M}[n]=e^{+j2\pi kn/M}$. La suma multiplica por su conjugado, con exponente negativo.
+    - La normalización rectangular divide por $N$, no por $M$. La suma exacta del tono es 64; $64/64=1$.
+    - Dividir por 512 daría 0.125 e introduciría una reducción artificial de escala.
+    - Incluso un tono alineado tiene valores entre los bins originales. Un único bin no nulo no implica una forma infinitamente estrecha.
+    - [`np.fft.fft(x, n=M)`](https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html) añade ceros cuando $M>N$. El ejemplo rechaza $M<N$ para no recortar datos.
+
+**Colab — padding:** esta celda define su propio visor y sus datos.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
 
 def espectro_bloque(x, sample_rate, ventana=None, nfft=None):
     cantidad = len(x)
     w = np.ones(cantidad) if ventana is None else np.asarray(ventana)
     longitud_fft = cantidad if nfft is None else nfft
-    if len(w) != cantidad or longitud_fft < cantidad:
-        raise ValueError("La ventana debe tener N valores y la FFT no debe recortar las muestras")
+    if len(w) != cantidad or longitud_fft < cantidad or w.sum() == 0:
+        raise ValueError("La ventana debe tener N pesos de suma no nula; la FFT no debe recortar muestras")
     f = np.fft.fftshift(np.fft.fftfreq(longitud_fft, d=1 / sample_rate))
-    C = np.fft.fftshift(np.fft.fft(x * w, n=longitud_fft)) / np.sum(w)
+    C = np.fft.fftshift(np.fft.fft(x * w, n=longitud_fft)) / w.sum()
     return f, C
 
-def magnitud_db(C):
-    return 20 * np.log10(np.maximum(np.abs(C), 1e-6))
-
-productos_bin1 = tono8 * np.conj(referencias[1])
-productos_bin2 = tono8 * np.conj(referencias[2])
-tono_entre_bins = np.exp(1j * 2 * np.pi * 1500 * n8 / fs)
-C_bin_alineado = np.fft.fft(tono8) / 8
-C_bin_intermedio = np.fft.fft(tono_entre_bins) / 8
-fig, axes = plt.subplots(2, 2, figsize=(12, 8), layout="constrained")
-for ax, productos, titulo in zip(axes[0], [productos_bin1, productos_bin2], ["A. Referencia de 1 kHz: la suma es 8", "B. Referencia de 2 kHz: la suma es cero"]):
-    ax.plot(n8, productos.real, "o-", label="Parte real del producto")
-    ax.plot(n8, productos.imag, "s--", label="Parte imaginaria del producto")
-    ax.set(title=titulo, xlabel="Índice de muestra n", ylabel="Valor del producto", xticks=n8, ylim=(-1.25, 1.25))
-    ax.legend(fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.17), ncol=2)
-for ax, C, titulo in zip(axes[1], [C_bin_alineado, C_bin_intermedio], ["C. Un tono de 1 kHz: coincide con el bin 1", "D. Un tono de 1.5 kHz: queda entre bins 1 y 2"]):
-    ax.stem(n8, np.abs(C), basefmt=" ")
-    ax.set(title=titulo, xlabel="Índice de bin k (no es tiempo)", ylabel="Magnitud |X[k]| / 8", xticks=n8, ylim=(-0.03, 1.15))
-for ax in axes.flat:
-    ax.grid(alpha=0.2)
-plt.show()
-```
-
-#### 5.3. Experimento A: construir y ordenar el eje de frecuencias
-
-- **Propósito:** asignar una frecuencia a cada coeficiente y mostrar el espectro en un orden fácil de leer.
-- **Separación sin padding:** si la FFT tiene $N$ puntos, $\Delta f=f_s/N=1/T_{\mathrm{obs}}$.
-- **Qué cambia:** solo el orden de presentación.
-- **Qué permanece fijo:** ocho muestras a 8 kS/s. La entrada suma un tono de +1 kHz, magnitud 1, y otro de −2 kHz, magnitud 0.5.
-- **Qué se observa:** los mismos coeficientes antes y después de reordenarlos.
-
-![Mismos coeficientes de una FFT de ocho puntos en orden original por índice y reordenados por frecuencia](figures/fft-orden-bins.png)
-
-**Figura 16.** El índice de un coeficiente y su frecuencia son datos diferentes; el eje permite relacionarlos.
-
-- **1. Asignar una frecuencia a cada bin.**
-    - **Concepto:** la posición $k$ no indica por sí sola una frecuencia en Hz. Se necesitan $f_s$ y $N$.
-    - **Ejemplo:** $\Delta f=8000/8=1000$ Hz. El bin $k=1$ corresponde a +1000 Hz.
-    - **Panel izquierdo — qué mirar:** el eje horizontal muestra índices. La barra de $k=1$ lleva la etiqueta +1 kHz y tiene magnitud 1.
-    - **Qué concluir:** cambiar el tamaño del bloque cambia la correspondencia entre índice y frecuencia. Con 64 muestras, +1 kHz correspondería a $k=8$.
-
-- **2. Construir el eje con `fftfreq`.**
-    - **Concepto:** [`fftfreq`](https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html) asigna frecuencias a los coeficientes en el orden que entrega `fft`.
-    - **Ejemplo:** el eje de ocho puntos es $[0,1,2,3,-4,-3,-2,-1]$ kHz. DC significa frecuencia cero.
-    - **Panel izquierdo — qué mirar:** el segundo pico está en $k=6$, pero su etiqueta es −2 kHz.
-    - **Por qué:** $6(1000)=6000$ Hz y $6000-8000=-2000$ Hz representan el mismo tono discreto.
-    - **Qué concluir:** los últimos índices no implican frecuencias positivas cada vez mayores. La mitad final contiene representantes negativos.
-
-- **3. Reordenar con `fftshift` no desplaza la señal.**
-    - **Concepto:** [`fftshift`](https://numpy.org/doc/stable/reference/generated/numpy.fft.fftshift.html) reordena los elementos y sitúa DC en el centro. Se aplica al eje **y** a los coeficientes.
-    - **Ejemplo:** el pico de −2 kHz pasa a mostrarse a la izquierda de cero. Conserva su magnitud de 0.5.
-    - **Panel derecho — qué mirar:** el eje aumenta desde −4 hasta +3 kHz. Los picos siguen en −2 y +1 kHz.
-    - **Qué concluir:** no hubo mezcla ni modificación de las muestras. Solo cambió la presentación.
-    - **Extremo del eje:** +4 kHz no se añade como punto independiente porque es equivalente a −4 kHz.
-
-- **Alcance del ejemplo:** ocho muestras permiten leer cada bin. No se propone ese tamaño como regla para analizar una captura.
-- Se utiliza una FFT compleja de ambos lados. `rfft`, destinada a entradas reales, no corresponde a una captura I/Q genérica.
-
-**Colab — Celda 2: relacionar cada índice con su frecuencia.**
-
-```python
-z8 = np.exp(1j * 2 * np.pi * 1000 * n8 / fs) + 0.5 * np.exp(-1j * 2 * np.pi * 2000 * n8 / fs)
-f_sin_ordenar = np.fft.fftfreq(len(z8), d=1 / fs)
-C_sin_ordenar = np.fft.fft(z8) / len(z8)
-f_ordenado = np.fft.fftshift(f_sin_ordenar)
-C_ordenado = np.fft.fftshift(C_sin_ordenar)
-print("k | frecuencia (Hz) | magnitud")
-for k, (frecuencia, coeficiente) in enumerate(zip(f_sin_ordenar, C_sin_ordenar)):
-    print(f"{k} | {frecuencia:7.0f} | {abs(coeficiente):.3f}")
-
-fig, axes = plt.subplots(1, 2, figsize=(12, 4.5), layout="constrained")
-axes[0].stem(np.arange(8), np.abs(C_sin_ordenar), basefmt=" ")
-axes[0].set(title="Orden original de fft", xlabel="Índice k de la salida", ylabel="Magnitud", xticks=np.arange(8), ylim=(-0.03, 1.2))
-for k, frecuencia in enumerate(f_sin_ordenar):
-    axes[0].text(k, abs(C_sin_ordenar[k]) + 0.07, f"{frecuencia / 1000:g} kHz", ha="center", fontsize=8)
-axes[1].stem(f_ordenado / 1000, np.abs(C_ordenado), basefmt=" ")
-axes[1].set(title="Eje y coeficientes después de fftshift", xlabel="Frecuencia (kHz)", ylabel="Magnitud", xticks=np.arange(-4, 4), ylim=(-0.03, 1.2))
-for ax in axes:
-    ax.grid(alpha=0.2)
-plt.show()
-```
-
-#### 5.4. Experimento B: un tono alineado y otro entre bins
-
-- **Propósito:** reconocer por qué un solo tono puede contribuir a varios bins.
-- **Spectral leakage:** al analizar un bloque finito, la contribución de un tono se extiende alrededor de su frecuencia.
-- **Qué cambia:** la frecuencia del tono, de 1000 a 1062.5 Hz.
-- **Qué permanece fijo:** $N=64$, $f_s=8000$ S/s, magnitud 1, fase inicial 0 y FFT sin padding.
-- Se usa una **ventana rectangular**: todas las muestras del bloque tienen peso 1.
-- **Datos del análisis:** $T_{\mathrm{obs}}=64/8000=8$ ms y $\Delta f=8000/64=125$ Hz.
-
-![Tono de 1000 Hz con ocho ciclos por bloque y tono de 1062.5 Hz con ocho ciclos y medio, comparados en repetición temporal y FFT](figures/fft-bloque-leakage.png)
-
-**Figura 17.** Un tono alineado concentra su contribución en un bin de esta rejilla; un tono intermedio contribuye a varios bins.
-
-- **1. Reconocer un tono alineado con la rejilla.**
-    - **Concepto:** el tono coincide con un bin si $f_0/\Delta f$ es entero.
-    - **Ejemplo:** $1000/125=8$. El tono completa $1000(0.008)=8$ ciclos durante el bloque.
-    - **Panel superior izquierdo — qué mirar:** el eje horizontal es tiempo y el vertical es I. La línea azul marca el reinicio en 8 ms.
-    - La repetición naranja de las muestras coincide con la continuación gris del tono. En 8 ms, ambas vuelven a +1.
-    - **Panel superior derecho — qué mirar:** el eje horizontal es frecuencia y el vertical es magnitud normalizada. El bin de 1000 Hz tiene magnitud 1.
-    - **Qué concluir:** los demás bins de esta FFT tienen valores cero, salvo residuos numéricos.
-
-- **2. Reconocer un tono situado entre bins.**
-    - **Concepto:** si $f_0/\Delta f$ no es entero, ninguna referencia de esta rejilla coincide exactamente con el tono.
-    - **Ejemplo:** $1062.5/125=8.5$. La frecuencia queda entre los bins de 1000 y 1125 Hz.
-    - **Panel inferior izquierdo — qué mirar:** en 8 ms, la continuación gris llega a −1. La repetición naranja vuelve a +1.
-    - **Qué significa el reinicio:** repetir las 64 muestras ya no reproduce la continuación del tono original.
-    - **Panel inferior derecho — qué mirar:** la línea naranja indica 1062.5 Hz. No hay un bin sobre esa línea.
-    - Los bins de 1000 y 1125 Hz alcanzan aproximadamente 0.637. También aparecen contribuciones en los demás bins.
-
-- **3. Explicar la distribución sin inventar señales adicionales.**
-    - **Concepto:** todos los bins comparan el mismo bloque con referencias diferentes. Sus contribuciones pueden no cancelarse.
-    - **Ejemplo con la fórmula:** al sustituir el tono en la DFT de 5.2, se obtiene:
-
-$$
-X[k]=\sum_{n=0}^{N-1}e^{j2\pi(f_0/f_s-k/N)n}.
-$$
-
-- **Lectura de la fórmula y la figura:**
-    - Para $f_0=1000$ Hz y $k=8$, el exponente es cero. La suma vale 64 y la magnitud normalizada vale 1.
-    - Para $f_0=1062.5$ Hz, ningún $k$ entero anula el exponente. Las sumas de los bins cercanos son parciales.
-    - **Panel inferior derecho — qué concluir:** varias barras no significan varios transmisores. La señal generada sigue teniendo un solo tono.
-    - La DFT completa conserva la información de las 64 muestras. Leakage no significa que la DFT haya borrado muestras.
-
-- **Precisión sobre la columna izquierda:** se compara la continuación en $n=64$ con el reinicio en $n=0$, no la primera muestra con la última.
-- Las líneas entre puntos facilitan la lectura. No representan una reconstrucción continua.
-- La repetición es una propiedad de la representación mediante la DFT. No exige que el receptor repita físicamente el archivo.
-- El [análisis espectral de SciPy](https://docs.scipy.org/doc/scipy/tutorial/signal.html#spectral-analysis) desarrolla el efecto de observar un bloque finito.
-
-**Colab — Celda 3: comparar un tono alineado y otro entre bins.**
-
-```python
-N = 64
-n = np.arange(N)
-t = n / fs
-T_obs = N / fs
-tonos = {f0: np.exp(1j * 2 * np.pi * f0 * t) for f0 in [1000, 1062.5]}
-t_dos_bloques = np.arange(2 * N) / fs
-td = np.linspace(0, 2 * T_obs, 4001)
-fig, axes = plt.subplots(2, 2, figsize=(12, 8), layout="constrained")
-for fila, (f0, z) in enumerate(tonos.items()):
-    f, C = espectro_bloque(z, fs)
-    repeticion = np.tile(z, 2)
-    print(f"f0={f0:g} Hz; ciclos={f0 * T_obs:g}; máximo en bins={np.max(np.abs(C)):.4f}")
-    axes[fila, 0].plot(td * 1000, np.cos(2 * np.pi * f0 * td), color="tab:gray", label="Continuación original conocida")
-    axes[fila, 0].plot(t_dos_bloques * 1000, repeticion.real, ".--", color="tab:orange", label="Repetición de las 64 muestras I")
-    axes[fila, 0].axvline(T_obs * 1000, color="tab:blue", linestyle=":", label="Reinicio del bloque")
-    axes[fila, 0].set(title=f"{f0:g} Hz: reinicio tras {f0 * T_obs:g} ciclos", xlabel="Tiempo (ms)", ylabel="I", xlim=((T_obs - 0.001) * 1000, (T_obs + 0.001) * 1000), ylim=(-1.3, 1.3))
-    axes[fila, 0].legend(fontsize=8, loc="lower left")
-    axes[fila, 1].stem(f, np.abs(C), basefmt=" ")
-    axes[fila, 1].axvline(f0, color="tab:orange", linestyle="--", label="Frecuencia del tono original")
-    axes[fila, 1].set(title="FFT compleja del primer bloque, sin padding", xlabel="Frecuencia (Hz)", ylabel="Magnitud", xlim=(250, 1875), ylim=(-0.03, 1.15))
-    axes[fila, 1].legend(fontsize=8)
-for ax in axes.flat:
-    ax.grid(alpha=0.2)
-plt.show()
-```
-
-#### 5.5. Experimento C: más puntos en la FFT no significa más muestras adquiridas
-
-- **Propósito:** distinguir una rejilla más densa de una observación más larga.
-- **Zero padding:** consiste en añadir ceros al final del bloque antes de calcular la FFT.
-- $N$ es el número de muestras adquiridas. $M$ es la longitud de la FFT, incluidos los ceros añadidos.
-- **Qué cambia:** $M$ pasa de 64 a 512.
-- **Qué permanece fijo:** las mismas 64 muestras del tono de 1062.5 Hz, $f_s=8000$ S/s y ventana rectangular.
-- **Qué se observa:** la FFT evalúa más puntos, pero el bloque adquirido sigue representando 8 ms.
-
-![Bloque de 64 muestras y el mismo bloque completado con ceros hasta 512, junto con sus rejillas espectrales](figures/fft-zero-padding.png)
-
-**Figura 18.** Zero padding añade puntos de evaluación sin añadir muestras adquiridas ni aumentar el tiempo observado.
-
-- **1. Identificar qué recibe la FFT.**
-    - **Concepto:** el arreglo de entrada puede contener muestras adquiridas y ceros añadidos por software.
-    - **Ejemplo:** $M-N=512-64=448$ ceros. Las primeras 64 posiciones conservan sus valores.
-    - **Panel superior izquierdo — qué mirar:** el eje horizontal identifica las muestras originales. El eje vertical muestra I.
-    - **Panel superior derecho — qué mirar:** la zona naranja identifica las 448 posiciones añadidas. El eje horizontal ahora recorre todo el arreglo.
-    - **Qué concluir:** los ceros no prueban que la señal física desapareciera después de 8 ms. No corresponden a nuevas mediciones.
-
-- **2. Calcular la nueva separación entre puntos.**
-    - **Concepto:** con padding, la separación de los puntos de salida depende de $M$, no solo de $N$.
-    - **Ejemplo sin padding:** $\Delta f_{\mathrm{FFT}}=8000/64=125$ Hz.
-    - **Ejemplo con padding:** $\Delta f_{\mathrm{FFT}}=8000/512=15.625$ Hz.
-    - **Panel inferior izquierdo — qué mirar:** solo aparecen los puntos originales de la FFT de 64 posiciones.
-    - **Panel inferior derecho — qué mirar:** los puntos azules son más numerosos. Los cuadrados naranjas señalan los puntos originales y coinciden con la curva azul.
-    - **Qué concluir:** se evalúa con más detalle la misma forma espectral. Los resultados originales no se sustituyen por otra señal.
-
-- **3. Leer mejor el máximo no equivale a observar más tiempo.**
-    - **Concepto:** el tiempo observado se calcula con las muestras adquiridas: $T_{\mathrm{obs}}=N/f_s$.
-    - **Ejemplo:** ambas gráficas usan $64/8000=8$ ms. No se observaron $512/8000=64$ ms.
-    - **Panel inferior derecho — qué mirar:** ahora existe un punto en 1062.5 Hz, porque $1062.5/15.625=68$.
-    - El máximo alcanza 1. Antes, la rejilla no pasaba por esa frecuencia; eso no significaba que el tono tuviera menor amplitud.
-    - **Qué concluir:** el padding ayuda a leer el máximo. No estrecha la forma espectral ni elimina el leakage.
-
-- **4. Mantener la escala de magnitud.**
-    - **Concepto:** en este caso rectangular, la normalización usa las $N=64$ muestras originales.
-    - **Ejemplo:** en la frecuencia exacta del tono, la suma vale 64. La magnitud normalizada es $64/64=1$, no $64/512=0.125$.
-    - **Panel inferior derecho — qué mirar:** los cuadrados naranjas conservan su altura. El cambio de $M$ no reduce todas las magnitudes.
-    - **Qué concluir:** dividir entre $M$ sin corregir la escala introduciría una reducción artificial.
-
-- **Relación con la DFT:** para $M\geq N$, los ceros añadidos no contribuyen a la suma:
-
-$$
-X_M[k]=\sum_{n=0}^{N-1}x[n]e^{-j2\pi kn/M},\qquad
-k=0,1,\ldots,M-1.
-$$
-
-- **Qué cambia en la fórmula:** $n$ recorre las $N$ muestras adquiridas; $k$ recorre las $M$ evaluaciones de salida.
-- La referencia ahora es $r_{k,M}[n]=e^{+j2\pi kn/M}$. La DFT sigue multiplicando por su conjugado, $e^{-j2\pi kn/M}$.
-- Los términos añadidos desde $n=N$ hasta $M-1$ valen cero y no se incluyen en la suma escrita.
-- La separación de la nueva rejilla es $\Delta f_{\mathrm{FFT}}=f_s/M$.
-
-- **Tres cantidades diferentes:** $N/f_s$ es tiempo observado, $f_s/M$ es separación de puntos y $M-N$ cuenta los ceros.
-- [`np.fft.fft(x, n=M)`](https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html) añade los ceros cuando $M>N$. La función auxiliar rechaza $M<N$ para no recortar el bloque.
-- **Incluso para un tono alineado:** el padding muestra valores entre los bins originales. Un único bin no nulo no implica una línea infinitamente estrecha.
-
-**Colab — Celda 4: comparar las muestras adquiridas con los ceros añadidos.**
-
-```python
-z_off = tonos[1062.5]
-M = 512
-entrada_padded = np.pad(z_off, (0, M - len(z_off)))
+fs, N, M = 8000, 64, 512
+z_off = np.exp(1j * 2 * np.pi * 1062.5 * np.arange(N) / fs)
+entrada_padded = np.pad(z_off, (0, M - N))
 f64, C64 = espectro_bloque(z_off, fs)
 f512, C512 = espectro_bloque(z_off, fs, nfft=M)
-print("Muestras adquiridas:", len(z_off), "; longitud FFT:", M)
-print("Los bins originales están incluidos:", np.allclose(C512[::8], C64))
-print("Máximo con padding:", np.max(np.abs(C512)))
-
-fig, axes = plt.subplots(2, 2, figsize=(12, 8), layout="constrained")
-axes[0, 0].plot(np.arange(N), z_off.real, ".-", label="64 muestras I adquiridas")
-axes[0, 0].set(title="Entrada original", xlabel="Índice de muestra", ylabel="I", ylim=(-1.2, 1.2))
-axes[0, 1].plot(np.arange(M), entrada_padded.real, ".-", label="Entrada con padding")
-axes[0, 1].axvspan(N, M - 1, color="tab:orange", alpha=0.12, label="448 ceros, no nuevas observaciones")
-axes[0, 1].set(title="La entrada se completa con ceros", xlabel="Índice en el arreglo de entrada", ylabel="I", ylim=(-1.2, 1.2))
-axes[1, 0].stem(f64, np.abs(C64), basefmt=" ")
-axes[1, 0].set(title="M = 64: bins cada 125 Hz", xlabel="Frecuencia (Hz)", ylabel="Magnitud", xlim=(700, 1450), ylim=(-0.03, 1.15))
-axes[1, 1].plot(f512, np.abs(C512), ".-", label="M = 512: bins cada 15.625 Hz")
-axes[1, 1].plot(f64, np.abs(C64), "s", color="tab:orange", markerfacecolor="none", markersize=8, label="Los bins de M = 64")
-axes[1, 1].set(title="Más puntos sobre la misma forma espectral", xlabel="Frecuencia (Hz)", ylabel="Magnitud", xlim=(700, 1450), ylim=(-0.03, 1.15))
-for ax in axes[1]:
-    ax.axvline(1062.5, color="tab:gray", linestyle="--")
-for ax in axes.flat:
-    ax.grid(alpha=0.2)
-for ax in [axes[0, 0], axes[0, 1], axes[1, 1]]:
-    ax.legend(fontsize=8)
+fig, axes = plt.subplots(2, 1, figsize=(12, 7), layout="constrained", gridspec_kw={"height_ratios": [1, 3]})
+axes[0].barh(0, N, height=0.5, color="tab:blue", label="64 muestras adquiridas: 8 ms")
+axes[0].barh(0, M - N, left=N, height=0.5, color="white", edgecolor="tab:orange", hatch="///", label="448 ceros: no medidos")
+axes[0].set(title="A. Arreglo de entrada: datos y ceros", xlabel="Posición en el arreglo", xlim=(0, M), yticks=[], xticks=[0, 64, 256, 512])
+axes[0].legend(loc="upper center", ncol=2, fontsize=9)
+axes[1].plot(f512, np.abs(C512), ".-", label="M = 512: pruebas cada 15.625 Hz")
+axes[1].plot(f64, np.abs(C64), "s", color="tab:orange", markerfacecolor="none", markersize=9, label="M = 64: pruebas cada 125 Hz")
+axes[1].axvline(1062.5, color="gray", linestyle="--", label="Tono: 1062.5 Hz")
+axes[1].set(title="B. Más puntos, la misma forma espectral", xlabel="Frecuencia de prueba (Hz)", ylabel="Magnitud", xlim=(700, 1450), ylim=(-0.03, 1.15))
+axes[1].grid(alpha=0.2)
+axes[1].legend(fontsize=9)
+print("Muestras adquiridas:", N, "; ceros:", M - N, "; tiempo observado (ms):", N / fs * 1000)
+print("Los puntos originales coinciden:", np.allclose(C512[::8], C64))
 plt.show()
 ```
 
-#### 5.6. Experimento D: qué cambia al aplicar una ventana
+#### 5.6. El problema: un tono débil junto a uno fuerte
 
-- **Propósito:** entender cómo los pesos de las muestras cambian la forma del espectro.
-- **Ventana:** es una secuencia de pesos $w[n]$. La FFT recibe $x_w[n]=x[n]w[n]$.
-- **Main lobe:** lóbulo principal alrededor de la frecuencia del tono.
-- **Sidelobes:** lóbulos secundarios, más alejados de esa frecuencia.
-- **Coeficiente con ventana:** $X_w[k]$ es la DFT sin normalizar del bloque $x_w[n]$, con ceros añadidos si $M>N$.
-- Antes de reordenar el eje, el visor usa $C_w[k]=X_w[k]/\sum_{n=0}^{N-1}w[n]$. La variable `C` del código contiene estos coeficientes normalizados y reordenados.
-- **Qué cambia:** ventana rectangular frente a Hann.
-- **Qué permanece fijo:** las 64 muestras del tono de 1062.5 Hz, $f_s=8000$ S/s y $M=4096$.
-- **Qué se observa:** Hann reduce los sidelobes, pero ensancha el main lobe.
+- **Qué cambia:** se añade al tono fuerte otro tono con amplitud 100 veces menor.
+- **Qué permanece fijo:** ventana rectangular, 256 muestras, $f_s=8000$ S/s y FFT de 8192 puntos. No se añade ruido.
+- El fuerte está en 1007.8125 Hz y tiene amplitud 1. El débil está en 1203.125 Hz y tiene amplitud 0.01.
+- **dB:** escala logarítmica. Para una magnitud $a$ respecto a 1, se calcula $20\log_{10}(a)$.
 
-![Ventanas rectangular y Hann, efecto de los pesos sobre I y comparación de sus lóbulos espectrales](figures/fft-ventanas.png)
+| Magnitud respecto a 1 | Valor en dB |
+|---:|---:|
+| 1 | 0 |
+| 0.1 | −20 |
+| 0.01 | −40 |
+| 0.001 | −60 |
 
-**Figura 19.** La ventana cambia los pesos del bloque y modifica su espectro; reducir sidelobes tiene un costo en el ancho del main lobe.
+El tono fuerte aporta valores donde está el débil. Esa contribución puede impedir reconocer al débil en el espectro combinado.
 
-- **1. Aplicar pesos antes de calcular la FFT.**
-    - **Concepto:** la ventana rectangular conserva todas las muestras del bloque con peso 1. Hann reduce principalmente los pesos próximos a los bordes.
-    - **Ejemplo:** con $N=64$, Hann asigna $w[0]=0$, $w[16]=0.5$ y $w[32]=1$.
-    - **Panel superior izquierdo — qué mirar:** el eje horizontal es el índice $n$. La curva azul vale 1; la naranja muestra los pesos de Hann.
-    - **Panel superior derecho — qué mirar:** el eje horizontal ahora es tiempo. La curva naranja muestra I después de multiplicarla por Hann.
-    - **Qué concluir:** cambian los valores, no los instantes de muestreo. No se adquieren más muestras ni se cambia $f_s$.
-    - Se conservan las muestras originales por separado. La ventana prepara otra entrada para el análisis.
+![Espectro del tono fuerte solo y de ambos tonos con ventana rectangular; contribución del fuerte mayor que el nivel del débil](figures/fft-tono-debil-problema.png)
 
-- **2. Comparar el ancho del main lobe.**
-    - **Concepto:** una ventana puede reducir las contribuciones alejadas y, a la vez, ampliar la zona central.
-    - **Ejemplo rectangular:** los primeros ceros están en 937.5 y 1187.5 Hz. El ancho entre ellos es 250 Hz.
-    - **Ejemplo Hann:** los primeros ceros están en 812.5 y 1312.5 Hz. El ancho entre ellos es 500 Hz.
-    - **Panel inferior izquierdo — qué mirar:** el eje horizontal es frecuencia y el vertical es magnitud en dB respecto a 1.
-    - La curva naranja ocupa una zona central más ancha. La frecuencia del tono sigue en 1062.5 Hz, marcada por la línea gris.
-    - **Qué concluir:** Hann no traslada el tono ni lo convierte en un tono alineado. Cambia la forma de su contribución espectral.
+**Figura 21.** En la frecuencia del tono débil, la contribución del fuerte supera el nivel del débil aislado, aunque no se añadió ruido.
 
-- **3. Comparar los sidelobes con una escala adecuada.**
-    - **Concepto:** una escala en dB permite leer contribuciones pequeñas. Aquí se usa $L[k]=20\log_{10}(|C_w[k]|/1)$, con referencia de magnitud 1.
-    - **Ejemplo:** magnitud 0.1 equivale a −20 dB. Magnitud 0.01 equivale a −40 dB.
-    - **Panel inferior derecho — qué mirar:** lejos del máximo, los picos secundarios de Hann quedan por debajo de los de rectangular.
-    - **Qué concluir:** la contribución alejada de un tono fuerte puede disminuir. El apartado 5.8 muestra cómo eso ayuda a observar otro tono débil.
-    - Las caídas profundas corresponden a ceros de las formas espectrales. No prueban que existan canales físicos vacíos.
-    - El código limita las magnitudes a $10^{-6}$ antes del logaritmo. El piso de −120 dB evita $\log(0)$; no representa ruido medido.
+- **Ejes y curvas:** frecuencia en Hz y magnitud en dB respecto a 1. Azul: fuerte solo; naranja discontinua: ambos tonos.
+- **En la línea vertical:** el fuerte aporta unos −28.9 dB. El débil aislado tendría −40 dB, marcado por el punto negro.
+- **Lectura:** añadir el débil cambia la curva, pero no produce un pico aislado fácil de reconocer. Se necesita controlar la contribución del fuerte.
 
-- **4. Comparar alturas sin confundir ventana con amplitud.**
-    - **Concepto:** el visor divide la FFT entre la suma de los pesos. Esta normalización permite comparar magnitudes de tonos.
-    - **Ejemplo:** con 64 muestras, rectangular tiene $\sum w[n]=64$ y Hann tiene $\sum w[n]=32$.
-    - Para un tono de amplitud 1 evaluado en su frecuencia, las sumas son 64 y 32. Los cocientes $64/64$ y $32/32$ valen 1.
-    - **Paneles inferiores — qué mirar:** ambos máximos alcanzan 0 dB. La rejilla densa incluye la frecuencia del tono.
-    - **Qué concluir:** normalizar la altura no deshace los pesos aplicados a cada muestra.
-    - Esta escala no es power spectral density (PSD, densidad espectral de potencia). Tampoco es potencia calibrada en dBm.
-    - Si ningún punto coincide con la frecuencia del tono, esta normalización no garantiza un máximo de magnitud 1.
+??? note "Para profundizar"
 
-- **Fórmula de la ventana usada:** se elige Hann periódica, con denominador $N$, no $N-1$:
+    - Las frecuencias están separadas $1203.125-1007.8125=195.3125$ Hz. El bloque representa $256/8000=32$ ms.
+    - La contribución del fuerte aparece por el análisis de un bloque finito. No es ruido añadido ni otra señal transmitida.
+    - Se mantienen fases iniciales cero. La FFT suma contribuciones complejas, no magnitudes independientes.
+    - En la frecuencia marcada, ambos tonos juntos producen aproximadamente −27.1 dB, no la suma aritmética de sus valores en dB.
+    - El piso de −120 dB del código evita el logaritmo de cero. No representa un piso de ruido medido.
 
-$$
-w[n]=\frac{1}{2}-\frac{1}{2}\cos\left(\frac{2\pi n}{N}\right),\qquad 0\leq n<N.
-$$
-
-- La [documentación de SciPy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.hann.html) distingue Hann periódica y simétrica.
-- **Evaluación en una frecuencia elegida:** se llama $S_w(f)$ a la suma calculada a una frecuencia $f$ expresada en Hz:
-
-$$
-S_w(f)=\sum_{n=0}^{N-1}x[n]w[n]e^{-j2\pi f n/f_s}.
-$$
-
-- Aquí $f$ no es un índice. Puede tomar valores entre los bins.
-- La FFT evalúa esa suma en $f_k=kf_s/M$: $X_w[k]=S_w(f_k)$. El eje centrado usa frecuencias equivalentes módulo $f_s$.
-- **Por qué se divide entre la suma de pesos:** para $x[n]=Ae^{j(2\pi f_0n/f_s+\phi)}$, al evaluar exactamente en $f=f_0$:
-
-$$
-\begin{aligned}
-S_w(f_0)
-&=\sum_{n=0}^{N-1}Ae^{j(2\pi f_0n/f_s+\phi)}w[n]e^{-j2\pi f_0n/f_s}\\
-&=Ae^{j\phi}\sum_{n=0}^{N-1}w[n].
-\end{aligned}
-$$
-
-- Al dividir por la suma de los pesos rectangular o Hann, queda $Ae^{j\phi}$. La magnitud es $A$ para $A\geq0$.
-
-- **Límite de la elección:** menos sidelobes no garantiza separar tonos más próximos. El main lobe más ancho puede dificultar esa separación.
-- Una ventana de análisis no corrige aliasing previo ni selecciona por sí sola un canal RF.
-
-**Colab — Celda 5: observar los pesos, el bloque modificado y sus lóbulos.**
-
-```python
-def hann_periodica(cantidad):
-    return 0.5 - 0.5 * np.cos(2 * np.pi * np.arange(cantidad) / cantidad)
-
-w_rect = np.ones(N)
-w_hann = hann_periodica(N)
-f_win, C_rect = espectro_bloque(z_off, fs, ventana=w_rect, nfft=4096)
-_, C_hann = espectro_bloque(z_off, fs, ventana=w_hann, nfft=4096)
-print("Suma de pesos rectangular:", np.sum(w_rect))
-print("Suma de pesos Hann:", np.sum(w_hann))
-print("Máximos con escala corregida:", np.max(np.abs(C_rect)), np.max(np.abs(C_hann)))
-
-fig, axes = plt.subplots(2, 2, figsize=(12, 8), layout="constrained")
-axes[0, 0].plot(n, w_rect, label="Rectangular")
-axes[0, 0].plot(n, w_hann, label="Hann periódica")
-axes[0, 0].set(title="Pesos aplicados a cada muestra", xlabel="Índice n", ylabel="Peso w[n]", ylim=(-0.05, 1.15))
-axes[0, 1].plot(t * 1000, z_off.real, ".-", label="I original: rectangular")
-axes[0, 1].plot(t * 1000, (z_off * w_hann).real, ".-", label="I multiplicada por Hann")
-axes[0, 1].set(title="Cambian las amplitudes del bloque, no sus instantes", xlabel="Tiempo (ms)", ylabel="I", ylim=(-1.2, 1.2))
-for ax in axes[1]:
-    ax.plot(f_win, magnitud_db(C_rect), label="Rectangular")
-    ax.plot(f_win, magnitud_db(C_hann), label="Hann periódica")
-    ax.axvline(1062.5, color="tab:gray", linestyle="--")
-    ax.set(xlabel="Frecuencia (Hz)", ylabel="Magnitud (dB respecto a 1)", ylim=(-85, 5))
-axes[1, 0].set(title="Main lobe: Hann es más ancha", xlim=(650, 1475))
-axes[1, 1].set(title="Sidelobes: Hann reduce los valores alejados", xlim=(0, 2500))
-for ax in axes.flat:
-    ax.grid(alpha=0.2)
-    ax.legend(fontsize=8)
-plt.show()
-```
-
-#### 5.7. Experimento E: observar durante más tiempo sí cambia la separación de tonos
-
-- **Propósito:** distinguir el efecto de adquirir más muestras del efecto de añadir ceros.
-- **Qué cambia:** $N$ pasa de 64 a 512 muestras realmente adquiridas.
-- **Qué permanece fijo:** $f_s=8000$ S/s y dos tonos de 1000 y 1062.5 Hz, ambos de amplitud 1 y fase inicial 0.
-- Ambos análisis usan Hann y una FFT de $M=8192$ puntos.
-- **Qué se observa:** solo el bloque largo muestra dos máximos separados en este experimento.
-
-![Dos tonos separados 62.5 Hz observados durante 8 y 64 ms con la misma rejilla FFT, combinados en el bloque corto y separados en el largo](figures/fft-duracion-resolucion.png)
-
-**Figura 20.** Más muestras adquiridas permiten observar los tonos estables durante más tiempo y estrechar sus contribuciones espectrales.
-
-- **1. Reconocer una adquisición más larga.**
-    - **Concepto:** aumentar $N$ manteniendo $f_s$ aumenta $T_{\mathrm{obs}}=N/f_s$.
-    - **Ejemplo corto:** $64/8000=8$ ms. **Ejemplo largo:** $512/8000=64$ ms.
-    - **Panel superior izquierdo — qué mirar:** el eje horizontal es tiempo y el vertical es $|z[n]|$, antes de aplicar Hann.
-    - Los puntos terminan antes de la línea de 8 ms. El espacio vacío no significa que la señal desapareció.
-    - **Panel inferior izquierdo — qué mirar:** ahora hay muestras hasta el final del bloque de 64 ms. Las nuevas posiciones contienen datos, no ceros.
-    - **Qué concluir:** a diferencia de 5.5, aquí aumentó el tiempo observado.
-
-- **2. Relacionar duración con separación visible.**
-    - **Concepto:** para estos tonos estables y la misma familia de ventana, una observación más larga estrecha sus lóbulos.
-    - **Ejemplo:** la separación física permanece en $1062.5-1000=62.5$ Hz.
-    - **Panel superior derecho — qué mirar:** aparece un máximo combinado cerca de 1031.25 Hz. Las líneas naranjas indican los dos tonos conocidos.
-    - Ese máximo no prueba que exista un tono original en 1031.25 Hz. Es el resultado de combinar contribuciones complejas.
-    - **Panel inferior derecho — qué mirar:** se distinguen máximos en 1000 y 1062.5 Hz.
-    - **Qué concluir:** el bloque largo permite distinguir ambos tonos en este ejemplo.
-
-- **3. Evitar atribuir el cambio a una rejilla más densa.**
-    - **Concepto:** más puntos de FFT y mayor capacidad de separación no son lo mismo.
-    - **Ejemplo:** ambos espectros tienen $\Delta f_{\mathrm{FFT}}=8000/8192=0.9765625$ Hz.
-    - **Paneles derechos — qué mirar:** los puntos de ambas curvas usan la misma rejilla. Sin embargo, una curva muestra un máximo combinado y la otra muestra dos.
-    - **Comprobación adicional:** para un tono aislado, Hann periódica tiene ancho $4f_s/N$ entre los primeros ceros del main lobe.
-    - Ese ancho pasa de $4(8000)/64=500$ Hz a $4(8000)/512=62.5$ Hz.
-    - **Qué concluir:** el cambio proviene del tiempo observado. El padding común permite dibujar las dos formas con detalle.
-
-- **4. Elegir la duración según la señal.**
-    - **Concepto:** aquí, resolución significa capacidad de distinguir componentes próximas. También depende de ventana, amplitudes, fases, ruido y criterio de separación.
-    - **Ejemplo visual:** la figura mantiene dos tonos estables durante 64 ms. Esa condición permite comparar los bloques corto y largo.
-    - **Panel inferior izquierdo — qué recordar:** la observación larga incluye más instantes. Si la señal cambiara durante ese intervalo, el espectro combinaría esos estados.
-    - **Qué concluir:** $1/T_{\mathrm{obs}}$ orienta la escala de frecuencia, pero no garantiza que cualquier par de tonos resulte distinguible.
-
-**Colab — Celda 6: comparar dos duraciones con la misma rejilla de salida.**
-
-```python
-frecuencias_par = [1000, 1062.5]
-resultados_duracion = {}
-fig, axes = plt.subplots(2, 2, figsize=(12, 8), layout="constrained")
-for fila, cantidad in enumerate([64, 512]):
-    tk = np.arange(cantidad) / fs
-    zk = np.exp(1j * 2 * np.pi * frecuencias_par[0] * tk) + np.exp(1j * 2 * np.pi * frecuencias_par[1] * tk)
-    wk = hann_periodica(cantidad)
-    fk, Ck = espectro_bloque(zk, fs, ventana=wk, nfft=8192)
-    resultados_duracion[cantidad] = (fk, Ck)
-    print(f"N={cantidad}; tiempo={1000 * cantidad / fs:g} ms; fs/N={fs / cantidad:g} Hz; fs/M={fs / 8192:g} Hz")
-    axes[fila, 0].plot(tk * 1000, np.abs(zk), ".-", label="Magnitud de las muestras originales")
-    axes[fila, 0].axvline(1000 * cantidad / fs, color="tab:orange", linestyle="--", label="Fin del tiempo observado")
-    axes[fila, 0].set(title=f"N = {cantidad}: se observan {1000 * cantidad / fs:g} ms", xlabel="Tiempo (ms)", ylabel="Magnitud de z[n]", xlim=(0, 65), ylim=(-0.05, 2.2))
-    axes[fila, 0].legend(fontsize=8)
-    axes[fila, 1].plot(fk, np.abs(Ck), label="Hann; misma FFT de 8192 puntos")
-    for frecuencia in frecuencias_par:
-        axes[fila, 1].axvline(frecuencia, color="tab:orange", linestyle="--")
-    axes[fila, 1].set(title="¿Se distinguen los dos tonos?", xlabel="Frecuencia (Hz)", ylabel="Magnitud", xlim=(700, 1350), ylim=(-0.03, 1.5))
-    axes[fila, 1].legend(fontsize=8)
-for ax in axes.flat:
-    ax.grid(alpha=0.2)
-plt.show()
-```
-
-#### 5.8. Experimento F: un tono débil junto a uno fuerte
-
-- **Propósito:** observar un caso práctico donde reducir sidelobes permite reconocer una componente débil.
-- **Señal conocida:** un tono de 1007.8125 Hz tiene magnitud 1. Otro de 1203.125 Hz tiene magnitud 0.01.
-- **Diferencia:** $20\log_{10}(0.01/1)=-40$ dB. No se añade ruido.
-- **Qué cambia:** rectangular frente a Hann; dentro de cada panel, tono fuerte solo frente a fuerte más débil.
-- **Qué permanece fijo:** frecuencias, amplitudes, fases iniciales 0, $f_s=8000$ S/s, $N=256$ y $M=8192$.
-- **Tiempo observado:** $256/8000=32$ ms.
-
-![Comparación de un tono fuerte aislado y acompañado de otro 40 dB más débil con ventanas rectangular y Hann](figures/fft-tono-debil.png)
-
-**Figura 21.** Los sidelobes de un tono fuerte pueden ocultar la contribución de otro débil; Hann facilita su lectura en este ejemplo.
-
-- **1. Identificar lo que ya aporta el tono fuerte.**
-    - **Concepto:** una contribución cerca del tono débil puede proceder del leakage del tono fuerte.
-    - **Ejemplo:** con rectangular, el tono fuerte solo aporta aproximadamente −28.9 dB en 1203.125 Hz.
-    - **Panel superior — qué mirar:** el eje horizontal es frecuencia. El eje vertical es magnitud en dB respecto a 1.
-    - La curva azul corresponde al fuerte solo. La naranja discontinua corresponde a la suma de ambos tonos.
-    - **En la línea vertical:** la contribución azul de −28.9 dB supera la magnitud de −40 dB del tono débil aislado.
-    - **Qué concluir:** la gráfica combinada no presenta allí un pico aislado fácil de atribuir al tono débil.
-
-- **2. Ver el efecto de reducir sidelobes.**
-    - **Concepto:** una ventana puede reducir la contribución del fuerte en la frecuencia del débil.
-    - **Ejemplo:** con Hann, el fuerte solo aporta aproximadamente −60.5 dB en 1203.125 Hz.
-    - **Panel inferior — qué mirar:** la curva azul queda por debajo de la naranja cerca de la línea vertical.
-    - La curva combinada presenta un máximo próximo al tono débil. En la frecuencia marcada, su valor es aproximadamente −40.6 dB.
-    - **Por qué no vale exactamente −40 dB:** la FFT suma contribuciones complejas. Todavía interviene una contribución del tono fuerte.
-    - **Qué concluir:** Hann facilita reconocer el tono débil de esta señal conocida.
-
-- **3. Mantener los límites de la conclusión.**
-    - **Concepto:** esta mejora no convierte a Hann en una solución universal para detectar señales.
-    - **Ejemplo visual:** los dos tonos están separados $1203.125-1007.8125=195.3125$ Hz. No se añade ruido y ambos permanecen estables.
-    - **Panel inferior — qué mirar:** la componente débil está fuera del main lobe del tono fuerte en esta configuración.
-    - **Contraste con la Figura 19:** Hann tiene un main lobe más ancho. Si los tonos estuvieran mucho más próximos, ese ancho podría dificultar separarlos.
-    - **Qué concluir:** se elige la ventana según la separación, las amplitudes y el ruido. El resultado de esta figura tiene condiciones concretas.
-
-- **Señal usada en el código:**
-
-$$
-z[n]=e^{j2\pi\,1007.8125\,n/f_s}+0.01e^{j2\pi\,1203.125\,n/f_s}.
-$$
-
-**Colab — Celda 7: comparar el tono fuerte solo con la suma de ambos.**
-
-```python
-N_debil = 256
-t_debil = np.arange(N_debil) / fs
-f_fuerte = 1007.8125
-f_debil = 1203.125
-fuerte = np.exp(1j * 2 * np.pi * f_fuerte * t_debil)
-debil = 0.01 * np.exp(1j * 2 * np.pi * f_debil * t_debil)
-resultados_debil = {}
-fig, axes = plt.subplots(2, 1, figsize=(11, 8), layout="constrained")
-for ax, nombre, w in zip(axes, ["Rectangular", "Hann"], [np.ones(N_debil), hann_periodica(N_debil)]):
-    f, C_fuerte = espectro_bloque(fuerte, fs, ventana=w, nfft=8192)
-    _, C_ambos = espectro_bloque(fuerte + debil, fs, ventana=w, nfft=8192)
-    resultados_debil[nombre] = (f, C_fuerte, C_ambos)
-    indice_debil = np.argmin(np.abs(f - f_debil))
-    print(f"{nombre}: solo fuerte en f_debil={magnitud_db(C_fuerte)[indice_debil]:.1f} dB; ambos={magnitud_db(C_ambos)[indice_debil]:.1f} dB")
-    ax.plot(f, magnitud_db(C_fuerte), label="Solo el tono fuerte")
-    ax.plot(f, magnitud_db(C_ambos), "--", label="Tono fuerte + tono débil")
-    ax.axvline(f_debil, color="tab:gray", linestyle=":", label="Frecuencia conocida del tono débil")
-    ax.set(title=f"Ventana {nombre}: mismos datos y misma escala", xlabel="Frecuencia (Hz)", ylabel="Magnitud (dB respecto a 1)", xlim=(900, 1350), ylim=(-85, 5))
-    ax.grid(alpha=0.2)
-    ax.legend(fontsize=8, loc="lower left")
-plt.show()
-```
-
-#### 5.9. Experimento G: separar aliasing de spectral leakage
-
-- **Propósito:** distinguir una ambigüedad del muestreo de un efecto del análisis de un bloque.
-- **Qué cambia:** la frecuencia del tono original, de +5 kHz a 1062.5 Hz.
-- **Qué permanece fijo:** $N=64$, $f_s=8000$ S/s, amplitud 1, fase inicial 0, ventana rectangular y FFT sin padding.
-- **Qué se observa:** un alias puede producir un pico limpio. Un tono dentro de la banda centrada puede contribuir a varios bins.
-
-![Pico limpio en menos 3 kHz producido por un tono original de más 5 kHz y varios bins de un tono de 1062.5 Hz sin aliasing](figures/fft-aliasing-vs-leakage.png)
-
-**Figura 22.** Un pico limpio no descarta aliasing; varias barras no demuestran que existan varios tonos originales.
-
-- **1. Identificar aliasing.**
-    - **Concepto:** frecuencias originales distintas pueden producir las mismas muestras a un sampling rate dado.
-    - **Ejemplo:** con $f_s=8000$ S/s, $5000-8000=-3000$ Hz. Los tonos de +5 y −3 kHz producen las mismas muestras.
-    - **Panel superior — qué mirar:** el eje horizontal muestra frecuencia representativa. Hay un pico de magnitud 1 en −3 kHz.
-    - **Qué concluir:** el pico es limpio porque −3 kHz coincide con un bin. La FFT no permite determinar si el tono original era +5 o −3 kHz.
-
-- **2. Identificar spectral leakage.**
-    - **Concepto:** al analizar un bloque finito, un solo tono puede contribuir a varios bins.
-    - **Ejemplo:** 1062.5 Hz está dentro de $[-4000,4000)$ Hz, pero no coincide con la rejilla de 125 Hz.
-    - **Panel inferior — qué mirar:** aparecen varias barras, aunque se generó un único tono.
-    - **Qué concluir:** este ejemplo muestra leakage sin trasladar el tono por aliasing hacia otra frecuencia representativa.
-    - En una señal desconocida pueden coexistir ambos efectos. La forma de una gráfica no basta para separarlos.
-
-- **3. Elegir una acción según el origen del problema.**
-    - **Concepto:** el padding, la ventana y el filtrado previo actúan en etapas diferentes.
-    - **Ejemplo superior:** añadir ceros no permite decidir entre +5 y −3 kHz. Se necesitan datos sobre la banda de entrada y la adquisición.
-    - **Ejemplo inferior:** el padding muestra más puntos del leakage. Cambiar ventana o tiempo observado modifica su forma, con los compromisos anteriores.
-    - **Qué mirar al comparar paneles:** un máximo único no certifica una adquisición sin aliasing. Varios valores no cuentan transmisores.
-    - **Qué concluir:** el aliasing se previene con banda, filtrado previo y sampling rate apropiados. Una ventana posterior no elimina una ambigüedad ya presente.
-
-**Colab — Celda 8: contrastar un alias limpio con un tono entre bins.**
-
-```python
-fig, axes = plt.subplots(2, 1, figsize=(11, 7), layout="constrained")
-for ax, f0, titulo in zip(axes, [5000, 1062.5], ["Original: +5 kHz; representante: -3 kHz, alineado con un bin", "Original: 1062.5 Hz; entre bins, dentro de la banda centrada"]):
-    z = np.exp(1j * 2 * np.pi * f0 * np.arange(64) / fs)
-    f, C = espectro_bloque(z, fs)
-    ax.stem(f, np.abs(C), basefmt=" ")
-    ax.set(title=titulo, xlabel="Frecuencia representativa (Hz)", ylabel="Magnitud", xlim=(-4100, 4100), ylim=(-0.03, 1.15))
-    ax.grid(alpha=0.2)
-plt.show()
-```
-
-#### 5.10. Comprobaciones y guía para interpretar un espectro
-
-- **Propósito:** reunir las decisiones anteriores en un orden de lectura.
-- **Datos necesarios:** sampling rate $f_s$, muestras adquiridas $N$, longitud de FFT $M$, ventana y escala.
-- Los siguientes pasos utilizan figuras ya estudiadas. Cada enlace permite abrir la imagen para compararla con la explicación.
-
-1. **Comprobar el sampling rate y el eje.**
-    - **Concepto:** el eje corresponde a la tasa de las muestras analizadas, no necesariamente a la tasa inicial del receptor.
-    - **Ejemplo:** en la [Figura 16](figures/fft-orden-bins.png), $f_s=8000$ S/s y $N=M=8$.
-    - **Qué mirar:** el panel izquierdo coloca −2 kHz en el índice 6. El derecho conserva esa frecuencia después de reordenar.
-    - **Comprobación:** si el índice se leyera como Hz, la interpretación sería incorrecta.
-
-2. **Calcular el tiempo realmente observado.**
-    - **Concepto:** se usa $T_{\mathrm{obs}}=N/f_s$, sin contar los ceros añadidos.
-    - **Ejemplo:** en la [Figura 18](figures/fft-zero-padding.png), ambas entradas contienen 64 muestras adquiridas a 8 kS/s: 8 ms.
-    - **Qué mirar:** los 448 ceros del panel superior derecho son posiciones de cálculo, no observaciones adicionales.
-    - **Aplicación SDR:** 4096 muestras a 2.4 MS/s representan $4096/2400000\approx1.707$ ms.
-
-3. **Comprobar la separación de los puntos de FFT.**
-    - **Concepto:** la separación es $\Delta f_{\mathrm{FFT}}=f_s/M$. No es la Nyquist frequency ni una garantía de resolución.
-    - **Ejemplo:** en la [Figura 18](figures/fft-zero-padding.png), los puntos pasan de 125 a 15.625 Hz de separación.
-    - **Qué mirar:** la curva inferior derecha tiene más puntos, pero conserva los valores originales marcados en naranja.
-    - **Aplicación SDR:** con $f_s=2.4$ MS/s y $M=4096$, la separación es 585.9375 Hz. La Nyquist frequency es 1.2 MHz.
-
-4. **Identificar la ventana y la escala vertical.**
-    - **Concepto:** la ventana cambia los pesos del bloque. La normalización determina cómo se interpretan las alturas.
-    - **Ejemplo:** en la [Figura 19](figures/fft-ventanas.png), ambas curvas alcanzan 0 dB tras dividir por sus respectivas sumas de pesos.
-    - **Qué mirar:** los paneles superiores muestran pesos diferentes. Los inferiores no representan potencia calibrada, aunque usan dB.
-    - **Comprobación:** un máximo de 0 dB respecto a 1 no significa 0 dBm.
-
-5. **Interpretar lóbulos antes de contar señales.**
-    - **Concepto:** ni el número de bins distintos de cero ni el número de máximos determina siempre cuántos tonos hay.
-    - **Ejemplo de un tono:** la [Figura 17](figures/fft-bloque-leakage.png), panel inferior derecho, presenta varias barras para 1062.5 Hz.
-    - **Ejemplo de dos tonos:** la [Figura 20](figures/fft-duracion-resolucion.png), panel superior derecho, presenta un máximo combinado.
-    - **Comprobación:** se compara la forma con la ventana, el tiempo observado y la señal que se conoce o se pretende analizar.
-
-6. **Revisar la adquisición antes de descartar aliasing.**
-    - **Concepto:** la FFT solo dispone de las muestras que recibió.
-    - **Ejemplo:** en la [Figura 22](figures/fft-aliasing-vs-leakage.png), el pico limpio de −3 kHz procede de un tono generado en +5 kHz.
-    - **Qué mirar:** nada en la limpieza de ese pico permite recuperar por sí solo la frecuencia original.
-    - **Comprobación:** se consultan la banda seleccionada, el filtrado y los cambios previos de sampling rate.
-
-- **Alcance:** estos experimentos usan tonos sintéticos sin ruido añadido. No implementan PSD, promediado de espectros ni calibración de potencia.
-- **Idea final:** la FFT describe su bloque de entrada. El eje, los lóbulos y las alturas se interpretan con los parámetros del análisis.
-- La sección 6 añadirá la referencia RF para interpretar las frecuencias de una captura SDR.
-
-#### 5.11. Ejercicios de refuerzo
-
-- **Propósito:** practicar las distinciones anteriores mediante cálculos y lectura de figuras.
-- Cada ejercicio indica una figura de apoyo. Primero se identifica el cambio visual; después se calcula su efecto.
-
-##### Ejercicio 5A — separar datos adquiridos y puntos de FFT
-
-- **Concepto que se practica:** más puntos de FFT no significan más tiempo observado.
-- **Ejemplo visual:** en la [Figura 18](figures/fft-zero-padding.png), el panel superior derecho conserva las muestras y añade ceros.
-- **Datos nuevos:** un bloque contiene $N=960$ muestras a $f_s=48000$ S/s. Se comparan $M=960$ y $M=3840$ puntos.
-- Calcular la duración observada, los ceros añadidos y la separación entre bins en ambos casos.
-- Indicar si la segunda FFT representa una observación de 80 ms. Calcular también la Nyquist frequency.
-- Explicar qué cambiaría en los paneles de la figura si se usaran estos datos.
-
-??? example "Solución del ejercicio 5A"
-
-    - **Punto de partida:** el apartado 5.5 distingue $N$, muestras adquiridas, de $M$, puntos de FFT. Se usan $T_{\mathrm{obs}}=N/f_s$, $M-N$ y $\Delta f_{\mathrm{FFT}}=f_s/M$. El apartado 5.1 define la Nyquist frequency como $f_s/2$.
-    - **Datos:** $N=960$, $f_s=48000$ S/s y dos longitudes de FFT: 960 y 3840. Las muestras adquiridas son las mismas.
-    - **Paso 1 — duración:** $T_{\mathrm{obs}}=960/48000=0.020$ s, es decir, 20 ms. El tiempo observado no cambia porque $N$ y $f_s$ permanecen fijos.
-    - **Paso 2 — ceros:** la primera FFT no necesita ceros. La segunda añade $3840-960=2880$ ceros.
-    - **Interpretación de los ceros:** completan el arreglo de cálculo. No son mediciones posteriores ni prueban que la señal desapareciera después de 20 ms.
-    - **Paso 3 — bins:** sin padding, $\Delta f_{\mathrm{FFT}}=48000/960=50$ Hz. Con padding, $\Delta f_{\mathrm{FFT}}=48000/3840=12.5$ Hz.
-    - **Paso 4 — descartar 80 ms:** $3840/48000=0.080$ s correspondería a 3840 muestras adquiridas. Aquí solo se adquirieron 960; las otras posiciones contienen ceros.
-    - **Paso 5 — Nyquist:** $f_s/2=48000/2=24000$ Hz, es decir, 24 kHz. El intervalo nominal centrado permanece en $[-24,+24)$ kHz.
-    - **Lectura de la figura:** los paneles superiores mostrarían 960 datos y 2880 ceros añadidos. Los inferiores usarían rejillas de 50 y 12.5 Hz.
-    - **Conclusión:** los puntos quedarían cuatro veces más juntos. El padding no aumentaría los 20 ms observados ni estrecharía por sí solo el main lobe.
-
-##### Ejercicio 5B — distinguir un tono alineado de otro entre bins
-
-- **Concepto que se practica:** un bin de magnitud máxima no siempre coincide con la frecuencia verdadera del tono.
-- **Ejemplo visual:** la [Figura 17](figures/fft-bloque-leakage.png) compara un tono alineado y otro intermedio. Sus paneles derechos muestran resultados diferentes.
-- **Datos nuevos:** se analizan por separado tonos de 1125 y 1100 Hz, ambos de magnitud 1 y fase inicial 0.
-- Se usan 64 muestras a 8 kS/s, ventana rectangular y FFT sin padding.
-- Calcular los ciclos de cada tono dentro del bloque. Determinar cuál coincide con un bin.
-- Explicar si un máximo cerca de 1125 Hz cambia la frecuencia del tono de 1100 Hz.
-- Indicar qué tono se parecería a cada fila de la figura.
-
-??? example "Solución del ejercicio 5B"
-
-    - **Punto de partida:** el apartado 5.2 define $f_k=kf_s/N$. El apartado 5.4 relaciona la coincidencia con un bin y los ciclos $f_0T_{\mathrm{obs}}$. Aquí $M=N=64$.
-    - **Paso 1 — duración y rejilla:** $T_{\mathrm{obs}}=64/8000=0.008$ s y $\Delta f=8000/64=125$ Hz. Los bins cercanos son $f_8=1000$ Hz y $f_9=1125$ Hz.
-    - **Paso 2 — tono de 1125 Hz:** completa $1125(0.008)=9$ ciclos. Además, $1125/125=9$ es entero: coincide con el bin 9.
-    - **Paso 3 — suma coincidente:** en ese bin, $e^{j2\pi9n/64}e^{-j2\pi9n/64}=1$. La DFT suma 64 unos y produce $X[9]=64$.
-    - **Lectura de magnitud:** la normalización divide entre 64. Por tanto, el bin 9 muestra $64/64=1$. Los demás bins se cancelan, salvo residuos numéricos.
-    - **Paso 4 — tono de 1100 Hz:** completa $1100(0.008)=8.8$ ciclos. El índice requerido sería $1100/125=8.8$, que no es entero.
-    - **Interpretación del tono intermedio:** ningún bin coincide exactamente con 1100 Hz. El tono contribuye a varios bins, como la fila inferior de la Figura 17.
-    - **Paso 5 — máximo de la rejilla:** 1125 Hz está a 25 Hz del tono. El bin de 1000 Hz está a 100 Hz. En este ejemplo, el mayor bin es el de 1125 Hz.
-    - **Conclusión:** el tono sigue siendo de 1100 Hz. El máximo disponible no cambia la frecuencia de generación ni demuestra una medición exacta.
-    - **Lectura visual:** el tono de 1125 Hz produciría una barra aislada, como la fila superior. El de 1100 Hz produciría varias contribuciones.
-
-##### Ejercicio 5C — elegir una modificación de análisis con un propósito
-
-- **Concepto que se practica:** escoger entre padding, ventana y una adquisición más larga.
-- **Ejemplos visuales:** se comparan la [Figura 18](figures/fft-zero-padding.png), la [Figura 19](figures/fft-ventanas.png) y la [Figura 20](figures/fft-duracion-resolucion.png).
-- Indicar qué modificación dibuja más puntos del mismo bloque, cuál reduce sidelobes y cuál permitió distinguir los dos tonos estables.
-- Para cada decisión, nombrar qué parámetro cambia y qué permanece fijo.
-- Explicar por qué ninguna decisión constituye una mejora universal.
-
-??? example "Solución del ejercicio 5C"
-
-    - **Punto de partida:** los apartados 5.5, 5.6 y 5.7 distinguen longitud $M$, pesos $w[n]$ y muestras adquiridas $N$. Las Figuras 18 y 19 usan un tono; la Figura 20 usa dos.
-    - **Paso 1 — dibujar más puntos:** en la Figura 18, $M$ pasa de 64 a 512. Permanecen fijos $N=64$, $f_s=8000$ S/s y la ventana rectangular.
-    - **Cálculo del padding:** $T_{\mathrm{obs}}=64/8000=8$ ms permanece fijo. La separación pasa de $8000/64=125$ Hz a $8000/512=15.625$ Hz.
-    - **Resultado visual del padding:** el panel inferior derecho muestra más puntos y conserva los originales. No aparece una observación más larga ni se estrecha el main lobe.
-    - **Paso 2 — reducir sidelobes:** en la Figura 19, se cambia rectangular por Hann periódica. Se conservan las 64 muestras, el sampling rate y $M=4096$.
-    - **Operación de ventana:** la nueva entrada es $x_w[n]=x[n]w[n]$. La normalización divide entre $\sum w[n]$ para comparar alturas.
-    - **Resultado visual de Hann:** el panel inferior derecho muestra sidelobes menores. El inferior izquierdo muestra el costo: un main lobe más ancho.
-    - **Paso 3 — distinguir los tonos del ejemplo:** en la Figura 20, $N$ pasa de 64 a 512. Se mantienen los tonos de 1000 y 1062.5 Hz, $f_s=8000$ S/s, Hann y $M=8192$.
-    - **Cálculo del tiempo:** la duración pasa de $64/8000=8$ ms a $512/8000=64$ ms. Ambas rejillas tienen separación $8000/8192=0.9765625$ Hz.
-    - **Resultado visual de más datos:** el panel superior derecho tiene un máximo combinado. El inferior derecho distingue dos máximos. La diferencia no proviene de $M$, que permanece fijo.
-    - **Límites:** padding no añade observaciones. Hann puede dificultar separar tonos muy próximos. Un bloque largo puede combinar distintos estados si la señal cambia.
-    - **Conclusión:** se elige la modificación según el propósito. Más puntos, menos sidelobes y más tiempo observado resuelven necesidades diferentes.
-
-##### Ejercicio 5D — recuperar el bloque que recibió la transformada
-
-- **Concepto que se practica:** distinguir las muestras originales, las muestras con ventana y la magnitud de la FFT.
-- **Ejemplo visual de ventana:** la [Figura 19](figures/fft-ventanas.png), panel superior derecho, muestra I original y su versión multiplicada por Hann.
-- **Ejemplo visual de fase:** la [Figura 8](figures/magnitud-fase-espectral.png) muestra señales con la misma magnitud espectral, pero diferentes fases.
-- **Datos:** se conserva $x[n]$ y se calcula $X_w[k]=\operatorname{DFT}\{x[n]w[n]\}$ con Hann, sin normalización adicional ni reordenamiento.
-- Indicar qué bloque recupera la inversa de $X_w[k]$.
-- Explicar si guardar solo $|X_w[k]|$ basta para recuperar ese bloque.
-- Explicar si corregir la escala de magnitud deshace la ventana.
-
-??? example "Solución del ejercicio 5D"
-
-    - **Punto de partida:** el apartado 5.6 define $x_w[n]=x[n]w[n]$. El apartado 3.5 explica que la DFT completa y su inversa recuperan el bloque entregado a la transformada.
-    - **Paso 1 — identificar la entrada:** la DFT recibió $x_w[n]$, no las muestras originales sin modificar. Por tanto, $\operatorname{IDFT}\{X_w[k]\}=x_w[n]$.
-    - **Resultado:** la inversa recupera $x[n]w[n]$. En el panel superior derecho de la Figura 19, su componente I corresponde a la curva naranja.
-    - **Paso 2 — conservar la fase:** cada coeficiente es $X_w[k]=|X_w[k]|e^{j\psi_k}$. Guardar solo la magnitud elimina la fase $\psi_k$.
-    - **Ejemplo visual de la pérdida:** la Figura 8 muestra magnitudes iguales para señales temporales diferentes. La magnitud sola no permite decidir cuál de esos bloques era la entrada.
-    - **Paso 3 — interpretar una inversa de magnitudes:** introducir únicamente $|X_w[k]|$ equivale a asignar fase cero a los coeficientes. En general, la secuencia resultante es diferente.
-    - **Paso 4 — deshacer la normalización:** el visor usa $C_w[k]=X_w[k]/\sum w[n]$. Multiplicar por $\sum w[n]$ recupera $X_w[k]$, no las muestras originales sin ventana.
-    - **Comprobación temporal:** la inversa de $C_w[k]$ es $x[n]w[n]/\sum w[n]$. Multiplicarla por $\sum w[n]$ devuelve $x[n]w[n]$: los pesos individuales siguen presentes.
-    - **Orden de los coeficientes:** estas igualdades usan el orden original de la DFT. Si se utiliza `C` del visor, primero se aplica `np.fft.ifftshift(C)`. La inversa no debe recibir directamente el arreglo reordenado por `fftshift`.
-    - **Paso 5 — examinar Hann:** con la fórmula de 5.6, $w[0]=0.5-0.5\cos0=0$. Por tanto, $x_w[0]=x[0](0)=0$, cualquiera que fuera $x[0]$.
-    - **Por qué no se divide por la ventana:** el valor original de esa muestra no puede recuperarse dividiendo por cero. Dividir por pesos pequeños también amplificaría errores numéricos.
-    - **Conclusión:** se conservan $x[n]$ y sus metadatos por separado. La DFT completa conserva el bloque con ventana; la ventana previa ya modificó las muestras originales.
-
-### 6. De baseband a RF: interpretar una captura SDR
-
-Hasta aquí se generaron tonos con frecuencias como +1 kHz o −3 kHz. En una captura SDR, esas frecuencias son **relativas a una referencia RF**, no necesariamente las frecuencias de los transmisores en la antena.
-
-La pregunta de esta subsección es: **si una componente aparece a la izquierda o a la derecha del cero de baseband, ¿a qué frecuencia RF corresponde y cómo puede trasladarse al cero?**
-
-El desarrollo empieza con tonos conocidos y termina leyendo un bloque de la grabación de la sesión 1. No se diseña todavía un filtro ni se recupera el audio de una emisora.
-
-#### 6.1. La frecuencia central es la referencia, no el sample rate
-
-Se distinguen tres frecuencias:
-
-- **$f_c$, frecuencia central:** referencia RF de la captura. En la grabación oficial es 99.1 MHz.
-- **$f_s$, sample rate:** tasa de las muestras complejas. En esa grabación es 2.4 MS/s.
-- **$f_{\mathrm{BB}}$, frecuencia en baseband:** desplazamiento de una componente respecto a $f_c$. Puede ser positivo, negativo o cero.
-
-Con la convención I/Q utilizada en esta sesión, las relaciones son:
-
-$$
-f_{\mathrm{BB}}=f_{\mathrm{RF}}-f_c,
-\qquad
-f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}.
-$$
-
-Esta interpretación supone una banda correctamente seleccionada, sin componentes aliased que se confundan con ella, y una captura sin inversión del espectro. La referencia es la frecuencia central documentada para la grabación; los errores de sintonía y calibración del receptor no se estudian aquí. El [tutorial I/Q de GNU Radio](https://wiki.gnuradio.org/index.php/IQ_Complex_Tutorial) explica la representación compleja equivalente en baseband.
-
-Por ejemplo, si $f_c=99.1$ MHz:
-
-| Frecuencia RF | Cálculo del desplazamiento | Frecuencia en baseband | Posición respecto al cero |
-|---|---|---|---|
-| 98.5 MHz | $98.5-99.1=-0.6$ MHz | −600 kHz | A la izquierda |
-| 99.1 MHz | $99.1-99.1=0$ | 0 Hz | En el centro |
-| 99.5 MHz | $99.5-99.1=+0.4$ MHz | +400 kHz | A la derecha |
-
-La frecuencia negativa de la primera fila **no es una RF física negativa**. Indica que 98.5 MHz está por debajo de la referencia de 99.1 MHz.
-
-¿Por qué no se genera una senoide de 99.5 MHz usando directamente $f_s=2.4$ MS/s? Porque las muestras que entrega esta etapa del receptor ya representan la banda convertida a baseband. El tono que corresponde a 99.5 MHz se modela con su desplazamiento de +400 kHz:
-
-$$
-x[n]=A e^{j(2\pi\,400000\,n/2400000+\phi)}.
-$$
-
-Los 2.4 MS/s corresponden a las muestras I/Q de salida del receptor. Su FFT muestra frecuencias relativas al centro de la captura; para convertirlas a RF, debe conocerse por separado la frecuencia central $f_c$.
-
-Para el intervalo centrado utilizado en la sesión:
-
-$$
--\frac{f_s}{2}\leq f_{\mathrm{BB}}<\frac{f_s}{2}
-\quad\Longrightarrow\quad
-f_c-\frac{f_s}{2}\leq f_{\mathrm{RF}}<f_c+\frac{f_s}{2}.
-$$
-
-Con los datos de la grabación, el intervalo nominal es $[-1.2,+1.2)$ MHz en baseband y $[97.9,100.3)$ MHz en RF. **Es un intervalo de representación:** no garantiza una respuesta plana ni que toda su anchura sea utilizable en un receptor real.
-
-#### 6.2. Experimento A: el mismo espectro con dos ejes
-
-Se generan tres tonos complejos para representar las tres posiciones de la tabla. Son señales sintéticas: **no son mediciones de emisoras reales ni una simulación de su modulación FM**.
-
-- **Qué se varía:** el eje horizontal, entre frecuencia relativa y frecuencia RF.
-- **Qué permanece fijo:** las muestras, la FFT y sus magnitudes; $f_s=2.4$ MS/s, $N=2400$ y $f_c=99.1$ MHz.
-- **Qué se debe notar:** cambiar el eje no cambia los coeficientes ni las muestras.
-
-Las celdas de esta subsección se ejecutan en orden y no necesitan las variables de las anteriores.
-
-**Colab — Celda 1: preparar las señales y el visor.**
+**Colab — reconocer el problema:**
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
-from pathlib import Path
 
-fs = 2.4e6
-fc = 99.1e6
-N = 2400
-n = np.arange(N)
-t = n / fs
-frecuencias_bb = np.array([-600e3, 0, 400e3])
-amplitudes = np.array([0.6, 0.4, 1.0])
-x = sum(A * np.exp(1j * 2 * np.pi * f0 * t) for A, f0 in zip(amplitudes, frecuencias_bb))
-
-def espectro_iq(z, sample_rate, ventana=None):
-    w = np.ones(len(z)) if ventana is None else np.asarray(ventana)
-    if len(w) != len(z) or np.sum(w) == 0:
-        raise ValueError("La ventana debe tener un peso por muestra y suma no nula")
-    f = np.fft.fftshift(np.fft.fftfreq(len(z), d=1 / sample_rate))
-    C = np.fft.fftshift(np.fft.fft(z * w)) / np.sum(w)
-    return f, C
-
-def dibujar_tonos(ax, f, C, escala=1000, referencia=0):
-    presentes = np.abs(C) > 1e-10
-    ax.stem((referencia + f[presentes]) / escala, np.abs(C[presentes]), basefmt=" ")
-    ax.grid(alpha=0.2)
-
-f_bb, C_entrada = espectro_iq(x, fs)
-print("Duración del bloque (ms):", N / fs * 1000)
-print("Separación entre bins (Hz):", fs / N)
-print("Frecuencias RF de los tonos (MHz):", (fc + frecuencias_bb) / 1e6)
-```
-
-La función `dibujar_tonos` omite únicamente los residuos numéricos menores que $10^{-10}$ de estos tonos alineados con bins. Ese umbral **no se propone como detector de señales en una captura real**. En el ejemplo con la grabación se dibujarán todos los bins.
-
-**Colab — Celda 2: cambiar el eje sin cambiar las muestras.**
-
-```python
-fig, axes = plt.subplots(1, 2, figsize=(12, 4.5), layout="constrained")
-dibujar_tonos(axes[0], f_bb, C_entrada)
-axes[0].axvline(0, color="tab:gray", linestyle="--")
-axes[0].set(title="Frecuencias relativas a 99.1 MHz", xlabel="Frecuencia en baseband (kHz)", ylabel="Magnitud", xlim=(-1200, 1200), ylim=(-0.03, 1.2), xticks=[-1200, -600, 0, 400, 1200])
-dibujar_tonos(axes[1], f_bb, C_entrada, escala=1e6, referencia=fc)
-axes[1].axvline(fc / 1e6, color="tab:gray", linestyle="--")
-axes[1].set(title="Los mismos coeficientes con etiquetas RF", xlabel="Frecuencia RF (MHz)", ylabel="Magnitud", xlim=(97.9, 100.3), ylim=(-0.03, 1.2), xticks=[97.9, 98.5, 99.1, 99.5, 100.3])
+fs, N_debil, M = 8000, 256, 8192
+f_fuerte, f_debil = 1007.8125, 1203.125
+t_debil = np.arange(N_debil) / fs
+fuerte = np.exp(1j * 2 * np.pi * f_fuerte * t_debil)
+debil = 0.01 * np.exp(1j * 2 * np.pi * f_debil * t_debil)
+f = np.fft.fftshift(np.fft.fftfreq(M, 1 / fs))
+C_fuerte = np.fft.fftshift(np.fft.fft(fuerte, M)) / N_debil
+C_ambos = np.fft.fftshift(np.fft.fft(fuerte + debil, M)) / N_debil
+def magnitud_db(C):
+    return 20 * np.log10(np.maximum(np.abs(C), 1e-6))
+indice_debil = np.argmin(np.abs(f - f_debil))
+fig, ax = plt.subplots(figsize=(12, 5), layout="constrained")
+ax.plot(f, magnitud_db(C_fuerte), label="Solo el tono fuerte")
+ax.plot(f, magnitud_db(C_ambos), "--", label="Fuerte + débil")
+ax.axvline(f_debil, color="gray", linestyle=":")
+ax.plot([f_debil], [-40], "ko", label="Nivel del débil aislado: −40 dB")
+ax.annotate("Fuerte solo: −28.9 dB", xy=(f_debil, magnitud_db(C_fuerte)[indice_debil]), xytext=(1240, -15), arrowprops={"arrowstyle": "->"})
+ax.set(title="Ventana rectangular: el tono fuerte ocupa también otras frecuencias de prueba", xlabel="Frecuencia de prueba (Hz)", ylabel="Magnitud (dB respecto a 1)", xlim=(900, 1390), ylim=(-85, 5))
+ax.grid(alpha=0.2)
+ax.legend(loc="lower left")
+print("Fuerte en la frecuencia del débil:", magnitud_db(C_fuerte)[indice_debil], "dB")
 plt.show()
 ```
 
-![Tres tonos en menos 600, cero y más 400 kHz, mostrados también como 98.5, 99.1 y 99.5 MHz sin modificar las muestras](figures/baseband-eje-rf.png)
+#### 5.7. La herramienta: una ventana Hann
 
-**Figura 23.** Una misma FFT puede leerse en frecuencia relativa o en RF si se conoce la referencia de la captura.
+- **Ventana:** secuencia de pesos $w[n]$ que multiplica las muestras antes del análisis: $x_w[n]=x[n]w[n]$.
+- Rectangular asigna peso 1 a todas las muestras. Hann reduce principalmente los pesos próximos a los extremos del bloque.
+- **Qué cambia:** los pesos. Las muestras adquiridas, sus instantes y la frecuencia del tono permanecen fijos.
 
-- **Panel izquierdo — baseband:** los tonos aparecen en −600, 0 y +400 kHz. La línea discontinua marca el cero relativo.
-- **Panel derecho — RF:** aparecen en 98.5, 99.1 y 99.5 MHz. La línea discontinua marca la referencia de 99.1 MHz.
-- **Correspondencia entre paneles:** el tono de −600 kHz no cambió de frecuencia física; su etiqueta RF es $99.1-0.6=98.5$ MHz. Lo mismo ocurre con los otros dos.
-- **Magnitudes:** permanecen en 0.6, 0.4 y 1. Se dibujan los mismos coeficientes, sin calcular otra FFT.
-- **Bordes del eje:** marcan el intervalo nominal. Para este bloque par, el último bin queda ligeramente antes del extremo derecho, que no se incluye como un bin adicional.
+Hann cambia las longitudes de las flechas antes de sumarlas. Algunas sumas lejanas se cierran mejor, pero las cercanas pueden quedar más largas.
 
-#### 6.3. Experimento B: trasladar una componente al cero mediante mezcla compleja
+![Pesos rectangular y Hann y tres comparaciones de recorridos normalizados con iguales escalas para media, dos y media y cuatro y media vueltas sobrantes](figures/fft-ventanas.png)
 
-Ahora se desea que el tono de +400 kHz quede en 0 Hz. No basta con escribir otra etiqueta: se deben transformar las muestras.
+**Figura 22.** Hann cambia los pesos y las sumas: reduce estas contribuciones lejanas, pero aumenta la contribución de la prueba cercana.
 
-La **mezcla compleja** consiste en multiplicar cada muestra por un tono complejo. Se define $f_{\mathrm{mix}}$ como la frecuencia del tono multiplicador:
+**Panel A — pesos:**
 
-$$
-y[n]=x[n]e^{j2\pi f_{\mathrm{mix}}n/f_s}.
-$$
+- El eje horizontal indica la muestra; el vertical indica su peso. Azul: rectangular; naranja: Hann.
+- Hann reduce las flechas de los extremos antes de sumar. No cambia cuándo se adquirieron las muestras.
 
-Para comprobar el resultado, primero se considera una sola componente de la entrada:
+**Panel B — 0.5 vueltas sobrantes:**
 
-$$
-x_0[n]=A e^{j(2\pi f_0 n/f_s+\phi)}.
-$$
+- Los recorridos suman flechas punta con cola. Cada recorrido se divide por la suma de sus pesos para comparar magnitudes.
+- El punto negro marca el inicio; el cuadrado marca el final. La magnitud normalizada pasa de aproximadamente 0.637 a 0.849.
 
-Primero se escribe la mezcla aplicada a $x_0[n]$. Después se sustituye esa componente por su expresión y se suman los exponentes:
+**Panel C — 2.5 vueltas sobrantes:**
 
-$$
-\begin{aligned}
-y_0[n]
-&=x_0[n]e^{j2\pi f_{\mathrm{mix}}n/f_s}\\
-&=A e^{j(2\pi f_0 n/f_s+\phi)}e^{j2\pi f_{\mathrm{mix}}n/f_s}\\
-&=A e^{j[2\pi(f_0+f_{\mathrm{mix}})n/f_s+\phi]}.
-\end{aligned}
-$$
+- Los ejes y colores son los mismos que en B. La suma con Hann termina más cerca del inicio.
+- La magnitud pasa de aproximadamente 0.128 a 0.024. La contribución de esta prueba disminuye.
 
-- **Primera igualdad:** se multiplica la componente de entrada $x_0[n]$ por el tono de mezcla.
-- **Segunda igualdad:** $x_0[n]$ no desaparece; se escribe como $A e^{j(2\pi f_0 n/f_s+\phi)}$. El factor $A$ es su amplitud, no un reemplazo de toda la señal.
+**Panel D — 4.5 vueltas sobrantes:**
 
-Por tanto, la frecuencia de salida es $f_0+f_{\mathrm{mix}}$, interpretada módulo $f_s$ si cruza el borde del intervalo. Para centrar $f_0=+400$ kHz se elige **$f_{\mathrm{mix}}=-400$ kHz**.
+- La suma con Hann termina aún más cerca del inicio. Los ejes mantienen la misma escala, aunque los recorridos ocupan menos espacio.
+- La magnitud pasa de aproximadamente 0.071 a 0.004. No se propone una regla de disminución para cualquier frecuencia.
 
-- **Multiplicador con frecuencia negativa:** desplaza hacia frecuencias menores, a la izquierda.
-- **Multiplicador con frecuencia positiva:** desplaza hacia frecuencias mayores, a la derecha.
-- **Para centrar una componente:** se utiliza la frecuencia opuesta a su desplazamiento actual.
-
-La operación afecta a **toda la entrada**, no solo al tono elegido:
-
-| Componente | Antes de la mezcla | Frecuencia del multiplicador | Después de la mezcla |
-|---|---:|---:|---:|
-| A | −600 kHz | −400 kHz | −1000 kHz |
-| B | 0 kHz | −400 kHz | −400 kHz |
-| C, objetivo | +400 kHz | −400 kHz | 0 kHz |
-
-En este ejemplo ninguna componente cruza los bordes de ±1.2 MHz. El multiplicador tiene magnitud 1; por ello $|y[n]|=|x[n]|$ muestra por muestra, aunque cambien I, Q y la evolución de fase. **Conservar la magnitud no significa conservar la secuencia compleja.**
-
-- **Qué se varía:** las muestras, al multiplicarlas por un tono de −400 kHz.
-- **Qué permanece fijo:** sample rate, cantidad de muestras, duración y magnitud del multiplicador.
-- **Qué se debe notar:** todos los tonos se desplazan −400 kHz; el objetivo deja de girar respecto al nuevo cero.
-
-**Colab — Celda 3: mezclar y comprobar el signo.**
+**Colab — pesos y sumas:** las rectas discontinuas unen el inicio con el final de cada suma.
 
 ```python
-f_objetivo = 400e3
-f_mix = -f_objetivo
-oscilador = np.exp(1j * 2 * np.pi * f_mix * t)
-y = x * oscilador
-f_salida, C_salida = espectro_iq(y, fs)
-objetivo = np.exp(1j * 2 * np.pi * f_objetivo * t)
-objetivo_centrado = objetivo * oscilador
-print("Misma magnitud por muestra:", np.allclose(np.abs(y), np.abs(x)))
-print("Muestras complejas iguales:", np.allclose(y, x))
-print("Objetivo convertido en 1+j0:", np.allclose(objetivo_centrado, 1))
+import numpy as np
+import matplotlib.pyplot as plt
 
-fig, axes = plt.subplots(2, 2, figsize=(12, 8), layout="constrained")
-dibujar_tonos(axes[0, 0], f_bb, C_entrada)
-axes[0, 0].set(title="Entrada: los tres tonos", xlabel="Frecuencia en baseband (kHz)", ylabel="Magnitud", xlim=(-1200, 1200), ylim=(-0.03, 1.2), xticks=[-1000, -600, -400, 0, 400, 1000])
-dibujar_tonos(axes[0, 1], f_salida, C_salida)
-axes[0, 1].set(title="Salida: desplazamiento de -400 kHz", xlabel="Frecuencia en baseband (kHz)", ylabel="Magnitud", xlim=(-1200, 1200), ylim=(-0.03, 1.2), xticks=[-1000, -600, -400, 0, 400, 1000])
-axes[1, 0].plot(t[:37] * 1e6, objetivo[:37].real, ".-", label="I del objetivo")
-axes[1, 0].plot(t[:37] * 1e6, objetivo[:37].imag, ".-", label="Q del objetivo")
-axes[1, 0].set(title="Solo el objetivo antes de la mezcla", xlabel="Tiempo (µs)", ylabel="Valor", ylim=(-1.2, 1.2))
-axes[1, 1].plot(t[:37] * 1e6, objetivo_centrado[:37].real, ".-", label="I del objetivo centrado")
-axes[1, 1].plot(t[:37] * 1e6, objetivo_centrado[:37].imag, ".-", label="Q del objetivo centrado")
-axes[1, 1].set(title="Solo el objetivo después: I = 1, Q = 0", xlabel="Tiempo (µs)", ylabel="Valor", ylim=(-1.2, 1.2))
+N = 64
+n = np.arange(N)
+w_rect = np.ones(N)
+w_hann = 0.5 - 0.5 * np.cos(2 * np.pi * n / N)
+recorridos = {}
+fig, axes = plt.subplots(2, 2, figsize=(12, 9), layout="constrained")
+axes[0, 0].plot(n, w_rect, label="Rectangular")
+axes[0, 0].plot(n, w_hann, label="Hann")
+axes[0, 0].set(title="A. Pesos de las 64 muestras", xlabel="Índice n", ylabel="Peso", ylim=(-0.05, 1.15))
+axes[0, 0].legend()
+for ax, letra, vueltas in zip([axes[0, 1], axes[1, 0], axes[1, 1]], "BCD", [0.5, 2.5, 4.5]):
+    for nombre, w, color in [("Rectangular", w_rect, "tab:blue"), ("Hann", w_hann, "tab:orange")]:
+        flechas = w * np.exp(1j * 2 * np.pi * vueltas * n / N) / w.sum()
+        p = np.r_[0j, np.cumsum(flechas)]
+        recorridos[(vueltas, nombre)] = p
+        ax.plot(p.real, p.imag, color=color, label=f"{nombre}: {abs(p[-1]):.3f}")
+        ax.plot([0, p[-1].real], [0, p[-1].imag], "--", color=color, alpha=0.7)
+        ax.plot(p[-1].real, p[-1].imag, "s", color=color)
+        for k in range(0, N, 8):
+            ax.annotate("", xy=(p[k + 1].real, p[k + 1].imag), xytext=(p[k].real, p[k].imag), arrowprops={"arrowstyle": "->", "color": color})
+    ax.plot(0, 0, "ko")
+    ax.set(title=f"{letra}. {vueltas:g} vueltas sobrantes", xlabel="Parte real de la suma normalizada", ylabel="Parte imaginaria", aspect="equal", xlim=(-0.57, 0.57), ylim=(-0.17, 0.97))
+    ax.legend(fontsize=9, loc="upper right")
 for ax in axes.flat:
     ax.grid(alpha=0.2)
-for ax in axes[0]:
-    ax.axvline(0, color="tab:gray", linestyle="--")
-for ax in axes[1]:
-    ax.legend(fontsize=8)
 plt.show()
 ```
 
-![Espectros antes y después de mezclar con menos 400 kHz y componentes I y Q del tono objetivo antes y después de centrarlo](figures/baseband-mezcla-compleja.png)
+- **Main lobe:** lóbulo principal alrededor de la frecuencia del tono. **Sidelobes:** lóbulos laterales, más alejados.
+- **Qué cambia ahora:** rectangular frente a Hann sobre los mismos tonos de 5.6. Permanecen fijos bloque, FFT, amplitudes y fases.
 
-**Figura 24.** La mezcla compleja desplaza todos los tonos y convierte el tono objetivo ideal en una constante cuando cancela exactamente su frecuencia.
+Con Hann, la contribución del fuerte baja en la frecuencia del débil. El costo es un lóbulo principal más ancho.
 
-- **Panel superior izquierdo — espectro de entrada:** se observan los tonos de −600, 0 y +400 kHz.
-- **Panel superior derecho — espectro de salida:** aparecen en −1000, −400 y 0 kHz. El desplazamiento es hacia la izquierda, de −400 kHz para todos.
-- **Panel inferior izquierdo — objetivo aislado:** I y Q oscilan porque el tono tiene frecuencia relativa de +400 kHz.
-- **Panel inferior derecho — objetivo centrado:** I queda en 1 y Q en 0, porque se canceló el avance de fase y la fase inicial era cero. **Solo se grafica el objetivo aislado**, no la suma completa de los tres tonos.
-- **Otra fase inicial:** un tono centrado con fase $\phi$ sería la constante $A e^{j\phi}$; no necesariamente tendría Q igual a cero.
-- **Una señal modulada:** centrarla no la convierte en una constante. Se elimina el desplazamiento de su centro, pero permanece la variación que transporta información.
-- **Qué no hizo la mezcla:** no eliminó los otros tonos ni cambió la tasa. Centrar no equivale a filtrar, decimar ni demodular.
+![Comparación rectangular y Hann para el tono fuerte y la suma de ambos, con lóbulos principales marcados y menor contribución lejana con Hann](figures/fft-tono-debil.png)
 
-El [bloque Rotator de GNU Radio](https://wiki.gnuradio.org/index.php/Rotator) implementa una rotación equivalente a multiplicar por un tono complejo. Su incremento de fase se expresa en radianes por muestra: $\Delta\phi_{\mathrm{mix}}=2\pi f_{\mathrm{mix}}/f_s$. Aquí se usa NumPy para observar la operación sin construir todavía un flowgraph.
+**Figura 23.** Hann permite reconocer el tono débil de este ejemplo; también ensancha el lóbulo principal del tono fuerte.
 
-#### 6.4. Experimento C: reetiquetar el visor no es volver a sintonizar
+**Panel A — rectangular:**
 
-Después de centrar el objetivo, el nuevo cero representa 99.5 MHz para las componentes del ejemplo. La nueva referencia es:
+- Los ejes muestran frecuencia y magnitud en dB. Azul: fuerte solo; naranja discontinua: ambos tonos.
+- La franja azul marca el main lobe del fuerte. Los máximos menores fuera de ella son sidelobes.
+- En la frecuencia del débil, el fuerte solo aporta −28.9 dB, por encima del nivel de −40 dB del débil aislado.
 
-$$
-f_c'=f_c-f_{\mathrm{mix}}=99.1\text{ MHz}-(-0.4\text{ MHz})=99.5\text{ MHz}.
-$$
+**Panel B — Hann:**
 
-Para una componente que no cruza los bordes, se comprueba que la frecuencia RF sigue siendo la misma:
+- Se utilizan las mismas muestras y escalas. La franja del main lobe es más ancha.
+- El fuerte solo aporta aproximadamente −60.5 dB en la frecuencia del débil. La curva combinada permite reconocer su contribución.
+- La curva combinada vale aproximadamente −40.6 dB en esa frecuencia. No coincide exactamente con −40 dB porque las contribuciones son complejas.
 
-$$
-\underbrace{f_c'+f_{\mathrm{salida}}}_{\text{RF después}}
-=(f_c-f_{\mathrm{mix}})+(f_{\mathrm{BB}}+f_{\mathrm{mix}})
-=\underbrace{f_c+f_{\mathrm{BB}}}_{\text{RF antes}}.
-$$
+??? note "Para profundizar"
 
-Hay dos operaciones distintas:
+    - Hann periódica usa $w[n]=0.5-0.5\cos(2\pi n/N)$ para $0\leq n<N$.
+    - Hann simétrica utiliza $N-1$ en el denominador. Son convenciones diferentes; este apartado utiliza la periódica.
+    - Referencia: [ventana Hann en SciPy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.hann.html).
+    - Una evaluación en una frecuencia $f$, expresada en Hz, se escribe:
 
-- **Reetiquetar sin mezclar:** se cambia el número que se suma al eje, pero se conservan las muestras. Si se coloca 99.5 MHz como referencia de la entrada original, sus etiquetas RF dejan de corresponder a la captura.
-- **Mezclar y actualizar la referencia:** se trasladan las muestras −400 kHz y se usa 99.5 MHz como nueva referencia. Las componentes del ejemplo conservan sus etiquetas RF correctas, pero el objetivo queda en el nuevo cero de baseband.
+    $$S_w(f)=\sum_{n=0}^{N-1}x[n]w[n]e^{-j2\pi f n/f_s}.$$
 
-- **Qué se varía:** la combinación de muestras de entrada o salida y referencia del eje.
-- **Qué permanece fijo:** el sample rate y las frecuencias RF originales de los tonos del experimento.
-- **Qué se debe notar:** una etiqueta incorrecta puede mover el dibujo sin haber trasladado la señal respecto al cero.
+    - La FFT evalúa esa suma en $f_k=kf_s/M$. Así, $X_w[k]=S_w(f_k)$; el eje centrado usa representantes módulo $f_s$.
+    - Para un tono $x[n]=Ae^{j(2\pi f_0n/f_s+\phi)}$, la prueba exacta cancela su giro:
 
-**Colab — Celda 4: comparar una etiqueta falsa con una mezcla real.**
+    $$S_w(f_0)=Ae^{j\phi}\sum_{n=0}^{N-1}w[n].$$
 
-```python
-fc_nuevo = fc - f_mix
-casos_eje = [
-    (f_bb, C_entrada, fc, "Entrada original: referencia correcta de 99.1 MHz"),
-    (f_bb, C_entrada, fc_nuevo, "Sin mezcla: etiquetas incorrectas al escribir 99.5 MHz"),
-    (f_salida, C_salida, fc_nuevo, "Con mezcla: nueva referencia correcta de 99.5 MHz"),
-]
-fig, axes = plt.subplots(3, 1, figsize=(11, 9), layout="constrained")
-for ax, (f, C, referencia, titulo) in zip(axes, casos_eje):
-    dibujar_tonos(ax, f, C, escala=1e6, referencia=referencia)
-    ax.axvline(referencia / 1e6, color="tab:orange", linestyle="--", label="Etiqueta RF del cero de baseband")
-    ax.set(title=titulo, xlabel="Etiqueta RF (MHz)", ylabel="Magnitud", xlim=(97.9, 100.7), ylim=(-0.03, 1.2), xticks=[98.5, 98.9, 99.1, 99.5, 99.9])
-    ax.legend(fontsize=8, loc="upper left")
-print("RF original (MHz):", (fc + frecuencias_bb) / 1e6)
-print("RF después de mezclar (MHz):", (fc_nuevo + frecuencias_bb + f_mix) / 1e6)
-plt.show()
-```
+    - Dividir por $\sum w[n]$ conserva la magnitud $A$ en esa prueba. No deshace los pesos individuales.
+    - Para $N=64$, las sumas de pesos son 64 y 32. Los anchos entre primeros ceros son 250 y 500 Hz.
+    - La Figura 23 usa $N=256$: sus anchos son 62.5 Hz y 125 Hz. Las franjas corresponden a esa configuración.
+    - Las frecuencias del tono no se trasladan. Si ningún punto coincide con el tono, la normalización no garantiza un máximo igual a su amplitud.
+    - Las caídas profundas son ceros de la forma espectral; no demuestran canales físicos vacíos.
+    - La escala compara magnitudes de tonos. No es power spectral density (PSD, densidad espectral de potencia) ni potencia calibrada en dBm.
+    - Hann no evita aliasing previo ni selecciona por sí sola un canal RF. El main lobe ancho puede dificultar separar tonos muy próximos.
+    - El resultado depende de separación, amplitudes, fases y ruido. Los ejemplos no añaden ruido y conservan los datos originales por separado.
 
-![Tres espectros con la referencia original correcta, una referencia cambiada sin mezcla y la referencia actualizada después de mezclar](figures/baseband-etiqueta-vs-mezcla.png)
-
-**Figura 25.** Cambiar las etiquetas sin transformar las muestras puede producir una interpretación RF falsa; la mezcla y la referencia deben ser coherentes.
-
-- **Panel superior — entrada correcta:** los tonos tienen etiquetas 98.5, 99.1 y 99.5 MHz. El cero de baseband está etiquetado como 99.1 MHz.
-- **Panel central — referencia falsa:** los mismos coeficientes se dibujan en 98.9, 99.5 y 99.9 MHz. Nada se mezcló; solo se sumó una referencia incorrecta al eje.
-- **Panel inferior — mezcla y referencia correctas:** se recuperan las etiquetas 98.5, 99.1 y 99.5 MHz, pero ahora el cero de baseband corresponde al objetivo de 99.5 MHz.
-- **Comparación superior e inferior:** las frecuencias RF coinciden porque los transmisores representados no cambiaron. Lo que cambió es la referencia respecto a la cual giran las muestras.
-- **Escala horizontal común:** facilita comparar las etiquetas; las zonas sin tallos no significan que se haya adquirido una banda RF nueva.
-- **Límite de esta equivalencia RF:** las tres componentes no cruzaron el borde. No se debe interpretar todo el intervalo posterior como una nueva captura continua alrededor de 99.5 MHz; la mezcla digital no obtiene lo que quedó fuera de la adquisición original.
-
-En el [QT GUI Frequency Sink](https://wiki.gnuradio.org/index.php/QT_GUI_Frequency_Sink), **Center Frequency** se utiliza para las etiquetas del eje. Cambiar ese parámetro, por sí solo, no mezcla las muestras ni cambia la sintonía del hardware. Una conexión de control que envíe órdenes a un receptor sería una acción adicional, no el efecto de reetiquetar el visor.
-
-| Acción | ¿Cambia las muestras? | ¿Qué cambia? |
-|---|---|---|
-| Cambiar Center Frequency del visor, sin control del receptor | No | Las etiquetas del eje |
-| Multiplicar por un tono complejo | Sí | La referencia frecuencial de las muestras ya adquiridas |
-| Volver a sintonizar el receptor y adquirir | Sí, se obtienen otras muestras | La banda RF observada por el equipo |
-
-#### 6.5. Experimento D: por qué se usa un multiplicador complejo
-
-Puede parecer equivalente multiplicar por un coseno de 400 kHz. Sin embargo, en la subsección 2 se comprobó que un coseno real contiene dos tonos complejos:
-
-$$
-\cos(2\pi f_m n/f_s)=\frac{1}{2}e^{j2\pi f_m n/f_s}+\frac{1}{2}e^{-j2\pi f_m n/f_s}.
-$$
-
-Por ello, al multiplicar el objetivo de +400 kHz por un coseno de 400 kHz se obtienen **dos componentes**:
-
-$$
-e^{j2\pi\,400000\,n/f_s}\cos(2\pi\,400000\,n/f_s)
-=\frac{1}{2}e^{j2\pi\,800000\,n/f_s}+\frac{1}{2}.
-$$
-
-- **Multiplicador complejo de −400 kHz:** produce una sola traslación y lleva el tono a 0 Hz, con magnitud 1.
-- **Coseno real de 400 kHz:** produce dos copias desplazadas, en 0 y +800 kHz, con magnitud 0.5 cada una.
-- **Para una entrada con varios tonos:** cada componente participa en ambas copias; si se superponen, sus contribuciones complejas se suman.
-
-Esto compara dos operaciones **sobre una entrada I/Q compleja**. No pretende describir ni descartar las arquitecturas analógicas que utilizan mezcladores reales y filtrado.
-
-- **Qué se varía:** el multiplicador, entre tono complejo y coseno real.
-- **Qué permanece fijo:** el objetivo aislado de +400 kHz, el bloque y el sample rate.
-- **Qué se debe notar:** un coseno no hace la misma operación que una exponencial compleja.
-
-**Colab — Celda 5: comparar los dos multiplicadores.**
+**Colab — comparar ventanas en el problema del tono débil:**
 
 ```python
-salida_compleja = objetivo * np.exp(-1j * 2 * np.pi * f_objetivo * t)
-salida_coseno = objetivo * np.cos(2 * np.pi * f_objetivo * t)
-f_compleja, C_compleja = espectro_iq(salida_compleja, fs)
-f_coseno, C_coseno = espectro_iq(salida_coseno, fs)
-fig, axes = plt.subplots(2, 1, figsize=(11, 7), layout="constrained")
-for ax, f, C, titulo in [(axes[0], f_compleja, C_compleja, "Multiplicador complejo: una componente en 0 Hz"), (axes[1], f_coseno, C_coseno, "Coseno real: componentes en 0 y +800 kHz")]:
-    dibujar_tonos(ax, f, C)
-    ax.set(title=titulo, xlabel="Frecuencia en baseband (kHz)", ylabel="Magnitud", xlim=(-1200, 1200), ylim=(-0.03, 1.2), xticks=[-1200, -800, -400, 0, 400, 800, 1200])
-plt.show()
-```
+import numpy as np
+import matplotlib.pyplot as plt
 
-![Mezcla de un tono complejo de más 400 kHz con exponencial compleja y con coseno real, con una y dos componentes de salida respectivamente](figures/baseband-mezclador-real-complejo.png)
-
-**Figura 26.** Un multiplicador complejo traslada una vez el espectro; un coseno real genera dos copias desplazadas.
-
-- **Panel superior — multiplicador complejo:** el objetivo queda en 0 Hz con magnitud 1.
-- **Panel inferior — coseno real:** aparece una componente en 0 Hz y otra en +800 kHz, ambas de magnitud 0.5.
-- **Origen de las dos componentes:** el coseno aporta frecuencias de +400 y −400 kHz. Al sumarlas a los +400 kHz de la entrada, se obtienen +800 y 0 kHz.
-- **Qué se debe concluir:** para la traslación única buscada en estos ejemplos I/Q, se utiliza un tono complejo. Multiplicar por un coseno no es un reemplazo equivalente.
-
-#### 6.6. Experimento E: la traslación digital también respeta la periodicidad
-
-Se retoma una tasa pequeña para leer los números con facilidad: $f_s=8000$ S/s. Un tono de +3 kHz se multiplica por otro de +2 kHz. La suma es +5 kHz, pero su representante en $[-4,+4)$ kHz es −3 kHz:
-
-$$
-f_{\mathrm{salida}}=3000+2000=5000\text{ Hz},
-\qquad
-f_{\mathrm{rep}}=5000-8000=-3000\text{ Hz}.
-$$
-
-La componente sale por el borde derecho y aparece por el izquierdo al presentar un solo intervalo. No se dibuja una banda ilimitada alrededor del cero: el espectro discreto es periódico, como se estudió en la subsección 4.
-
-Aquí conviene distinguir dos situaciones:
-
-- **Aliasing de una adquisición:** dos frecuencias continuas diferentes pueden haber producido las mismas muestras. Las muestras no permiten decidir cuál fue la original sin información adicional.
-- **Traslación de una secuencia conocida:** multiplicar por un tono complejo de magnitud 1 es reversible. Se recupera la secuencia de entrada multiplicando por el tono opuesto; la aparición al otro lado del eje no implica que se hayan descartado muestras.
-
-La reversibilidad de la mezcla **no recupera información que ya se perdió al adquirir**. Tampoco autoriza a interpretar una componente que reaparece por el borde como una nueva RF que el receptor nunca observó.
-
-- **Qué se varía:** se añade un desplazamiento digital de +2 kHz.
-- **Qué permanece fijo:** las 64 muestras, la tasa de 8 kS/s y la magnitud 1.
-- **Qué se debe notar:** la salida aparece en −3 kHz, pero la mezcla inversa recupera la entrada.
-
-**Colab — Celda 6: observar el cruce del borde y deshacer la mezcla.**
-
-```python
-fs_borde = 8000
-n_borde = np.arange(64)
-entrada_borde = np.exp(1j * 2 * np.pi * 3000 * n_borde / fs_borde)
-osc_borde = np.exp(1j * 2 * np.pi * 2000 * n_borde / fs_borde)
-salida_borde = entrada_borde * osc_borde
-recuperada = salida_borde * np.conj(osc_borde)
-print("Se recupera la secuencia original:", np.allclose(recuperada, entrada_borde))
-fig, axes = plt.subplots(2, 1, figsize=(11, 7), layout="constrained")
-for ax, z, titulo in [(axes[0], entrada_borde, "Entrada: +3 kHz"), (axes[1], salida_borde, "Tras mezclar con +2 kHz: +5 kHz es equivalente a -3 kHz")]:
-    f, C = espectro_iq(z, fs_borde)
-    dibujar_tonos(ax, f, C)
-    ax.axvline(-4, color="tab:gray", linestyle="--")
-    ax.axvline(4, color="tab:gray", linestyle="--")
-    ax.set(title=titulo, xlabel="Frecuencia representativa (kHz)", ylabel="Magnitud", xlim=(-4.3, 4.3), ylim=(-0.03, 1.2), xticks=np.arange(-4, 5))
-plt.show()
-```
-
-![Tono de más 3 kHz antes de mezclar y representante en menos 3 kHz después de añadir un desplazamiento de más 2 kHz a 8 kS/s](figures/baseband-cruce-borde.png)
-
-**Figura 27.** Al cruzar el borde del intervalo, una traslación digital reaparece por el otro extremo; la mezcla inversa recupera la secuencia de entrada.
-
-- **Panel superior — antes de mezclar:** el pico está en +3 kHz, dentro del intervalo de la tasa de 8 kS/s.
-- **Panel inferior — después de mezclar:** el pico aparece en −3 kHz. Se eligió una mezcla de +2 kHz: $3+2=5$ kHz y $5-8=-3$ kHz.
-- **Otra mezcla equivalente:** restar 6 kHz produciría las mismas muestras, porque $+2-8=-6$ kHz. Los multiplicadores de +2 y −6 kHz son idénticos a 8 kS/s.
-- **Líneas verticales:** marcan −4 y +4 kHz. El borde derecho no añade una frecuencia independiente del izquierdo.
-- **Resultado de la mezcla inversa:** `np.allclose` devuelve `True` al comparar la secuencia recuperada con la original. En este experimento no se aplicó un filtro ni se descartaron muestras.
-- **Límite de la interpretación RF:** una etiqueta RF continua requiere seguir la referencia y los cruces del borde. No basta con sumar una nueva frecuencia central a toda la salida y suponer que se adquirió otra banda.
-
-#### 6.7. Experimento F: leer la grabación oficial sin confundir baseband y RF
-
-Se utiliza `fm_99p1MHz_2p4Msps_g30.cu8`, distribuido en la [carpeta de muestras del curso](../01-introduccion-sdr/index.md#descargar-la-grabacion). Para Colab, se descarga el archivo y se carga mediante el panel de archivos del notebook; debe conservar su nombre. Para ejecución local desde la raíz del repositorio, se coloca en `samples/`.
-
-Los metadatos que se retoman de la sesión 1 son:
-
-| Dato | Valor | Para qué se utiliza |
-|---|---|---|
-| Frecuencia central | 99.1 MHz | Convertir baseband a etiquetas RF |
-| Sample rate | 2.4 MS/s | Construir el eje y calcular la duración |
-| Formato | `.cu8`, bytes sin signo intercalados I, Q | Interpretar cada pareja como una muestra compleja |
-
-**El archivo raw no incorpora estos metadatos como un encabezado.** No se deducen únicamente de los bytes: deben acompañar la grabación. La documentación de [`np.fromfile`](https://numpy.org/doc/stable/reference/generated/numpy.fromfile.html) advierte que el formato binario raw no conserva por sí mismo información como el tipo de datos.
-
-Se lee un bloque inicial de 16384 muestras, no los 10 segundos completos. El bloque corresponde a unos 6.827 ms y sus bins están separados aproximadamente 146.484 Hz. Se aplica Hann periódica, sin padding, y se muestran las magnitudes en dB **relativos al máximo de este mismo bloque**. No son dBm ni una PSD calibrada.
-
-- **Qué se varía:** únicamente el eje entre baseband y RF.
-- **Qué permanece fijo:** el bloque leído, la ventana, la FFT y la referencia vertical de dB.
-- **Qué se debe notar:** las mismas estructuras espectrales aparecen con etiquetas relativas o absolutas; una emisora modulada no tiene por qué parecer un tono aislado.
-
-**Colab — Celda 7: leer un bloque `.cu8` y mostrar sus dos ejes.**
-
-```python
-if "ruta_captura" not in globals():
-    ruta_captura = Path("fm_99p1MHz_2p4Msps_g30.cu8")
-    if not ruta_captura.exists():
-        ruta_captura = Path("samples/fm_99p1MHz_2p4Msps_g30.cu8")
-ruta_captura = Path(ruta_captura)
-if not ruta_captura.exists():
-    raise FileNotFoundError("Falta la grabación oficial: debe cargarse en Colab o colocarse en samples/")
-
-N_captura = 16384
-fs_captura = 2.4e6
-fc_captura = 99.1e6
-crudo = np.fromfile(ruta_captura, dtype=np.uint8, count=2 * N_captura)
-if len(crudo) != 2 * N_captura:
-    raise ValueError("El archivo no contiene el bloque completo de 16384 parejas I/Q")
-pares = crudo.astype(np.float64).reshape(-1, 2)
-z_captura = ((pares[:, 0] - 127.5) + 1j * (pares[:, 1] - 127.5)) / 127.5
-w_captura = 0.5 - 0.5 * np.cos(2 * np.pi * np.arange(N_captura) / N_captura)
-f_captura, C_captura = espectro_iq(z_captura, fs_captura, ventana=w_captura)
-maximo_captura = np.max(np.abs(C_captura))
-if maximo_captura == 0:
-    raise ValueError("El bloque no tiene magnitud espectral para definir un máximo de referencia")
-db_captura = 20 * np.log10(np.maximum(np.abs(C_captura) / maximo_captura, 1e-6))
-print("Duración observada (ms):", N_captura / fs_captura * 1000)
-print("Separación entre bins (Hz):", fs_captura / N_captura)
-
+fs, N_debil, M = 8000, 256, 8192
+f_fuerte, f_debil = 1007.8125, 1203.125
+t_debil = np.arange(N_debil) / fs
+fuerte = np.exp(1j * 2 * np.pi * f_fuerte * t_debil)
+debil = 0.01 * np.exp(1j * 2 * np.pi * f_debil * t_debil)
+f = np.fft.fftshift(np.fft.fftfreq(M, 1 / fs))
+ventanas = [np.ones(N_debil), np.hanning(N_debil + 1)[:-1]]
+def magnitud_db(C):
+    return 20 * np.log10(np.maximum(np.abs(C), 1e-6))
+resultados_debil = {}
 fig, axes = plt.subplots(2, 1, figsize=(12, 8), layout="constrained")
-axes[0].plot(f_captura / 1e6, db_captura, linewidth=0.7)
-axes[0].set(title="Grabación oficial: eje relativo a 99.1 MHz", xlabel="Frecuencia en baseband (MHz)", ylabel="dB relativos al máximo", xlim=(-1.2, 1.2), ylim=(-65, 3), xticks=[-1.2, -1, -0.5, 0, 0.5, 1, 1.2])
-axes[1].plot((fc_captura + f_captura) / 1e6, db_captura, linewidth=0.7)
-axes[1].set(title="El mismo bloque y la misma FFT: eje RF", xlabel="Frecuencia RF (MHz)", ylabel="dB relativos al máximo", xlim=(97.9, 100.3), ylim=(-65, 3), xticks=[97.9, 98.1, 98.6, 99.1, 99.6, 100.1, 100.3])
-for ax, referencias in [(axes[0], [-1, 0, 1]), (axes[1], [98.1, 99.1, 100.1])]:
-    for referencia in referencias:
-        ax.axvline(referencia, color="tab:orange", linestyle="--", alpha=0.6)
+for ax, letra, nombre, w, semiancho in zip(axes, "AB", ["Rectangular", "Hann"], ventanas, [fs / N_debil, 2 * fs / N_debil]):
+    C_fuerte = np.fft.fftshift(np.fft.fft(fuerte * w, M)) / w.sum()
+    C_ambos = np.fft.fftshift(np.fft.fft((fuerte + debil) * w, M)) / w.sum()
+    resultados_debil[nombre] = (f, C_fuerte, C_ambos)
+    ax.axvspan(f_fuerte - semiancho, f_fuerte + semiancho, color="tab:blue", alpha=0.12, label="Main lobe del fuerte")
+    ax.plot(f, magnitud_db(C_fuerte), label="Solo fuerte")
+    ax.plot(f, magnitud_db(C_ambos), "--", label="Fuerte + débil")
+    ax.axvline(f_debil, color="gray", linestyle=":")
+    ax.plot([f_debil], [-40], "ko", label="Débil aislado: −40 dB")
+    ax.set(title=f"{letra}. {nombre}: ancho del main lobe = {2 * semiancho:g} Hz", xlabel="Frecuencia de prueba (Hz)", ylabel="Magnitud (dB respecto a 1)", xlim=(900, 1390), ylim=(-85, 5))
     ax.grid(alpha=0.2)
+    ax.legend(fontsize=9, loc="lower left")
+    k = np.argmin(abs(f - f_debil))
+    print(nombre, ": fuerte solo / ambos (dB):", magnitud_db(C_fuerte)[k], magnitud_db(C_ambos)[k])
 plt.show()
 ```
 
-![FFT de un bloque inicial de la grabación oficial en frecuencia relativa y en RF, con referencias correspondientes en menos uno, cero y más uno MHz](figures/baseband-captura-oficial.png)
+#### 5.8. Dos tonos cercanos: observar más tiempo
 
-**Figura 28.** La grabación oficial se interpreta mediante sus metadatos: un mismo bloque I/Q admite un eje en baseband y otro en RF.
+- **Qué cambia:** el bloque contiene 64, 256, 512 o 1024 muestras adquiridas, no ceros añadidos.
+- **Qué permanece fijo:** tonos de 1000 y 1062.5 Hz, amplitudes 1, fases iniciales cero, $f_s=8000$ S/s, Hann y $M=16384$.
+- **Qué se observa:** aumentan las vueltas sobrantes entre ambos tonos durante el bloque; sus contribuciones espectrales se estrechan.
 
-- **Panel superior — frecuencia relativa:** el cero representa la referencia de la captura. Las líneas de −1, 0 y +1 MHz sirven para localizar posiciones conocidas.
-- **Panel inferior — frecuencia RF:** esas mismas líneas corresponden a 98.1, 99.1 y 100.1 MHz, porque se suma la referencia de 99.1 MHz.
-- **Correspondencia de las curvas:** cada bin tiene la misma altura en ambos paneles. No se volvió a sintonizar el receptor ni se mezclaron las muestras.
-- **Anchura de las estructuras:** la grabación contiene señales moduladas, no únicamente tonos ideales. No se debe contar cada máximo o cada bin como una emisora distinta.
-- **Líneas naranjas:** son referencias de frecuencia, no un detector ni una afirmación de que el máximo de cada señal deba coincidir exactamente con ellas.
-- **Escala vertical:** 0 dB corresponde al bin de mayor magnitud de este bloque. Otra selección temporal podría cambiar las alturas; no se está midiendo potencia RF absoluta.
-- **Información disponible:** solo se analizan unos 6.827 ms de la grabación. La figura no describe por sí sola toda la evolución temporal ni demuestra ausencia de aliasing o de errores del receptor.
+Observar más tiempo permite separar estos tonos estables. Más puntos de FFT, por sí solos, no producen ese cambio.
 
-#### 6.8. Comprobaciones y cierre de la teoría
+![Cuatro espectros del mismo par de tonos con bloques de 64, 256, 512 y 1024 muestras, idénticas escalas y frecuencias conocidas marcadas](figures/fft-duracion-resolucion.png)
 
-??? example "Comprobación 1: una componente por debajo de la referencia"
-    Con $f_c=99.1$ MHz, una componente en −750 kHz corresponde a $99.1-0.75=98.35$ MHz. La frecuencia negativa es relativa al centro, no una RF física negativa.
+**Figura 24.** Al aumentar las muestras adquiridas, los máximos de este par se separan y se aproximan a las frecuencias conocidas.
 
-??? example "Comprobación 2: centrar una componente negativa"
-    Para llevar −600 kHz al cero se multiplica por $e^{j2\pi\,600000\,n/f_s}$. El multiplicador tiene +600 kHz, porque $-600+600=0$. Para esa componente, la nueva referencia RF es $99.1-0.6=98.5$ MHz.
+**Panel A — 8 ms:**
 
-??? example "Comprobación 3: escoger el signo equivocado"
-    Si el objetivo está en +400 kHz y se multiplica por un tono de +400 kHz, aparece en +800 kHz, no en cero. La cancelación exige sumar la frecuencia opuesta.
+- La curva azul combina ambos tonos; las líneas naranjas marcan sus frecuencias conocidas. Los ejes muestran Hz y magnitud normalizada.
+- Solo aparecen 0.5 vueltas sobrantes entre tonos. El máximo combinado está en 1031.25 Hz, donde no se generó ningún tono.
 
-??? example "Comprobación 4: centrar no es aislar"
-    Después de trasladar −400 kHz, el objetivo del ejemplo queda en cero, pero los otros tonos siguen en −1000 y −400 kHz. Para aislar la banda del objetivo hace falta filtrado; para reducir después la tasa hace falta considerar la banda conservada y el filtrado anti-aliasing.
+**Panel B — 32 ms:**
 
-??? example "Comprobación 5: cambiar solo la referencia del visor"
-    Si la captura sigue centrada en 99.1 MHz, un tono en +400 kHz corresponde a 99.5 MHz. Escribir 99.5 MHz como Center Frequency del visor sin mezclar haría etiquetarlo como 99.9 MHz; no cambiaría las muestras ni adquiriría otra banda.
+- Hay dos vueltas sobrantes. La curva forma una meseta con una pequeña muesca central.
+- Sus máximos todavía están desplazados. Contar dos máximos no basta para medir correctamente dos tonos.
 
-La interpretación de una captura se puede organizar así:
+**Panel C — 64 ms:**
 
-1. Identificar el formato, el sample rate y la frecuencia central documentados.
-2. Construir el eje de baseband con la tasa de la etapa que se analiza.
-3. Relacionar una posición con RF mediante $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$, considerando la banda seleccionada y posibles inversiones o aliases.
-4. Si se necesita centrar una señal, multiplicar por un tono complejo con frecuencia opuesta a su desplazamiento.
-5. Seguir la referencia de las muestras transformadas y comprobar si alguna componente cruza el borde.
-6. Distinguir centrar, filtrar, reducir la tasa y demodular: son operaciones diferentes.
+- Hay cuatro vueltas sobrantes. Los máximos aparecen en 1000 y 1062.5 Hz en la rejilla utilizada.
+- Los puntos FFT tienen la misma separación que en A y B. La diferencia procede del bloque adquirido.
 
-Con esta subsección se completa el recorrido teórico de la sesión: las muestras tienen un eje temporal, su carácter I/Q permite distinguir el signo de las frecuencias, la FFT describe un bloque finito y los metadatos permiten relacionar baseband con RF. La selección de un canal mediante filtros queda como puente hacia el siguiente tema. El laboratorio #2 aplica estas ideas en una cadena FM con bloques de GNU Radio; el diseño detallado de filtros no se desarrolla todavía.
+**Panel D — 128 ms:**
 
-#### 6.9. Ejercicios de refuerzo
+- Hay ocho vueltas sobrantes. Los máximos permanecen en las frecuencias conocidas y sus contribuciones son más estrechas.
+- Esta comparación supone tonos estables. Una señal cambiante puede requerir bloques más cortos para observar sus cambios.
 
-##### Ejercicio 6A — pasar de posiciones relativas a RF
+??? note "Para profundizar"
 
-Una captura I/Q tiene $f_c=433.92$ MHz y $f_s=2$ MS/s. Se consideran componentes conocidas en −350 y +125 kHz, sin inversión del espectro ni aliasing de la banda seleccionada.
+    - La separación física es $\Delta f=62.5$ Hz. Las vueltas sobrantes se calculan como $\Delta f\,N/f_s$.
+    - Todas las FFT utilizan $M=16384$ y separación $8000/16384=0.48828125$ Hz.
+    - Para Hann y un tono aislado, el ancho entre primeros ceros es $4f_s/N$.
+    - Ese ancho pasa por 500, 125, 62.5 y 31.25 Hz. No es una garantía universal de separación.
+    - Resolución significa aquí capacidad de distinguir componentes próximas. También depende de amplitudes, fases, ruido, ventana y criterio de separación.
+    - En B, los máximos de esta rejilla están en 1009.765625 y 1052.734375 Hz. No coinciden con los tonos originales.
+    - Las contribuciones se suman como números complejos. Las fases pueden desplazar máximos sin cambiar las frecuencias generadas.
+    - El ejemplo no necesita una envolvente temporal: un tramo sin puntos no significaría que la señal se apaga.
 
-- Calcular sus frecuencias RF y el intervalo RF nominal representativo.
-- Explicar qué significa el signo negativo de la primera componente.
+**Colab — cuatro duraciones con la misma rejilla:**
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+fs, M = 8000, 16384
+frecuencias_par = [1000, 1062.5]
+resultados_duracion = {}
+fig, axes = plt.subplots(2, 2, figsize=(12, 8), layout="constrained")
+for ax, letra, cantidad in zip(axes.flat, "ABCD", [64, 256, 512, 1024]):
+    tk = np.arange(cantidad) / fs
+    zk = np.exp(1j * 2 * np.pi * frecuencias_par[0] * tk) + np.exp(1j * 2 * np.pi * frecuencias_par[1] * tk)
+    wk = np.hanning(cantidad + 1)[:-1]
+    fk = np.fft.fftshift(np.fft.fftfreq(M, 1 / fs))
+    Ck = np.fft.fftshift(np.fft.fft(zk * wk, M)) / wk.sum()
+    resultados_duracion[cantidad] = (fk, Ck)
+    vueltas = (frecuencias_par[1] - frecuencias_par[0]) * cantidad / fs
+    ax.plot(fk, np.abs(Ck), label="Suma de ambos tonos")
+    for frecuencia in frecuencias_par:
+        ax.axvline(frecuencia, color="tab:orange", linestyle="--")
+    ax.set(title=f"{letra}. N={cantidad}: {1000 * cantidad / fs:g} ms; {vueltas:g} vueltas sobrantes", xlabel="Frecuencia (Hz)", ylabel="Magnitud", xlim=(850, 1210), ylim=(-0.03, 1.5))
+    ax.grid(alpha=0.2)
+    print("N:", cantidad, "; vueltas sobrantes:", vueltas)
+plt.show()
+```
+
+#### 5.9. Un pico limpio también puede ser un alias
+
+- **Qué se compara:** dos tonos originales, +5 y −3 kHz, muestreados a 8 kS/s.
+- **Qué permanece fijo:** 64 muestras, amplitud 1, fase inicial cero y ventana rectangular.
+- **Qué se observa:** producen la misma secuencia y la misma FFT, aunque sus frecuencias originales sean distintas.
+
+Una FFT con un pico limpio no demuestra que la adquisición esté libre de aliasing.
+
+![FFT con una barra en menos 3 kHz para muestras que también corresponden a un tono original de más 5 kHz](figures/fft-aliasing-vs-leakage.png)
+
+**Figura 25.** Los tonos de +5 y −3 kHz producen este mismo pico al muestrear a 8 kS/s; la FFT no distingue su origen.
+
+- **Ejes:** frecuencia representativa en Hz y magnitud. El pico está en −3 kHz, alineado con un bin.
+- **Equivalencia:** $5000-8000=-3000$ Hz. Las muestras coinciden, como en la sección 4.
+- **Límite:** añadir ceros o cambiar la ventana no permite elegir entre ambos orígenes.
+
+| Situación | Qué puede ocurrir | Acción útil |
+|---|---|---|
+| Un pico limpio | Puede ser un alias. | Revisar banda de entrada, filtrado y sampling rate de adquisición. |
+| Varias barras de un tono conocido | Puede ser leakage, como en la Figura 19. | Revisar duración, rejilla y ventana. |
+
+??? note "Para profundizar"
+
+    - Aliasing y leakage pueden coexistir. La forma de una captura desconocida no permite separarlos automáticamente.
+    - El aliasing se previene antes de perder la distinción entre componentes: banda, filtrado previo y tasa adecuados.
+    - El padding muestra más puntos del leakage. La ventana y el tiempo observado cambian su forma, con los compromisos anteriores.
+    - Varios bins no cuentan transmisores; un único pico tampoco certifica una adquisición correcta.
+
+**Colab — comprobar ambas secuencias:**
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+fs, N = 8000, 64
+n = np.arange(N)
+z5 = np.exp(1j * 2 * np.pi * 5000 * n / fs)
+zm3 = np.exp(-1j * 2 * np.pi * 3000 * n / fs)
+f = np.fft.fftshift(np.fft.fftfreq(N, 1 / fs))
+C_alias = np.fft.fftshift(np.fft.fft(z5)) / N
+fig, ax = plt.subplots(figsize=(11, 4.5), layout="constrained")
+ax.stem(f, np.abs(C_alias), basefmt=" ")
+ax.set(title="Misma FFT para +5 kHz y −3 kHz muestreados a 8 kS/s", xlabel="Frecuencia representativa (Hz)", ylabel="Magnitud", xlim=(-4100, 4100), ylim=(-0.03, 1.15))
+ax.grid(alpha=0.2)
+print("Mismas muestras:", np.allclose(z5, zm3))
+plt.show()
+```
+
+#### 5.10. Guía para leer un espectro
+
+| Control | Qué cambia | Qué no cambia | Figura |
+|---|---|---|---|
+| $M$: puntos de FFT | Densidad de pruebas. | Muestras adquiridas y tiempo observado. | [20](figures/fft-zero-padding.png) |
+| Ventana | Pesos y forma espectral. | Instantes adquiridos. | [22](figures/fft-ventanas.png) y [23](figures/fft-tono-debil.png) |
+| $N$: muestras adquiridas | Tiempo observado, con $f_s$ fijo. | Frecuencias de los tonos estables del ejemplo. | [24](figures/fft-duracion-resolucion.png) |
+
+1. ¿Qué sampling rate corresponde a las muestras analizadas?
+2. ¿Cuánto tiempo se observó realmente: $N/f_s$?
+3. ¿Cuál es la separación de pruebas: $f_s/M$?
+4. ¿Qué ventana y referencia utiliza la escala vertical?
+5. ¿Los máximos pueden combinar contribuciones, como en la Figura 24?
+6. ¿Qué se conoce de la adquisición para descartar aliasing, como en la Figura 25?
+
+- **Ejemplo SDR:** 4096 muestras a 2.4 MS/s representan aproximadamente 1.707 ms. Con $M=4096$, las pruebas están separadas 585.9375 Hz.
+- La FFT describe el bloque recibido. La sección 6 añadirá los metadatos RF, el promedio y los cambios temporales de una captura real.
+
+??? note "Para profundizar"
+
+    - La Nyquist frequency de ese ejemplo SDR es $f_s/2=1.2$ MHz. No es la separación de bins.
+    - Un máximo de 0 dB respecto a 1 no significa 0 dBm. La referencia debe indicarse antes de comparar alturas.
+    - Los índices de salida no son frecuencias en Hz. La Figura 18 muestra cómo ordenar y etiquetar los mismos coeficientes.
+    - Las Figuras 19 y 24 muestran por qué contar barras o máximos no siempre permite contar tonos.
+    - Los experimentos de sección 5 usan señales sintéticas sin ruido añadido. No incluyen calibración de potencia RF.
+
+#### 5.11. Ejercicios de refuerzo
+
+- Cada ejercicio utiliza los conceptos y las figuras del apartado correspondiente.
+- Las soluciones separan los datos, el cálculo y la interpretación.
+
+##### Ejercicio 5A — Separar datos adquiridos y puntos de FFT
+
+- Un bloque contiene $N=960$ muestras a $f_s=48000$ S/s. Se comparan FFT de $M=960$ y $M=3840$ puntos.
+- Calcular tiempo observado, ceros añadidos, separación entre puntos y Nyquist frequency.
+- ¿La segunda FFT representa una observación de 80 ms? ¿Cómo cambiaría la Figura 20?
+
+??? example "Solución del ejercicio 5A"
+
+    - **Punto de partida:** el apartado 5.5 distingue $N$ de $M$. Las fórmulas son $T_{\mathrm{obs}}=N/f_s$, ceros $=M-N$ y $\Delta f_{\mathrm{FFT}}=f_s/M$.
+    - **Datos:** $N=960$, $f_s=48000$ S/s y longitudes de FFT de 960 y 3840. Las muestras adquiridas son las mismas.
+    - **Paso 1 — duración:** $T_{\mathrm{obs}}=960/48000=0.020$ s, equivalentes a 20 ms. El tiempo observado permanece fijo.
+    - **Paso 2 — ceros:** la primera FFT no añade ceros. La segunda añade $3840-960=2880$ ceros.
+    - **Interpretación de los ceros:** son posiciones de cálculo, no mediciones posteriores. Tampoco demuestran que la señal desapareciera después de 20 ms.
+    - **Paso 3 — separación:** sin padding, $48000/960=50$ Hz. Con padding, $48000/3840=12.5$ Hz.
+    - **Paso 4 — descartar 80 ms:** $3840/48000=0.080$ s requeriría 3840 muestras adquiridas. Aquí solo se adquirieron 960.
+    - **Paso 5 — Nyquist:** $f_s/2=24000$ Hz, es decir, 24 kHz. El intervalo nominal centrado sigue siendo $[-24,+24)$ kHz.
+    - **Lectura de la figura:** el panel A mostraría 960 datos y 2880 ceros. El panel B compararía puntos separados 50 y 12.5 Hz.
+    - **Conclusión:** los puntos quedan cuatro veces más juntos. No aumentan los 20 ms observados ni se estrecha la forma espectral.
+
+##### Ejercicio 5B — Distinguir un tono alineado de otro entre bins
+
+- Se analizan por separado tonos de 1125 y 1100 Hz, con magnitud 1 y fase inicial cero.
+- Se utilizan 64 muestras a 8 kS/s, ventana rectangular y FFT sin padding.
+- ¿Cuál coincide con un bin? Para el tono de 1100 Hz, calcular las vueltas sobrantes al probar 1125 y 1000 Hz.
+- Comparar con las Figuras 16 y 19. ¿El máximo de la FFT cambia la frecuencia generada?
+
+??? example "Solución del ejercicio 5B"
+
+    - **Punto de partida:** los apartados 5.3 y 5.4 usan $f_k=kf_s/N$ y vueltas sobrantes $=(f_0-f_k)N/f_s$.
+    - **Datos:** $N=64$, $f_s=8000$ S/s, rectangular y amplitud 1. La normalización divide la suma entre 64.
+    - **Paso 1 — duración y rejilla:** $T=64/8000=0.008$ s. Las pruebas están separadas $8000/64=125$ Hz.
+    - **Paso 2 — tono alineado:** $1125/125=9$. La prueba del bin 9 deja cero vueltas sobrantes y suma 64 flechas iguales.
+    - **Resultado alineado:** su barra mide $64/64=1$; las otras se cancelan, salvo redondeo numérico. Es el comportamiento de la Figura 16.
+    - **Paso 3 — tono intermedio:** $1100/125=8.8$ no es entero. No hay una prueba exactamente en 1100 Hz, como ocurre en la Figura 19.
+    - **Paso 4 — probar 1125 Hz:** $(1100-1125)(0.008)=-0.2$ vueltas sobrantes. La magnitud normalizada de la suma es aproximadamente 0.936.
+    - **Paso 5 — probar 1000 Hz:** $(1100-1000)(0.008)=+0.8$ vueltas sobrantes. La magnitud es aproximadamente 0.234.
+    - **Interpretación:** en este caso gana la prueba de 1125 Hz. El tono generado sigue siendo de 1100 Hz.
+    - **Límite:** no existe una regla universal de altura basada solo en cercanía. La ventana, los lóbulos y otras componentes también influyen.
+
+##### Ejercicio 5C — Elegir una modificación del análisis
+
+- Comparar las Figuras 20, 23 y 24.
+- ¿Qué modificación dibuja más puntos? ¿Cuál reduce la contribución lejana del fuerte? ¿Cuál permite separar el par estable del ejemplo?
+- Indicar qué cambia, qué permanece fijo y qué límite conserva cada elección.
+
+??? example "Solución del ejercicio 5C"
+
+    - **Punto de partida:** los apartados 5.5, 5.7 y 5.8 distinguen puntos $M$, pesos $w[n]$ y muestras adquiridas $N$.
+    - **Paso 1 — más puntos:** la Figura 20 cambia $M$ de 64 a 512. Conserva $N=64$, $f_s=8000$ S/s y rectangular.
+    - **Cálculo del padding:** el tiempo sigue siendo $64/8000=8$ ms. La separación pasa de 125 a 15.625 Hz.
+    - **Límite del padding:** el panel B añade puntos sobre la misma forma. No adquiere datos ni estrecha sus lóbulos.
+    - **Paso 2 — contribuciones lejanas:** la Figura 23 cambia rectangular por Hann. Conserva los dos tonos, $N=256$, $f_s=8000$ S/s y $M=8192$.
+    - **Operación:** se analiza $x[n]w[n]$ y se divide la FFT entre $\sum w[n]$ para comparar magnitudes.
+    - **Límite de Hann:** baja la contribución del fuerte en la frecuencia del débil, pero ensancha el main lobe. No garantiza separar tonos más próximos.
+    - **Paso 3 — más observación:** la Figura 24 cambia $N$ entre 64, 256, 512 y 1024. Conserva tonos, Hann, sampling rate y $M=16384$.
+    - **Cálculo temporal:** los bloques representan 8, 32, 64 y 128 ms. Todos los espectros tienen separación $8000/16384=0.48828125$ Hz.
+    - **Lectura:** los paneles C y D sitúan los máximos en las frecuencias conocidas. La mejora no procede del número de puntos, que permanece fijo.
+    - **Límite temporal:** una observación larga puede combinar estados diferentes si la señal cambia. La elección depende de la pregunta del análisis.
+
+##### Ejercicio 5D — Desafío opcional: recuperar el bloque analizado
+
+- Se conserva $x[n]$ y se calcula $X_w[k]=\operatorname{DFT}\{x[n]w[n]\}$ con Hann, sin normalización ni reordenamiento.
+- ¿Qué recupera su inversa? ¿Basta guardar $|X_w[k]|$? ¿Corregir la normalización deshace la ventana?
+- La Figura 22 muestra los pesos. La Figura 8 compara señales con iguales magnitudes espectrales y distintas fases.
+
+??? example "Solución del ejercicio 5D"
+
+    - **Punto de partida:** el apartado 5.7 define $x_w[n]=x[n]w[n]$. El apartado 3.5 explica que la inversa recupera el bloque entregado a la DFT.
+    - **Datos:** $X_w[k]$ contiene coeficientes complejos completos, en orden original y sin normalización adicional.
+    - **Paso 1 — entrada:** la transformada recibió $x_w[n]$, no $x[n]$. Por tanto, $\operatorname{IDFT}\{X_w[k]\}=x[n]w[n]$.
+    - **Resultado:** la inversa recupera $x[n]w[n]$. La multiplicación por la ventana ya modificó los valores originales.
+    - **Paso 2 — fase:** $X_w[k]=|X_w[k]|e^{j\psi_k}$. Guardar solo magnitudes elimina $\psi_k$ y no permite determinar el bloque original.
+    - **Ejemplo:** la Figura 8 muestra señales distintas con iguales magnitudes. Una inversa de magnitudes asignaría fase cero a los coeficientes.
+    - **Paso 3 — escala:** si $C_w[k]=X_w[k]/\sum w[n]$, multiplicar por $\sum w[n]$ recupera $X_w[k]$, no $x[n]$.
+    - **Comprobación:** la inversa de $C_w[k]$ es $x[n]w[n]/\sum w[n]$. Corregir esa escala deja los pesos individuales presentes.
+    - **Paso 4 — orden:** si el visor aplicó `fftshift`, primero se aplica `np.fft.ifftshift(C)`. La inversa espera el orden original.
+    - **Paso 5 — muestra perdida:** Hann tiene $w[0]=0$. El producto $x[0]w[0]=0$ no permite conocer qué valor tenía $x[0]$.
+    - **Límite:** dividir por cero no recupera esa muestra. Dividir por pesos pequeños también puede amplificar errores numéricos.
+    - **Conclusión:** se conservan las muestras originales y sus metadatos. La transformada completa conserva el bloque con ventana, no deshace la ventana previa.
+
+##### Ejercicio 5E — Ordenar tres pruebas mediante vueltas sobrantes
+
+- Un tono de 2030 Hz tiene amplitud 1 y fase inicial cero. Se toman 100 muestras a 10 kS/s con ventana rectangular.
+- Calcular las vueltas sobrantes para pruebas de 2000, 2100 y 2500 Hz.
+- Ordenar las tres barras y comprobar sus magnitudes con una suma compleja.
+
+??? example "Solución del ejercicio 5E"
+
+    - **Punto de partida:** el apartado 5.4 relaciona las barras con $|\sum x[n]e^{-j2\pi f_{\mathrm{prueba}}n/f_s}|/N$ y las vueltas sobrantes.
+    - **Datos:** $f_0=2030$ Hz, $N=100$, $f_s=10000$ S/s y rectangular. El tiempo observado es $100/10000=0.01$ s.
+    - **Paso 1 — prueba de 2000 Hz:** $(2030-2000)(0.01)=+0.3$ vueltas sobrantes.
+    - **Paso 2 — prueba de 2100 Hz:** $(2030-2100)(0.01)=-0.7$ vueltas sobrantes.
+    - **Paso 3 — prueba de 2500 Hz:** $(2030-2500)(0.01)=-4.7$ vueltas sobrantes.
+    - **Paso 4 — verificar las sumas:** las magnitudes normalizadas son aproximadamente 0.858406, 0.367913 y 0.054991, respectivamente.
+    - **Resultado:** la barra de 2000 Hz supera a la de 2100 Hz; ambas superan a la de 2500 Hz.
+    - **Interpretación:** esos valores describen estas tres pruebas. No convierten la cercanía en una regla universal para cualquier ventana o conjunto de tonos.
+
+??? note "Comprobar el ejercicio 5E con Python"
+
+    ```python
+    import numpy as np
+    fs, N, f0 = 10000, 100, 2030
+    n = np.arange(N)
+    x = np.exp(1j * 2 * np.pi * f0 * n / fs)
+    for prueba in [2000, 2100, 2500]:
+        suma = np.sum(x * np.exp(-1j * 2 * np.pi * prueba * n / fs))
+        print(prueba, (f0 - prueba) * N / fs, abs(suma) / N)
+    ```
+
+### 6. Leer una captura SDR real
+
+- La grabación oficial contiene muestras I/Q de una banda de radio, no una lista de emisoras.
+- Esta sección relaciona las muestras con RF, observa sus cambios y prepara la demodulación FM del laboratorio.
+- Los ejemplos usan `fm_99p1MHz_2p4Msps_g30.cu8`. La demostración del giro usa una señal sintética conocida.
+
+#### 6.1. ¿Qué frecuencia de radio representa cada punto?
+
+- **Referencia:** $f_c=99.1$ MHz identifica la frecuencia RF que corresponde al cero de baseband.
+- **Sampling rate:** $f_s=2.4$ MS/s indica cuántas muestras complejas se adquirieron por segundo.
+- **Formato CU8:** cada muestra ocupa dos bytes sin signo: primero I y después Q.
+- **Metadatos:** CU8 no guarda por sí solo $f_s$, $f_c$ ni el orden I/Q. Esos datos acompañan al archivo.
+
+El cero de este eje representa 99.1 MHz de radio, no 0 Hz de radio.
+
+$$
+f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}},\qquad f_{\mathrm{BB}}=f_{\mathrm{RF}}-f_c.
+$$
+
+| Posición en baseband | Cálculo | Etiqueta RF |
+|---:|---|---:|
+| −1 MHz | $99.1-1$ MHz | 98.1 MHz |
+| 0 Hz | $99.1+0$ MHz | 99.1 MHz |
+| +1 MHz | $99.1+1$ MHz | 100.1 MHz |
+
+- Una frecuencia negativa indica una posición a la izquierda del centro. No indica una RF física negativa.
+- El intervalo nominal es $[-f_s/2,+f_s/2)$: aquí, $[-1.2,+1.2)$ MHz en baseband y $[97.9,100.3)$ MHz en RF.
+- El extremo derecho no se incluye. El intervalo nominal no garantiza una respuesta plana del receptor.
+- Cambiar `Center Frequency` del visor cambia etiquetas; no transforma las muestras del archivo ni sintoniza el receptor.
+
+??? note "Para profundizar"
+
+    - Los 2.4 MS/s corresponden a las muestras I/Q de salida del receptor, después de la conversión de frecuencia.
+    - La FFT no puede descubrir $f_c$ sin información adicional.
+    - La interpretación supone una captura sin inversión espectral y una banda correctamente seleccionada, sin superposición por aliasing.
+    - Los errores de sintonía y calibración pueden desplazar las posiciones medidas respecto a las nominales.
+    - Una conexión de control al hardware sería una acción adicional; no es el efecto de reetiquetar el visor.
+    - Referencias: [I/Q en GNU Radio](https://wiki.gnuradio.org/index.php/IQ_Complex_Tutorial) y [Frequency Sink](https://wiki.gnuradio.org/index.php/QT_GUI_Frequency_Sink).
+
+#### 6.2. ¿Por qué cambia el espectro entre bloques?
+
+- **Qué cambia:** se compara un bloque con el promedio de 200 bloques consecutivos.
+- **Qué permanece fijo:** captura, ventana Hann, 4096 muestras por bloque y escalas de los paneles.
+- **Qué se observa:** el promedio reduce la variación entre bloques; no estrecha los detalles que cada bloque puede distinguir.
+- Cada bloque representa unos 1.707 ms. Los 200 bloques representan unos 341.333 ms.
+- Se promedia la potencia lineal: primero $|X[k]|^2$, después el promedio y finalmente la conversión a dB.
+
+Un bloque muestra un instante breve. El promedio permite comparar la potencia observada durante varios bloques.
+
+![Un espectro de la captura frente al promedio de 200 bloques, con igual escala RF y marcas de tres bandas](figures/captura-promedio-rf.png)
+
+**Figura 26.** El promedio muestra con menos variación las bandas de la captura; ambos paneles usan bloques del mismo tamaño.
+
+**Panel A — un bloque:**
+
+- El eje horizontal muestra RF en MHz. El eje vertical muestra potencia relativa en dB, sin calibración en dBm.
+- La curva azul corresponde a las primeras 4096 muestras. Sus irregularidades no significan que cada pico sea una emisora distinta.
+- Las líneas señalan 98.1, 99.1 y 100.1 MHz. Esas referencias no cambian entre paneles.
+
+**Panel B — promedio:**
+
+- La curva naranja promedia 200 estimaciones de potencia. Los paneles comparten referencia y límites verticales.
+- Se observan bandas alrededor de las tres referencias. La marca negra de 200 kHz sirve como regla visual, no como ancho medido.
+- La separación entre bins sigue siendo $2400000/4096=585.9375$ Hz. Promediar no añade muestras a cada bloque.
+
+??? note "Para profundizar"
+
+    - La potencia relativa se calcula como $10\log_{10}(P/P_{\mathrm{ref}})$, con una referencia común a los dos paneles.
+    - Aquí $P_{\mathrm{ref}}$ es el máximo del promedio. Un bloque individual puede superar 0 dB respecto a esa referencia.
+    - La escala no es potencia calibrada en dBm ni una densidad espectral expresada por Hz.
+    - Promediar coeficientes complejos puede cancelar fases. Promediar dB tampoco equivale a promediar potencia lineal.
+    - El promedio puede ocultar señales breves. El waterfall del apartado siguiente conserva información sobre cuándo aparece la potencia.
+    - La normalización es fija: $|\mathrm{FFT}(xw)|^2/(\sum w)^2$. No se normaliza cada bloque por su propio máximo.
+    - Referencia: [estimación mediante periodogramas promediados, SciPy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html).
+
+**Colab:** el archivo se sube al directorio del notebook. Esta celda funciona sin ejecutar los apartados anteriores.
+
+```python
+from pathlib import Path
+import numpy as np
+import matplotlib.pyplot as plt
+
+ruta = Path(globals().get("ruta_captura", "fm_99p1MHz_2p4Msps_g30.cu8"))
+fs, fc, N, bloques = 2400000, 99100000, 4096, 200
+if not ruta.is_file():
+    raise FileNotFoundError(f"Falta la grabación: {ruta}")
+if ruta.stat().st_size % 2:
+    raise ValueError("El archivo CU8 debe contener pares completos I/Q")
+raw = np.fromfile(ruta, dtype=np.uint8, count=2 * N * bloques)
+if raw.size != 2 * N * bloques:
+    raise ValueError("Se necesitan 200 bloques completos de 4096 muestras I/Q")
+v = (raw.astype(np.float32) - 127.5) / 127.5
+z = (v[0::2] + 1j * v[1::2]).reshape(bloques, N)
+w = 0.5 - 0.5 * np.cos(2 * np.pi * np.arange(N) / N)
+P = np.abs(np.fft.fftshift(np.fft.fft(z * w, axis=1), axes=1)) ** 2 / w.sum() ** 2
+promedio = P.mean(axis=0)
+referencia = max(promedio.max(), np.finfo(float).tiny)
+db = 10 * np.log10(np.maximum(np.vstack([P[0], promedio]) / referencia, 1e-12))
+f_rf = (fc + np.fft.fftshift(np.fft.fftfreq(N, 1 / fs))) / 1e6
+fig, axes = plt.subplots(2, 1, figsize=(12, 7), layout="constrained")
+for ax, valores, color, titulo in zip(axes, db, ["tab:blue", "tab:orange"], ["A. Un bloque: 1.707 ms", "B. Promedio de 200 bloques: 341.333 ms"]):
+    ax.plot(f_rf, valores, color=color, linewidth=0.8)
+    for frecuencia in [98.1, 99.1, 100.1]:
+        ax.axvline(frecuencia, color="gray", linestyle="--", alpha=0.6)
+        ax.text(frecuencia, 8, f"{frecuencia:.1f} MHz", ha="center")
+    ax.set(title=titulo, xlabel="Frecuencia RF (MHz)", ylabel="Potencia relativa (dB)", xlim=(97.9, 100.3), ylim=(-65, 14))
+    ax.grid(alpha=0.2)
+axes[1].annotate("", xy=(99.2, -51), xytext=(99.0, -51), arrowprops={"arrowstyle": "<->", "color": "black"})
+axes[1].text(99.1, -60, "Regla: 200 kHz (no es un ancho medido)", ha="center", fontsize=9, bbox={"facecolor": "white", "alpha": 0.85, "edgecolor": "none"})
+print("Duración por bloque (ms):", 1000 * N / fs, "; separación de bins (Hz):", fs / N)
+plt.show()
+```
+
+#### 6.3. ¿Qué cambia y qué permanece durante la captura?
+
+- **Waterfall:** vista que apila espectros en el tiempo. El color indica la potencia en cada posición.
+- **Qué cambia:** el tramo temporal de la grabación que representa cada fila.
+- **Qué permanece fijo:** ventana Hann, 4096 muestras por bloque y escala de color.
+- Cada fila promedia diez bloques consecutivos. Se muestran 585 filas, que cubren 9.984 s.
+
+El waterfall muestra dónde aparece potencia y cómo cambia durante la grabación.
+
+![Waterfall de la captura con frecuencia RF, tiempo y escala de potencia relativa; marcas para bandas, líneas estrechas y bordes](figures/captura-waterfall.png)
+
+**Figura 27.** El waterfall separa los cambios temporales de las bandas, las líneas estrechas estables y la atenuación observada en los bordes.
+
+- **Ejes y color:** RF aumenta hacia la derecha; el tiempo avanza hacia abajo. El color claro representa mayor potencia según la barra lateral.
+- **Marcas A y B:** A señala bandas anchas; B señala una línea estrecha estable. La forma de B no basta para identificar su origen.
+- **Marca C:** el borde tiene menor potencia en esta vista. La figura no demuestra qué etapa del receptor produce esa diferencia.
+
+??? note "Para profundizar"
+
+    - Una línea estrecha puede corresponder a una portadora, una interferencia o un artefacto del receptor.
+    - Una banda ancha tampoco demuestra por sí sola qué modulación utiliza.
+    - Una prueba adicional de demodulación detectó un componente próximo a 19 kHz en las tres bandas señaladas.
+    - Ese resultado respalda la presencia de un piloto estéreo. No identifica nombres de emisoras ni demuestra una decodificación estéreo completa.
+    - Referencia del piloto: [ITU-R BS.450-3, apartado 2.2.2.3](https://www.itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.450-3-200111-S%21%21PDF-E.pdf).
+    - Cada fila cubre $10(4096)/2400000\approx17.067$ ms. No hay huecos entre las filas utilizadas.
+    - Se omiten los últimos 0.016 s, porque no completan otra fila. El eje termina en 9.984 s.
+    - La actualización de una pantalla GNU Radio no equivale necesariamente a este agrupamiento temporal calculado desde el archivo.
+
+**Colab — waterfall independiente:** la celda lee bloques pequeños para no transformar toda la captura de una sola vez.
+
+```python
+from pathlib import Path
+import numpy as np
+import matplotlib.pyplot as plt
+
+ruta = Path(globals().get("ruta_captura", "fm_99p1MHz_2p4Msps_g30.cu8"))
+fs, fc, N, por_fila = 2400000, 99100000, 4096, 10
+if not ruta.is_file():
+    raise FileNotFoundError(f"Falta la grabación: {ruta}")
+if ruta.stat().st_size % 2:
+    raise ValueError("El archivo CU8 debe contener pares completos I/Q")
+filas = min(ruta.stat().st_size // (2 * N * por_fila), 585)
+if filas < 1:
+    raise ValueError("Se necesitan diez bloques completos de 4096 muestras I/Q")
+w = 0.5 - 0.5 * np.cos(2 * np.pi * np.arange(N) / N)
+potencia = np.empty((filas, N))
+with ruta.open("rb") as archivo:
+    for fila in range(filas):
+        raw = np.fromfile(archivo, dtype=np.uint8, count=2 * N * por_fila)
+        v = (raw.astype(np.float32) - 127.5) / 127.5
+        z = (v[0::2] + 1j * v[1::2]).reshape(por_fila, N)
+        P = np.abs(np.fft.fftshift(np.fft.fft(z * w, axis=1), axes=1)) ** 2 / w.sum() ** 2
+        potencia[fila] = P.mean(axis=0)
+referencia = max(potencia.mean(axis=0).max(), np.finfo(float).tiny)
+db = 10 * np.log10(np.maximum(potencia / referencia, 1e-12))
+f_rf = (fc + np.fft.fftshift(np.fft.fftfreq(N, 1 / fs))) / 1e6
+paso_f = fs / N / 1e6
+tiempo_bordes = np.arange(filas + 1) * por_fila * N / fs
+frecuencia_bordes = np.r_[f_rf - paso_f / 2, f_rf[-1] + paso_f / 2]
+fig, ax = plt.subplots(figsize=(12, 6.5), layout="constrained")
+imagen = ax.pcolormesh(frecuencia_bordes, tiempo_bordes, db, cmap="magma", vmin=-50, vmax=5, shading="flat", rasterized=True)
+ax.set(title="La misma captura observada a lo largo del tiempo", xlabel="Frecuencia RF (MHz)", ylabel="Tiempo desde el inicio (s)", xlim=(97.9, 100.3), ylim=(tiempo_bordes[-1], 0))
+for frecuencia in [98.1, 99.1, 100.1]:
+    ax.text(frecuencia, tiempo_bordes[-1] * 0.12, "A: banda", color="white", ha="center", bbox={"facecolor": "black", "alpha": 0.65})
+ax.annotate("B: línea estable", xy=(99.36, tiempo_bordes[-1] * 0.5), xytext=(99.53, tiempo_bordes[-1] * 0.65), color="white", arrowprops={"arrowstyle": "->", "color": "white"})
+ax.annotate("C: borde", xy=(97.93, tiempo_bordes[-1] * 0.7), xytext=(98.3, tiempo_bordes[-1] * 0.85), color="white", arrowprops={"arrowstyle": "->", "color": "white"})
+fig.colorbar(imagen, ax=ax, label="Potencia relativa (dB; referencia común a todas las filas)")
+print("Filas:", filas, "; segundos mostrados:", tiempo_bordes[-1])
+plt.show()
+```
+
+#### 6.4. ¿Cuánta banda necesita conservar el receptor?
+
+- La Figura 26 muestra bandas, no tonos aislados. La marca de 200 kHz permite comparar tamaños, pero no mide automáticamente su ancho.
+- El ancho observado depende del contenido transmitido, el ruido y el criterio elegido para marcar sus límites.
+- El laboratorio filtra la banda central antes de reducir el sampling rate. Así evita superponer las otras bandas al canal deseado.
+
+$$
+f_{s,\mathrm{canal}}=2400000\frac{2}{25}=192000\ \mathrm{S/s}.
+$$
+
+- Las muestras complejas resultantes representan el intervalo nominal $[-96,+96)$ kHz.
+- Esta cadena didáctica permite escuchar audio mono. No garantiza conservar toda emisión FM completa y sin distorsión.
+- El diseño del filtro y la selección de una banda fuera del centro se estudiarán en S03 y S04.
+
+??? note "Para profundizar"
+
+    - El Rational Resampler combina filtrado y cambio de tasa; no se limita a retirar muestras.
+    - Con los parámetros predeterminados utilizados, el diseño nominal conserva aproximadamente hasta ±76.8 kHz antes de la transición hacia ±96 kHz.
+    - Esos límites describen el diseño, no un filtro ideal con un salto abrupto.
+    - Los 192 kHz nominales no contienen necesariamente toda la energía de una emisión cuyo ancho sea mayor.
+    - Dividir 2.4 MHz entre 200 kHz no predice cuántas emisoras se recibirán. También importan separaciones, filtros y señales presentes.
+    - Referencia: [diseño del Rational Resampler](https://raw.githubusercontent.com/gnuradio/gnuradio/v3.10.12.0/gr-filter/lib/rational_resampler_impl.cc).
+
+#### 6.5. ¿Cómo permite FM recuperar el audio?
+
+- **FM, frequency modulation:** el mensaje modifica la frecuencia instantánea; en el plano I/Q, modifica el avance de fase entre muestras.
+- **Qué cambia:** un mensaje sinusoidal controla el giro de una señal sintética.
+- **Qué permanece fijo:** amplitud 1, sampling rate de 48 kS/s y desviación máxima de 6 kHz.
+- **Qué se observa:** medir el giro y aplicar la escala conocida recupera el mensaje utilizado para generar las muestras.
+
+En FM, el mensaje cambia el giro entre muestras. El demodulador mide ese cambio para recuperar el mensaje.
+
+![Flechas de una señal FM sintética, giros entre muestras y coincidencia entre mensaje original y recuperado](figures/fm-giro-entre-muestras.png)
+
+**Figura 28.** En esta simulación, el giro entre muestras sigue el mensaje; una escala conocida permite recuperar sus valores desde la segunda muestra.
+
+**Panel A — muestras I/Q:**
+
+- Los ejes son I y Q. Cada flecha representa una muestra; las etiquetas indican su orden.
+- Las flechas tienen la misma longitud. Cambia el ángulo que separa una muestra de la siguiente.
+- Las primeras muestras avanzan cada vez más porque el mensaje aumenta durante ese tramo.
+
+**Panel B — giro medido:**
+
+- El eje horizontal identifica la muestra que termina cada intervalo. Las barras muestran el giro en grados.
+- Un giro positivo indica avance en sentido antihorario; uno negativo indica avance en sentido horario.
+- El máximo es 45°. No aparece un valor para la primera muestra, porque no tiene una muestra anterior en el bloque.
+
+**Panel C — mensaje recuperado:**
+
+- El eje horizontal muestra tiempo. La curva azul es el mensaje original; los puntos naranjas son el resultado de medir y escalar el giro.
+- Los puntos coinciden con el mensaje desde la segunda muestra. Las muestras I/Q no se convirtieron en una componente constante.
+- Esta comparación usa una simulación conocida, no el audio original de una emisora real.
+
+**La operación después de verla:**
+
+- $z[n]$ es una muestra del canal seleccionado y centrado. El asterisco indica conjugado.
+- $\arg$ obtiene el ángulo principal, en radianes. El producto permite comparar la fase actual con la anterior.
+
+$$
+\Delta\theta[n]=\arg\left(z[n]z^*[n-1]\right),\qquad n\geq1.
+$$
+
+- $\Delta f$ es la desviación máxima usada para generar esta FM. $\widehat m[n]$ es el mensaje estimado.
+
+$$
+\widehat m[n]=\frac{f_s}{2\pi\Delta f}\Delta\theta[n].
+$$
+
+- En el laboratorio, primero se selecciona el canal. Después del giro se aplican filtrado, decimación y de-emphasis.
+- **De-emphasis:** compensación del realce de altas frecuencias aplicado en la transmisión. Esa cadena entrega audio mono, no dos canales estéreo.
+
+??? note "Para profundizar"
+
+    - La simulación define $\theta[n]=\theta[n-1]+2\pi\Delta f\,m[n]/f_s$ y $z[n]=e^{j\theta[n]}$.
+    - Por ello, $z[n]z^*[n-1]=e^{j2\pi\Delta f\,m[n]/f_s}$.
+    - Si el giro verdadero cumple $|\Delta\theta|<\pi$, el argumento principal conserva ese giro sin ambigüedad.
+    - La fase no está definida cuando la amplitud es cero. El ruido también afecta la estimación.
+    - Una frecuencia residual produce un término adicional. Centrar el canal no equivale a eliminar su modulación.
+    - Para una FM continua, el giro mide la frecuencia media entre dos muestras, no necesariamente su valor en el instante final.
+    - En WBFM Receive, la tasa usada para escalar el giro es 192 kS/s, no la tasa inicial de 2.4 MS/s.
+    - Su desviación nominal es 75 kHz. La simulación emplea 6 kHz para observar giros pequeños con pocos puntos.
+    - Referencias: [Quadrature Demod](https://raw.githubusercontent.com/gnuradio/gnuradio/v3.10.12.0/gr-analog/lib/quadrature_demod_cf_impl.cc) y [WFM Receive](https://raw.githubusercontent.com/gnuradio/gnuradio/v3.10.12.0/gr-analog/python/analog/wfm_rcv.py).
+
+**Colab — mensaje conocido:** esta celda es independiente y no necesita la captura ni produce WAV.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+fs, desviacion, frecuencia_mensaje, N = 48000, 6000, 1000, 48
+n = np.arange(N)
+t = n / fs
+mensaje = np.sin(2 * np.pi * frecuencia_mensaje * t)
+fase = 2 * np.pi * desviacion / fs * np.cumsum(mensaje)
+z = np.exp(1j * fase)
+giro = np.angle(z[1:] * np.conj(z[:-1]))
+recuperado = fs / (2 * np.pi * desviacion) * giro
+fig = plt.figure(figsize=(13, 7), layout="constrained")
+rejilla = fig.add_gridspec(2, 2)
+a = fig.add_subplot(rejilla[0, 0])
+b = fig.add_subplot(rejilla[0, 1])
+c = fig.add_subplot(rejilla[1, :])
+angulos = np.linspace(0, 2 * np.pi, 300)
+a.plot(np.cos(angulos), np.sin(angulos), color="lightgray")
+for k in range(9):
+    a.annotate("", xy=(z[k].real, z[k].imag), xytext=(0, 0), arrowprops={"arrowstyle": "->", "color": plt.cm.viridis(k / 8)})
+    a.text(1.14 * z[k].real, 1.14 * z[k].imag, str(k), ha="center", va="center")
+a.set(title="A. Primeras nueve muestras: cambia el giro", xlabel="I", ylabel="Q", aspect="equal", xlim=(-1.35, 1.35), ylim=(-1.35, 1.35))
+b.bar(n[1:], np.rad2deg(giro), color="tab:orange")
+b.set(title="B. Giro desde la muestra anterior", xlabel="Índice n", ylabel="Giro (grados)", ylim=(-50, 50))
+c.plot(t * 1000, mensaje, color="tab:blue", label="Mensaje original")
+c.plot(t[1:] * 1000, recuperado, "o", color="tab:orange", markersize=4, label="Mensaje recuperado")
+c.set(title="C. El giro medido, multiplicado por una escala conocida", xlabel="Tiempo (ms)", ylabel="Valor del mensaje", ylim=(-1.2, 1.2))
+c.legend()
+for ax in [a, b, c]:
+    ax.grid(alpha=0.2)
+print("Error máximo:", np.max(np.abs(recuperado - mensaje[1:])))
+plt.show()
+```
+
+#### 6.6. ¿Y si interesa la banda situada fuera del centro?
+
+La banda de 98.1 MHz está fuera del centro. S04 explicará cómo centrarla, filtrarla y reducir la tasa.
+
+![Espectros de la captura antes y después de centrar la banda de 98.1 MHz, mostrando que las otras bandas también se desplazan](figures/captura-adelanto-seleccion.png)
+
+**Figura 29.** Centrar la banda deseada mueve todas las componentes; el filtrado posterior selecciona el canal que llegará al demodulador.
+
+- **Panel A:** la banda objetivo está en −1 MHz; la franja naranja es una referencia visual, no un ancho medido ni un filtro aplicado.
+- **Panel B:** la banda objetivo queda en cero, pero conserva su ancho y sus cambios; no se convierte en una constante.
+- **Comparación:** las otras bandas también se desplazan y permanecen presentes; S04 explicará el desplazamiento, sus bordes y el filtrado posterior.
+
+??? note "Ampliación opcional hacia S04"
+
+    - La [demostración interactiva de mezcla compleja](mezcla-interactiva.md) permite explorar este desplazamiento con tonos conocidos.
+    - No es necesaria para resolver los ejercicios de S02.
+    - El archivo `figures/gen_captura_sdr.py`, incluido en el proyecto, conserva el cálculo reproducible sobre la captura real.
+
+#### 6.7. Comprobaciones y Ejercicios de refuerzo
+
+- **Metadatos:** sin $f_c$, la FFT entrega posiciones relativas; no permite asignar una RF a cada punto.
+- **Etiquetas:** escribir otra frecuencia central en el visor no cambia las muestras de la captura.
+- **Giro:** con $f_s=48$ kS/s y $\Delta f=6$ kHz, un giro de $\pi/4$ produce $\widehat m=1$.
+
+##### Ejercicio 6A — De baseband a RF
+
+- Una captura tiene $f_c=433.92$ MHz y $f_s=2$ MS/s.
+- Dos componentes aparecen en −350 kHz y +125 kHz. ¿Qué RF corresponde a cada una?
+- ¿Cuál es el intervalo RF nominal de la captura?
 
 ??? example "Solución del ejercicio 6A"
 
-    - **Punto de partida:** el apartado 6.1 utiliza $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$ y el intervalo nominal $[f_c-f_s/2,f_c+f_s/2)$. La suma requiere expresar las frecuencias en unidades compatibles. Se conserva la convención del enunciado: sin inversión del espectro ni aliasing de la banda seleccionada.
-    - **Paso 1 — convertir los desplazamientos:** −350 kHz equivale a −0.350 MHz y +125 kHz equivale a +0.125 MHz. No se suman directamente los números 433.92 y 125 sin esta conversión, porque sus unidades originales son diferentes.
-    - **Paso 2 — componente por debajo de la referencia:** $f_{\mathrm{RF},1}=433.92+(-0.350)=433.57$ MHz. El desplazamiento negativo se resta de la frecuencia central; la RF resultante sigue siendo positiva.
-    - **Paso 3 — componente por encima de la referencia:** $f_{\mathrm{RF},2}=433.92+0.125=434.045$ MHz. El signo positivo indica que está a la derecha del cero de baseband, 125 kHz por encima de la referencia.
-    - **Paso 4 — construir el intervalo nominal:** $f_s=2$ MS/s da un semiancho de representación $f_s/2=1$ MHz. Baseband se representa en $[-1,+1)$ MHz; al sumar 433.92 MHz a ambos extremos, RF se representa en $[432.92,434.92)$ MHz. Se incluye el extremo izquierdo y se excluye el derecho, conforme a la convención de la subsección 4.
-    - **Interpretación de los signos y del ancho:** −350 kHz es una frecuencia relativa, no una RF física de valor negativo. El intervalo nominal tiene ancho 2 MHz por el sample rate complejo, pero no certifica respuesta plana ni 2 MHz de banda útil del hardware. La FFT y los metadatos permiten etiquetar el eje; no reemplazan la caracterización del receptor.
+    - **Punto de partida:** el apartado 6.1 establece $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$. La frecuencia central y el desplazamiento cumplen funciones distintas.
+    - **Datos:** $f_c=433.92$ MHz, $f_s=2$ MS/s y desplazamientos de −0.350 MHz y +0.125 MHz.
+    - **Paso 1 — componente izquierda:** $433.92-0.350=433.57$ MHz. El signo negativo indica una posición por debajo de la referencia.
+    - **Paso 2 — componente derecha:** $433.92+0.125=434.045$ MHz. El signo positivo indica una posición por encima de la referencia.
+    - **Paso 3 — límites:** $f_s/2=1$ MHz. Los extremos son $433.92-1=432.92$ MHz y $433.92+1=434.92$ MHz.
+    - **Interpretación:** el intervalo nominal es $[432.92,434.92)$ MHz. Su ancho no garantiza que el receptor responda igual en toda la banda.
 
-##### Ejercicio 6B — centrar una componente que está a la izquierda
+##### Ejercicio 6B — Bytes, muestras y tiempo
 
-La captura tiene $f_c=99.1$ MHz y $f_s=2.4$ MS/s. Se desea centrar un objetivo en 98.7 MHz; también hay componentes en 99.1 y 99.5 MHz.
-
-- Calcular la posición inicial del objetivo, la frecuencia del multiplicador y la nueva referencia RF.
-- Determinar las posiciones de salida de las otras dos componentes e indicar si quedaron eliminadas.
+- Un fragmento de la captura oficial contiene 48 000 bytes CU8.
+- ¿Cuántas muestras complejas contiene y cuánto tiempo representa a 2.4 MS/s?
+- Una banda está en −1 MHz de baseband. ¿Cuál es su RF si $f_c=99.1$ MHz?
 
 ??? example "Solución del ejercicio 6B"
 
-    - **Punto de partida:** el apartado 6.1 calcula $f_{\mathrm{BB}}=f_{\mathrm{RF}}-f_c$. El apartado 6.3 define la mezcla $y[n]=x[n]e^{j2\pi f_{\mathrm{mix}}n/f_s}$ y demuestra que cada componente pasa de $f_0$ a $f_0+f_{\mathrm{mix}}$. Para conservar la interpretación RF después de esta operación, se utiliza la nueva referencia $f_c'=f_c-f_{\mathrm{mix}}$ del apartado 6.4.
-    - **Paso 1 — posición inicial del objetivo:** $f_{\mathrm{BB,obj}}=98.7-99.1=-0.4$ MHz, o −400 kHz. Está a la izquierda del cero inicial porque su RF es menor que 99.1 MHz.
-    - **Paso 2 — elegir el signo del multiplicador:** se resuelve $f_{\mathrm{BB,obj}}+f_{\mathrm{mix}}=0$. Así, $f_{\mathrm{mix}}=+400$ kHz, y $y[n]=x[n]e^{j2\pi\,400000\,n/2400000}$. La frecuencia positiva del multiplicador desplaza el espectro hacia la derecha; el objetivo pasa de −400 a 0 kHz.
-    - **Paso 3 — nueva referencia RF:** convirtiendo $f_{\mathrm{mix}}$ a MHz, $f_c'=99.1-0.4=98.7$ MHz. Se comprueba con el objetivo: $f_c'+f_{\mathrm{BB,obj}}'=98.7+0=98.7$ MHz. La RF original no cambió; cambió qué RF corresponde al cero de la secuencia de salida.
-    - **Paso 4 — seguir las otras componentes:** 99.1 MHz tenía baseband $99.1-99.1=0$ y pasa a +400 kHz. La componente de 99.5 MHz tenía baseband $99.5-99.1=+0.4$ MHz y pasa a +800 kHz. La misma suma de +400 kHz se aplica a todas las componentes, no únicamente al objetivo.
-    - **Comprobación de banda y etiquetas:** el intervalo de salida sigue siendo $[-1.2,+1.2)$ MHz porque $f_s$ no cambió. Las posiciones 0, +400 y +800 kHz están dentro de él, sin cruce de borde. Además, $98.7+0.4=99.1$ MHz y $98.7+0.8=99.5$ MHz recuperan las RF originales de las otras componentes.
-    - **Qué operación falta para seleccionarlo:** la mezcla no elimina las otras componentes, no reduce el sample rate y no demodula. Solo centra el objetivo. El multiplicador tiene magnitud 1; no es un filtro que atenúe frecuencias no deseadas. La selección de una banda alrededor del nuevo cero requiere una operación de filtrado adicional.
+    - **Punto de partida:** el apartado 6.1 define dos bytes por muestra CU8. El apartado 1.5 relaciona duración y muestras mediante $T=N/f_s$.
+    - **Datos:** 48 000 bytes, $f_s=2400000$ S/s y $f_c=99.1$ MHz. Cada par contiene I y Q del mismo instante.
+    - **Paso 1 — contar muestras:** $N=48000/2=24000$ muestras complejas. No son 48 000 instantes de la señal.
+    - **Paso 2 — duración:** $T=24000/2400000=0.01$ s, equivalentes a 10 ms.
+    - **Paso 3 — frecuencia:** $f_{\mathrm{RF}}=99.1-1=98.1$ MHz.
+    - **Interpretación:** el tamaño del archivo permite contar muestras. Para obtener tiempo y RF también se necesitan los metadatos.
 
-##### Ejercicio 6C — detectar una etiqueta RF incorrecta
+##### Ejercicio 6C — Localizar las bandas
 
-En la captura original centrada en 99.1 MHz, una componente aparece en +250 kHz. Sin modificar las muestras, se cambia Center Frequency del visor a 99.5 MHz.
-
-- Indicar la RF correcta y la etiqueta RF que mostraría esa configuración errónea.
-- Explicar qué mezcla permitiría centrar la componente y qué referencia correspondería entonces.
+- Las marcas A del waterfall señalan bandas alrededor de 98.1, 99.1 y 100.1 MHz.
+- ¿Dónde están en baseband si $f_c=99.1$ MHz?
+- ¿Una línea estrecha estable basta para afirmar que no proviene de un transmisor?
 
 ??? example "Solución del ejercicio 6C"
 
-    - **Punto de partida:** el apartado 6.4 distingue reetiquetar un visor de transformar las muestras. Para una captura sin transformar, el apartado 6.1 exige utilizar su referencia real en $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$. Cambiar Center Frequency del visor no modifica por sí solo los valores I/Q del archivo.
-    - **Paso 1 — RF correcta:** la posición +250 kHz equivale a +0.250 MHz. Con la referencia documentada de 99.1 MHz, $f_{\mathrm{RF}}=99.1+0.250=99.35$ MHz. Ese es el valor que corresponde a la componente original bajo las condiciones de esta sesión.
-    - **Paso 2 — etiqueta con la configuración errónea:** el visor usaría 99.5 MHz como nuevo cero del dibujo y sumaría $99.5+0.250=99.75$ MHz. La diferencia respecto a la RF correcta es $99.75-99.35=0.4$ MHz: exactamente el error introducido al cambiar la referencia de 99.1 a 99.5 MHz.
-    - **Qué no sucedió:** la componente continúa en +250 kHz dentro de la secuencia original. No se adquirió otra banda, no se trasladó el objetivo al cero y no cambió su RF física. El mismo espectro recibió etiquetas que no corresponden a sus muestras.
-    - **Paso 3 — mezcla que sí centra la componente:** el apartado 6.3 exige $f_0+f_{\mathrm{mix}}=0$. Con $f_0=+250$ kHz se elige $f_{\mathrm{mix}}=-250$ kHz y se calcula $y[n]=x[n]e^{-j2\pi\,250000\,n/f_s}$. Ahora sí cambian las muestras y el objetivo pasa de +250 a 0 kHz.
-    - **Paso 4 — referencia después de la mezcla:** $f_c'=f_c-f_{\mathrm{mix}}=99.1-(-0.250)=99.35$ MHz. La comprobación es $f_c'+0=99.35$ MHz, la RF original del objetivo. Cambiar las etiquetas a 99.35 MHz solo es coherente con esta salida transformada, no con la captura original aún sin mezclar.
-    - **Conclusión:** para corregir únicamente la visualización de la captura original, se restablece la referencia de 99.1 MHz. Para centrar el objetivo, se hace la mezcla de −250 kHz y se documenta la nueva referencia de 99.35 MHz. Son acciones diferentes; ninguna equivale por sí sola a volver a sintonizar el hardware.
+    - **Punto de partida:** el apartado 6.1 establece $f_{\mathrm{BB}}=f_{\mathrm{RF}}-f_c$. El apartado 6.3 distingue observación e identificación.
+    - **Datos:** la referencia común es $f_c=99.1$ MHz. Las tres posiciones se leen en la Figura 27.
+    - **Paso 1 — banda izquierda:** $98.1-99.1=-1$ MHz. Está por debajo de la referencia.
+    - **Paso 2 — banda central:** $99.1-99.1=0$ MHz. Ya está centrada para el laboratorio.
+    - **Paso 3 — banda derecha:** $100.1-99.1=+1$ MHz. Está por encima de la referencia.
+    - **Interpretación:** una línea estable describe un comportamiento, no una causa. Se necesitan otras pruebas para identificar su origen.
 
-##### Ejercicio 6D — relacionar bytes, tiempo y metadatos
+##### Ejercicio 6D — Comparar la cobertura nominal
 
-Un bloque de la grabación oficial contiene 48000 bytes `.cu8`, intercalados I, Q. Sus metadatos indican $f_s=2.4$ MS/s y $f_c=99.1$ MHz.
-
-- Calcular cuántas muestras complejas contiene y cuánto tiempo representa.
-- Indicar a qué RF corresponde una posición de −1 MHz y explicar si los bytes por sí solos permitirían obtener esa referencia RF.
+- Se mantiene $f_c=99.1$ MHz. Se comparan capturas a 2.4 y 2.048 MS/s.
+- ¿Cuáles son sus intervalos RF nominales?
+- En la segunda captura, ¿a qué distancia del borde exterior quedan los centros de 98.1 y 100.1 MHz?
 
 ??? example "Solución del ejercicio 6D"
 
-    - **Punto de partida:** el apartado 6.7 documenta el formato `.cu8` de esta grabación: un byte sin signo para I y otro para Q, intercalados por pareja. La subsección 2 establece que cada pareja corresponde a una sola muestra compleja. El tiempo se calcula con $T_{\mathrm{obs}}=N/f_s$ y RF con $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$.
-    - **Paso 1 — contar parejas:** los primeros dos bytes contienen I y Q de $n=0$; los siguientes dos contienen I y Q de $n=1$, y así sucesivamente. Como cada muestra compleja ocupa dos bytes en este formato, $N=48000/2=24000$. No se utilizan 48000 como número de instantes temporales.
-    - **Paso 2 — convertir la tasa:** $2.4$ MS/s equivale a $2400000$ muestras complejas por segundo. Por tanto, $T_{\mathrm{obs}}=24000/2400000=0.01$ s, es decir, 10 ms. Utilizar los bytes como si fueran muestras complejas daría 20 ms y duplicaría incorrectamente el tiempo.
-    - **Paso 3 — construir la lectura RF:** la componente de −1 MHz se encuentra por debajo del centro. Así, $f_{\mathrm{RF}}=99.1+(-1)=98.1$ MHz. También está dentro del intervalo nominal de baseband $[-1.2,+1.2)$ MHz correspondiente a esta tasa.
-    - **Qué aporta cada metadato:** el formato permite agrupar e interpretar los bytes; $f_s$ permite asignar tiempos y convertir el eje de frecuencia a Hz; $f_c$ permite pasar de los desplazamientos en baseband a las etiquetas RF absolutas. Ninguno de esos papeles se reemplaza simplemente conociendo el tamaño del archivo.
-    - **Por qué no basta el contenido raw:** esta grabación no tiene un encabezado que declare esos metadatos. Los mismos bytes, interpretados con otra tasa o referencia, recibirían otro eje temporal y otras etiquetas RF, sin cambiar sus valores. El nombre del archivo y la documentación pueden acompañar esos datos, pero la FFT no descubre por sí sola la frecuencia central.
-    - **Alcance del cálculo:** la relación de dos bytes por muestra se aplica al `.cu8` descrito, no a cualquier archivo I/Q. Primero se identifica el formato y después se cuentan las muestras. En esta captura se preservan, junto al archivo, el formato, la tasa, la referencia RF y la convención I/Q utilizados para interpretarlo.
+    - **Punto de partida:** el apartado 6.1 utiliza el intervalo $[f_c-f_s/2,f_c+f_s/2)$. Su ancho nominal es $f_s$.
+    - **Datos:** $f_c=99.1$ MHz. Las semianchuras son 1.2 MHz y 1.024 MHz.
+    - **Paso 1 — 2.4 MS/s:** $99.1\pm1.2$ produce $[97.9,100.3)$ MHz.
+    - **Paso 2 — 2.048 MS/s:** $99.1\pm1.024$ produce $[98.076,100.124)$ MHz.
+    - **Paso 3 — márgenes:** $98.1-98.076=0.024$ MHz y $100.124-100.1=0.024$ MHz. Ambos márgenes exteriores son 24 kHz.
+    - **Interpretación:** un centro dentro del intervalo no garantiza contener toda su banda. Tampoco permite atribuir diferencias de contraste solo al sampling rate.
 
-## Síntesis visual — de las muestras a la interpretación del espectro
+## Síntesis visual — de las muestras al análisis y al audio
 
-- **Propósito:** conectar las seis subsecciones mediante cuatro láminas. No se introduce teoría nueva: se retoman señales conocidas para distinguir qué se observa, qué se calcula y qué información hace falta.
-- **Lectura en dos paneles:** cada enlace «Abrir imagen» abre la lámina por separado. En un panel se mantiene la imagen y en el otro, la lectura guiada de la clase; las letras A, B, C y D vinculan los ítems con los paneles de la figura.
-- **Orden de explicación:** primero se relacionan muestras, tiempo e I/Q; luego se distinguen aliasing y leakage; después se comparan decisiones de FFT y finalmente se conecta baseband con RF.
+### Una señal, cuatro vistas
 
-### 1. Las muestras, el plano I/Q y el espectro describen aspectos distintos
+Las muestras, el plano I/Q y el espectro describen aspectos distintos de la señal.
 
-- **Imagen para el panel visual:** [Abrir imagen de la Figura 29](figures/sintesis-muestras-representaciones.png){target="_blank" rel="noopener"}.
+[Abrir la imagen en otra pestaña](figures/sintesis-muestras-representaciones.png){ target="_blank" }
 
-![Síntesis con cuatro paneles: muestras I y Q en el tiempo, primeras ocho muestras en el plano complejo, FFT compleja y FFT de la componente real](figures/sintesis-muestras-representaciones.png)
+![Muestras I/Q, posiciones en el plano complejo, FFT compleja y FFT de solo I para un tono de más 1 kHz](figures/sintesis-muestras-representaciones.png)
 
-**Figura 29.** Un tono complejo de +1 kHz a 8 kS/s permite relacionar el tiempo, el plano I/Q y las diferencias entre un espectro complejo y uno real.
+**Figura 30.** Las cuatro vistas relacionan las muestras y el espectro; usar solo I cambia la señal analizada.
 
-- **A1. Panel A — qué representa cada instante:** un círculo azul y un cuadrado naranja en el mismo tiempo forman **una muestra compleja**, $z[n]=I[n]+jQ[n]$. No son dos muestras tomadas en momentos diferentes; son dos componentes del mismo valor.
-- **A2. Panel A — separación temporal:** con $f_s=8000$ S/s, el intervalo es $T_s=1/f_s=0.125$ ms. La separación de los puntos proviene del sample rate, no de la frecuencia del tono.
-- **A3. Panel A — duración del bloque:** las 16 muestras representan $N/f_s=2$ ms, señalados por la línea discontinua. La última muestra está en $15/f_s=1.875$ ms; la línea de 2 ms marca el límite nominal del bloque, no una muestra adicional.
-- **B1. Panel B — las mismas componentes vistas como coordenadas:** I se lee en el eje horizontal y Q en el vertical. Las primeras ocho muestras caen sobre un círculo de radio 1 porque el tono ideal tiene magnitud constante; una captura I/Q genérica no tiene por qué formar ese círculo.
-- **B2. Panel B — dirección y frecuencia:** al pasar de $n=0$ a $n=1$, el punto gira 45° en sentido antihorario. Ese avance corresponde a $2\pi f_0/f_s=2\pi(1000/8000)=\pi/4$ radianes por muestra y representa el tono de +1 kHz.
-- **B3. Panel B — una vuelta no es una muestra:** ocho avances de 45° completan 360°. La muestra $n=8$ vuelve al punto de $n=0$; la figura muestra los ocho puntos anteriores a ese retorno. El círculo gris es una referencia del tono conocido, no una reconstrucción de una captura desconocida.
-- **C1. Panel C — FFT de la secuencia compleja:** al utilizar I y Q conjuntamente, aparece una componente en +1 kHz de magnitud 1. El signo de la frecuencia es coherente con el giro del panel B; no aparece una copia obligatoria en −1 kHz.
-- **C2. Panel C — por qué el pico es limpio:** el bloque de 2 ms contiene exactamente dos ciclos del tono, y 1 kHz coincide con un bin. La limpieza de este ejemplo depende de la señal y del bloque elegidos; no garantiza que toda captura tenga picos aislados ni que esté libre de aliasing.
-- **D1. Panel D — qué cambia al utilizar solo I:** la entrada de la FFT ya no es $z[n]$, sino su componente real, un coseno. Su representación contiene componentes de +1 y −1 kHz, de magnitud 0.5 cada una, como se desarrolló en la subsección 2.
-- **D2. Panel D — qué no debe concluirse:** los dos picos no representan necesariamente dos transmisores. Son la descomposición del coseno real; descartar Q cambia la información que se entrega al análisis y no es equivalente a conservar la señal I/Q completa.
-- **Idea que conecta los cuatro paneles:** el tiempo muestra la evolución de los valores, el plano I/Q muestra magnitud y fase, y la FFT muestra las componentes frecuenciales del bloque. La gráfica de magnitud de FFT no conserva por sí sola toda la información de fase de la transformada completa.
+**Panel A — tiempo:**
 
-### 2. Aliasing y spectral leakage responden a preguntas diferentes
+- I y Q corresponden a las mismas 16 muestras. El sampling rate de 8 kS/s sitúa cada muestra en el tiempo.
+- El bloque representa $16/8000=2$ ms. La última muestra está en 1.875 ms, antes del final nominal.
 
-- **Imagen para el panel visual:** [Abrir imagen de la Figura 30](figures/sintesis-aliasing-leakage.png){target="_blank" rel="noopener"}.
+**Panel B — plano I/Q:**
 
-![Comparación entre muestras I y Q idénticas para tonos de más cinco y menos tres kHz y una FFT con leakage de un único tono de 1062.5 Hz](figures/sintesis-aliasing-leakage.png)
+- Cada punto reúne I y Q del mismo instante. Las primeras ocho muestras completan las posiciones de una vuelta.
+- El orden muestra el giro positivo del tono de +1 kHz; cada avance es de 45°.
 
-**Figura 30.** Aliasing hace indistinguibles frecuencias originales diferentes; spectral leakage distribuye la contribución de un tono en el análisis de un bloque finito.
+**Panel C — FFT compleja:**
 
-- **A1. Panel A — qué se compara:** los círculos representan las muestras del tono de +5 kHz y los cuadrados vacíos, las del tono de −3 kHz. Se compara I con I y Q con Q; en ambas componentes los marcadores coinciden.
-- **A2. Panel A — por qué coinciden:** las frecuencias difieren en un sample rate: $5000-(-3000)=8000$ Hz. Entre muestras, sus avances de fase difieren en una vuelta completa; para todo índice entero $n$, esa diferencia no cambia el valor complejo observado.
-- **A3. Panel A — qué información falta:** si solo se recibiera esa secuencia, no se podría decidir cuál de las dos frecuencias originales la produjo sin información adicional sobre la banda de entrada. La igualdad existe antes de calcular una FFT; el aliasing no se origina en el dibujo del espectro.
-- **A4. Panel A — qué no soluciona la ambigüedad:** obtener un bloque más largo al mismo sample rate o añadir ceros a la FFT no distingue estos tonos. El control del aliasing depende de la banda seleccionada, el filtrado previo y la tasa de adquisición o de reducción.
-- **B1. Panel B — qué señal se generó:** hay un único tono complejo de 1062.5 Hz y se observan 64 muestras a 8 kS/s. La línea naranja indica su frecuencia conocida; no corresponde a un bin de esta FFT, cuyos puntos están separados 125 Hz.
-- **B2. Panel B — qué muestran los tallos:** la contribución del tono aparece en varios bins. Los mayores están en 1000 y 1125 Hz y tienen magnitud aproximada de 0.637; esos bins no son nuevos tonos que se hayan añadido a la entrada.
-- **B3. Panel B — qué significa leakage:** se observa el espectro de un bloque finito, no la línea ideal de un tono que existiera durante un tiempo infinito. La duración y la ventana afectan esa forma espectral; la DFT completa sigue conservando la información de las muestras que recibió.
-- **Comparación A–B:** en A, el problema es distinguir posibles frecuencias originales a partir de unas mismas muestras. En B, el problema es interpretar cómo contribuye una señal conocida al espectro de un bloque observado.
-- **Regla de lectura:** un pico limpio no demuestra ausencia de aliasing y varios bins no demuestran varios transmisores. Ambos efectos pueden ocurrir simultáneamente; en una captura real también deben conocerse los metadatos y el procesamiento previo.
+- La entrada es $I+jQ$. Aparece una componente en +1 kHz, con magnitud 1.
+- El ejemplo está alineado con un bin y usa ventana rectangular. Un tono entre bins produciría leakage.
 
-### 3. Más ceros, otra ventana y más datos no hacen lo mismo
+**Panel D — FFT de solo I:**
 
-- **Imagen para el panel visual:** [Abrir imagen de la Figura 31](figures/sintesis-decisiones-fft.png){target="_blank" rel="noopener"}.
+- La entrada es otra: solo I, un coseno real. Aparecen componentes en −1 y +1 kHz, con magnitud 0.5 cada una.
+- Omitir Q no equivale a cambiar el visor. Cambia la secuencia entregada a la FFT.
 
-![Cuatro decisiones de análisis: FFT sin padding, mismos datos con padding, cambio de ventana y comparación de dos tonos con bloques de distinta duración](figures/sintesis-decisiones-fft.png)
+### Dos caminos desde las mismas muestras
 
-**Figura 31.** El padding densifica la rejilla, la ventana modifica la forma espectral y una observación más larga puede mejorar la separación de tonos estables.
+Las muestras permiten observar el espectro o recuperar audio. El demodulador no recibe la curva dibujada por la FFT.
 
-- **A1. Panel A — punto de partida:** se analizan 64 muestras del tono de 1062.5 Hz con ventana rectangular y una FFT de 64 puntos. Se observaron 8 ms y los bins están separados $8000/64=125$ Hz.
-- **A2. Panel A — qué se debe notar:** los bins cercanos no caen exactamente en la frecuencia del tono. Por eso sus alturas no llegan a 1, aunque el tono generado tenga esa magnitud; el máximo de una rejilla no siempre coincide con el máximo de la forma espectral.
-- **B1. Panel B — qué se cambió:** se conservaron las mismas 64 muestras y se añadieron 448 ceros para obtener una FFT de 512 puntos. No se realizaron nuevas mediciones ni se observó durante más tiempo: siguen siendo 8 ms.
-- **B2. Panel B — qué se obtuvo:** la separación de salida pasa a $8000/512=15.625$ Hz. Los cuadrados naranjas, que reproducen los bins de A, coinciden con puntos de la curva azul; ahora hay más evaluaciones entre ellos.
-- **B3. Panel B — qué no cambió:** el padding no estrecha el main lobe ni elimina los sidelobes. El máximo llega a 1 porque la nueva rejilla incluye 1062.5 Hz, no porque se haya recuperado una amplitud física perdida ni porque se haya adquirido más información.
-- **C1. Panel C — qué se compara:** el mismo bloque de 64 muestras se analiza con rectangular y Hann periódica. Las dos curvas usan una FFT de 4096 puntos para mostrar su forma con detalle; la diferencia entre ellas la produce la ventana, no una cantidad distinta de datos o de ceros.
-- **C2. Panel C — compromiso de Hann:** la curva naranja tiene sidelobes menores, pero un main lobe más ancho. Esa combinación puede facilitar observar una señal débil junto a otra fuerte y, al mismo tiempo, dificultar separar componentes demasiado próximas.
-- **C3. Panel C — cómo leer las alturas:** la escala es dB relativos a magnitud 1 y se corrigió la suma de pesos de cada ventana. Los máximos de 0 dB no implican una medición de 0 dBm; las caídas profundas son ceros de la forma espectral, no demostraciones de canales RF vacíos.
-- **D1. Panel D — aquí la entrada es otra:** se retoma el par de tonos de 1000 y 1062.5 Hz de la subsección 5.7. No se compara este panel como si fuera el mismo tono único de A, B y C; su propósito es comprobar la separación de dos componentes próximas.
-- **D2. Panel D — qué se varía y qué se mantiene:** se comparan 64 muestras adquiridas durante 8 ms y 512 adquiridas durante 64 ms. En ambos casos se utiliza Hann y una FFT de 8192 puntos: la rejilla de salida es la misma, pero el tiempo observado no.
-- **D3. Panel D — qué se debe notar:** el bloque corto muestra un máximo combinado y el largo distingue dos máximos cerca de las líneas de referencia. El cambio proviene de los datos adicionales; el máximo combinado no es la amplitud individual de ninguno de los tonos.
-- **Límite de la comparación D:** los tonos son estables durante el bloque. Una observación más larga no es una mejora universal: si la señal cambia, el espectro puede mezclar lo ocurrido en distintos instantes, y también importan el ruido, las amplitudes y la ventana.
-- **Relación que debe conservarse:** $N$ cuenta muestras adquiridas, $M$ cuenta puntos de FFT y $T_{\mathrm{obs}}=N/f_s$. La separación de salida es $f_s/M$; no se debe utilizar $M/f_s$ como tiempo observado cuando parte de la entrada son ceros añadidos.
+```mermaid
+flowchart TD
+    A["Archivo CU8: pares I/Q"] --> B["Decodificar muestras complejas"]
+    B --> C["Bloques de N muestras"]
+    C --> D["Ventana y FFT"]
+    D --> E["Magnitud al cuadrado"]
+    E --> F["Promedio de potencia lineal y dB"]
+    F --> G["Espectro o waterfall"]
+    H["Metadatos: sampling rate y frecuencia central"] -.-> C
+    H -.-> G
+    B --> I["Seleccionar canal: filtrar y reducir tasa"]
+    I --> J["Medir giro entre muestras"]
+    J --> K["Filtrar audio, decimar y aplicar de-emphasis"]
+    K --> L["Audio mono"]
+    M["S04: centrar primero si el canal no está en cero"] -.-> I
+```
 
-### 4. La referencia RF permite interpretar; la mezcla transforma
+**Figura 31.** El análisis y la demodulación parten de las muestras I/Q; observar un espectro no equivale a recuperar audio.
 
-- **Imagen para el panel visual:** [Abrir imagen de la Figura 32](figures/sintesis-baseband-rf.png){target="_blank" rel="noopener"}.
+- **Rama de análisis:** los bloques producen estimaciones de potencia. Los metadatos permiten expresar sus ejes en tiempo y RF.
+- **Rama de audio:** el receptor selecciona un canal antes de medir el giro. El procesamiento posterior entrega audio mono.
+- **Avance a S04:** un canal fuera del centro necesita primero un desplazamiento. En este laboratorio se utiliza la banda central.
 
-![Tres paneles de síntesis: tonos en baseband con referencia de 99.1 MHz, los mismos coeficientes con eje RF y salida de la mezcla de menos 400 kHz](figures/sintesis-baseband-rf.png)
+### Siete preguntas de cierre
 
-**Figura 32.** Reetiquetar el eje conserva las muestras; la mezcla compleja cambia su referencia frecuencial y desplaza todas las componentes.
-
-- **A1. Panel A — posiciones relativas:** con referencia $f_c=99.1$ MHz, las componentes aparecen en −600, 0 y +400 kHz. La línea discontinua marca el cero de baseband, no 0 Hz de RF.
-- **A2. Panel A — lectura de las etiquetas sobre los tonos:** se utiliza $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$. Así, −600 kHz corresponde a 98.5 MHz y +400 kHz corresponde a 99.5 MHz; el signo negativo solo indica una posición por debajo de la referencia.
-- **B1. Panel B — qué cambió:** se dibujan los mismos coeficientes de FFT sobre un eje RF. Las alturas siguen siendo 0.6, 0.4 y 1 porque no se modificaron las muestras ni se aplicó otra operación de señal.
-- **B2. Panel B — qué dato hizo posible la lectura:** se conocía la frecuencia central de la captura. La FFT obtiene las posiciones relativas usando el sample rate, pero no descubre por sí sola la referencia RF de un archivo raw.
-- **C1. Panel C — qué operación se realizó:** la entrada se multiplicó por un tono complejo de −400 kHz: $y[n]=x[n]e^{-j2\pi\,400000\,n/f_s}$. Ahora sí cambió la secuencia I/Q; no se trata únicamente de otra etiqueta horizontal.
-- **C2. Panel C — qué se desplazó:** **todos** los tonos se trasladaron −400 kHz. El objetivo pasó de +400 a 0 kHz, el tono central pasó a −400 kHz y el de −600 pasó a −1000 kHz.
-- **C3. Panel C — nuevo cero y RF original:** el nuevo cero corresponde a 99.5 MHz. Las etiquetas sobre los tonos siguen siendo 98.5, 99.1 y 99.5 MHz porque las frecuencias RF originales no cambiaron; ninguna de estas componentes cruzó el borde del intervalo.
-- **Comparación A–B–C:** entre A y B cambia la forma de etiquetar el mismo espectro. Entre A y C se transforma la señal para que el objetivo quede en el cero; las dos acciones tienen propósitos diferentes.
-- **Qué no hizo C:** no eliminó los otros tonos, no redujo el sample rate y no recuperó audio. Centrar, filtrar, decimar y demodular son operaciones distintas; centrar no equivale a seleccionar por completo un canal.
-- **Precaución sobre la banda:** la mezcla trabaja con muestras ya adquiridas. No obtiene señales que estaban fuera de la captura, y si una componente cruza el borde reaparece por el otro extremo del intervalo discreto; no debe interpretarse como una nueva banda RF adquirida.
-- **Precaución sobre el visor:** cambiar solo Center Frequency sin una mezcla ni una nueva adquisición no sintoniza el receptor. Si se usa una referencia que no corresponde a las muestras, las etiquetas RF pueden ser falsas, aunque el dibujo parezca razonable.
-
-### 5. Guía de cierre: qué se necesita para interpretar una captura
-
-- **1. Formato de entrada:** antes de calcular, se identifica cómo están almacenadas las muestras. En `.cu8`, una pareja de bytes I, Q forma una muestra compleja; leerlos como otro tipo de datos cambia la secuencia que recibe el análisis.
-- **2. Sample rate de la etapa:** se identifica la tasa de la secuencia analizada, que puede ser distinta de la tasa anterior a una decimación. Con ella se construyen los ejes; $f_s$ es el sample rate y $f_s/2$ es la Nyquist frequency, no son nombres intercambiables.
-- **3. Datos realmente observados:** se cuenta $N$ y se calcula $T_{\mathrm{obs}}=N/f_s$. Se distingue ese tiempo del instante de la última muestra y de la longitud de un arreglo completado con ceros.
-- **4. Configuración del análisis:** se identifica $M$, la ventana y la escala vertical. Una rejilla más densa, otra ventana y más tiempo de adquisición no deben presentarse como si fueran la misma modificación.
-- **5. Interpretación prudente del espectro:** no se cuenta cada bin como un transmisor ni se concluye que un pico limpio descarta aliasing. Se consideran la banda seleccionada y el procesamiento previo, además de la duración y la ventana del bloque.
-- **6. Referencia RF:** se conoce $f_c$ y se relaciona con las posiciones en baseband. Si se mezclaron las muestras, se sigue la nueva referencia y se comprueban posibles cruces del borde; no se asume que toda etiqueta del visor sea automáticamente correcta.
-- **7. Operación que se necesita:** se distingue entre mostrar otro eje, centrar una señal, aislar su banda, reducir su tasa y recuperar información. Esa distinción permite seguir el receptor del laboratorio #2; el diseño interno de sus filtros queda para el desarrollo de sistemas y filtros.
-- **Conclusión de la sesión:** una captura SDR no se interpreta solo mirando picos. Se interpreta relacionando las muestras con sus metadatos, el bloque observado, la configuración de FFT y las operaciones aplicadas a la señal.
+1. [¿Qué representan I y Q en una misma muestra?](#21-que-significa-una-muestra-compleja)
+2. [¿Qué indican el sampling rate y la frecuencia central?](#61-que-frecuencia-de-radio-representa-cada-punto)
+3. [¿Cómo se convierte una posición en baseband a una frecuencia RF?](#61-que-frecuencia-de-radio-representa-cada-punto)
+4. [¿Qué cambia al añadir muestras adquiridas, ceros o una ventana distinta?](#510-guia-para-leer-un-espectro)
+5. [¿Por qué aliasing y leakage no significan lo mismo?](#59-un-pico-limpio-tambien-puede-ser-un-alias)
+6. [¿Qué muestran el promedio y el waterfall sobre la captura?](#62-por-que-cambia-el-espectro-entre-bloques)
+7. [¿Qué mide el giro entre muestras y qué falta para entregar audio mono?](#65-como-permite-fm-recuperar-el-audio)
 
 ## Laboratorio #2 — demodulador FM en GNU Radio
 
-La [guía del laboratorio #2](laboratorio-receptor-fm.md) recupera el receptor FM basado en un archivo I/Q y una entrada RTL-SDR opcional. El estudiante sigue las tasas, interpreta ambos visores y obtiene audio mono mediante `WBFM Receive`.
+La [guía del laboratorio #2](laboratorio-receptor-fm.md) implementa un receptor FM desde un archivo I/Q. También incluye una entrada RTL-SDR opcional.
 
-- **Conexión con la teoría:** la cadena aplica la representación I/Q, el eje baseband/RF y el cuidado con el aliasing al reducir la tasa. La demodulación utiliza el cambio de fase entre muestras, una idea relacionada con el giro de la subsección 2.
-- **Archivo de este laboratorio:** `fm_99p1MHz_2p048Msps_g30.cu8`, a **2.048 MS/s**. Es una captura distinta de `fm_99p1MHz_2p4Msps_g30.cu8`, a **2.4 MS/s**, utilizada en la subsección 6.7. No se intercambian sin ajustar la fuente y el resampler como explica la guía.
-- **Alcance:** se implementa una cadena de recepción y se justifican sus parámetros. No se supone que el estudiante ya domine el diseño de filtros, la decodificación stereo ni RDS.
+- **Conexión con la teoría:** el estudiante sigue las tasas y compara el espectro RF, el waterfall y el espectro del canal seleccionado.
+- **Archivo principal:** `fm_99p1MHz_2p4Msps_g30.cu8`, a **2.4 MS/s**. Es la misma captura de la sección 6.
+- **Cadena de audio:** el resampler convierte 2.4 MS/s en 192 kS/s con la razón 2/25. `WBFM Receive` entrega audio mono a 48 kS/s.
+- **Alcance:** se justifican los parámetros y se relaciona la demodulación con el giro entre muestras de 6.5. El diseño de filtros queda para sesiones posteriores.
 
 ## Lecturas y referencias
 

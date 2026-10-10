@@ -19,12 +19,14 @@ def visor_fft():
     """Ejecuta la celda publicada: no duplica la implementación del visor."""
     texto = PAGINA.read_text(encoding="utf-8")
     seccion = texto.split("### 5. Qué calcula una FFT de un bloque finito", 1)[1]
-    celda = re.findall(r"```python\n(.*?)```", seccion, flags=re.DOTALL)[0]
+    celdas = re.findall(r"```python\n(.*?)```", seccion, flags=re.DOTALL)
+    seleccionadas = [celdas[0], next(c for c in celdas if "def espectro_bloque(" in c)]
     namespace = {}
     original = plt.show
     plt.show = lambda: plt.close("all")
     try:
-        exec(compile(celda, "sesion02-referencias-dft", "exec"), namespace)
+        for celda in seleccionadas:
+            exec(compile(celda, "sesion02-referencias-dft", "exec"), namespace)
     finally:
         plt.show = original
         plt.close("all")

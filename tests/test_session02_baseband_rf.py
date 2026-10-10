@@ -1,79 +1,43 @@
-"""Comprueba los snippets de baseband/RF, mezcla y lectura raw de la sesión 02."""
+"""Regresión matemática del material de mezcla conservado para S04.
 
-import ast
-import importlib.util
-from pathlib import Path
-import re
+Estos casos no dependen del archivo interno .planning ni de apartados retirados.
+La captura real y las nuevas celdas de S02 se prueban en test_session02_captura_real.
+"""
 
 import pytest
 
 np = pytest.importorskip("numpy")
-matplotlib = pytest.importorskip("matplotlib")
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-
-
-ROOT = Path(__file__).resolve().parents[1]
-SESSION = ROOT / "docs/sessions/02-tiempo-frecuencia-iq"
-CAPTURA = ROOT / "samples/fm_99p1MHz_2p4Msps_g30.cu8"
-
-
-def celdas():
-    texto = (SESSION / "index.md").read_text(encoding="utf-8")
-    seccion = texto.split("### 6. De baseband a RF: interpretar una captura SDR", 1)[1]
-    seccion = re.split(r"^## ", seccion, maxsplit=1, flags=re.MULTILINE)[0]
-    return re.findall(r"```python\n(.*?)```", seccion, flags=re.DOTALL)
 
 
 @pytest.fixture(scope="module")
 def experimento():
-    namespace = {}
-    original_show = plt.show
-    plt.show = lambda: plt.close("all")
-    try:
-        for numero, celda in enumerate(celdas()[:-1], start=1):
-            exec(compile(celda, f"subseccion6-celda{numero}", "exec"), namespace)
-    finally:
-        plt.show = original_show
-        plt.close("all")
-    return namespace
+    fs, fc, N = 2400000, 99100000, 2400
+    t = np.arange(N) / fs
+    frecuencias_bb = np.array([-600000, 0, 400000])
+    amplitudes = np.array([0.6, 0.4, 1])
+    x = sum(a * np.exp(1j * 2 * np.pi * f * t) for a, f in zip(amplitudes, frecuencias_bb))
 
+    def espectro_iq(z, tasa):
+        return np.fft.fftshift(np.fft.fftfreq(len(z), 1 / tasa)), np.fft.fftshift(np.fft.fft(z)) / len(z)
 
-@pytest.fixture
-def raw_prueba(tmp_path):
-    """Bytes extremos y centrales para detectar una resta unsigned incorrecta."""
-    pares = np.tile(np.array([[0, 255], [127, 128], [255, 0], [128, 127]], dtype=np.uint8), (4096, 1))
-    path = tmp_path / "prueba.cu8"
-    path.write_bytes(pares.tobytes())
-    return path, pares
-
-
-def ejecutar_captura(experimento, ruta):
-    namespace = dict(experimento, ruta_captura=ruta)
-    original_show = plt.show
-    plt.show = lambda: plt.close("all")
-    try:
-        exec(compile(celdas()[-1], "subseccion6-captura", "exec"), namespace)
-    finally:
-        plt.show = original_show
-        plt.close("all")
-    return namespace
-
-
-def generador():
-    spec = importlib.util.spec_from_file_location("gen_baseband_rf", SESSION / "figures/gen_baseband_rf.py")
-    modulo = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(modulo)
-    return modulo
-
-
-def test_siete_celdas_y_ploteo_sin_lineas_partidas():
-    assert len(celdas()) == 7
-    metodos = {"plot", "stem", "set", "subplots", "annotate", "text", "legend", "axhline", "axvline", "axvspan", "grid", "show"}
-    for celda in celdas():
-        for nodo in ast.walk(ast.parse(celda)):
-            if isinstance(nodo, ast.Call) and isinstance(nodo.func, ast.Attribute) and nodo.func.attr in metodos:
-                assert nodo.lineno == nodo.end_lineno, nodo.func.attr
+    f_bb, C_entrada = espectro_iq(x, fs)
+    f_mix = -400000
+    oscilador = np.exp(1j * 2 * np.pi * f_mix * t)
+    y = x * oscilador
+    f_salida, C_salida = espectro_iq(y, fs)
+    objetivo = np.exp(1j * 2 * np.pi * 400000 * t)
+    objetivo_centrado = objetivo * oscilador
+    fc_nuevo = fc - f_mix
+    casos_eje = [(f_bb, C_entrada, fc), (f_bb, C_entrada, fc_nuevo)]
+    f_compleja, C_compleja = espectro_iq(objetivo_centrado, fs)
+    f_coseno, C_coseno = espectro_iq(objetivo * np.cos(2 * np.pi * 400000 * t), fs)
+    fs_borde = 8000
+    n_borde = np.arange(64)
+    entrada_borde = np.exp(1j * 2 * np.pi * 3000 * n_borde / fs_borde)
+    oscilador_borde = np.exp(1j * 2 * np.pi * 2000 * n_borde / fs_borde)
+    salida_borde = entrada_borde * oscilador_borde
+    recuperada = salida_borde * np.conj(oscilador_borde)
+    return locals()
 
 
 def test_mapeo_baseband_rf_y_amplitudes(experimento):
@@ -135,58 +99,3 @@ def test_cruce_del_borde_y_reversibilidad(experimento):
     f, C = d["espectro_iq"](d["salida_borde"], d["fs_borde"])
     np.testing.assert_array_equal(f[np.abs(C) > 1e-10], [-3000])
     np.testing.assert_allclose(d["recuperada"], d["entrada_borde"], atol=1e-12)
-
-
-def test_lectura_cu8_y_escala_de_un_bloque(experimento, raw_prueba):
-    path, pares = raw_prueba
-    d = ejecutar_captura(experimento, path)
-    esperada = ((pares[:, 0].astype(float) - 127.5) + 1j * (pares[:, 1].astype(float) - 127.5)) / 127.5
-    np.testing.assert_allclose(d["z_captura"], esperada)
-    assert d["z_captura"][0] == -1 + 1j
-    assert len(d["z_captura"]) == 16384
-    assert d["N_captura"] / d["fs_captura"] * 1000 == pytest.approx(6.826666666666667)
-    assert np.diff(d["f_captura"])[0] == 146.484375
-    assert np.sum(d["w_captura"]) == pytest.approx(8192)
-    assert np.max(d["db_captura"]) == pytest.approx(0)
-    assert np.isfinite(d["db_captura"]).all()
-
-
-def test_archivo_ausente_o_incompleto_da_error_claro(experimento, tmp_path):
-    with pytest.raises(FileNotFoundError, match="Falta la grabación"):
-        ejecutar_captura(experimento, tmp_path / "ausente.cu8")
-    corto = tmp_path / "corto.cu8"
-    corto.write_bytes(bytes([0, 255, 127]))
-    with pytest.raises(ValueError, match="bloque completo"):
-        ejecutar_captura(experimento, corto)
-
-
-def test_generador_sintetico_no_requiere_grabacion(tmp_path):
-    modulo = generador()
-    paths = modulo.generar(tmp_path, captura=tmp_path / "ausente.cu8", incluir_captura=False)
-    assert len(paths) == 5
-    for path in paths:
-        assert path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
-
-
-def test_generador_completo_reproduce_seis_figuras(tmp_path, raw_prueba):
-    path, _ = raw_prueba
-    paths = generador().generar(tmp_path / "figuras", captura=path)
-    assert len(paths) == 6
-    for path in paths:
-        assert path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
-
-
-def test_grabacion_oficial_si_esta_disponible(experimento):
-    if not CAPTURA.is_file():
-        pytest.skip("La grabación oficial se distribuye por Drive, no por Git")
-    d = ejecutar_captura(experimento, CAPTURA)
-    assert len(d["crudo"]) == 32768
-    assert np.max(d["db_captura"]) == pytest.approx(0)
-    assert d["fc_captura"] == 99100000
-
-
-def test_figuras_nuevas_tienen_lectura_itemizada():
-    texto = (SESSION / "index.md").read_text(encoding="utf-8")
-    for numero in range(22, 28):
-        despues = texto.split(f"**Figura {numero}.**", 1)[1].split("\n", 1)[1]
-        assert despues.lstrip().startswith("- **"), numero

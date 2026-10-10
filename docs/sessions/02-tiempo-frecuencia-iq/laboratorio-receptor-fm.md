@@ -1,281 +1,271 @@
 ---
 title: "Laboratorio #2 — Demodulador FM en GNU Radio"
 session: 2
-description: "Implementación de un receptor FM mono, con una captura CU8 a 2.048 MS/s y una fuente RTL-SDR opcional."
+description: "Receptor FM mono desde la captura CU8 oficial a 2.4 MS/s, con espectro, waterfall y entrada RTL-SDR opcional."
 ---
 
 # Laboratorio #2 — Demodulador FM en GNU Radio
 
-Esta guía recupera el laboratorio de receptor FM que acompañaba la versión anterior de la sesión. Conserva su cadena principal: captura I/Q a 2.048 MS/s, resampler 3/32, `WBFM Receive` a 192 kS/s y audio mono a 48 kS/s.
+- El laboratorio utiliza la misma captura de 2.4 MS/s que S01 y la teoría de S02.
+- La cadena selecciona la banda central y entrega audio mono a 48 kS/s.
+- El estudiante observa la captura mediante un espectro y un waterfall. No necesita un dongle.
 
 ## Objetivos
 
-Al finalizar, el estudiante será capaz de:
+1. Reconstruir muestras complejas desde bytes CU8.
+2. Calcular las tasas de entrada, canal y audio.
+3. Relacionar espectro y waterfall con los metadatos de la captura.
+4. Explicar cómo el giro entre muestras permite demodular FM.
+5. Implementar y verificar la cadena en GNU Radio Companion.
 
-1. Reconstruir muestras complejas a partir de un archivo CU8, sin confundir bytes con muestras I/Q.
-2. Calcular y configurar las tasas de las etapas de recepción y de audio.
-3. Relacionar los ejes de los visores con la frecuencia central y con la tasa de cada etapa.
-4. Explicar cómo el cambio de fase entre muestras permite demodular FM.
-5. Implementar la cadena en GNU Radio Companion y distinguir qué operaciones realiza cada bloque.
-
-La construcción no requiere diseñar los taps de los filtros desde cero. Los bloques se utilizan como sistemas cuyas entradas, salidas y parámetros deben entenderse. El análisis detallado de sus filtros queda para el tema de sistemas y filtrado.
+El diseño detallado de los filtros queda para S03 y S04. Aquí se utilizan bloques con parámetros conocidos y límites explícitos.
 
 ## Archivos y requisitos
 
 | Recurso | Ubicación | Uso |
 |---|---|---|
-| [Grafo de referencia](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/receptor_fm_99p1_2p048Msps.grc) | `sdr/gnuradio-flowgraphs/receptor_fm_99p1_2p048Msps.grc` | Comparar parámetros y conexiones. |
-| `fm_99p1MHz_2p048Msps_g30.cu8` | `sdr/samples/` | Captura I/Q centrada en 99.1 MHz a 2.048 MS/s. |
-| GNU Radio Companion | Equipo local | Construir y ejecutar el flowgraph. |
-| Parlantes o audífonos | Equipo local | Escuchar la salida a 48 kS/s. |
+| Grafo de referencia | `gnuradio-flowgraphs/receptor_fm_99p1_2p4Msps.grc` | Comparar parámetros y conexiones. |
+| Captura oficial | `samples/fm_99p1MHz_2p4Msps_g30.cu8` | I/Q a 2.4 MS/s, con referencia RF de 99.1 MHz. |
+| GNU Radio Companion | Equipo local | Construir y ejecutar el grafo. |
+| Parlantes o audífonos | Equipo local | Escuchar audio mono a 48 kS/s. |
 
-- **Distribución:** las grabaciones se entregan fuera de Git, en la [carpeta de muestras del curso](https://drive.google.com/drive/folders/1tP8u1tQZDnvi_-ZAxZ3J8tehdKwi92an?usp=drive_link). Se consulta también la [descarga de muestras de la sesión 1](../01-introduccion-sdr/index.md#descargar-la-grabacion).
-- **Ruta del archivo:** el `.grc` espera `../samples/fm_99p1MHz_2p048Msps_g30.cu8`. La ruta se interpreta desde `gnuradio-flowgraphs/`, donde se ejecuta el grafo. Una ruta absoluta del equipo del profesor no sirve en otro equipo.
-- **Dos capturas diferentes:** la subsección 6.7 de la teoría utiliza una captura a **2.4 MS/s**. Este laboratorio conserva la de **2.048 MS/s**. El sample rate correcto procede de los metadatos, no del valor que se escriba en el visor ni de renombrar el archivo.
-- **Sin hardware obligatorio:** la ruta principal utiliza el archivo. El dongle se reserva para una extensión opcional.
+- Las grabaciones se distribuyen por la [carpeta de muestras](https://drive.google.com/drive/folders/1tP8u1tQZDnvi_-ZAxZ3J8tehdKwi92an?usp=drive_link), fuera de Git.
+- La [sesión 1](../01-introduccion-sdr/index.md#descargar-la-grabacion) explica la descarga de la captura oficial.
+- El grafo utiliza `../samples/fm_99p1MHz_2p4Msps_g30.cu8`, porque se ejecuta desde `gnuradio-flowgraphs/`.
+- La fuente RTL-SDR queda desactivada. Solo se utiliza en la extensión opcional.
 
 ## 1. Seguir las tasas antes de conectar bloques
 
-La cadena principal es:
-
 ```text
-Archivo CU8: bytes I,Q alternados
-        ↓  4 096 000 bytes/s
-Conversión CU8 → I+jQ
-        ↓  2.048 MS/s complejas
-Rational Resampler: interpolación 3, decimación 32
-        ↓  192 kS/s complejas
-WBFM Receive: audio decimation 4
-        ↓  48 kS/s reales, audio mono
-Control de volumen → Audio Sink
+Archivo CU8: 4 800 000 bytes/s
+    → reconstrucción I/Q: 2.4 MS/s complejas
+    → Rational Resampler, 2/25: 192 kS/s complejas
+    → WBFM Receive, audio decimation 4: 48 kS/s reales
+    → volumen → Audio Sink
 ```
 
-| Punto de la cadena | Tipo de un item | Tasa de items |
+| Punto | Tipo de item | Tasa de items |
 |---|---|---:|
-| `File Source` y `Throttle` | Un byte I o Q | 4 096 000 items/s |
-| Después de `UChar to Float`, antes de `Deinterleave` | Un float I o Q | 4 096 000 items/s |
-| Cada salida de `Deinterleave` | Un float I o un float Q | 2 048 000 items/s |
-| `Float to Complex` | Una muestra I+jQ | 2.048 MS/s |
-| Salida del `Rational Resampler` | Una muestra compleja | 192 kS/s |
-| Salida de `WBFM Receive` | Una muestra real de audio | 48 kS/s |
+| File Source y Throttle | Un byte I o Q | 4 800 000 items/s |
+| Después de UChar to Float, antes de Deinterleave | Un float I o Q | 4 800 000 items/s |
+| Cada salida de Deinterleave | Un float I o un float Q | 2 400 000 items/s |
+| Float to Complex | Una muestra I+jQ | 2.4 MS/s |
+| Rational Resampler | Una muestra compleja | 192 kS/s |
+| WBFM Receive | Una muestra real de audio | 48 kS/s |
 
-- **Pareja, no dos instantes:** I y Q de una muestra corresponden al mismo índice. Dos bytes CU8 forman una muestra compleja, como se explicó en las subsecciones 2 y 6.7.
-- **Ritmo de reproducción:** el `Throttle` es de tipo `Byte`, con `Sample Rate = 2*samp_rate`. Así permite pasar aproximadamente $2(2048000)=4096000$ bytes por segundo de reloj. No convierte el formato, no interpola y no filtra.
-- **Tasa de señal frente a reloj del computador:** $f_s$ describe el tiempo que representan las muestras. `Throttle` limita cuánto tarda el programa en entregarlas; no modifica los valores ni convierte una captura a otro sample rate. En esta ruta, `Audio Sink` tiene `OK to Block = No`, como en el grafo de referencia.
-
-El resampler establece la relación entre las tasas complejas:
+- I y Q corresponden al mismo instante. Dos bytes CU8 forman una muestra compleja.
+- El Throttle de tipo Byte utiliza `Sample Rate = 2*samp_rate`.
+- Throttle limita el ritmo de suministro. No cambia los valores, no filtra ni convierte el sampling rate de la señal.
 
 $$
-f_{s,\mathrm{canal}}=f_{s,\mathrm{entrada}}\frac{L}{D}
-=2048000\frac{3}{32}=192000\ \text{S/s}.
+f_{s,\mathrm{canal}}=2400000\frac{2}{25}=192000\ \mathrm{S/s},\qquad
+f_{s,\mathrm{audio}}=\frac{192000}{4}=48000\ \mathrm{S/s}.
 $$
 
-El bloque de recepción entrega audio con otra decimación:
+??? example "Comprobación 1.1 — Throttle incorrecto"
 
-$$
-f_{s,\mathrm{audio}}=\frac{f_{s,\mathrm{canal}}}{D_a}
-=\frac{192000}{4}=48000\ \text{S/s}.
-$$
+    - **Datos:** la entrada es Byte y cada muestra I/Q requiere dos bytes.
+    - **Cálculo:** un Throttle de 2400000 bytes/s suministraría $2400000/2=1200000$ muestras complejas por segundo de reloj.
+    - **Resultado:** sería la mitad del ritmo necesario para reproducir esta captura en tiempo real.
+    - **Interpretación:** el archivo sigue representando muestras adquiridas a 2.4 MS/s. El límite de suministro no cambia sus metadatos.
+    - **Consecuencia:** Audio Sink puede sufrir underruns, es decir, falta de datos para su reloj. Pueden aparecer cortes o pausas.
+    - **Límite:** no se garantiza un tono a media frecuencia. Audio Sink permanece configurado a 48 kS/s.
 
-??? example "Comprobación 1.1 — Throttle a samp_rate en una ruta Byte"
+??? example "Comprobación 1.2 — Tamaño y duración"
 
-    - **Cálculo:** $2048000$ bytes/s permiten formar $2048000/2=1024000$ muestras I/Q por segundo de reloj, la mitad de la tasa necesaria para reproducir esta captura en tiempo real.
-    - **Qué no cambia:** la secuencia almacenada sigue representando muestras tomadas a 2.048 MS/s. La división anterior describe el suministro al programa, no una nueva adquisición.
-    - **Consecuencia posible:** al mantenerse `Audio Sink` a 48 kS/s, llega audio insuficiente para su reloj; pueden aparecer underruns, cortes o pausas. No se garantiza que la tarjeta reproduzca un tono a la mitad de su frecuencia: su tasa de audio sigue configurada a 48 kS/s.
-
-??? example "Comprobación 1.2 — tamaño de un segundo de captura"
-
-    - **Muestras:** en un segundo hay $N=f_sT=2048000(1)=2048000$ parejas I/Q.
-    - **Bytes:** cada pareja ocupa dos bytes; por tanto, $2N=4096000$ bytes. No se aplica este cálculo a un archivo `complex64`, que utiliza otro tamaño de item.
-    - **Duración:** una captura CU8 de 40960000 bytes contiene $40960000/2=20480000$ muestras. Con estos metadatos, $T=N/f_s=10$ s. El tamaño por sí solo no permite descubrir $f_s$.
+    - **Datos:** la captura tiene 48 000 000 bytes CU8 y $f_s=2400000$ S/s.
+    - **Muestras:** $N=48000000/2=24000000$ parejas I/Q.
+    - **Duración:** $T=N/f_s=24000000/2400000=10$ s.
+    - **Interpretación:** el tamaño permite contar muestras. Sin el sampling rate documentado, no permite calcular su duración.
 
 ## 2. Reconstruir I/Q desde CU8
 
-El estudiante crea un flowgraph con salida `QT GUI`, lo guarda en `gnuradio-flowgraphs/` y asigna un `ID` propio, por ejemplo `lab02_fm_estudiante`. Se definen `samp_rate = 2048000`, `freq = 99.1e6` y `volume = 0.2`.
+1. El estudiante crea un grafo con salida `QT GUI` y lo guarda en `gnuradio-flowgraphs/`.
+2. Asigna un ID propio, como `lab02_fm_estudiante`, distinto del ID de la referencia.
+3. Define `samp_rate = 2400000`, `freq = 99.1e6` y `volume = 0.2`.
+4. Conecta los siete bloques de la ruta CU8 en el orden de la tabla.
 
-La primera parte se construye en este orden:
-
-| Bloque | Parámetro principal | Operación |
+| Bloque | Parámetros | Operación |
 |---|---|---|
-| `File Source` | Output Type: `Byte`; Repeat: `Yes`; ruta relativa indicada arriba | Leer I,Q,I,Q,... sin interpretar los bytes como floats. |
-| `Throttle` | Type: `Byte`; Sample Rate: `2*samp_rate` | Limitar el suministro del archivo. |
-| `UChar to Float` | Valor por defecto | Representar cada byte unsigned como float. |
-| `Add Const` | Type: `Float`; Constant: `-127.5` | Desplazar el centro del formato a cero. |
-| `Multiply Const` | Type: `Float`; Constant: `1/127.5` | Normalizar cada componente. |
-| `Deinterleave` | Type: `Float`; Number of Streams: `2`; Block Size: `1` | Separar items alternados en I y Q. |
-| `Float to Complex` | Vector Length: `1` | Unir ambas componentes en una muestra compleja. |
+| File Source | Byte; Repeat: Yes; ruta relativa de la captura | Leer I,Q,I,Q,… |
+| Throttle | Byte; Sample Rate: `2*samp_rate` | Limitar el suministro. |
+| UChar to Float | Valores predeterminados | Representar cada byte unsigned como float. |
+| Add Const | Float; Constant: `-127.5` | Centrar cada componente. |
+| Multiply Const | Float; Constant: `1/127.5` | Normalizar cada componente. |
+| Deinterleave | Float; Streams: 2; Block Size: 1 | Separar I y Q alternados. |
+| Float to Complex | Vector Length: 1 | Reconstruir I+jQ. |
 
-- **Conexiones iniciales:** los primeros cinco bloques se conectan en cadena a `Deinterleave`.
-- **Puerto I:** la salida 0 de `Deinterleave` se conecta a la entrada real 0 de `Float to Complex`.
-- **Puerto Q:** la salida 1 se conecta a la entrada imaginaria 1. No se conectan ambos flujos al mismo puerto.
-- **Conversión:** si los bytes son $u_I[n]$ y $u_Q[n]$, se obtiene
+- La salida 0 de Deinterleave entra en el puerto real 0 de Float to Complex.
+- La salida 1 entra en el puerto imaginario 1. Los dos puertos representan el mismo índice de muestra.
+- Para bytes $u_I[n]$ y $u_Q[n]$, la conversión es:
 
-$$
-z[n]=\frac{u_I[n]-127.5}{127.5}+j\frac{u_Q[n]-127.5}{127.5}.
-$$
+$$z[n]=\frac{u_I[n]-127.5}{127.5}+j\frac{u_Q[n]-127.5}{127.5}.$$
 
-- **Extremos:** un byte 0 se representa como −1 y uno 255 como +1. Como el centro 127.5 queda entre dos códigos enteros, 127 y 128 producen valores pequeños de signos opuestos, no cero exacto.
-- **Magnitud compleja:** que I y Q estén entre −1 y +1 no implica $|z|\leq1$. Por ejemplo, $-1+j$ tiene magnitud $\sqrt{2}$. La magnitud se calcula con $\sqrt{I^2+Q^2}$, como en la subsección 2.2.
+??? note "Para profundizar"
 
-??? example "Comprobación 2.1 — por qué no se declara Complex el File Source"
+    - Un byte 0 produce −1; un byte 255 produce +1.
+    - Los códigos 127 y 128 producen valores pequeños de signos opuestos, no cero exacto.
+    - Que I y Q estén entre −1 y +1 no implica $|z|\leq1$. Por ejemplo, $|-1+j|=\sqrt{2}$.
+    - La conversión conserva los códigos disponibles, con redondeo numérico. No recupera información perdida por cuantización o clipping previo.
+    - Estos bloques no agregan metadatos RF al archivo raw.
 
-    - **Formato esperado por ese tipo:** `Complex` en esta ruta de GNU Radio corresponde a dos float32, con ocho bytes por muestra compleja.
-    - **Formato disponible:** CU8 utiliza dos bytes, uno unsigned para I y otro para Q. No contiene floats almacenados.
-    - **Error:** escoger `Complex` no ejecuta la conversión anterior; reinterpreta grupos de ocho bytes con un formato equivocado. La reconstrucción requiere leer bytes y aplicar los bloques de la tabla.
+??? example "Comprobación 2.1 — File Source no debe ser Complex"
 
-??? example "Comprobación 2.2 — qué información conserva la conversión"
-
-    - **Valores disponibles:** cada componente de CU8 tiene 256 códigos posibles. La transformación asigna a cada código un valor float distinto, con el redondeo numérico habitual.
-    - **Qué no se recupera:** se conservan los códigos de la captura, pero no se crean niveles de amplitud que el archivo nunca tuvo. Los bits perdidos por cuantización o clipping previo no reaparecen al normalizar.
-    - **Tiempo y referencia:** estos bloques tampoco incorporan una frecuencia central ni un sample rate al archivo raw. Esos datos siguen dependiendo de la documentación de la captura.
+    - **Formato disponible:** CU8 contiene dos bytes unsigned por muestra compleja.
+    - **Tipo Complex:** en esta ruta, GNU Radio espera dos float32, equivalentes a ocho bytes por muestra.
+    - **Error:** seleccionar Complex reinterpreta bytes con un formato equivocado. No ejecuta la conversión de la tabla.
+    - **Solución:** leer Byte y reconstruir I/Q mediante los siete bloques indicados.
 
 ## 3. Reducir la tasa y observar el canal
 
-Se añade `Rational Resampler`, con entrada y salida `Complex`, `Interpolation = 3`, `Decimation = 32`, `Taps = []` y `Fractional BW = 0`. Su entrada se conecta a `Float to Complex`.
+1. Se conecta Float to Complex a Rational Resampler.
+2. Se configura entrada y salida Complex, `Interpolation = 2`, `Decimation = 25`, `Taps = []` y `Fractional BW = 0`.
+3. Se añaden los tres visores de la tabla como ramas de observación.
 
-- **No es tomar una de cada 32 muestras:** el bloque realiza resampling con filtrado y relación 3/32. El filtro es necesario para controlar el aliasing al reducir la tasa, como mostró la subsección 4.7.
-- **Configuración automática:** en GNU Radio 3.10.12, taps vacíos y `Fractional BW = 0` solicitan el filtro predeterminado, con ancho fraccional 0.4. Para esta reducción, su banda de paso de diseño llega aproximadamente a ±76.8 kHz y la transición hasta ±96 kHz. No es un filtro ideal de corte abrupto. [Implementación del resampler](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/lib/rational_resampler_impl.cc).
-- **Límite del ejemplo:** 192 kS/s dan un intervalo nominal de 192 kHz, no una garantía de conservar todo el espectro de cualquier emisión FM. Este montaje es una práctica de recepción mono; no certifica fidelidad de una señal de radiodifusión completa.
+| Visor | Entrada | Bandwidth | FFT y ventana | Intervalo RF nominal |
+|---|---|---|---|---|
+| QT GUI Frequency Sink, RF | Antes del resampler | `samp_rate` | 4096, Hann | [97.9, 100.3) MHz |
+| QT GUI Waterfall Sink, RF | Antes del resampler | `samp_rate` | 4096, Hann | [97.9, 100.3) MHz |
+| QT GUI Frequency Sink, Canal | Después del resampler | `192000` | 1024, Blackman-Harris | [99.004, 99.196) MHz |
 
-Se conectan dos `QT GUI Frequency Sink`, ambos de tipo `Complex`, FFT de 1024 puntos y `Center Frequency = freq`:
+- Los tres visores utilizan `Type = Complex` y `Center Frequency = freq`.
+- El resampler filtra y cambia la tasa. No toma simplemente una de cada 25 muestras.
+- La cadena permite una práctica de audio mono. Los 192 kS/s no garantizan conservar toda emisión FM completa y sin distorsión.
 
-| Visor | Entrada | Bandwidth | Intervalo RF nominal con $f_c=99.1$ MHz |
-|---|---|---:|---|
-| RF | Antes del resampler | `samp_rate` | 98.076 a 100.124 MHz |
-| Canal | Después del resampler | `192000` | 99.004 a 99.196 MHz |
+**Lectura de los visores:**
 
-- **Qué se debe observar en RF:** el cero de baseband corresponde a 99.1 MHz. Los desplazamientos a izquierda y derecha se interpretan con $f_{\mathrm{RF}}=f_c+f_{\mathrm{BB}}$.
-- **Qué se debe observar en Canal:** cambia el ancho del eje porque cambia el sample rate. También se modificó la señal mediante el filtro; no se trata solo de ampliar una zona del dibujo original.
-- **Extremos del eje:** los valores de la tabla son bordes nominales. Los bins representan $[-f_s/2,f_s/2)$; no hay dos frecuencias discretas independientes en los dos extremos de Nyquist.
-- **Separación entre bins:** con 1024 puntos resulta $2048000/1024=2000$ Hz antes del resampler y $192000/1024=187.5$ Hz después. No equivale por sí sola a la capacidad de separar emisoras, como explicó la subsección 5.
-- **Escala vertical:** los visores del grafo de referencia utilizan Blackman-Harris y no tienen calibración de potencia RF. No se exige que sus alturas coincidan con las figuras Colab, que utilizan otras ventanas y normalizaciones; los dB del visor no se presentan como dBm.
+- **RF:** las bandas aparecen respecto a 99.1 MHz. La separación entre bins es $2400000/4096=585.9375$ Hz.
+- **Waterfall:** el color muestra potencia y su variación temporal. Una línea estable no identifica por sí sola un transmisor o una interferencia.
+- **Canal:** la nueva banda es más estrecha por el filtro y la reducción de tasa. La separación entre bins es $192000/1024=187.5$ Hz.
 
-??? example "Comprobación 3.1 — cambiar freq durante la reproducción"
+??? note "Para profundizar"
 
-    - **Ejemplo:** una componente a +250 kHz en la captura corresponde a $99.1+0.250=99.35$ MHz.
-    - **Reetiquetado erróneo:** si se cambia `freq` a 99.5 MHz sin transformar las muestras, el visor la etiquetaría como $99.5+0.250=99.75$ MHz. El dato físico no cambió.
-    - **Operación necesaria:** para centrar esa componente se utilizaría una mezcla de −250 kHz y se seguiría la nueva referencia, como en las subsecciones 6.3 y 6.4. Esa mezcla no forma parte de la ruta principal: aquí el canal de interés ya está centrado.
+    - En GNU Radio 3.10.12, taps vacíos y Fractional BW de cero solicitan el diseño predeterminado con ancho fraccional 0.4.
+    - Para esta reducción, la banda de paso nominal llega aproximadamente a ±76.8 kHz, con transición hacia ±96 kHz.
+    - No es un filtro ideal de corte abrupto. El diseño detallado se estudiará después.
+    - El extremo RF derecho no representa un bin adicional independiente del borde izquierdo de Nyquist.
+    - Los visores no están calibrados en dBm. Sus normalizaciones no necesariamente coinciden con las figuras Colab.
+    - El waterfall de referencia inicia con Intensity Min de −100 y Max de −20. Es una escala de visualización ajustable, no una medición absoluta.
+    - Update Period de 0.10 s controla la actualización del visor. No significa que cada fila replique el promedio temporal de Colab.
+    - Fuente del filtro: [rational_resampler_impl.cc](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/lib/rational_resampler_impl.cc).
+    - Fuente del visor: [QT GUI Waterfall Sink](https://wiki.gnuradio.org/index.php/QT_GUI_Waterfall_Sink).
 
-## 4. Del cambio de fase al audio FM
+??? example "Comprobación 3.1 — Cambiar freq con un archivo fijo"
 
-Las subsecciones 2.3 y 4.1 relacionaron frecuencia y avance de fase. Para un tono complejo, $\Delta\theta=2\pi f_0/f_s$. En FM ese avance no es constante: cambia con la información moduladora.
+    - **Datos:** una componente aparece en +250 kHz respecto a 99.1 MHz.
+    - **RF correcta:** $99.1+0.250=99.35$ MHz.
+    - **Etiqueta incorrecta:** escribir 99.5 MHz en el visor produce $99.5+0.250=99.75$ MHz, sin modificar las muestras.
+    - **Interpretación:** cambiar etiquetas no sintoniza otra emisora. S04 explicará cómo desplazar y seleccionar un canal fuera del centro.
 
-- **Muestras:** se considera $z[n]=Ae^{j\theta[n]}$, con amplitud constante $A>0$. El símbolo $z^*$ indica el conjugado.
-- **Tasa de esta etapa:** $f_s=192000$ S/s es el sampling rate de entrada al demodulador, después del resampler.
-- **Intervalo:** $T_s=1/f_s$ separa las muestras de índices $n-1$ y $n$.
-- **Avance de fase:** $\Delta\theta[n]=\theta[n]-\theta[n-1]$ se expresa en radianes, antes de reducirlo módulo $2\pi$.
-- **Producto:** se multiplica la muestra actual por el conjugado de la anterior:
+## 4. Del giro entre muestras al audio FM
 
-$$
-z[n]z^*[n-1]=A^2e^{j(\theta[n]-\theta[n-1])}.
-$$
+- La [teoría de 6.5](index.md#65-como-permite-fm-recuperar-el-audio) muestra cómo el mensaje modifica el giro entre muestras.
+- WBFM Receive recibe la banda central seleccionada, en formato complejo, y entrega audio mono real.
+- Se configura **`Quadrature Rate = 192000`** y **`Audio Decimation = 4`**.
+- Después se conecta Multiply Const de tipo Float, con constante `volume`.
+- La salida entra en Audio Sink: una entrada, `Sample Rate = 48000` y `OK to Block = No`.
+- `volume` utiliza QT GUI Range: mínimo 0, máximo 1, paso 0.05 y valor inicial 0.2.
 
-- **Argumento:** $\operatorname{arg}$ devuelve el ángulo principal del producto. Ese ángulo representa $\Delta\theta[n]$ módulo $2\pi$.
-- **Condición:** si $|\Delta\theta[n]|<\pi$, el ángulo permite calcular la frecuencia media durante el intervalo:
+??? note "Para profundizar"
 
-$$
-\widehat f[n]=\frac{f_s}{2\pi}\operatorname{arg}\left(z[n]z^*[n-1]\right).
-$$
+    - Para $z[n]=Ae^{j\theta[n]}$, con $A>0$, el producto es $z[n]z^*[n-1]=A^2e^{j(\theta[n]-\theta[n-1])}$.
+    - Si el giro verdadero es menor que media vuelta, el argumento principal permite estimar la frecuencia media durante ese intervalo:
 
-- **Unidad del resultado:** $\widehat f[n]$ se expresa en Hz. No es una fase ni una amplitud de audio.
-- **Relación con el tono:** si el avance es constante y cumple la condición anterior, esta operación recupera su frecuencia.
-- **Relación con FM centrada:** se usa el modelo $f[n]=\Delta f\,m[n]$, sin offset de portadora. $\Delta f$ es la desviación de referencia, en Hz.
-- **Mensaje normalizado:** aquí $m[n]$ es el promedio del mensaje durante ese intervalo, sin unidades y con $|m[n]|\leq1$.
-- **Recuperación:** dividir $\widehat f[n]$ entre $\Delta f$ estima ese promedio antes del filtrado de audio. No entrega necesariamente el valor instantáneo del mensaje en $t=n/f_s$.
-- **Límite de fase:** el argumento es un ángulo principal. No distingue avances que difieran en vueltas completas, igual que en el aliasing de la subsección 4. No se interpreta una muestra de magnitud nula como si tuviera fase fiable.
-- **Bloque utilizado:** `Quadrature Demod` implementa el producto conjugado y el argumento multiplicado por una ganancia. [Fuente de GNU Radio](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/lib/quadrature_demod_cf_impl.cc).
+    $$\widehat f[n]=\frac{f_s}{2\pi}\arg\left(z[n]z^*[n-1]\right).$$
 
-El estudiante conecta `WBFM Receive` a la salida del resampler, con **`Quadrature Rate = 192000`** y **`Audio Decimation = 4`**. Se utiliza el nombre del parámetro mostrado por GNU Radio Companion 3.10.12.
+    - Aquí $f_s=192000$ S/s. El resultado se expresa en Hz, no en amplitud de audio.
+    - Para FM centrada, dividir por la desviación de referencia estima el mensaje medio del intervalo antes del filtrado de audio.
+    - El ángulo principal no distingue giros separados por vueltas completas. Una muestra de magnitud nula tampoco proporciona una fase definida.
+    - Quadrature Demod implementa el producto conjugado y el argumento, multiplicados por una ganancia.
+    - Fuente: [quadrature_demod_cf_impl.cc](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/lib/quadrature_demod_cf_impl.cc).
+    - WBFM Receive incluye discriminación de fase, filtrado de audio, decimación y de-emphasis.
+    - Utiliza desviación nominal de 75 kHz y ganancia $G=f_s/(2\pi\,75000)\approx0.4074$.
+    - Esa referencia no demuestra la desviación real de una emisora.
+    - Con mensaje 0.5 y desviación de 75 kHz, la frecuencia relativa es 37 500 Hz.
+    - Su giro es aproximadamente 1.2272 rad. Multiplicar por $G$ produce 0.5 antes de los filtros.
+    - Fuente: [wfm_rcv.py](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/wfm_rcv.py).
+    - De-emphasis compensa el realce de altas frecuencias de transmisión. La constante predeterminada del bloque es 75 µs.
+    - Esa configuración no garantiza coincidencia automática con el transmisor local.
+    - Fuente: [fm_emph.py](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/fm_emph.py).
+    - No se añade decoder stereo ni decoder RDS. Escuchar audio no demuestra que esas partes de la emisión se hayan recuperado.
 
-- **Entrada y salida:** el bloque recibe muestras complejas y entrega muestras reales de audio mono.
-- **Operaciones internas:** incluye demodulación de fase, filtrado de audio y decimación. No basta cambiar el tipo de `Complex` a `Float` para obtener el audio.
-- **Escala interna:** la implementación utiliza una desviación de referencia de 75 kHz y ganancia $G=f_s/(2\pi\,75000)$. A 192 kS/s, $G\approx0.4074$. Esa referencia del bloque no demuestra por sí sola la desviación real de la emisora. [Implementación de WBFM Receive](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/wfm_rcv.py).
-- **Ejemplo de escala:** con $m[n]=0.5$ y $\Delta f=75000$ Hz, resulta $f[n]=37500$ Hz. El avance es $2\pi(37500/192000)\approx1.2272$ rad. Multiplicar por $G$ produce 0.5, antes de los filtros de audio.
-- **De-emphasis:** también incluye este filtrado, que modifica la respuesta del audio; su constante predeterminada es 75 µs. Se documenta como una elección de la implementación, sin asumir que coincida automáticamente con la del transmisor local. [Implementación de de-emphasis](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/fm_emph.py).
-- **Alcance:** no se añade un decoder stereo ni un decoder RDS. Escuchar audio no demuestra que todas esas partes de una emisión se hayan recuperado.
+??? example "Comprobación 4.1 — Tasa de Audio Sink"
 
-Después se conectan `Multiply Const` de tipo `Float`, con constante `volume`, y `Audio Sink` con una entrada, `Sample Rate = 48000` y `OK to Block = No`. Para disponer de un control visible, `volume` puede definirse mediante `QT GUI Range`, entre 0 y 1, paso 0.05 y valor inicial 0.2, como en la referencia.
-
-??? example "Comprobación 4.1 — por qué Audio Sink debe quedar a 48000"
-
-    - **Tasa recibida:** el resampler entrega 192000 muestras complejas/s y `Audio Decimation = 4` produce $192000/4=48000$ muestras reales/s.
-    - **Tipo:** estas muestras son valores de audio; no contienen una pareja I/Q que deba dividirse nuevamente entre dos.
-    - **Correspondencia:** `Audio Sink` debe reproducirlas a la tasa que representan. Una configuración diferente cambia la interpretación temporal del audio o causa problemas de suministro; no corrige un archivo de entrada con metadatos equivocados.
+    - **Datos:** el demodulador recibe 192 000 muestras complejas/s y utiliza decimación de audio 4.
+    - **Cálculo:** $192000/4=48000$ muestras reales/s.
+    - **Tipo:** son valores de audio. No contienen otra pareja I/Q que deba dividirse entre dos.
+    - **Interpretación:** Audio Sink utiliza la tasa representada por esas muestras. Otra configuración no corrige metadatos incorrectos de la captura.
 
 ## 5. Ejecutar y registrar observaciones
 
-1. Se verifica que la captura correcta está en `samples/` y que la ruta del `File Source` es relativa.
-2. Se comparan las conexiones y tipos del montaje del estudiante con el grafo de referencia. El `ID` del estudiante se mantiene distinto del de la referencia.
-3. En la referencia, `File Source` y toda la cadena CU8 están activos; `Soapy RTLSDR Source` está desactivado. No se mezclan las dos rutas.
-4. Se ejecuta desde GNU Radio Companion con **F6** y se aumenta el volumen gradualmente. El contenido de la grabación y la salida de audio del equipo determinan lo que se escucha.
-5. Se registra cada visor con su eje de frecuencia y se explica la diferencia entre las dos etapas mediante los ítems de la sección 3.
+1. Se comprueban archivo, ruta relativa, sampling rate e ID propio del grafo.
+2. Se comprueba que la ruta CU8 está activa y Soapy RTLSDR Source está desactivado.
+3. Se comparan parámetros y conexiones con la referencia de 2.4 MS/s.
+4. Se ejecuta con F6 y se aumenta el volumen gradualmente.
+5. Se registra cada visor, con sus ejes y su escala. Se compara el waterfall con la sección 6.3 de la teoría.
+6. Se explica por separado qué muestra el espectro y qué se escucha en el audio.
 
-- **Repetición:** `Repeat = Yes` vuelve al inicio al terminar el archivo. Puede haber una discontinuidad en ese retorno; no representa una nueva observación del entorno RF.
-- **Archivo fijo:** cambiar `freq` solo modifica etiquetas en esta ruta. No se recibe otra emisora ni se reescribe la frecuencia central de adquisición.
-- **Expectativa verificable:** debe haber muestras en ambas etapas complejas y una salida real a 48 kS/s. La interpretación de la captura y la audición se documentan por separado; no se presume una calidad determinada solo porque el grafo compile.
+- Repeat de valor Yes vuelve al inicio del archivo. Puede aparecer una discontinuidad; no es una adquisición nueva.
+- La cadena debe producir muestras complejas a 192 kS/s y audio real a 48 kS/s.
+- La compilación no garantiza una calidad de recepción determinada. La audición y las observaciones se documentan por separado.
 
-### Si solo se dispone de la captura a 2.4 MS/s
+??? note "Variante anterior: captura a 2.048 MS/s"
 
-No se renombra el archivo para hacerlo pasar por la captura de 2.048 MS/s. Se guarda una variante con otro `ID` y se cambian **conjuntamente** estos parámetros:
-
-| Parámetro | Valor para la variante |
-|---|---|
-| `File Source` | `../samples/fm_99p1MHz_2p4Msps_g30.cu8` |
-| `samp_rate` | `2400000` |
-| `Throttle`, Byte | `2*samp_rate`, equivalente a 4800000 bytes/s |
-| `Rational Resampler` | Interpolation: `2`; Decimation: `25` |
-
-- **Comprobación:** $2400000(2/25)=192000$ S/s. `WBFM Receive`, el visor de canal y `Audio Sink` conservan 192000, decimación 4 y 48000, respectivamente.
-- **Primer visor:** su `Bandwidth = samp_rate` pasa a 2.4 MHz. Con la misma referencia de 99.1 MHz, los bordes nominales son 97.9 y 100.3 MHz.
-- **Contenido:** aunque ambas capturas documenten 99.1 MHz, no se supone que contengan el mismo instante ni las mismas amplitudes. Ajustar la cadena conserva una interpretación temporal correcta; no convierte una grabación en la otra.
+    - Se conserva `gnuradio-flowgraphs/receptor_fm_99p1_2p048Msps.grc` con su ID independiente.
+    - Esa referencia utiliza `../samples/fm_99p1MHz_2p048Msps_g30.cu8`, `samp_rate = 2048000` y resampler 3/32.
+    - Su Throttle de bytes utiliza $2(2048000)=4096000$ items/s.
+    - El resultado sigue siendo $2048000(3/32)=192000$ S/s. Las etapas de audio conservan sus parámetros.
+    - Su intervalo nominal es [98.076, 100.124) MHz. No contiene necesariamente completas las bandas cercanas a los bordes.
+    - La referencia anterior no incluye el nuevo waterfall. El archivo no debe renombrarse para hacerlo pasar por la captura oficial de 2.4 MS/s.
+    - Son grabaciones diferentes. No se atribuyen sus diferencias de contraste únicamente al sampling rate.
 
 ## 6. Extensión opcional con RTL-SDR
 
-Para recibir en vivo se detiene el grafo y se selecciona una sola ruta:
+1. Se detiene el grafo antes de cambiar la fuente.
+2. Se desactivan los siete bloques de la ruta CU8, desde File Source hasta Float to Complex. El control de volumen permanece activo.
+3. Se activa Soapy RTLSDR Source con salida `Complex Float32`, `Sample Rate = samp_rate` y `Center Frequency = freq`.
+4. Se conservan ganancia manual de 30 dB y AGC desactivado, como en la referencia.
+5. Su salida se conecta al resampler, al Frequency Sink RF y al Waterfall Sink RF.
+6. Se revisa la [configuración del RTL-SDR](../../setup/rtl-sdr.md) y se ejecuta nuevamente.
 
-1. Se desactivan los **siete bloques de la ruta CU8**: `File Source`, `Throttle`, `UChar to Float`, `Add Const`, el `Multiply Const` de normalización, `Deinterleave` y `Float to Complex`. No se desactiva el control de volumen de la salida de audio.
-2. Se activa `Soapy RTLSDR Source`, que en la referencia está desactivado.
-3. Se mantiene su salida `Complex Float32`, `Sample Rate = samp_rate`, `Center Frequency = freq`, ganancia manual 30 dB y AGC desactivado, como en el grafo.
-4. Se conecta directamente al resampler y al visor RF; el hardware ya entrega muestras complejas. No se aplica la conversión CU8 a esa salida.
-5. Se ejecuta nuevamente. Los requisitos del dispositivo se revisan en la [guía de configuración del RTL-SDR](../../setup/rtl-sdr.md).
+- La fuente de hardware proporciona el ritmo de adquisición. No se añade Throttle a esa ruta.
+- En esta variante, `freq` sí configura el receptor. Con el archivo fijo solo modifica las etiquetas de los visores.
+- Se pueden recibir señales y niveles distintos. Cambiar de fuente no equivale a cambiar únicamente el procesamiento.
 
-- **Clock de adquisición:** la fuente de hardware proporciona el ritmo de las muestras. No se añade el `Throttle` de archivo a esa ruta.
-- **Sintonización real:** en esta variante, `freq` sí configura la frecuencia central de la fuente Soapy. La variable tiene una función distinta de la que tenía con un archivo fijo.
-- **Comparación válida:** pueden variar la señal, la interferencia, el nivel y el ruido respecto a la captura. Se distingue cambiar de fuente de cambiar el procesamiento digital.
+??? example "Comprobación 6.1 — Una fuente activa"
 
-??? example "Comprobación 6.1 — por qué no quedan activas ambas fuentes"
-
-    - **Entrada del resampler:** espera un solo flujo complejo. Dos fuentes no constituyen automáticamente una suma ni una selección entre ellas.
-    - **Selección:** en la ruta de archivo la entrada procede de `Float to Complex`; en la ruta de hardware procede de Soapy. Se desactiva completamente la ruta que no se utiliza.
-    - **Misma tasa declarada:** ambas rutas de esta referencia proporcionan 2.048 MS/s complejas; se mantiene el resampler 3/32. Esa coincidencia no implica que los valores de las muestras sean iguales.
+    - **Entrada:** el resampler recibe un flujo complejo. Dos fuentes conectadas no forman automáticamente una suma ni un selector.
+    - **Selección:** se utiliza Float to Complex o Soapy, pero no ambas rutas activas.
+    - **Tasa:** la nueva referencia configura ambas alternativas a 2.4 MS/s y utiliza resampler 2/25.
+    - **Interpretación:** tasas iguales no implican muestras iguales. La fuente en vivo adquiere otros datos.
 
 ## 7. Diagnóstico breve
 
 | Síntoma | Revisión inicial |
 |---|---|
-| El grafo no abre el archivo | Se comprueban el nombre, la ruta relativa y la presencia de la captura en `samples/`. |
-| Hay underruns o cortes de audio | Se revisan captura, `Throttle = 2*samp_rate` en Byte, carga del equipo y tasas de las etapas. |
-| Los tiempos o el audio no corresponden | Se revisa el sample rate documentado; una captura a 2.4 MS/s no se declara a 2.048 MS/s. |
-| Hay espectro, pero no audio | Se verifican `Quadrature Rate = 192000`, decimación 4, salida a 48000 y volumen; también la salida de audio del sistema. |
-| La señal parece ruido | Se revisan formato Byte, normalización CU8 y orden de las entradas I y Q. |
-| Las frecuencias RF parecen desplazadas | Se comprueba que `freq` corresponde a los metadatos; cambiar etiquetas no mezcla muestras. |
-| Soapy no abre el dongle | Se vuelve a la ruta de archivo y se revisan driver y configuración del dispositivo por separado. |
+| El archivo no abre | Nombre, ubicación en samples y ruta relativa. |
+| Hay underruns o cortes | Throttle de bytes a `2*samp_rate`, tasas y carga del equipo. |
+| El audio o los tiempos no corresponden | Sampling rate documentado de la captura, no solo el rótulo del visor. |
+| Hay espectro, pero no audio | Quadrature Rate, decimación 4, Audio Sink a 48000, volumen y salida del sistema. |
+| El waterfall tiene un solo color | Intensidad mínima y máxima; presencia de datos; Bandwidth y tipo Complex. |
+| La señal parece ruido | Tipo Byte, normalización y orden I/Q. |
+| Las etiquetas RF parecen desplazadas | Correspondencia entre `freq` y los metadatos. |
+| Soapy no abre el dongle | Volver a la ruta de archivo y revisar el dispositivo por separado. |
 
 ## Entrega
 
-El estudiante entrega:
-
-1. El `.grc` construido, con un `ID` propio y sin rutas absolutas ni archivos I/Q dentro de Git.
-2. La tabla de tasas completada: bytes de entrada, flujos I y Q, flujo complejo, salida del resampler y audio. Cada número se acompaña de su cálculo.
-3. Una captura de cada visor, identificando la tasa, los bordes nominales, la referencia RF y la posición del canal objetivo.
-4. Una explicación itemizada de qué hacen la conversión CU8, el resampling, la demodulación y el control de volumen. Se identifica qué etapa deja de tener una salida I/Q.
-5. Una justificación de por qué cambiar `freq` no sintoniza otra señal del archivo. Si se utiliza la variante a 2.4 MS/s o el dongle, se documentan los cambios por separado.
+1. Grafo `.grc` con ID propio, rutas relativas y sin grabaciones añadidas a Git.
+2. Tabla de tasas con sus cálculos, distinguiendo bytes, componentes, muestras complejas y audio.
+3. Capturas de los tres visores con ejes y escalas. En el waterfall se señalan una banda y una línea estable.
+4. Explicación en viñetas de conversión CU8, resampling, demodulación y volumen. Se identifica dónde la salida deja de ser I/Q.
+5. Justificación de por qué cambiar las etiquetas RF no sintoniza otra señal del archivo.
+6. Si se utiliza la variante anterior o el dongle, descripción de los cambios y los metadatos correspondientes.
 
 ## Lecturas y referencias
 
-- [GNU Radio 3.10.12 — Rational Resampler](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/lib/rational_resampler_impl.cc): relación entre tasas y filtro automático.
-- [GNU Radio 3.10.12 — Quadrature Demod](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/lib/quadrature_demod_cf_impl.cc): producto conjugado y cálculo del argumento.
-- [GNU Radio 3.10.12 — WBFM Receive](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/wfm_rcv.py): parámetros de entrada, demodulación y salida mono.
-- [GNU Radio 3.10.12 — FM de-emphasis](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/fm_emph.py): constante predeterminada del filtro de audio.
-
-La estructura procede del laboratorio respaldado del curso. Los parámetros anteriores se verifican contra GNU Radio 3.10.12; no se atribuye a sus valores predeterminados una garantía de calibración o de compatibilidad con toda emisora.
+- [Teoría de S02: lectura de una captura SDR](index.md#6-leer-una-captura-sdr-real).
+- [GNU Radio: Rational Resampler](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/lib/rational_resampler_impl.cc).
+- [GNU Radio: Quadrature Demod](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/lib/quadrature_demod_cf_impl.cc).
+- [GNU Radio: WBFM Receive](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/wfm_rcv.py).
+- [GNU Radio: FM de-emphasis](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/fm_emph.py).
+- [GNU Radio: QT GUI Waterfall Sink](https://wiki.gnuradio.org/index.php/QT_GUI_Waterfall_Sink).

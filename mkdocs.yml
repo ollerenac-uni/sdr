@@ -63,11 +63,14 @@ markdown_extensions:
   - md_in_html
 
 extra_javascript:
+  - javascripts/sdr-mixer-model.js
+  - javascripts/sdr-mixer.js
   - javascripts/mathjax.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/sdr-mixer.css
 
 nav:
   - Inicio: index.md
@@ -79,6 +82,7 @@ nav:
           - "Laboratorio #1: muestreo": sessions/01-introduccion-sdr/laboratorio-muestreo.md
       - "02 — Señales y espectro en SDR":
           - sessions/02-tiempo-frecuencia-iq/index.md
+          - "Demostración: mezcla compleja": sessions/02-tiempo-frecuencia-iq/mezcla-interactiva.md
           - "Laboratorio #2: demodulador FM": sessions/02-tiempo-frecuencia-iq/laboratorio-receptor-fm.md
       - "03 — Sistemas y filtros digitales":
           - sessions/03-sistemas-filtros-digitales/index.md

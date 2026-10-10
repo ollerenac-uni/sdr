@@ -16,7 +16,7 @@ import yaml
 np = pytest.importorskip("numpy")
 
 ROOT = Path(__file__).resolve().parents[1]
-GRAFO = ROOT / "gnuradio-flowgraphs/receptor_fm_99p1_2p048Msps.grc"
+GRAFO = ROOT / "gnuradio-flowgraphs/receptor_fm_99p1_2p4Msps.grc"
 GUIA = ROOT / "docs/sessions/02-tiempo-frecuencia-iq/laboratorio-receptor-fm.md"
 GRCC = shutil.which("grcc") or str(Path.home() / "radioconda/bin/grcc")
 PYTHON_GR = Path(GRCC).parent / "python3"
@@ -54,7 +54,7 @@ def compilar(grafo, directorio, runtime):
     return directorio / (grafo["options"]["parameters"]["id"] + ".py")
 
 
-def variante_headless(archivo, fs=2048000, interpolacion=3, decimacion=32):
+def variante_headless(archivo, fs=2400000, interpolacion=2, decimacion=25):
     grafo = deepcopy(leer_grafo())
     grafo["options"]["parameters"].update(id="fm_verificacion", generate_options="no_gui")
     b = bloques(grafo)
@@ -63,7 +63,7 @@ def variante_headless(archivo, fs=2048000, interpolacion=3, decimacion=32):
     b["blocks_file_source_0"]["parameters"].update(file=str(archivo), repeat="False", length=str(2 * fs))
     # El Copy no altera los bytes, pero evita esperar al reloj durante una prueba.
     b["blocks_throttle2_0"].update(id="blocks_copy", parameters={"type": "byte", "vlen": "1", "enabled": "True"})
-    for nombre in ("qtgui_freq_sink_rf", "qtgui_freq_sink_canal"):
+    for nombre in ("qtgui_freq_sink_rf", "qtgui_freq_sink_canal", "qtgui_waterfall_sink_rf"):
         b[nombre].update(id="blocks_null_sink", parameters={"type": "complex", "vlen": "1", "num_inputs": "1"})
     b["audio_sink_0"].update(id="blocks_vector_sink_x", parameters={"type": "float", "vlen": "1", "reserve_items": "48000"})
     b["rational_resampler_xxx_0"]["parameters"].update(interp=str(interpolacion), decim=str(decimacion))
@@ -116,12 +116,12 @@ def test_tasas_y_intervalos_derivados_de_parametros_del_grc():
     D = int(b["rational_resampler_xxx_0"]["parameters"]["decim"])
     tasa_canal = fs * L / D
     wbfm = b["analog_wfm_rcv_0"]["parameters"]
-    assert 2 * fs == 4096000
+    assert 2 * fs == 4800000
     assert tasa_canal == float(wbfm["quad_rate"]) == 192000
     assert tasa_canal / int(wbfm["audio_decimation"]) == int(b["audio_sink_0"]["parameters"]["samp_rate"]) == 48000
-    np.testing.assert_allclose((99.1e6 + np.array([-fs / 2, fs / 2])) / 1e6, [98.076, 100.124])
+    np.testing.assert_allclose((99.1e6 + np.array([-fs / 2, fs / 2])) / 1e6, [97.9, 100.3])
     np.testing.assert_allclose((99.1e6 + np.array([-tasa_canal / 2, tasa_canal / 2])) / 1e6, [99.004, 99.196])
-    assert fs / 1024 == 2000
+    assert fs / int(b["qtgui_freq_sink_rf"]["parameters"]["fftsize"]) == 585.9375
     assert tasa_canal / 1024 == 187.5
     assert 2400000 * 2 / 25 == tasa_canal
     assert 192000 * 0.4 == 76800
@@ -149,7 +149,7 @@ def test_cadena_grc_recupera_tono_fm_conocido(tmp_path, runtime, fs, L, D):
 
 
 def test_captura_del_laboratorio_produce_audio_real_si_esta_disponible(tmp_path, runtime):
-    archivo = ROOT / "samples/fm_99p1MHz_2p048Msps_g30.cu8"
+    archivo = ROOT / "samples/fm_99p1MHz_2p4Msps_g30.cu8"
     if not archivo.is_file():
         pytest.skip("La captura se distribuye fuera de Git")
     modulo = compilar(variante_headless(archivo), tmp_path / "compilado", runtime)

@@ -21,6 +21,7 @@ def celdas():
     texto = (SESSION / "index.md").read_text(encoding="utf-8")
     seccion = texto.split("### 5. Qué calcula una FFT de un bloque finito", 1)[1]
     seccion = re.split(r"^### [6-9]\. ", seccion, maxsplit=1, flags=re.MULTILINE)[0]
+    seccion = seccion.split("#### 5.11.", 1)[0]
     return re.findall(r"```python\n(.*?)```", seccion, flags=re.DOTALL)
 
 
@@ -31,15 +32,17 @@ def experimento():
     plt.show = lambda: plt.close("all")
     try:
         for numero, celda in enumerate(celdas(), start=1):
-            exec(compile(celda, f"subseccion5-celda{numero}", "exec"), namespace)
+            independiente = {}
+            exec(compile(celda, f"subseccion5-celda{numero}", "exec"), independiente)
+            namespace.update(independiente)
     finally:
         plt.show = original_show
         plt.close("all")
     return namespace
 
 
-def test_ocho_celdas_y_ploteo_en_una_linea():
-    assert len(celdas()) == 8
+def test_nueve_celdas_y_ploteo_en_una_linea():
+    assert len(celdas()) == 9
     metodos = {"plot", "stem", "set", "subplots", "annotate", "text", "legend", "axhline", "axvline", "axvspan", "grid", "show"}
     for celda in celdas():
         for nodo in ast.walk(ast.parse(celda)):
@@ -54,8 +57,8 @@ def test_dft_como_suma_y_orden_de_bins(experimento):
     assert np.sum(productos) == pytest.approx(8)
     np.testing.assert_allclose(np.fft.fft(d["tono8"])[[1, 2]], [8, 0], atol=1e-12)
     np.testing.assert_array_equal(d["f_sin_ordenar"], [0, 1000, 2000, 3000, -4000, -3000, -2000, -1000])
-    assert abs(d["C_sin_ordenar"][1]) == pytest.approx(1)
-    assert abs(d["C_sin_ordenar"][6]) == pytest.approx(0.5)
+    assert abs(d["C_sin_ordenar"][1]) == pytest.approx(0, abs=1e-12)
+    assert abs(d["C_sin_ordenar"][6]) == pytest.approx(1)
     np.testing.assert_array_equal(d["f_ordenado"], np.arange(-4000, 4000, 1000))
     np.testing.assert_allclose(d["C_ordenado"], np.fft.fftshift(d["C_sin_ordenar"]))
 
@@ -63,10 +66,11 @@ def test_dft_como_suma_y_orden_de_bins(experimento):
 def test_coherencia_y_leakage_rectangular(experimento):
     d = experimento
     assert d["T_obs"] == pytest.approx(0.008)
-    f, C = d["espectro_bloque"](d["tonos"][1000], d["fs"])
+    alineado = np.exp(1j * 2 * np.pi * 1000 * np.arange(64) / d["fs"])
+    f, C = d["espectro_bloque"](alineado, d["fs"])
     np.testing.assert_array_equal(f[np.abs(C) > 1e-10], [1000])
     assert np.max(np.abs(C)) == pytest.approx(1)
-    f, C = d["espectro_bloque"](d["tonos"][1062.5], d["fs"])
+    f, C = d["espectro_bloque"](d["tono"], d["fs"])
     assert np.count_nonzero(np.abs(C) > 1e-10) == 64
     for frecuencia in [1000, 1125]:
         k = np.flatnonzero(f == frecuencia)[0]
@@ -95,25 +99,51 @@ def test_hann_periodica_y_normalizacion(experimento):
     np.testing.assert_allclose(d["w_hann"], np.hanning(65)[:-1], atol=1e-14)
     assert np.sum(d["w_hann"]) == pytest.approx(32)
     assert np.sum(d["w_rect"]) == 64
-    for nombre, desplazamiento in [("C_rect", 125), ("C_hann", 250)]:
-        C = d[nombre]
+    for w, desplazamiento in [(d["w_rect"], 125), (d["w_hann"], 250)]:
+        f_win, C = d["espectro_bloque"](d["z_off"], 8000, ventana=w, nfft=4096)
         assert np.max(np.abs(C)) == pytest.approx(1)
         for frecuencia in [1062.5 - desplazamiento, 1062.5 + desplazamiento]:
-            k = np.flatnonzero(d["f_win"] == frecuencia)[0]
+            k = np.flatnonzero(f_win == frecuencia)[0]
             assert abs(C[k]) < 1e-12
     np.testing.assert_allclose(d["magnitud_db"](np.array([1, 0.1, 0.01, 0])), [0, -20, -40, -120])
 
 
 def test_mas_observacion_resuelve_el_par_no_mas_puntos(experimento):
     d = experimento
-    f_corto, C_corto = d["resultados_duracion"][64]
-    f_largo, C_largo = d["resultados_duracion"][512]
-    np.testing.assert_array_equal(f_corto, f_largo)
-    for f, C, esperados in [(f_corto, C_corto, [1031.25]), (f_largo, C_largo, [1000, 1062.5])]:
+    casos = {64: [1031.25], 256: [1009.765625, 1052.734375], 512: [1000, 1062.5], 1024: [1000, 1062.5]}
+    assert set(d["resultados_duracion"]) == set(casos)
+    for cantidad, esperados in casos.items():
+        f, C = d["resultados_duracion"][cantidad]
+        np.testing.assert_array_equal(f, d["resultados_duracion"][64][0])
+        assert len(f) == 16384
+        assert np.diff(f)[0] == pytest.approx(0.48828125)
         a = np.abs(C)
         indices = np.flatnonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:])) + 1
         indices = indices[(f[indices] > 850) & (f[indices] < 1250) & (a[indices] > 0.2)]
         np.testing.assert_array_equal(f[indices], esperados)
+
+
+def test_recorridos_hann_no_se_recortan_y_comparten_escala(monkeypatch):
+    celda = next(c for c in celdas() if "recorridos = {}" in c)
+    monkeypatch.setattr(plt, "show", lambda: None)
+    d = {}
+    try:
+        exec(compile(celda, "pesos-y-recorridos", "exec"), d)
+        paneles = d["axes"].flat
+        next(paneles)  # El primer panel representa pesos, no sumas complejas.
+        limites = []
+        for ax, vueltas in zip(paneles, [0.5, 2.5, 4.5]):
+            xmin, xmax = ax.get_xlim()
+            ymin, ymax = ax.get_ylim()
+            limites.append((xmin, xmax, ymin, ymax))
+            assert ax.get_aspect() == 1
+            for nombre in ["Rectangular", "Hann"]:
+                p = d["recorridos"][(vueltas, nombre)]
+                assert np.all((xmin < p.real) & (p.real < xmax))
+                assert np.all((ymin < p.imag) & (p.imag < ymax))
+        assert limites[0] == limites[1] == limites[2]
+    finally:
+        plt.close("all")
 
 
 def test_leakage_del_fuerte_en_frecuencia_del_debil(experimento):
@@ -143,13 +173,13 @@ def test_figura_compara_productos_y_no_cuenta_bins_como_tonos(experimento):
     np.testing.assert_allclose(np.abs(d["C_bin_intermedio"][[1, 2]]), 0.6407288619353766)
 
 
-def test_generador_reproduce_ocho_figuras(tmp_path):
+def test_generador_reproduce_once_figuras(tmp_path):
     path = SESSION / "figures/gen_fft_bloque.py"
     spec = importlib.util.spec_from_file_location("gen_fft_bloque", path)
     modulo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(modulo)
     paths = modulo.generar(tmp_path)
-    assert len(paths) == 8
+    assert len(paths) == 11
     for path in paths:
         assert path.parent == tmp_path
         assert path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
