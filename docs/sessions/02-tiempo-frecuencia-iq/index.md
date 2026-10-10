@@ -397,6 +397,9 @@ ax.annotate("", xy=(muestra.real, muestra.imag), xytext=(0, 0), arrowprops={"arr
 ax.plot([muestra.real, muestra.real], [0, muestra.imag], "--", color="0.5")
 ax.plot([0, muestra.real], [muestra.imag, muestra.imag], "--", color="0.5")
 ax.plot(muestra.real, muestra.imag, "o", color="tab:blue", label=f"z = {muestra}")
+arco = np.linspace(0, np.angle(muestra), 100)
+ax.plot(np.cos(arco), np.sin(arco), color="tab:red")
+ax.text(1.3 * np.cos(np.angle(muestra) / 2), 1.3 * np.sin(np.angle(muestra) / 2), f"{np.angle(muestra, deg=True):.2f}°", color="tab:red")
 ax.set(xlabel="I (parte real)", ylabel="Q (parte imaginaria)", xlim=(-6, 6), ylim=(-6, 6), title="Una muestra en el plano I/Q")
 ax.set_aspect("equal")
 ax.grid(alpha=0.2)
@@ -410,7 +413,10 @@ En Python se escribe `1j` para la unidad imaginaria, y `3 + 4j` para esta muestr
 
 **Figura 3.** Una muestra compleja descrita por sus componentes I/Q, su magnitud y su fase.
 
-Las líneas grises permiten leer I y Q en sus ejes. La flecha azul une el origen con la muestra: su longitud es 5. El arco rojo indica la fase de 53.13°. Las componentes, la magnitud y la fase describen el mismo punto de dos maneras diferentes.
+- **Componentes:** las líneas grises permiten leer I = 3 y Q = 4 en sus ejes.
+- **Magnitud:** la flecha azul une el origen con la muestra. Su longitud es 5.
+- **Fase:** el arco rojo indica 53.13°, medidos desde el eje I positivo.
+- **Relación:** las componentes I/Q y la pareja magnitud-fase describen el mismo punto.
 
 ??? example "Comprobación: igual magnitud, distinta fase"
     La muestra $-3+j4$ también tiene magnitud 5, pero se encuentra en el segundo cuadrante. Su fase es aproximadamente 126.87°. Cambiar `muestra` a `-3 + 4j` en la celda 1 permite comprobarlo. Si ambas componentes son cero, la magnitud es cero y no existe una dirección que defina la fase; el valor que devuelva el software en ese caso es una convención.
@@ -439,7 +445,7 @@ I[n]=A\cos\theta[n],
 Q[n]=A\sin\theta[n].
 $$
 
-En este tono ideal, I y Q son senoides separadas un cuarto de ciclo. Al observarlas juntas, cada pareja corresponde a un punto del círculo de radio $A$.
+En el ejemplo de 1 kHz, I y Q son muestras de senoides separadas un cuarto de ciclo. Cada pareja corresponde a un punto del círculo de radio $A$.
 
 La magnitud del tono complejo es constante:
 
@@ -518,7 +524,9 @@ plt.show()
 
 En el panel izquierdo, cada instante tiene un valor azul I y un valor rojo Q. El panel derecho combina cada pareja en un punto. La flecha muestra el avance de $n=0$ a $n=1$. Los ocho puntos visibles se repiten durante el segundo ciclo del bloque, por lo que no aparecen 16 posiciones diferentes. Las curvas representan el tono conocido del ejemplo, no una reconstrucción de datos recibidos.
 
-Para experimentar, el estudiante puede cambiar $A$ a 0.5 en la celda 2 y ejecutar de nuevo las celdas 2 y 3. El radio pasa a 0.5. Si solo cambia $\phi$ a $\pi/2$, la primera muestra pasa a $0+j1$, pero el radio y el tiempo por vuelta se mantienen.
+- **Experimento de amplitud:** se cambia $A$ a 0.5 y se mantiene $\phi=0$. Se ejecutan de nuevo las celdas 2 y 3. El radio pasa a 0.5.
+- **Experimento de fase:** primero se restablece $A=1$. Después se cambia $\phi$ a $\pi/2$ y se ejecutan las mismas celdas. La primera muestra pasa a $0+j1$.
+- **Parámetros fijos:** ambos experimentos conservan $f_0=1$ kHz y $f_s=8$ kS/s. El tiempo por vuelta sigue siendo 1 ms.
 
 !!! note "Una captura I/Q no tiene que formar un círculo"
     El círculo corresponde a un tono complejo ideal de amplitud constante. Una captura puede contener varias señales, cambios de amplitud y ruido. Además, I y Q no tienen que ser siempre dos senoides separadas 90°: sus nombres se refieren a las referencias de mezcla. La relación de seno y coseno usada aquí corresponde al tono elegido.
@@ -573,6 +581,12 @@ plt.show()
 
 Ambos recorridos comienzan en $(1,0)$. En el panel izquierdo, la muestra $n=1$ tiene Q positiva; en el derecho, Q negativa. Los círculos y los puntos ocupan las mismas posiciones, pero las etiquetas muestran un orden diferente. La dirección se identifica observando la secuencia, no una muestra aislada ni una nube de puntos sin orden temporal.
 
+!!! note "El sentido observado depende de las muestras"
+    - Los ejemplos de ±1 kHz están dentro de $(-f_s/2,f_s/2)$. En ese intervalo, el signo distingue el sentido del avance entre muestras.
+    - Las muestras no identifican por sí solas la frecuencia continua original. Se comparan tonos con igual amplitud y fase inicial. Producen muestras iguales si sus frecuencias difieren en un múltiplo entero de $f_s$.
+    - En DC (0 Hz), el punto permanece fijo. En Nyquist, el tono alterna entre dos posiciones opuestas y no permite distinguir $+f_s/2$ de $-f_s/2$.
+    - La subsección 4 desarrolla estas equivalencias mediante el aliasing.
+
 #### 2.5. Una senoide real reúne dos giros opuestos
 
 La identidad de Euler también permite escribir una senoide real como suma de dos tonos complejos:
@@ -581,7 +595,7 @@ $$
 A\cos\theta[n]=\frac{A}{2}e^{j\theta[n]}+\frac{A}{2}e^{-j\theta[n]}.
 $$
 
-Cada tono tiene la mitad de amplitud y gira en un sentido. Al sumar sus componentes, las partes imaginarias se cancelan y las partes reales se suman:
+Cada término tiene amplitud $A/2$. En el ejemplo de ±1 kHz, los tonos giran en sentidos opuestos. Sus partes imaginarias se cancelan y sus partes reales se suman:
 
 $$
 \frac{A}{2}(\cos\theta+j\sin\theta)+\frac{A}{2}(\cos\theta-j\sin\theta)=A\cos\theta.
@@ -709,6 +723,13 @@ La descomposición de la subsección 2 permite predecir tres espectros:
 | $e^{-j2\pi\,1000\,t}$ | −1 kHz | 1 |
 
 El coseno real reúne dos giros de amplitud 0.5. El tono complejo conserva un solo sentido de giro. Por eso el espectro completo del coseno tiene dos componentes y el de cada tono complejo tiene una.
+
+!!! note "Excepciones: DC y Nyquist"
+    - Las dos componentes distintas corresponden al coseno de 1 kHz del ejemplo.
+    - En DC, las frecuencias positiva y negativa coinciden en 0 Hz. Sus coeficientes se suman.
+    - En Nyquist, $+f_s/2$ y $-f_s/2$ producen la misma secuencia. También se suman sus coeficientes; no aparecen dos picos separados.
+    - Por ejemplo, con $f_s=8$ kS/s, $\cos(2\pi\,4000\,n/8000)=(-1)^n$. El espectro tiene una sola componente de magnitud 1.
+    - La subsección 4.6 explica por qué ambos extremos representan la misma frecuencia discreta.
 
 Las dos componentes del coseno describen una sola senoide real. No significan que existan dos emisoras. En general, un pico representa una componente frecuencial; identificar su origen requiere más información.
 
@@ -847,12 +868,15 @@ Ambas tienen frecuencia de 1 kHz y amplitud 1. La primera comienza en un máximo
 | 0° | 0° | 0° |
 | 90° | +90° | −90° |
 
-Esto se obtiene al conservar la fase en la descomposición del coseno:
+- **Símbolos:** $\omega=2\pi f_0$ es la frecuencia angular, en rad/s. El tiempo $t$ se expresa en segundos y $\phi$ en radianes.
+- **Descomposición:** se conserva la fase inicial del coseno en cada componente:
 
 $$
 \cos(\omega t+\phi)=\frac{1}{2}e^{j\phi}e^{j\omega t}+\frac{1}{2}e^{-j\phi}e^{-j\omega t},
 \qquad \omega=2\pi f_0.
 $$
+
+- **Paso a muestras:** al sustituir $t=n/f_s$, se obtiene la descomposición del coseno de esta subsección.
 
 Una pantalla que presenta únicamente magnitud no distingue estos dos casos. La transformada completa sí los distingue porque conserva la fase.
 
@@ -1109,9 +1133,11 @@ plt.show()
 La representación compleja distingue frecuencias positivas y negativas dentro de un intervalo apropiado, pero no elimina el aliasing. Para un tono complejo se cumple:
 
 $$
-e^{j2\pi(f_0+kf_s)n/f_s}=e^{j2\pi f_0n/f_s}\underbrace{e^{j2\pi kn}}_{1},
-\qquad k\in\mathbb{Z}.
+e^{j2\pi(f_0+\ell f_s)n/f_s}=e^{j2\pi f_0n/f_s}\underbrace{e^{j2\pi\ell n}}_{1},
+\qquad \ell\in\mathbb{Z}.
 $$
+
+El entero $\ell$ cuenta múltiplos del sampling rate. No identifica un bin de FFT; ese índice se denotará con $k$.
 
 Por tanto, frecuencias separadas por un múltiplo entero de $f_s$ producen la misma secuencia compleja, con igual amplitud y fase inicial.
 
@@ -1123,7 +1149,7 @@ z[n]=A e^{j\theta[n]},
 \theta[n]=2\pi\frac{f_0}{f_s}n+\phi.
 $$
 
-El avance de fase entre dos muestras consecutivas es la diferencia entre sus ángulos:
+El avance de fase del modelo es la diferencia entre los valores de $\theta[n]$, sin reducirlos a una vuelta:
 
 $$
 \Delta\theta=\theta[n+1]-\theta[n]=2\pi\frac{f_0}{f_s}.
@@ -1135,12 +1161,16 @@ $$
 \Delta\theta_{\mathrm{grados}}=360^\circ\frac{f_0}{f_s}.
 $$
 
+- **Fase del modelo:** puede acumular tantas vueltas como indique la frecuencia elegida.
+- **Ángulo obtenido de una muestra:** `np.angle` entrega un representante entre $-\pi$ y $\pi$. No conserva el número de vueltas completas.
+- **Ejemplo:** un avance de +225° y otro de −135° producen el mismo ángulo de llegada. Las muestras no permiten distinguir esos recorridos.
+
 Al sustituir cada frecuencia:
 
 $$
 \begin{aligned}
-f_0=+5000\ \text{Hz}:&\quad \Delta\theta=360^\circ\frac{5000}{8000}=+225^\circ,\\
-f_0=-3000\ \text{Hz}:&\quad \Delta\theta=360^\circ\frac{-3000}{8000}=-135^\circ.
+f_0=+5000\ \text{Hz}:&\quad \Delta\theta_{\mathrm{grados}}=360^\circ\frac{5000}{8000}=+225^\circ,\\
+f_0=-3000\ \text{Hz}:&\quad \Delta\theta_{\mathrm{grados}}=360^\circ\frac{-3000}{8000}=-135^\circ.
 \end{aligned}
 $$
 
@@ -1207,7 +1237,7 @@ plt.show()
 
 #### 4.4. Experimento C: ¿en qué frecuencia aparece el alias?
 
-Como las frecuencias $f_0+kf_s$ son equivalentes, el espectro de tiempo discreto se repite cada $f_s$ cuando su eje se expresa en Hz. Basta mostrar un intervalo de ancho $f_s$. En esta sesión se utiliza:
+Como las frecuencias $f_0+\ell f_s$, con $\ell$ entero, son equivalentes, el espectro de tiempo discreto se repite cada $f_s$ en Hz. Basta mostrar un intervalo de ancho $f_s$. En esta sesión se utiliza:
 
 $$
 -\frac{f_s}{2}\leq f<\frac{f_s}{2}.
@@ -1470,7 +1500,7 @@ Se utiliza $f_s=8000$ S/s y el intervalo representativo $[-4,+4)$ kHz.
 
 ??? example "Solución del ejercicio 4A"
 
-    - **Punto de partida:** el apartado 4.3 demuestra que $f_0+kf_s$, con $k$ entero, produce las mismas muestras de un tono complejo con igual magnitud y fase inicial. El apartado 4.4 elige un único representante en $[-f_s/2,f_s/2)$ y da $f_a=((f_0+f_s/2)\bmod f_s)-f_s/2$. Aquí la repetición es cada 8 kHz y el intervalo es $[-4,+4)$ kHz.
+    - **Punto de partida:** el apartado 4.3 demuestra que $f_0+\ell f_s$, con $\ell$ entero, produce las mismas muestras de un tono complejo con igual magnitud y fase inicial. El apartado 4.4 elige un único representante en $[-f_s/2,f_s/2)$ y da $f_a=((f_0+f_s/2)\bmod f_s)-f_s/2$. Aquí la repetición es cada 8 kHz y el intervalo es $[-4,+4)$ kHz.
     - **Paso 1 — representar +13 kHz:** restar una tasa da $13-8=5$ kHz, todavía fuera del intervalo. Restar otra da $13-2(8)=-3$ kHz, que sí pertenece a él. Así, +13, +5 y −3 kHz son posiciones equivalentes para esa secuencia; se muestra −3 kHz por la convención elegida.
     - **Paso 2 — representar −10 kHz:** se suma una tasa: $-10+8=-2$ kHz. Como $-4\leq-2<4$, no hace falta otra operación. La diferencia respecto a la frecuencia original es exactamente un múltiplo de $f_s$.
     - **Paso 3 — tratar el extremo +4 kHz:** el intervalo excluye +4 kHz, por lo que se resta una tasa: $4-8=-4$ kHz. El extremo izquierdo sí se incluye. Esta decisión evita dibujar dos veces la misma posición discreta; no significa que se haya eliminado una componente diferente.
@@ -1551,19 +1581,39 @@ $$T_{\mathrm{obs}}=\frac{N}{f_s}.$$
 
 - **Propósito:** entender qué calcula cada coeficiente de la DFT.
 - **Bin:** es una posición $k$ de la salida. Cada bin evalúa la relación entre el bloque completo y una frecuencia de referencia.
-- **Fórmula:** se utiliza la convención de [NumPy](https://numpy.org/doc/stable/reference/routines.fft.html):
+- **Índices:** $n$ identifica una muestra de entrada. $k$ identifica un bin de salida. Ambos recorren $0,1,\ldots,N-1$ en esta FFT sin padding.
+- **Tono de referencia:** se llama $r_k[n]$ al tono complejo asociado al bin $k$:
 
 $$
-X[k]=\sum_{n=0}^{N-1}x[n]e^{-j2\pi kn/N},\qquad k=0,1,\ldots,N-1.
+r_k[n]=e^{+j2\pi kn/N}.
 $$
 
-- $n$ identifica una muestra de entrada. $k$ identifica un bin de salida. $X[k]$ es un número complejo.
-- La referencia del bin es $e^{j2\pi kn/N}$, con frecuencia $f_k=kf_s/N$, interpretada módulo $f_s$.
+- Su frecuencia es $f_k=kf_s/N$, interpretada módulo $f_s$. El apartado 5.3 explica cómo se presenta en un eje centrado.
+- **Conjugado de la referencia:** el símbolo $^{*}$ cambia el signo de la parte imaginaria: si $z=a+jb$, entonces $z^*=a-jb$.
+- En esta exponencial, la conjugación cambia el signo del exponente:
+
+$$
+r_k^*[n]=e^{-j2\pi kn/N}.
+$$
+
+- **Factor usado en la DFT:** la entrada se multiplica por $r_k^*[n]$, no por $r_k[n]$.
+- **Fórmula:** el coeficiente complejo $X[k]$ es la suma de esos productos, con la convención de [NumPy](https://numpy.org/doc/stable/reference/routines.fft.html):
+
+$$
+X[k]=\sum_{n=0}^{N-1}x[n]r_k^*[n]
+=\sum_{n=0}^{N-1}x[n]e^{-j2\pi kn/N}.
+$$
+
+- **Por qué aparecen signos opuestos:** si la entrada coincide con la referencia, $x[n]=r_k[n]$, cada producto vale $r_k[n]r_k^*[n]=1$.
+- La suma vale entonces $X[k]=N$. La referencia y su conjugado son objetos distintos, no dos versiones contradictorias de la fórmula.
 - El cálculo sigue tres pasos:
 
-1. Elegir el bin $k$ y su tono de referencia.
-2. Multiplicar **todas** las muestras por el conjugado de esa referencia, $e^{-j2\pi kn/N}$.
+1. Elegir el bin $k$ y construir su tono de referencia $r_k[n]$.
+2. Multiplicar **todas** las muestras por el conjugado $r_k^*[n]$.
 3. Sumar los productos complejos para obtener $X[k]$.
+
+- **Coeficiente y magnitud no son lo mismo:** $X[k]$ conserva magnitud y fase. La figura muestra $|X[k]|/N$, no el coeficiente complejo completo.
+- **Ejemplo con otra fase:** si $x[n]=A e^{j\phi}r_k[n]$, entonces $X[k]=NAe^{j\phi}$. Su magnitud normalizada es $|X[k]|/N=A$ para $A\geq0$.
 
 - **Qué cambia en la figura:** arriba cambia la referencia del bin; abajo cambia la frecuencia del tono de entrada.
 - **Qué permanece fijo:** ocho muestras a 8 kS/s, amplitud 1, fase inicial 0 y ningún peso adicional.
@@ -1608,8 +1658,9 @@ import matplotlib.pyplot as plt
 fs = 8000
 n8 = np.arange(8)
 tono8 = np.exp(1j * 2 * np.pi * 1000 * n8 / fs)
+referencias = {k: np.exp(1j * 2 * np.pi * k * n8 / 8) for k in [1, 2]}
 for k in [1, 2]:
-    productos = tono8 * np.exp(-1j * 2 * np.pi * k * n8 / 8)
+    productos = tono8 * np.conj(referencias[k])
     print(f"Bin k={k}; frecuencia={k * fs / 8:g} Hz; suma={np.sum(productos):.6f}")
 print("La FFT devuelve las mismas sumas:", np.round(np.fft.fft(tono8)[[1, 2]], 6))
 
@@ -1626,8 +1677,8 @@ def espectro_bloque(x, sample_rate, ventana=None, nfft=None):
 def magnitud_db(C):
     return 20 * np.log10(np.maximum(np.abs(C), 1e-6))
 
-productos_bin1 = tono8 * np.exp(-1j * 2 * np.pi * n8 / 8)
-productos_bin2 = tono8 * np.exp(-1j * 2 * np.pi * 2 * n8 / 8)
+productos_bin1 = tono8 * np.conj(referencias[1])
+productos_bin2 = tono8 * np.conj(referencias[2])
 tono_entre_bins = np.exp(1j * 2 * np.pi * 1500 * n8 / fs)
 C_bin_alineado = np.fft.fft(tono8) / 8
 C_bin_intermedio = np.fft.fft(tono_entre_bins) / 8
@@ -1826,8 +1877,13 @@ plt.show()
 
 $$
 X_M[k]=\sum_{n=0}^{N-1}x[n]e^{-j2\pi kn/M},\qquad
-\Delta f_{\mathrm{FFT}}=\frac{f_s}{M}.
+k=0,1,\ldots,M-1.
 $$
+
+- **Qué cambia en la fórmula:** $n$ recorre las $N$ muestras adquiridas; $k$ recorre las $M$ evaluaciones de salida.
+- La referencia ahora es $r_{k,M}[n]=e^{+j2\pi kn/M}$. La DFT sigue multiplicando por su conjugado, $e^{-j2\pi kn/M}$.
+- Los términos añadidos desde $n=N$ hasta $M-1$ valen cero y no se incluyen en la suma escrita.
+- La separación de la nueva rejilla es $\Delta f_{\mathrm{FFT}}=f_s/M$.
 
 - **Tres cantidades diferentes:** $N/f_s$ es tiempo observado, $f_s/M$ es separación de puntos y $M-N$ cuenta los ceros.
 - [`np.fft.fft(x, n=M)`](https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html) añade los ceros cuando $M>N$. La función auxiliar rechaza $M<N$ para no recortar el bloque.
@@ -1871,6 +1927,8 @@ plt.show()
 - **Ventana:** es una secuencia de pesos $w[n]$. La FFT recibe $x_w[n]=x[n]w[n]$.
 - **Main lobe:** lóbulo principal alrededor de la frecuencia del tono.
 - **Sidelobes:** lóbulos secundarios, más alejados de esa frecuencia.
+- **Coeficiente con ventana:** $X_w[k]$ es la DFT sin normalizar del bloque $x_w[n]$, con ceros añadidos si $M>N$.
+- Antes de reordenar el eje, el visor usa $C_w[k]=X_w[k]/\sum_{n=0}^{N-1}w[n]$. La variable `C` del código contiene estos coeficientes normalizados y reordenados.
 - **Qué cambia:** ventana rectangular frente a Hann.
 - **Qué permanece fijo:** las 64 muestras del tono de 1062.5 Hz, $f_s=8000$ S/s y $M=4096$.
 - **Qué se observa:** Hann reduce los sidelobes, pero ensancha el main lobe.
@@ -1896,7 +1954,7 @@ plt.show()
     - **Qué concluir:** Hann no traslada el tono ni lo convierte en un tono alineado. Cambia la forma de su contribución espectral.
 
 - **3. Comparar los sidelobes con una escala adecuada.**
-    - **Concepto:** una escala en dB permite leer contribuciones pequeñas. Aquí se usa $L=20\log_{10}|C|$, con referencia de magnitud 1.
+    - **Concepto:** una escala en dB permite leer contribuciones pequeñas. Aquí se usa $L[k]=20\log_{10}(|C_w[k]|/1)$, con referencia de magnitud 1.
     - **Ejemplo:** magnitud 0.1 equivale a −20 dB. Magnitud 0.01 equivale a −40 dB.
     - **Panel inferior derecho — qué mirar:** lejos del máximo, los picos secundarios de Hann quedan por debajo de los de rectangular.
     - **Qué concluir:** la contribución alejada de un tono fuerte puede disminuir. El apartado 5.8 muestra cómo eso ayuda a observar otro tono débil.
@@ -1919,11 +1977,25 @@ w[n]=\frac{1}{2}-\frac{1}{2}\cos\left(\frac{2\pi n}{N}\right),\qquad 0\leq n<N.
 $$
 
 - La [documentación de SciPy](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.windows.hann.html) distingue Hann periódica y simétrica.
-- **Por qué se divide entre la suma de pesos:** para un tono de amplitud $A$ y fase inicial $\phi$, evaluado exactamente en $f_0$:
+- **Evaluación en una frecuencia elegida:** se llama $S_w(f)$ a la suma calculada a una frecuencia $f$ expresada en Hz:
 
 $$
-X_w(f_0)=A e^{j\phi}\sum_{n=0}^{N-1}w[n].
+S_w(f)=\sum_{n=0}^{N-1}x[n]w[n]e^{-j2\pi f n/f_s}.
 $$
+
+- Aquí $f$ no es un índice. Puede tomar valores entre los bins.
+- La FFT evalúa esa suma en $f_k=kf_s/M$: $X_w[k]=S_w(f_k)$. El eje centrado usa frecuencias equivalentes módulo $f_s$.
+- **Por qué se divide entre la suma de pesos:** para $x[n]=Ae^{j(2\pi f_0n/f_s+\phi)}$, al evaluar exactamente en $f=f_0$:
+
+$$
+\begin{aligned}
+S_w(f_0)
+&=\sum_{n=0}^{N-1}Ae^{j(2\pi f_0n/f_s+\phi)}w[n]e^{-j2\pi f_0n/f_s}\\
+&=Ae^{j\phi}\sum_{n=0}^{N-1}w[n].
+\end{aligned}
+$$
+
+- Al dividir por la suma de los pesos rectangular o Hann, queda $Ae^{j\phi}$. La magnitud es $A$ para $A\geq0$.
 
 - **Límite de la elección:** menos sidelobes no garantiza separar tonos más próximos. El main lobe más ancho puede dificultar esa separación.
 - Una ventana de análisis no corrige aliasing previo ni selecciona por sí sola un canal RF.
@@ -2282,6 +2354,7 @@ plt.show()
     - **Paso 3 — interpretar una inversa de magnitudes:** introducir únicamente $|X_w[k]|$ equivale a asignar fase cero a los coeficientes. En general, la secuencia resultante es diferente.
     - **Paso 4 — deshacer la normalización:** el visor usa $C_w[k]=X_w[k]/\sum w[n]$. Multiplicar por $\sum w[n]$ recupera $X_w[k]$, no las muestras originales sin ventana.
     - **Comprobación temporal:** la inversa de $C_w[k]$ es $x[n]w[n]/\sum w[n]$. Multiplicarla por $\sum w[n]$ devuelve $x[n]w[n]$: los pesos individuales siguen presentes.
+    - **Orden de los coeficientes:** estas igualdades usan el orden original de la DFT. Si se utiliza `C` del visor, primero se aplica `np.fft.ifftshift(C)`. La inversa no debe recibir directamente el arreglo reordenado por `fftshift`.
     - **Paso 5 — examinar Hann:** con la fórmula de 5.6, $w[0]=0.5-0.5\cos0=0$. Por tanto, $x_w[0]=x[0](0)=0$, cualquiera que fuera $x[0]$.
     - **Por qué no se divide por la ventana:** el valor original de esa muestra no puede recuperarse dividiendo por cero. Dividir por pesos pequeños también amplificaría errores numéricos.
     - **Conclusión:** se conservan $x[n]$ y sus metadatos por separado. La DFT completa conserva el bloque con ventana; la ventana previa ya modificó las muestras originales.
@@ -2668,7 +2741,8 @@ plt.show()
 **Figura 27.** Al cruzar el borde del intervalo, una traslación digital reaparece por el otro extremo; la mezcla inversa recupera la secuencia de entrada.
 
 - **Panel superior — antes de mezclar:** el pico está en +3 kHz, dentro del intervalo de la tasa de 8 kS/s.
-- **Panel inferior — después de mezclar:** el pico aparece en −3 kHz. Es el representante de $3+2=5$ kHz, no el resultado de restar 6 kHz a la entrada.
+- **Panel inferior — después de mezclar:** el pico aparece en −3 kHz. Se eligió una mezcla de +2 kHz: $3+2=5$ kHz y $5-8=-3$ kHz.
+- **Otra mezcla equivalente:** restar 6 kHz produciría las mismas muestras, porque $+2-8=-6$ kHz. Los multiplicadores de +2 y −6 kHz son idénticos a 8 kS/s.
 - **Líneas verticales:** marcan −4 y +4 kHz. El borde derecho no añade una frecuencia independiente del izquierdo.
 - **Resultado de la mezcla inversa:** `np.allclose` devuelve `True` al comparar la secuencia recuperada con la original. En este experimento no se aplicó un filtro ni se descartaron muestras.
 - **Límite de la interpretación RF:** una etiqueta RF continua requiere seguir la referencia y los cruces del borde. No basta con sumar una nueva frecuencia central a toda la salida y suponer que se adquirió otra banda.

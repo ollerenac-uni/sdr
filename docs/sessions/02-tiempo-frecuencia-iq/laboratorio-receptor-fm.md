@@ -160,20 +160,28 @@ Se conectan dos `QT GUI Frequency Sink`, ambos de tipo `Complex`, FFT de 1024 pu
 
 Las subsecciones 2.3 y 4.1 relacionaron frecuencia y avance de fase. Para un tono complejo, $\Delta\theta=2\pi f_0/f_s$. En FM ese avance no es constante: cambia con la información moduladora.
 
-Si $z[n]=Ae^{j\theta[n]}$ y $A$ es constante y no nula, el producto de dos muestras consecutivas, conjugando la anterior, es
+- **Muestras:** se considera $z[n]=Ae^{j\theta[n]}$, con amplitud constante $A>0$. El símbolo $z^*$ indica el conjugado.
+- **Tasa de esta etapa:** $f_s=192000$ S/s es el sampling rate de entrada al demodulador, después del resampler.
+- **Intervalo:** $T_s=1/f_s$ separa las muestras de índices $n-1$ y $n$.
+- **Avance de fase:** $\Delta\theta[n]=\theta[n]-\theta[n-1]$ se expresa en radianes, antes de reducirlo módulo $2\pi$.
+- **Producto:** se multiplica la muestra actual por el conjugado de la anterior:
 
 $$
 z[n]z^*[n-1]=A^2e^{j(\theta[n]-\theta[n-1])}.
 $$
 
-Su argumento entrega la diferencia de fase, módulo $2\pi$. Bajo un avance sin ambigüedad, $|\Delta\theta[n]|<\pi$, se estima la frecuencia media durante ese intervalo:
+- **Argumento:** $\operatorname{arg}$ devuelve el ángulo principal del producto. Ese ángulo representa $\Delta\theta[n]$ módulo $2\pi$.
+- **Condición:** si $|\Delta\theta[n]|<\pi$, el ángulo permite calcular la frecuencia media durante el intervalo:
 
 $$
 \widehat f[n]=\frac{f_s}{2\pi}\operatorname{arg}\left(z[n]z^*[n-1]\right).
 $$
 
-- **Relación con el tono:** si el avance es constante, esta operación recupera su frecuencia. Si cambia, la salida sigue ese cambio.
-- **Relación con FM centrada:** en un modelo de frecuencia $f[n]=\Delta f\,m[n]$, con $m[n]$ normalizada y sin offset de portadora, dividir $\widehat f[n]$ entre $\Delta f$ recupera una estimación de $m[n]$ antes del filtrado de audio.
+- **Unidad del resultado:** $\widehat f[n]$ se expresa en Hz. No es una fase ni una amplitud de audio.
+- **Relación con el tono:** si el avance es constante y cumple la condición anterior, esta operación recupera su frecuencia.
+- **Relación con FM centrada:** se usa el modelo $f[n]=\Delta f\,m[n]$, sin offset de portadora. $\Delta f$ es la desviación de referencia, en Hz.
+- **Mensaje normalizado:** aquí $m[n]$ es el promedio del mensaje durante ese intervalo, sin unidades y con $|m[n]|\leq1$.
+- **Recuperación:** dividir $\widehat f[n]$ entre $\Delta f$ estima ese promedio antes del filtrado de audio. No entrega necesariamente el valor instantáneo del mensaje en $t=n/f_s$.
 - **Límite de fase:** el argumento es un ángulo principal. No distingue avances que difieran en vueltas completas, igual que en el aliasing de la subsección 4. No se interpreta una muestra de magnitud nula como si tuviera fase fiable.
 - **Bloque utilizado:** `Quadrature Demod` implementa el producto conjugado y el argumento multiplicado por una ganancia. [Fuente de GNU Radio](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/lib/quadrature_demod_cf_impl.cc).
 
@@ -182,6 +190,7 @@ El estudiante conecta `WBFM Receive` a la salida del resampler, con **`Quadratur
 - **Entrada y salida:** el bloque recibe muestras complejas y entrega muestras reales de audio mono.
 - **Operaciones internas:** incluye demodulación de fase, filtrado de audio y decimación. No basta cambiar el tipo de `Complex` a `Float` para obtener el audio.
 - **Escala interna:** la implementación utiliza una desviación de referencia de 75 kHz y ganancia $G=f_s/(2\pi\,75000)$. A 192 kS/s, $G\approx0.4074$. Esa referencia del bloque no demuestra por sí sola la desviación real de la emisora. [Implementación de WBFM Receive](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/wfm_rcv.py).
+- **Ejemplo de escala:** con $m[n]=0.5$ y $\Delta f=75000$ Hz, resulta $f[n]=37500$ Hz. El avance es $2\pi(37500/192000)\approx1.2272$ rad. Multiplicar por $G$ produce 0.5, antes de los filtros de audio.
 - **De-emphasis:** también incluye este filtrado, que modifica la respuesta del audio; su constante predeterminada es 75 µs. Se documenta como una elección de la implementación, sin asumir que coincida automáticamente con la del transmisor local. [Implementación de de-emphasis](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/fm_emph.py).
 - **Alcance:** no se añade un decoder stereo ni un decoder RDS. Escuchar audio no demuestra que todas esas partes de una emisión se hayan recuperado.
 
