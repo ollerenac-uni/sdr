@@ -133,13 +133,23 @@ def test_alias_limpio_y_leakage_son_casos_distintos(experimento):
     np.testing.assert_array_equal(f[np.abs(C) > 1e-10], [-3000])
 
 
-def test_generador_reproduce_siete_figuras(tmp_path):
+def test_figura_compara_productos_y_no_cuenta_bins_como_tonos(experimento):
+    d = experimento
+    np.testing.assert_allclose(d["productos_bin1"], 1, atol=1e-12)
+    np.testing.assert_allclose(d["productos_bin2"][:4], -d["productos_bin2"][4:], atol=1e-12)
+    assert np.sum(d["productos_bin2"]) == pytest.approx(0, abs=1e-12)
+    np.testing.assert_array_equal(np.flatnonzero(np.abs(d["C_bin_alineado"]) > 1e-10), [1])
+    assert np.count_nonzero(np.abs(d["C_bin_intermedio"]) > 1e-10) == 8
+    np.testing.assert_allclose(np.abs(d["C_bin_intermedio"][[1, 2]]), 0.6407288619353766)
+
+
+def test_generador_reproduce_ocho_figuras(tmp_path):
     path = SESSION / "figures/gen_fft_bloque.py"
     spec = importlib.util.spec_from_file_location("gen_fft_bloque", path)
     modulo = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(modulo)
     paths = modulo.generar(tmp_path)
-    assert len(paths) == 7
+    assert len(paths) == 8
     for path in paths:
         assert path.parent == tmp_path
         assert path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")

@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 OUT = Path(__file__).parent
 NOMBRES = [
+    "fft-comparacion-bins.png",
     "fft-orden-bins.png",
     "fft-bloque-leakage.png",
     "fft-zero-padding.png",

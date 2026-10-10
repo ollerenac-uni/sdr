@@ -109,7 +109,7 @@ def test_rf_y_mezcla_coherentes_con_la_referencia(modulo):
 def test_laminas_con_lectura_itemizada_y_enlace_independiente(modulo):
     texto = (SESSION / "index.md").read_text(encoding="utf-8").split("## Síntesis visual", 1)[1]
     assert texto.count('target="_blank"') == 4
-    for numero, nombre in zip(range(28, 32), modulo.NOMBRES):
+    for numero, nombre in zip(range(29, 33), modulo.NOMBRES):
         assert f"](figures/{nombre})" in texto
         despues = texto.split(f"**Figura {numero}.**", 1)[1].split("\n", 1)[1]
         assert despues.lstrip().startswith("- **A1. Panel A"), numero
