@@ -435,6 +435,7 @@ plt.show()
 ## Laboratorio #3 — Enlace digital de mensajes
 
 - [Laboratorio #3 — Enlace digital de mensajes](laboratorio-enlace-digital.md).
+- [Clase visual — Del texto al enlace BPSK](clase-enlace-digital.md): mapa de los 24 pasos, con las funciones estudiadas resaltadas.
 - Se construye el archivo `end-to-end.grc` por pasos, desde texto UTF-8 hasta un enlace BPSK simulado con recepción y comprobación del paquete.
 - Cada paso incluye configuración, observación y ejercicios. El enlace incorpora filtros RRC, desajustes del canal y recuperación de portadora y temporización.
 

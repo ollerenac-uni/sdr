@@ -87,6 +87,7 @@ nav:
       - "03 — Sistemas y filtros digitales":
           - sessions/03-sistemas-filtros-digitales/index.md
           - "Laboratorio #3: enlace digital": sessions/03-sistemas-filtros-digitales/laboratorio-enlace-digital.md
+          - "Clase: mapa del enlace BPSK": sessions/03-sistemas-filtros-digitales/clase-enlace-digital.md
           - "Práctica complementaria: filtros FIR": sessions/03-sistemas-filtros-digitales/laboratorio-filtrado.md
   - Guías:
       - setup/index.md

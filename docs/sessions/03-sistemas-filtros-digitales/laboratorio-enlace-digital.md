@@ -14,6 +14,7 @@ status: draft
 - La construcción avanza por pasos. Cada paso introduce pocos bloques y termina con una comprobación.
 - Esta guía pertenece a la sesión 3. El enlace completo se desarrollará en entregas posteriores; no se exige terminarlo en esta sesión.
 - La [práctica de filtros FIR](laboratorio-filtrado.md) se conserva como material complementario.
+- La [clase visual del enlace BPSK](clase-enlace-digital.md) explica cada paso mediante el mismo mapa de bloques con las funciones estudiadas resaltadas.
 
 !!! info "Alcance de esta entrega"
 
