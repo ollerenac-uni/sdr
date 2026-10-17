@@ -7,8 +7,8 @@ status: draft
 
 # Práctica complementaria — Filtros FIR en Python y GNU Radio
 
-- Esta práctica conserva los experimentos de filtrado de la sesión 3.
-- La construcción gradual del [Laboratorio #3 — Enlace digital de mensajes](laboratorio-enlace-digital.md) tiene su propia guía.
+- Esta práctica opcional reúne experimentos de filtrado con sus propias celdas de Python.
+- La construcción gradual del [Laboratorio #3 — Enlace digital de mensajes](index.md) tiene su propia guía.
 
 ## Objetivos
 
@@ -19,7 +19,7 @@ status: draft
 
 ## Preparación y materiales
 
-- [Sesión 3 — Sistemas y filtros digitales](index.md), con las celdas ejecutadas en orden en un notebook de Google Colab.
+- Las dos celdas de esta práctica se ejecutan en orden en un notebook de Google Colab.
 - GNU Radio Companion instalado según la [guía del curso](../../setup/instalacion.md). El flowgraph se verifica con GNU Radio 3.10.12.
 - [Descargar el flowgraph `filtros_sesion03.grc`](filtros_sesion03.grc). El archivo también se encuentra localmente en `docs/sessions/03-sistemas-filtros-digitales/`.
 - No se necesita RTL-SDR, USRP, archivo `.cu8` ni conexión con un transmisor. Los tonos se generan en software.
@@ -35,7 +35,7 @@ status: draft
 ## Parte A — Una convolución que se puede comprobar a mano
 
 - Se utilizan $x=[3,6,3]$ y $h=[1/3,1/3,1/3]$, con entrada nula antes y después del bloque.
-- Primero se resuelve el ejercicio 3 de la clase mediante $y[n]=\sum h[k]x[n-k]$.
+- Primero se calcula cada muestra de salida mediante $y[n]=\sum h[k]x[n-k]$.
 - Después se compara la salida completa de `np.convolve` con la salida de `lfilter` para una entrada de tres muestras y para una entrada prolongada con ceros.
 
 ```python
@@ -69,11 +69,11 @@ print("Entrada prolongada con dos ceros:", y_con_cola)
 
 ## Parte B — Predecir antes de observar
 
-- Se comparan los mismos tonos de la sección 3 de la clase: tonos complejos de 1 y 9 kHz, amplitudes 1 y 0.6, y $f_s=24000$ S/s.
+- Se comparan tonos complejos de 1 y 9 kHz, amplitudes 1 y 0.6, y $f_s=24000$ S/s.
 - Se conservan el mismo bloque estable de 4800 muestras y el mismo descarte inicial para ambos filtros. Se comparan únicamente los taps.
 - Antes de mirar los espectros, se calculan las amplitudes esperadas con $A_{\mathrm{salida}}=A_{\mathrm{entrada}}|H(f)|$.
-- Para la tabla, basta con ejecutar la celda siguiente después de la parte A: utiliza sus imports, pero no depende de las variables de la clase.
-- Para la comparación visual, se reutilizan las figuras 4 y 5 de la clase o los plots que ya se obtuvieron con sus celdas. No es necesario repetir todo el notebook.
+- Para obtener la tabla, se ejecuta la celda siguiente después de la parte A. Utiliza sus imports, pero define sus propias variables.
+- La parte C permite comparar las entradas y salidas mediante los visores del flowgraph.
 
 ```python
 fs = 24000
@@ -107,7 +107,7 @@ for nombre, h in [("Moving average", np.ones(3) / 3), ("Low-pass", signal.firwin
     - Con el moving average, se esperan aproximadamente 0.97728388 a 1 kHz y 0.08284271 a 9 kHz.
     - Con el low-pass preparado, se esperan aproximadamente 1.00266084 y 0.00023229, respectivamente.
     - Las medidas coinciden porque se analiza el régimen estable y ambos tonos coinciden con bins de la FFT; la normalización por $N$ recupera sus amplitudes complejas.
-    - El low-pass atenúa mucho más el segundo tono. No lo desplaza: el factor temporal $e^{j2\pi fn/f_s}$ sigue teniendo la misma frecuencia, como se dedujo en la sección 3.1.
+    - El low-pass atenúa mucho más el segundo tono. El filtrado conserva la frecuencia del factor temporal $e^{j2\pi fn/f_s}$.
     - La normalización de `firwin` fija la ganancia en DC, no exactamente en todas las frecuencias de su banda. En este ejemplo, $|H(1\text{ kHz})|\approx1.00266$.
     - Una amplitud tan pequeña a 9 kHz puede no distinguirse en una gráfica lineal; la tabla evita interpretar esa limitación visual como un cero exacto.
 
@@ -176,7 +176,7 @@ flowchart LR
 
 ### C.5. Cómo leer los niveles del visor
 
-- Las figuras de la clase muestran magnitud lineal de una FFT normalizada. El visor de GNU Radio utiliza una escala de nivel en **dB**; no deben igualarse directamente los números de sus ejes verticales.
+- La tabla de la parte B utiliza amplitudes lineales. El visor de GNU Radio utiliza una escala de nivel en **dB**; sus valores no se comparan directamente.
 - Para una misma frecuencia y con la misma configuración del visor, la diferencia de niveles entre salida y entrada se relaciona con la ganancia de amplitud:
 
 $$

@@ -13,7 +13,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 CARPETA = ROOT / "docs/sessions/03-sistemas-filtros-digitales"
-GUIA = CARPETA / "laboratorio-enlace-digital.md"
+GUIA = CARPETA / "index.md"
 GRCC = shutil.which("grcc") or str(Path.home() / "radioconda/bin/grcc")
 PYTHON_GR = Path(GRCC).parent / "python3"
 

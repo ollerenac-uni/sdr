@@ -84,14 +84,13 @@ nav:
           - sessions/02-tiempo-frecuencia-iq/index.md
           - "Demostración: mezcla compleja": sessions/02-tiempo-frecuencia-iq/mezcla-interactiva.md
           - "Laboratorio #2: demodulador FM": sessions/02-tiempo-frecuencia-iq/laboratorio-receptor-fm.md
-      - "03 — Sistemas y filtros digitales":
-          - sessions/03-sistemas-filtros-digitales/index.md
-          - "Laboratorio #3: enlace digital": sessions/03-sistemas-filtros-digitales/laboratorio-enlace-digital.md
-          - "Clase: mapa del enlace BPSK": sessions/03-sistemas-filtros-digitales/clase-enlace-digital.md
-          - "Práctica complementaria: filtros FIR": sessions/03-sistemas-filtros-digitales/laboratorio-filtrado.md
+      - "03 — Laboratorio de enlace digital":
+          - "Laboratorio #3: enlace digital": sessions/03-sistemas-filtros-digitales/index.md
+          - "Mapa visual de los 24 pasos": sessions/03-sistemas-filtros-digitales/clase-enlace-digital.md
   - Guías:
       - setup/index.md
       - "Instalar GNU Radio": setup/instalacion.md
       - "Configurar el RTL-SDR": setup/rtl-sdr.md
+      - "Práctica complementaria: filtros FIR": sessions/03-sistemas-filtros-digitales/laboratorio-filtrado.md
   - Exámenes:
       - exams/index.md

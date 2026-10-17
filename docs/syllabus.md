@@ -42,11 +42,16 @@ relacionan con el tiempo y cómo se observa su espectro. Esta base permite
 interpretar una captura antes de procesarla. El laboratorio FM ofrece un primer
 ejemplo de recuperación de información desde un archivo de muestras.
 
-### Sesiones 3 y 4 — Preparar la señal
+### Sesión 3 — Construir un enlace digital
 
-Una captura puede contener varios canales. Se aprende a filtrar, seleccionar el
-canal deseado y reducir su sampling rate. Estas herramientas se estudian primero
-porque se reutilizan en el receptor digital de las sesiones siguientes.
+La clase se desarrolla directamente con el laboratorio de enlace digital.
+El estudiante construye el transmisor y el receptor BPSK por pasos, desde el texto hasta su recuperación.
+El mapa visual relaciona cada paso con los bloques estudiados.
+Los experimentos incorporan filtros, detección de paquetes, ruido y sincronización.
+
+### Sesión 4 — Seleccionar el canal y reducir la tasa
+
+Una captura puede contener varios canales. Se aprende a seleccionar el canal deseado y reducir su sampling rate mediante mezcla, filtrado y decimación.
 
 ### Sesiones 5 y 6 — Convertir bits en una señal
 
@@ -108,7 +113,7 @@ equalization adaptativa y OFDM quedan fuera del programa obligatorio.
 |:------:|---|---|
 | 01 | **Introducción.** Se presenta la Radio Definida por Software, la arquitectura del receptor RTL-SDR y sus parámetros de adquisición. | **Laboratorio #1: muestreo y lectura de I/Q.** Se interpreta un archivo `.cu8` y se observan sus muestras y su espectro. |
 | 02 | **Señales y espectro en SDR.** Se estudian las muestras I/Q, el muestreo, la FFT y la relación entre baseband y RF. | **Laboratorio #2: demodulador FM.** Se construye un receptor FM en GNU Radio para recuperar audio desde una captura `.cu8`. |
-| 03 | **Sistemas y filtros digitales.** Se explica la respuesta al impulso y la convolución mediante filtros sencillos y ejemplos de entrada y salida. | **Laboratorio #3: filtrado digital.** Se modifica un ejemplo preparado en Python y GNU Radio para comparar una señal antes y después del filtrado. |
+| 03 | **Laboratorio de enlace digital.** Se construye un enlace BPSK por pasos y se relaciona cada experimento con los bloques del transmisor y del receptor. | **Laboratorio #3: enlace digital de mensajes.** Se recupera texto en GNU Radio mediante paquetes, filtros RRC, detección y sincronización, con pruebas de los efectos del canal. |
 | 04 | **Selección de canal y decimación.** Se explica cómo la mezcla compleja y el filtrado permiten seleccionar un canal y reducir su sampling rate. | **Laboratorio #4: selección de un canal.** Se configura un flowgraph preparado para aislar un canal de una captura y observar el efecto de decimar con y sin filtro. |
 | 05 | **De bits a símbolos: BPSK y QPSK.** Se relacionan bits, símbolos y constelaciones, y se distinguen bit rate, symbol rate y sampling rate. | **Laboratorio #5: bits y constelaciones.** Se utiliza código preparado para representar bits como símbolos BPSK/QPSK y recuperar los bits de símbolos ideales. |
 | 06 | **Pulse shaping y matched filtering.** Se explica cómo los símbolos forman una señal, qué hacen los filtros RRC y cómo se observa la interferencia entre símbolos (ISI). | **Laboratorio #6: pulsos y eye diagram.** Se modifican los parámetros de filtros root-raised cosine en un ejemplo preparado y se observan los pulsos, el espectro y el diagrama de ojo. |

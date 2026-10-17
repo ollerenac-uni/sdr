@@ -1,0 +1,2 @@
+# La sintaxis de un PDF incluye espacios significativos; no es texto editable.
+*.pdf binary

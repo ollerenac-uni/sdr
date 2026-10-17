@@ -9,7 +9,7 @@ status: draft
 
 ## Propósito de la clase
 
-El estudiante explica qué transforma cada bloque y qué problema resuelve cada paso del [laboratorio de enlace digital](laboratorio-enlace-digital.md).
+El estudiante explica qué transforma cada bloque y qué problema resuelve cada paso del [laboratorio de enlace digital](index.md).
 La guía de construcción indica cómo montar el flowgraph. Esta clase conecta esos procedimientos con el sistema completo.
 
 El hilo conductor es una pregunta: **¿qué debe ocurrir para que el receptor entregue exactamente el texto escrito en el transmisor?**
@@ -146,7 +146,7 @@ Options define cómo se genera y ejecuta el programa. La interfaz Qt permite int
 
 **Error que debe evitarse:** Un canvas vacío que ejecuta correctamente solo comprueba el entorno.
 
-[Montaje y procedimiento del paso 1](laboratorio-enlace-digital.md#1-preparar-end-to-endgrc).
+[Montaje y procedimiento del paso 1](index.md#1-preparar-end-to-endgrc).
 
 ## Paso 2 — Definir la entrada de texto { #paso-2 }
 
@@ -174,7 +174,7 @@ QT GUI Message Edit Box recibe texto y publica un mensaje al confirmarlo. Su pue
 
 **Error que debe evitarse:** Escribir una palabra sin confirmarla no demuestra que el bloque haya publicado el mensaje.
 
-[Montaje y procedimiento del paso 2](laboratorio-enlace-digital.md#2-primer-bloque-qt-gui-message-edit-box).
+[Montaje y procedimiento del paso 2](index.md#2-primer-bloque-qt-gui-message-edit-box).
 
 ## Paso 3 — Comprobar la interfaz antes de continuar { #paso-3 }
 
@@ -202,7 +202,7 @@ Una prueba pequeña permite revisar la entrada sin mezclar errores de interfaz, 
 
 **Error que debe evitarse:** Una ventana abierta no prueba que otro bloque haya recibido Hola.
 
-[Montaje y procedimiento del paso 3](laboratorio-enlace-digital.md#3-comprobar-el-primer-bloque).
+[Montaje y procedimiento del paso 3](index.md#3-comprobar-el-primer-bloque).
 
 ## Paso 4 — Observar mensajes con Message Debug { #paso-4 }
 
@@ -230,7 +230,7 @@ Message Debug permite inspeccionar la salida del bloque de entrada. La conexión
 
 **Error que debe evitarse:** Confundir una conexión de mensajes con el canal del enlace ocultaría errores posteriores del procesamiento de señal.
 
-[Montaje y procedimiento del paso 4](laboratorio-enlace-digital.md#4-observar-el-mensaje-con-message-debug).
+[Montaje y procedimiento del paso 4](index.md#4-observar-el-mensaje-con-message-debug).
 
 ## Paso 5 — Codificar el texto como bytes UTF-8 { #paso-5 }
 
@@ -258,7 +258,7 @@ UTF-8 convierte caracteres en bytes. Una PDU, Protocol Data Unit o unidad de dat
 
 **Error que debe evitarse:** Una PDU de cuatro bytes todavía no contiene cuatro símbolos ni cuatro muestras.
 
-[Montaje y procedimiento del paso 5](laboratorio-enlace-digital.md#5-convertir-texto-en-bytes-utf-8).
+[Montaje y procedimiento del paso 5](index.md#5-convertir-texto-en-bytes-utf-8).
 
 ## Paso 6 — Comprobar la conversión inversa { #paso-6 }
 
@@ -286,7 +286,7 @@ El convertidor inverso interpreta los bytes como UTF-8. Esta prueba conecta los 
 
 **Error que debe evitarse:** Esta recuperación valida la representación del texto; todavía no valida un enlace de muestras.
 
-[Montaje y procedimiento del paso 6](laboratorio-enlace-digital.md#6-recuperar-el-texto-desde-los-bytes).
+[Montaje y procedimiento del paso 6](index.md#6-recuperar-el-texto-desde-los-bytes).
 
 ## Paso 7 — Construir un paquete que pueda comprobarse { #paso-7 }
 
@@ -314,7 +314,7 @@ El constructor añade dos bytes de longitud y cuatro de CRC-32. El CRC, Cyclic R
 
 **Error que debe evitarse:** El CRC detecta errores; no corrige bits ni autentica al emisor.
 
-[Montaje y procedimiento del paso 7](laboratorio-enlace-digital.md#7-construir-el-paquete).
+[Montaje y procedimiento del paso 7](index.md#7-construir-el-paquete).
 
 ## Paso 8 — Validar antes de entregar el texto { #paso-8 }
 
@@ -342,7 +342,7 @@ El comprobador interpreta la longitud y verifica el CRC antes de entregar los by
 
 **Error que debe evitarse:** Comparar solo lo enviado y lo mostrado no sustituye la comprobación del paquete recibido.
 
-[Montaje y procedimiento del paso 8](laboratorio-enlace-digital.md#8-comprobar-el-paquete-y-recuperar-el-texto).
+[Montaje y procedimiento del paso 8](index.md#8-comprobar-el-paquete-y-recuperar-el-texto).
 
 ## Paso 9 — Introducir un error deliberado { #paso-9 }
 
@@ -370,7 +370,7 @@ Un auxiliar de prueba cambia un bit del segundo paquete después de calcular el 
 
 **Error que debe evitarse:** Este error deliberado no representa todavía ruido gaussiano ni un modelo de canal.
 
-[Montaje y procedimiento del paso 9](laboratorio-enlace-digital.md#9-comprobar-el-rechazo-de-un-bit-alterado).
+[Montaje y procedimiento del paso 9](index.md#9-comprobar-el-rechazo-de-un-bit-alterado).
 
 ## Paso 10 — Separar cada byte en ocho bits { #paso-10 }
 
@@ -398,7 +398,7 @@ Bytes a bits entrega un elemento por bit, en orden MSB first: primero el bit má
 
 **Error que debe evitarse:** El orden de bits dentro del byte y el orden de bytes dentro de un campo son decisiones diferentes.
 
-[Montaje y procedimiento del paso 10](laboratorio-enlace-digital.md#10-representar-el-paquete-mediante-bits).
+[Montaje y procedimiento del paso 10](index.md#10-representar-el-paquete-mediante-bits).
 
 ## Paso 11 — Mapear los bits a símbolos BPSK { #paso-11 }
 
@@ -426,7 +426,7 @@ BPSK, Binary Phase Shift Keying, asigna dos estados de fase. El laboratorio util
 
 **Error que debe evitarse:** La constelación no muestra por sí sola el orden temporal de los símbolos.
 
-[Montaje y procedimiento del paso 11](laboratorio-enlace-digital.md#11-asociar-bits-con-simbolos-bpsk).
+[Montaje y procedimiento del paso 11](index.md#11-asociar-bits-con-simbolos-bpsk).
 
 ## Paso 12 — Construir muestras con un pulso rectangular { #paso-12 }
 
@@ -454,7 +454,7 @@ Repeat representa cada símbolo mediante L muestras iguales. L es samples per sy
 
 **Error que debe evitarse:** El eje temporal del visor expresa tiempo de señal. No obliga al computador a esperar esa duración.
 
-[Montaje y procedimiento del paso 12](laboratorio-enlace-digital.md#12-construir-la-senal-en-el-dominio-del-tiempo).
+[Montaje y procedimiento del paso 12](index.md#12-construir-la-senal-en-el-dominio-del-tiempo).
 
 ## Paso 13 — Dar forma RRC y cerrar la ráfaga { #paso-13 }
 
@@ -482,7 +482,7 @@ El filtro Root Raised Cosine, RRC o raíz de coseno alzado, interpola y da forma
 
 **Error que debe evitarse:** La forma RRC no debe interpretarse como una lista de niveles BPSK constantes entre símbolos.
 
-[Montaje y procedimiento del paso 13](laboratorio-enlace-digital.md#13-construir-un-pulso-rrc-y-observar-el-cierre-del-paquete).
+[Montaje y procedimiento del paso 13](index.md#13-construir-un-pulso-rrc-y-observar-el-cierre-del-paquete).
 
 ## Paso 14 — Recibir con filtro y tiempo conocidos { #paso-14 }
 
@@ -510,7 +510,7 @@ El matched filter, filtro adaptado, utiliza la forma RRC del transmisor. La prim
 
 **Error que debe evitarse:** Esta selección ideal no estima un reloj desconocido. Todavía recibe información de delimitación mediante etiquetas internas.
 
-[Montaje y procedimiento del paso 14](laboratorio-enlace-digital.md#14-filtrar-en-el-receptor-ideal-y-seleccionar-los-simbolos).
+[Montaje y procedimiento del paso 14](index.md#14-filtrar-en-el-receptor-ideal-y-seleccionar-los-simbolos).
 
 ## Paso 15 — Recuperar bits, bytes y el paquete { #paso-15 }
 
@@ -538,7 +538,7 @@ El receptor toma I, decide un bit por su signo, reúne ocho bits por byte y entr
 
 **Error que debe evitarse:** Una constelación con dos grupos no demuestra que los bytes estén ordenados ni que el CRC sea correcto.
 
-[Montaje y procedimiento del paso 15](laboratorio-enlace-digital.md#15-recuperar-los-bytes-y-comprobar-el-paquete).
+[Montaje y procedimiento del paso 15](index.md#15-recuperar-los-bytes-y-comprobar-el-paquete).
 
 ## Paso 16 — Detectar acceso y longitud desde los bits { #paso-16 }
 
@@ -566,7 +566,7 @@ TX añade una palabra de acceso y una cabecera externa duplicada. RX busca el ac
 
 **Error que debe evitarse:** Este paso resuelve la detección del paquete; la selección de instantes todavía utiliza referencias ideales.
 
-[Montaje y procedimiento del paso 16](laboratorio-enlace-digital.md#16-detectar-el-comienzo-y-la-longitud-desde-los-bits).
+[Montaje y procedimiento del paso 16](index.md#16-detectar-el-comienzo-y-la-longitud-desde-los-bits).
 
 ## Paso 17 — Recibir muestras sin etiquetas del transmisor { #paso-17 }
 
@@ -597,7 +597,7 @@ Los puntos cercanos al origen no añaden un tercer símbolo al alfabeto BPSK.
 
 **Error que debe evitarse:** Un stream sin etiquetas de paquete no implica señal de duración infinita. Durante las pausas no se añaden muestras artificiales.
 
-[Montaje y procedimiento del paso 17](laboratorio-enlace-digital.md#17-recibir-desde-un-stream-sin-etiquetas-de-delimitacion).
+[Montaje y procedimiento del paso 17](index.md#17-recibir-desde-un-stream-sin-etiquetas-de-delimitacion).
 
 ## Paso 18 — Añadir ruido y contar cada etapa { #paso-18 }
 
@@ -625,7 +625,7 @@ El canal suma ruido gaussiano complejo antes del filtro RX. Los contadores separ
 
 **Error que debe evitarse:** El CRC no elimina ruido. Un lote pequeño tampoco establece una tasa de error estadística para cualquier mensaje.
 
-[Montaje y procedimiento del paso 18](laboratorio-enlace-digital.md#18-anadir-ruido-gaussiano-y-contar-resultados).
+[Montaje y procedimiento del paso 18](index.md#18-anadir-ruido-gaussiano-y-contar-resultados).
 
 ## Paso 19 — Introducir fase y observar Costas { #paso-19 }
 
@@ -653,7 +653,7 @@ Una fase constante rota la señal. El Costas Loop, lazo de recuperación de port
 
 **Error que debe evitarse:** Una alineación geométrica correcta no establece cuál grupo significa cero.
 
-[Montaje y procedimiento del paso 19](laboratorio-enlace-digital.md#19-introducir-una-rotacion-constante-y-recuperar-fase).
+[Montaje y procedimiento del paso 19](index.md#19-introducir-una-rotacion-constante-y-recuperar-fase).
 
 ## Paso 20 — Resolver la polaridad con el protocolo { #paso-20 }
 
@@ -681,7 +681,7 @@ El receptor prueba los bits normales y sus complementos. Cada ruta busca la mism
 
 **Error que debe evitarse:** Invertir los bits resuelve la ambigüedad de signo. No corrige una selección temporal errónea.
 
-[Montaje y procedimiento del paso 20](laboratorio-enlace-digital.md#20-resolver-la-polaridad-bpsk-y-recuperar-el-caso-de-120).
+[Montaje y procedimiento del paso 20](index.md#20-resolver-la-polaridad-bpsk-y-recuperar-el-caso-de-120).
 
 ## Paso 21 — Seguir una diferencia de frecuencia { #paso-21 }
 
@@ -711,7 +711,7 @@ El desajuste se expresa en Hz, hertz o ciclos por segundo.
 
 **Error que debe evitarse:** Una fase que cambia durante el paquete no se compensa mediante una sola rotación constante. La fila −10 Hz queda para el alumno.
 
-[Montaje y procedimiento del paso 21](laboratorio-enlace-digital.md#21-introducir-un-desajuste-de-frecuencia-y-recuperarlo-con-costas).
+[Montaje y procedimiento del paso 21](index.md#21-introducir-un-desajuste-de-frecuencia-y-recuperarlo-con-costas).
 
 ## Paso 22 — Separar retardo y fase de muestreo { #paso-22 }
 
@@ -739,7 +739,7 @@ Delay desplaza las muestras. Un selector fijo puede tomar muestras entre símbol
 
 **Error que debe evitarse:** Costas puede alinear la fase sin corregir el instante de muestreo. El valor manual conocido no constituye sincronización automática.
 
-[Montaje y procedimiento del paso 22](laboratorio-enlace-digital.md#22-introducir-un-desajuste-temporal-y-reconocer-sus-efectos).
+[Montaje y procedimiento del paso 22](index.md#22-introducir-un-desajuste-temporal-y-reconocer-sus-efectos).
 
 ## Paso 23 — Adquirir el instante y seguir el reloj { #paso-23 }
 
@@ -769,7 +769,7 @@ La unidad ppm significa partes por millón. Un error de +1000 ppm corresponde a 
 
 **Error que debe evitarse:** No se sustituye esa secuencia por dos Hola. La fila −1000 ppm queda para el alumno y el ensayo aún no demuestra seguimiento de jitter.
 
-[Montaje y procedimiento del paso 23](laboratorio-enlace-digital.md#23-recuperar-el-instante-de-simbolo-y-seguir-la-deriva-de-reloj).
+[Montaje y procedimiento del paso 23](index.md#23-recuperar-el-instante-de-simbolo-y-seguir-la-deriva-de-reloj).
 
 ## Paso 24 — Dar tiempo de adquisición e integrar { #paso-24 }
 
@@ -797,7 +797,7 @@ La combinación de desajustes reveló una pérdida inicial sin preámbulo. TX a�
 
 **Error que debe evitarse:** Los lazos no corrigen retroactivamente un acceso ya perdido. Las capturas manuales del paso 24 quedan pendientes; QPSK requiere otra validación.
 
-[Montaje y procedimiento del paso 24](laboratorio-enlace-digital.md#24-cerrar-la-etapa-bpsk-con-el-enlace-integrado).
+[Montaje y procedimiento del paso 24](index.md#24-cerrar-la-etapa-bpsk-con-el-enlace-integrado).
 
 
 ## Síntesis: qué función trata cada dificultad
@@ -940,7 +940,7 @@ La integración BPSK no certifica todavía QPSK, hardware ni canales con variaci
 
 ## Lecturas y fuentes
 
-- [Guía de construcción y referencias del laboratorio](laboratorio-enlace-digital.md#referencias): formatos, parámetros y evidencias que sustentan este mapa.
+- [Guía de construcción y referencias del laboratorio](index.md#referencias): formatos, parámetros y evidencias que sustentan este mapa.
 - [Costas Loop en GNU Radio 3.10.12.0](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/costas_loop_cc.h): recuperación de portadora y configuración para BPSK.
 - [Symbol Sync en GNU Radio 3.10.12.0](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/symbol_sync_cc.h): sincronización temporal y parámetros nominales.
 - [Correlate Access Code - Tag Stream en GNU Radio 3.10.12.0](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/correlate_access_code_bb_ts.h): búsqueda del acceso y cabecera de longitud duplicada.
