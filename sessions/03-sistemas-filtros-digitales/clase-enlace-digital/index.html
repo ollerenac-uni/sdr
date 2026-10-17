@@ -1,0 +1,3126 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Clase visual del laboratorio: un mapa TX, canal y RX con los bloques estudiados resaltados en cada paso.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/03-sistemas-filtros-digitales/clase-enlace-digital/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../../../setup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Del texto al enlace BPSK — Mapa de los 24 pasos - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/sdr-mixer.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#del-texto-al-enlace-bpsk-mapa-de-los-24-pasos" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Del texto al enlace BPSK — Mapa de los 24 pasos
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../syllabus/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Syllabus
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../syllabus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Syllabus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01-introduccion-sdr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 — Introducción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-introduccion-sdr/laboratorio-muestreo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #1: muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../02-tiempo-frecuencia-iq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Señales y espectro en SDR
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 — Señales y espectro en SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/mezcla-interactiva/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demostración: mezcla compleja
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/laboratorio-receptor-fm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #2: demodulador FM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 — Laboratorio de enlace digital
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03 — Laboratorio de enlace digital
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapa visual de los 24 pasos
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapa visual de los 24 pasos
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#proposito-de-la-clase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propósito de la clase
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-leer-el-mapa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo leer el mapa
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#antes-de-seguir-un-mensaje-cinco-representaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Antes de seguir un mensaje: cinco representaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Antes de seguir un mensaje: cinco representaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tasas-que-no-deben-confundirse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasas que no deben confundirse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tres-tamanos-distintos-para-hola" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tres tamaños distintos para Hola
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recorrido-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recorrido de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 1 — Preparar el entorno de la simulación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 2 — Definir la entrada de texto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 3 — Comprobar la interfaz antes de continuar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 4 — Observar mensajes con Message Debug
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 5 — Codificar el texto como bytes UTF-8
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 6 — Comprobar la conversión inversa
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 7 — Construir un paquete que pueda comprobarse
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 8 — Validar antes de entregar el texto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 9 — Introducir un error deliberado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 10 — Separar cada byte en ocho bits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 11 — Mapear los bits a símbolos BPSK
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 12 — Construir muestras con un pulso rectangular
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 13 — Dar forma RRC y cerrar la ráfaga
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 14 — Recibir con filtro y tiempo conocidos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 15 — Recuperar bits, bytes y el paquete
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 16 — Detectar acceso y longitud desde los bits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 17 — Recibir muestras sin etiquetas del transmisor
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 18 — Añadir ruido y contar cada etapa
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 19 — Introducir fase y observar Costas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 20 — Resolver la polaridad con el protocolo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 21 — Seguir una diferencia de frecuencia
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 22 — Separar retardo y fase de muestreo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 23 — Adquirir el instante y seguir el reloj
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 24 — Dar tiempo de adquisición e integrar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintesis-que-funcion-trata-cada-dificultad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Síntesis: qué función trata cada dificultad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Síntesis: qué función trata cada dificultad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuatro-funciones-que-deben-nombrarse-por-separado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cuatro funciones que deben nombrarse por separado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejercicios-de-integracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicios de integración
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejercicios de integración">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-a-seguir-las-longitudes-de-hola" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio A — Seguir las longitudes de Hola
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-b-separar-simbolos-muestras-y-tiempo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio B — Separar símbolos, muestras y tiempo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-c-encontrar-los-instantes-del-receptor-ideal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio C — Encontrar los instantes del receptor ideal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-d-localizar-un-fallo-con-contadores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio D — Localizar un fallo con contadores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-e-relacionar-reloj-y-desplazamiento-acumulado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio E — Relacionar reloj y desplazamiento acumulado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-f-explicar-el-preambulo-sin-confundirlo-con-el-acceso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio F — Explicar el preámbulo sin confundirlo con el acceso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#laboratorio-de-lectura-y-explicacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Laboratorio de lectura y explicación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lecturas-y-fuentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lecturas y fuentes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../laboratorio-filtrado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Práctica complementaria: filtros FIR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#proposito-de-la-clase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propósito de la clase
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-leer-el-mapa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo leer el mapa
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#antes-de-seguir-un-mensaje-cinco-representaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Antes de seguir un mensaje: cinco representaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Antes de seguir un mensaje: cinco representaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tasas-que-no-deben-confundirse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasas que no deben confundirse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tres-tamanos-distintos-para-hola" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tres tamaños distintos para Hola
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recorrido-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recorrido de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 1 — Preparar el entorno de la simulación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 2 — Definir la entrada de texto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 3 — Comprobar la interfaz antes de continuar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 4 — Observar mensajes con Message Debug
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 5 — Codificar el texto como bytes UTF-8
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 6 — Comprobar la conversión inversa
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 7 — Construir un paquete que pueda comprobarse
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 8 — Validar antes de entregar el texto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 9 — Introducir un error deliberado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 10 — Separar cada byte en ocho bits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 11 — Mapear los bits a símbolos BPSK
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 12 — Construir muestras con un pulso rectangular
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 13 — Dar forma RRC y cerrar la ráfaga
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 14 — Recibir con filtro y tiempo conocidos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 15 — Recuperar bits, bytes y el paquete
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 16 — Detectar acceso y longitud desde los bits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 17 — Recibir muestras sin etiquetas del transmisor
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 18 — Añadir ruido y contar cada etapa
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 19 — Introducir fase y observar Costas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 20 — Resolver la polaridad con el protocolo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 21 — Seguir una diferencia de frecuencia
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 22 — Separar retardo y fase de muestreo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 23 — Adquirir el instante y seguir el reloj
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paso-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 24 — Dar tiempo de adquisición e integrar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sintesis-que-funcion-trata-cada-dificultad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Síntesis: qué función trata cada dificultad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Síntesis: qué función trata cada dificultad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuatro-funciones-que-deben-nombrarse-por-separado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cuatro funciones que deben nombrarse por separado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ejercicios-de-integracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicios de integración
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ejercicios de integración">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-a-seguir-las-longitudes-de-hola" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio A — Seguir las longitudes de Hola
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-b-separar-simbolos-muestras-y-tiempo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio B — Separar símbolos, muestras y tiempo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-c-encontrar-los-instantes-del-receptor-ideal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio C — Encontrar los instantes del receptor ideal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-d-localizar-un-fallo-con-contadores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio D — Localizar un fallo con contadores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-e-relacionar-reloj-y-desplazamiento-acumulado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio E — Relacionar reloj y desplazamiento acumulado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejercicio-f-explicar-el-preambulo-sin-confundirlo-con-el-acceso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejercicio F — Explicar el preámbulo sin confundirlo con el acceso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#laboratorio-de-lectura-y-explicacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Laboratorio de lectura y explicación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lecturas-y-fuentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lecturas y fuentes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="del-texto-al-enlace-bpsk-mapa-de-los-24-pasos">Del texto al enlace BPSK — Mapa de los 24 pasos</h1>
+<h2 id="proposito-de-la-clase">Propósito de la clase</h2>
+<p>El estudiante explica qué transforma cada bloque y qué problema resuelve cada paso del <a href="../">laboratorio de enlace digital</a>.
+La guía de construcción indica cómo montar el flowgraph. Esta clase conecta esos procedimientos con el sistema completo.</p>
+<p>El hilo conductor es una pregunta: <strong>¿qué debe ocurrir para que el receptor entregue exactamente el texto escrito en el transmisor?</strong></p>
+<h2 id="objetivos">Objetivos</h2>
+<p>Al finalizar el recorrido, el estudiante puede:</p>
+<ul>
+<li>Seguir un mensaje a través de texto, bytes, bits, símbolos y muestras.</li>
+<li>Distinguir el contenido útil, el paquete protegido y la trama transmitida.</li>
+<li>Explicar el propósito de los filtros y de cada función de sincronización.</li>
+<li>Relacionar una perturbación del canal con la función receptora que la trata.</li>
+<li>Identificar dónde falla un envío utilizando observaciones y contadores.</li>
+<li>Separar un resultado comprobado de una conclusión que el experimento todavía no permite.</li>
+</ul>
+<h2 id="como-leer-el-mapa">Cómo leer el mapa</h2>
+<p>Cada paso conserva las posiciones de los bloques. El mapa amplía el esquema conceptual del paso 15 de la guía.
+Los bloques agrupan funciones; un recuadro puede corresponder a varios bloques de GNU Radio.</p>
+<ul>
+<li><strong>Naranja, borde grueso:</strong> función estudiada en ese paso.</li>
+<li><strong>Azul:</strong> funciones relacionadas que ayudan a explicar el experimento.</li>
+<li><strong>Gris:</strong> contexto del sistema completo; no significa que el bloque ya esté instalado o activo.</li>
+<li><strong>T:</strong> transmisor, TX. La fila se lee de izquierda a derecha.</li>
+<li><strong>C:</strong> canal simulado. Las flechas continúan de derecha a izquierda.</li>
+<li><strong>R:</strong> receptor, RX. La fila se lee de izquierda a derecha.</li>
+<li><strong>Fila inferior:</strong> entorno, observadores, auxiliares de prueba y rama rectangular de comparación.</li>
+</ul>
+<p>RRC significa <em>Root Raised Cosine</em>, raíz de coseno alzado. El paso 13 introduce este filtro para dar forma a los pulsos.</p>
+<p><strong>Los mapas no son capturas de ejecución ni planos de cableado.</strong>
+El texto de cada paso declara qué ruta utiliza el experimento.
+Las conexiones y los parámetros exactos permanecen en la guía.</p>
+<p>El recorrido utiliza muestras complejas de banda base. No incluye antenas, conversión a radiofrecuencia, hardware ni propagación física.
+Los efectos introducidos en el canal representan perturbaciones controladas del enlace.</p>
+<div class="admonition info">
+<p class="admonition-title">Estado del material</p>
+<p>Esta clase acompaña los 24 pasos BPSK. No inicia otra sesión formal ni desarrolla todavía QPSK.
+Las capturas manuales del paso 24 quedan pendientes. Sus referencias automáticas tienen el alcance declarado en la guía.
+El archivo <code>end-to-end.grc</code> guardado en el repositorio corresponde al estado restaurado del paso 23.
+El paso 24 se aplica siguiendo la guía.</p>
+</div>
+<h2 id="antes-de-seguir-un-mensaje-cinco-representaciones">Antes de seguir un mensaje: cinco representaciones</h2>
+<p>Un mismo contenido cambia de representación durante el recorrido.
+La cantidad de elementos puede cambiar sin que cambie el texto.</p>
+<table>
+<thead>
+<tr>
+<th>Representación</th>
+<th>Qué significa un elemento</th>
+<th>Ejemplo del laboratorio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Texto</td>
+<td>Carácter del mensaje escrito.</td>
+<td>La palabra <code>Hola</code> tiene cuatro caracteres.</td>
+</tr>
+<tr>
+<td>Bytes</td>
+<td>Valores de ocho bits de la codificación UTF-8.</td>
+<td><code>48 6f 6c 61</code>, en hexadecimal.</td>
+</tr>
+<tr>
+<td>Bits</td>
+<td>Valores individuales cero o uno.</td>
+<td>El byte <code>48</code> se separa como <code>01001000</code>.</td>
+</tr>
+<tr>
+<td>Símbolos BPSK</td>
+<td>Elecciones de dos valores complejos posibles.</td>
+<td>Cero selecciona −1; uno selecciona +1.</td>
+</tr>
+<tr>
+<td>Muestras I/Q</td>
+<td>Valores complejos en instantes separados por el intervalo de muestreo.</td>
+<td>El pulso rectangular utiliza cuatro muestras por símbolo.</td>
+</tr>
+</tbody>
+</table>
+<p>La señal compleja se escribe <span class="arithmatex">\(x[n]=I[n]+jQ[n]\)</span>.
+<span class="arithmatex">\(I\)</span> es la componente real, <span class="arithmatex">\(Q\)</span> es la componente imaginaria y <span class="arithmatex">\(j^2=-1\)</span>.
+El índice <span class="arithmatex">\(n\)</span> cuenta muestras; no cuenta caracteres ni paquetes.</p>
+<p>En BPSK, <em>Binary Phase Shift Keying</em>, cada símbolo transporta un bit.
+El mapeo del laboratorio sitúa los símbolos en <span class="arithmatex">\((-1,0)\)</span> y <span class="arithmatex">\((+1,0)\)</span>.
+Los filtros construyen las muestras entre los instantes de símbolo.</p>
+<h3 id="tasas-que-no-deben-confundirse">Tasas que no deben confundirse</h3>
+<p>La tasa <span class="arithmatex">\(R_s\)</span> cuenta símbolos por segundo. La tasa <span class="arithmatex">\(f_s\)</span> cuenta muestras por segundo.
+<span class="arithmatex">\(L\)</span>, también llamado <code>sps</code>, cuenta muestras por símbolo:</p>
+<div class="arithmatex">\[
+f_s=L R_s.
+\]</div>
+<p>Con <span class="arithmatex">\(R_s=1000\)</span> símbolos/s y <span class="arithmatex">\(L=4\)</span>, resulta <span class="arithmatex">\(f_s=4000\)</span> muestras/s.
+Un símbolo dura 1 ms. Dos muestras consecutivas quedan separadas por 0.25 ms.
+Estas son las tasas nominales; el ensayo de reloj introduce una diferencia relativa entre TX y RX.</p>
+<h3 id="tres-tamanos-distintos-para-hola">Tres tamaños distintos para Hola</h3>
+<p>CRC significa <em>Cyclic Redundancy Check</em>, comprobación cíclica de redundancia.
+El CRC permite detectar alteraciones; no corrige bits.</p>
+<table>
+<thead>
+<tr>
+<th>Momento de la construcción</th>
+<th>Contenido transmitido antes del mapeo</th>
+<th>Tamaño</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pasos 7–15</td>
+<td>Longitud interna + texto UTF-8 + CRC.</td>
+<td>10 bytes.</td>
+</tr>
+<tr>
+<td>Pasos 16–23</td>
+<td>Acceso + longitud externa duplicada + paquete protegido.</td>
+<td>22 bytes.</td>
+</tr>
+<tr>
+<td>Paso 24</td>
+<td>Preámbulo + acceso + longitud externa duplicada + paquete protegido.</td>
+<td>54 bytes.</td>
+</tr>
+</tbody>
+</table>
+<p>La longitud interna de <code>Hola</code> siempre indica cuatro bytes de texto.
+Cada copia de la longitud externa indica diez bytes de paquete protegido.
+Los ceros de cierre de los filtros no pertenecen a ninguno de esos campos.</p>
+<p>El formato admite hasta 500 palabras y 5000 bytes UTF-8 de texto, sin recortar mensajes que excedan los límites.</p>
+<h2 id="recorrido-de-aprendizaje">Recorrido de aprendizaje</h2>
+<table>
+<thead>
+<tr>
+<th>Tramo</th>
+<th>Pregunta central</th>
+<th>Punto de llegada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#paso-1">Pasos 1–10</a></td>
+<td>¿Cómo se representa y comprueba el mensaje?</td>
+<td>Datos preparados, todavía sin señal temporal.</td>
+</tr>
+<tr>
+<td><a href="#paso-11">Pasos 11–15</a></td>
+<td>¿Cómo pasan los bits por una señal?</td>
+<td>Recuperación con referencias ideales.</td>
+</tr>
+<tr>
+<td><a href="#paso-16">Pasos 16–17</a></td>
+<td>¿Cómo encuentra RX el paquete?</td>
+<td>Detección desde bits y recepción sin etiquetas de TX.</td>
+</tr>
+<tr>
+<td><a href="#paso-18">Pasos 18–23</a></td>
+<td>¿Qué ocurre al perturbar la señal?</td>
+<td>Comparación de controles y recuperación de portadora y tiempo.</td>
+</tr>
+<tr>
+<td><a href="#paso-24">Paso 24</a></td>
+<td>¿La cadena integrada recupera el primer envío?</td>
+<td>Adquisición previa al acceso y comprobación conjunta.</td>
+</tr>
+</tbody>
+</table>
+<p>El orden de enseñanza incorpora primero casos fáciles de comprobar.
+El orden físico de los bloques responde al procesamiento de la señal.
+Por ejemplo, el mapa final sitúa Symbol Sync antes de Costas, aunque Costas se estudia antes.</p>
+<h2 id="paso-1">Paso 1 — Preparar el entorno de la simulación</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué prepara el programa antes de que exista una señal?</p>
+<p>Options define cómo se genera y ejecuta el programa. La interfaz Qt permite introducir mensajes y observar resultados.</p>
+<p><img alt="Mapa funcional del enlace BPSK con E · Entorno resaltado para el paso 1." src="../figures/enlace-mapa-paso-01.png" />
+<strong>Figura 1.</strong> El foco del paso 1 corresponde a E · Entorno.</p>
+<ul>
+<li><strong>Fila TX:</strong> La cadena de datos sirve de contexto. En este paso solo se prepara el programa.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> El receptor del mapa todavía no forma parte del ensayo.</li>
+<li><strong>Fila de entorno y observación:</strong> E identifica las opciones y el entorno Qt; no transporta el mensaje.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-01.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Configuración del flowgraph → programa ejecutable con interfaz Qt.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se crea y guarda el archivo; se configuran sus opciones.</li>
+<li><strong>Qué permanece fijo:</strong> Todavía no existe una cadena de transmisión ni un canal.</li>
+<li><strong>Qué se observa:</strong> La aplicación puede abrirse y cerrarse sin errores.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> Guardar el archivo no equivale a transmitir. La extensión .grc identifica el diagrama; el ID identifica la clase del programa generado.</p>
+<p><strong>Error que debe evitarse:</strong> Un canvas vacío que ejecuta correctamente solo comprueba el entorno.</p>
+<p><a href="../#1-preparar-end-to-endgrc">Montaje y procedimiento del paso 1</a>.</p>
+<h2 id="paso-2">Paso 2 — Definir la entrada de texto</h2>
+<p><strong>Pregunta guía:</strong> ¿Por dónde entra la información del usuario?</p>
+<p>QT GUI Message Edit Box recibe texto y publica un mensaje al confirmarlo. Su puerto pertenece al dominio de mensajes.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T1 · Texto resaltado para el paso 2." src="../figures/enlace-mapa-paso-02.png" />
+<strong>Figura 2.</strong> El foco del paso 2 corresponde a T1 · Texto.</p>
+<ul>
+<li><strong>Fila TX:</strong> Solo se estudia la entrada de texto. La conversión UTF-8 de T1 se incorpora en el paso 5.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> El receptor del mapa todavía no forma parte del ensayo.</li>
+<li><strong>Fila de entorno y observación:</strong> E organiza la interfaz; la publicación de mensajes se comprueba después.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-02.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Texto escrito → mensaje interno de GNU Radio.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se añade el cuadro de texto.</li>
+<li><strong>Qué permanece fijo:</strong> No hay bytes de paquete, símbolos BPSK ni muestras.</li>
+<li><strong>Qué se observa:</strong> El cuadro admite Hola y reconoce la confirmación con Enter.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> El puerto de mensajes no representa una entrada de muestras complejas. Los adaptadores posteriores conectarán ambos dominios.</p>
+<p><strong>Error que debe evitarse:</strong> Escribir una palabra sin confirmarla no demuestra que el bloque haya publicado el mensaje.</p>
+<p><a href="../#2-primer-bloque-qt-gui-message-edit-box">Montaje y procedimiento del paso 2</a>.</p>
+<h2 id="paso-3">Paso 3 — Comprobar la interfaz antes de continuar</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué confirma esta primera prueba y qué queda sin comprobar?</p>
+<p>Una prueba pequeña permite revisar la entrada sin mezclar errores de interfaz, formato y procesamiento de señal.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T1 · Texto, E · Entorno resaltado para el paso 3." src="../figures/enlace-mapa-paso-03.png" />
+<strong>Figura 3.</strong> El foco del paso 3 corresponde a T1 · Texto, E · Entorno.</p>
+<ul>
+<li><strong>Fila TX:</strong> Solo se estudia la entrada de texto. La conversión UTF-8 de T1 se incorpora en el paso 5.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> El receptor del mapa todavía no forma parte del ensayo.</li>
+<li><strong>Fila de entorno y observación:</strong> E representa la comprobación de apertura, entrada y cierre de la ventana.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-03.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Interacción del usuario → evento de publicación del cuadro de texto.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se ejecuta la interfaz y se introduce el primer mensaje.</li>
+<li><strong>Qué permanece fijo:</strong> Se conserva el cuadro del paso 2; todavía no hay un receptor.</li>
+<li><strong>Qué se observa:</strong> La ventana aparece y responde a las acciones previstas.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> La evidencia visible solo confirma la interfaz. El paso 4 añadirá un observador de la salida.</p>
+<p><strong>Error que debe evitarse:</strong> Una ventana abierta no prueba que otro bloque haya recibido Hola.</p>
+<p><a href="../#3-comprobar-el-primer-bloque">Montaje y procedimiento del paso 3</a>.</p>
+<h2 id="paso-4">Paso 4 — Observar mensajes con Message Debug</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué entrega realmente el cuadro de texto?</p>
+<p>Message Debug permite inspeccionar la salida del bloque de entrada. La conexión transporta mensajes dentro del mismo programa.</p>
+<p><img alt="Mapa funcional del enlace BPSK con O · Observar resaltado para el paso 4." src="../figures/enlace-mapa-paso-04.png" />
+<strong>Figura 4.</strong> El foco del paso 4 corresponde a O · Observar.</p>
+<ul>
+<li><strong>Fila TX:</strong> Solo se estudia la entrada de texto. La conversión UTF-8 de T1 se incorpora en el paso 5.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> El receptor del mapa todavía no forma parte del ensayo.</li>
+<li><strong>Fila de entorno y observación:</strong> O identifica Message Debug, conectado a la salida de la entrada de texto.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-04.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Mensaje del cuadro → Message Debug → texto en consola.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se conecta un observador a la salida de mensajes.</li>
+<li><strong>Qué permanece fijo:</strong> Se mantiene Hola y todavía no existe una señal modulada.</li>
+<li><strong>Qué se observa:</strong> La consola muestra el contenido después de confirmar el envío.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> El observador recibe el mensaje, pero no realiza una recepción de radio. No existe aún una ruta a través de muestras.</p>
+<p><strong>Error que debe evitarse:</strong> Confundir una conexión de mensajes con el canal del enlace ocultaría errores posteriores del procesamiento de señal.</p>
+<p><a href="../#4-observar-el-mensaje-con-message-debug">Montaje y procedimiento del paso 4</a>.</p>
+<h2 id="paso-5">Paso 5 — Codificar el texto como bytes UTF-8</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué números representan el texto?</p>
+<p>UTF-8 convierte caracteres en bytes. Una PDU, Protocol Data Unit o unidad de datos, conserva un vector junto con sus metadatos.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T1 · Texto resaltado para el paso 5." src="../figures/enlace-mapa-paso-05.png" />
+<strong>Figura 5.</strong> El foco del paso 5 corresponde a T1 · Texto.</p>
+<ul>
+<li><strong>Fila TX:</strong> T1 convierte el texto en bytes. Los demás bloques TX todavía no intervienen.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> El receptor del mapa todavía no forma parte del ensayo.</li>
+<li><strong>Fila de entorno y observación:</strong> O permite inspeccionar los bytes y los metadatos de la PDU.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-05.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Mensaje de texto → PDU con bytes UTF-8.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se incorpora el convertidor de texto a bytes.</li>
+<li><strong>Qué permanece fijo:</strong> Se conserva el contenido del texto y sus espacios.</li>
+<li><strong>Qué se observa:</strong> Hola produce 48 6f 6c 61 en hexadecimal: cuatro bytes.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> La cantidad de caracteres puede diferir de la cantidad de bytes. La letra á ocupa dos bytes en UTF-8.</p>
+<p><strong>Error que debe evitarse:</strong> Una PDU de cuatro bytes todavía no contiene cuatro símbolos ni cuatro muestras.</p>
+<p><a href="../#5-convertir-texto-en-bytes-utf-8">Montaje y procedimiento del paso 5</a>.</p>
+<h2 id="paso-6">Paso 6 — Comprobar la conversión inversa</h2>
+<p><strong>Pregunta guía:</strong> ¿La codificación permite recuperar exactamente el texto?</p>
+<p>El convertidor inverso interpreta los bytes como UTF-8. Esta prueba conecta los convertidores directamente mediante mensajes.</p>
+<p><img alt="Mapa funcional del enlace BPSK con R6 · Validar resaltado para el paso 6." src="../figures/enlace-mapa-paso-06.png" />
+<strong>Figura 6.</strong> El foco del paso 6 corresponde a R6 · Validar.</p>
+<ul>
+<li><strong>Fila TX:</strong> T1 convierte el texto en bytes. Los demás bloques TX todavía no intervienen.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> R6 señala la decodificación UTF-8. Se conecta directamente por mensajes, sin filtros, sincronizadores ni CRC.</li>
+<li><strong>Fila de entorno y observación:</strong> O muestra el texto recuperado por la conexión directa.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-06.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Texto → bytes UTF-8 → texto recuperado, sin atravesar el canal del mapa.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se añade la conversión de bytes a texto.</li>
+<li><strong>Qué permanece fijo:</strong> No se añade todavía longitud, CRC ni modulación.</li>
+<li><strong>Qué se observa:</strong> El texto recuperado coincide con el original, incluidos sus espacios.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> R6 señala la función de decodificación que luego pertenecerá al receptor. Su comprobador CRC todavía no forma parte de este ensayo.</p>
+<p><strong>Error que debe evitarse:</strong> Esta recuperación valida la representación del texto; todavía no valida un enlace de muestras.</p>
+<p><a href="../#6-recuperar-el-texto-desde-los-bytes">Montaje y procedimiento del paso 6</a>.</p>
+<h2 id="paso-7">Paso 7 — Construir un paquete que pueda comprobarse</h2>
+<p><strong>Pregunta guía:</strong> ¿Cómo sabrá el receptor cuántos bytes pertenecen al texto?</p>
+<p>El constructor añade dos bytes de longitud y cuatro de CRC-32. El CRC, Cyclic Redundancy Check, permite detectar alteraciones del paquete.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T2 · Paquete resaltado para el paso 7." src="../figures/enlace-mapa-paso-07.png" />
+<strong>Figura 7.</strong> El foco del paso 7 corresponde a T2 · Paquete.</p>
+<ul>
+<li><strong>Fila TX:</strong> T2 construye el paquete protegido. T3, el acceso, todavía no interviene.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> El comprobador R6 se incorporará después. El ensayo actual inspecciona el paquete construido.</li>
+<li><strong>Fila de entorno y observación:</strong> O muestra el vector con longitud, texto y CRC.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-07.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> 4 bytes de Hola → 2 de longitud + 4 de texto + 4 de CRC = 10 bytes.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se incorpora el formato del paquete protegido.</li>
+<li><strong>Qué permanece fijo:</strong> Los bytes UTF-8 del texto permanecen iguales.</li>
+<li><strong>Qué se observa:</strong> La longitud interna vale cuatro, aunque el paquete completo contiene diez bytes.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> El CRC se calcula sobre longitud y texto. No incluye su propio campo. Los límites se aplican a palabras y bytes del texto.</p>
+<p><strong>Error que debe evitarse:</strong> El CRC detecta errores; no corrige bits ni autentica al emisor.</p>
+<p><a href="../#7-construir-el-paquete">Montaje y procedimiento del paso 7</a>.</p>
+<h2 id="paso-8">Paso 8 — Validar antes de entregar el texto</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué condiciones permiten aceptar un paquete?</p>
+<p>El comprobador interpreta la longitud y verifica el CRC antes de entregar los bytes al convertidor UTF-8.</p>
+<p><img alt="Mapa funcional del enlace BPSK con R6 · Validar resaltado para el paso 8." src="../figures/enlace-mapa-paso-08.png" />
+<strong>Figura 8.</strong> El foco del paso 8 corresponde a R6 · Validar.</p>
+<ul>
+<li><strong>Fila TX:</strong> T2 construye el paquete protegido. T3, el acceso, todavía no interviene.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> El comprobador y el decodificador R6 reciben una PDU por conexión directa; no atraviesan el canal.</li>
+<li><strong>Fila de entorno y observación:</strong> O permite observar la aceptación o el motivo de rechazo.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-08.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Paquete protegido → comprobación → bytes útiles → texto.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se conecta el comprobador al constructor por la ruta directa de PDU.</li>
+<li><strong>Qué permanece fijo:</strong> Se conserva el formato del paso 7; el canal del mapa sigue sin utilizarse.</li>
+<li><strong>Qué se observa:</strong> Hola se acepta cuando tamaño, longitud y CRC son coherentes.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> La salida aceptada es una decisión del protocolo. El comprobador no necesita conocer de antemano que el usuario escribió Hola.</p>
+<p><strong>Error que debe evitarse:</strong> Comparar solo lo enviado y lo mostrado no sustituye la comprobación del paquete recibido.</p>
+<p><a href="../#8-comprobar-el-paquete-y-recuperar-el-texto">Montaje y procedimiento del paso 8</a>.</p>
+<h2 id="paso-9">Paso 9 — Introducir un error deliberado</h2>
+<p><strong>Pregunta guía:</strong> ¿El receptor rechaza una alteración sin perder los mensajes siguientes?</p>
+<p>Un auxiliar de prueba cambia un bit del segundo paquete después de calcular el CRC. La referencia exige rechazo, no recuperación de ese paquete.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T2 · Paquete, R6 · Validar, X · Ensayar resaltado para el paso 9." src="../figures/enlace-mapa-paso-09.png" />
+<strong>Figura 9.</strong> El foco del paso 9 corresponde a T2 · Paquete, R6 · Validar, X · Ensayar.</p>
+<ul>
+<li><strong>Fila TX:</strong> T2 construye el paquete protegido. T3, el acceso, todavía no interviene.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> El comprobador y el decodificador R6 reciben una PDU por conexión directa; no atraviesan el canal.</li>
+<li><strong>Fila de entorno y observación:</strong> X representa el auxiliar que altera el segundo paquete. O muestra los tres resultados.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-09.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Paquete válido → alteración controlada → comprobador → rechazo del segundo envío.</p>
+<ul>
+<li><strong>Qué cambia:</strong> El auxiliar altera únicamente el segundo paquete de tres envíos.</li>
+<li><strong>Qué permanece fijo:</strong> Se envía el mismo texto y se conserva el comprobador.</li>
+<li><strong>Qué se observa:</strong> El primer y el tercer paquete se aceptan; el segundo se rechaza.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> El auxiliar es un instrumento de prueba. Más adelante se repite este control a través de las muestras.</p>
+<p><strong>Error que debe evitarse:</strong> Este error deliberado no representa todavía ruido gaussiano ni un modelo de canal.</p>
+<p><a href="../#9-comprobar-el-rechazo-de-un-bit-alterado">Montaje y procedimiento del paso 9</a>.</p>
+<h2 id="paso-10">Paso 10 — Separar cada byte en ocho bits</h2>
+<p><strong>Pregunta guía:</strong> ¿Cambió el contenido o cambió su representación?</p>
+<p>Bytes a bits entrega un elemento por bit, en orden MSB first: primero el bit más significativo de cada byte.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T4 · Bits resaltado para el paso 10." src="../figures/enlace-mapa-paso-10.png" />
+<strong>Figura 10.</strong> El foco del paso 10 corresponde a T4 · Bits.</p>
+<ul>
+<li><strong>Fila TX:</strong> T4 separa los bytes del paquete en bits. No añade información nueva.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> El comprobador y el decodificador R6 reciben una PDU por conexión directa; no atraviesan el canal.</li>
+<li><strong>Fila de entorno y observación:</strong> O permite contar y revisar los bits del vector.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-10.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Paquete de 10 bytes → vector de 80 bits individuales.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se cambia la representación y la cantidad de elementos del vector.</li>
+<li><strong>Qué permanece fijo:</strong> La secuencia de información del paquete y su CRC permanecen iguales.</li>
+<li><strong>Qué se observa:</strong> El byte de H, 0x48, aparece como 01001000.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> Ochenta elementos con valores cero o uno no significan ochenta bytes de texto. Cada elemento representa un bit.</p>
+<p><strong>Error que debe evitarse:</strong> El orden de bits dentro del byte y el orden de bytes dentro de un campo son decisiones diferentes.</p>
+<p><a href="../#10-representar-el-paquete-mediante-bits">Montaje y procedimiento del paso 10</a>.</p>
+<h2 id="paso-11">Paso 11 — Mapear los bits a símbolos BPSK</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué valor complejo representa cada bit?</p>
+<p>BPSK, Binary Phase Shift Keying, asigna dos estados de fase. El laboratorio utiliza 0 → −1 y 1 → +1, con componente imaginaria cero.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T5 · BPSK resaltado para el paso 11." src="../figures/enlace-mapa-paso-11.png" />
+<strong>Figura 11.</strong> El foco del paso 11 corresponde a T5 · BPSK.</p>
+<ul>
+<li><strong>Fila TX:</strong> T5 transforma bits en símbolos. Todavía no actúa el filtro RRC T6.</li>
+<li><strong>Fila canal:</strong> Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.</li>
+<li><strong>Fila RX:</strong> Los bloques RX son contexto futuro. Los visores actuales observan el transmisor.</li>
+<li><strong>Fila de entorno y observación:</strong> O reúne constelación y consola; los visores no actúan como receptor.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-11.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> 80 bits → 80 símbolos complejos, situados en (−1, 0) y (+1, 0).</p>
+<ul>
+<li><strong>Qué cambia:</strong> El adaptador pasa de PDU a tagged stream, flujo con etiquetas, y Chunks to Symbols aplica el mapeo.</li>
+<li><strong>Qué permanece fijo:</strong> Cada bit conserva su posición; todavía no se forman varios valores temporales por símbolo.</li>
+<li><strong>Qué se observa:</strong> La constelación TX tiene dos posiciones posibles.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> Un símbolo es una elección del alfabeto de modulación. Una muestra es un valor de la señal en un instante.</p>
+<p><strong>Error que debe evitarse:</strong> La constelación no muestra por sí sola el orden temporal de los símbolos.</p>
+<p><a href="../#11-asociar-bits-con-simbolos-bpsk">Montaje y procedimiento del paso 11</a>.</p>
+<h2 id="paso-12">Paso 12 — Construir muestras con un pulso rectangular</h2>
+<p><strong>Pregunta guía:</strong> ¿Cómo adquieren duración los símbolos?</p>
+<p>Repeat representa cada símbolo mediante L muestras iguales. L es samples per symbol, muestras por símbolo, y corresponde a sps.</p>
+<p><img alt="Mapa funcional del enlace BPSK con P · Rectangular resaltado para el paso 12." src="../figures/enlace-mapa-paso-12.png" />
+<strong>Figura 12.</strong> El foco del paso 12 corresponde a P · Rectangular.</p>
+<ul>
+<li><strong>Fila TX:</strong> T5 alimenta la rama rectangular P. La cadena RRC T6 permanece como contexto futuro.</li>
+<li><strong>Fila canal:</strong> El recorrido de muestras es ideal. No se introducen las perturbaciones de la fila C.</li>
+<li><strong>Fila RX:</strong> Los bloques RX son contexto futuro. Los visores actuales observan el transmisor.</li>
+<li><strong>Fila de entorno y observación:</strong> P produce la señal rectangular. O muestra I y Q en el tiempo.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-12.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> 80 símbolos → 320 muestras complejas con sps = 4.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se añade la rama rectangular de comparación; el bloque T6 RRC todavía no interviene.</li>
+<li><strong>Qué permanece fijo:</strong> La tasa de símbolos vale 1000 símbolos/s y el paquete conserva sus bits.</li>
+<li><strong>Qué se observa:</strong> La tasa de muestreo vale 4000 muestras/s. I presenta escalones y Q permanece en cero.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> Cuatro muestras por símbolo separan las tasas. No multiplican por cuatro la cantidad de bits del mensaje.</p>
+<p><strong>Error que debe evitarse:</strong> El eje temporal del visor expresa tiempo de señal. No obliga al computador a esperar esa duración.</p>
+<p><a href="../#12-construir-la-senal-en-el-dominio-del-tiempo">Montaje y procedimiento del paso 12</a>.</p>
+<h2 id="paso-13">Paso 13 — Dar forma RRC y cerrar la ráfaga</h2>
+<p><strong>Pregunta guía:</strong> ¿Por qué el último mensaje necesita muestras de cierre?</p>
+<p>El filtro Root Raised Cosine, RRC o raíz de coseno alzado, interpola y da forma a los pulsos. Su memoria continúa después del último símbolo.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T6 · Pulso TX resaltado para el paso 13." src="../figures/enlace-mapa-paso-13.png" />
+<strong>Figura 13.</strong> El foco del paso 13 corresponde a T6 · Pulso TX.</p>
+<ul>
+<li><strong>Fila TX:</strong> La rama RRC T6 produce las muestras TX. T3 todavía no añade una envoltura de trama.</li>
+<li><strong>Fila canal:</strong> El recorrido de muestras es ideal. No se introducen las perturbaciones de la fila C.</li>
+<li><strong>Fila RX:</strong> Los bloques RX son contexto futuro. Los visores actuales observan el transmisor.</li>
+<li><strong>Fila de entorno y observación:</strong> P conserva la comparación rectangular. O permite leer la respuesta RRC y su cierre.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-13.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> 80 símbolos + 8 ceros de cierre → 88 elementos → 352 muestras RRC.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se añade la rama RRC y se compara con la rama rectangular.</li>
+<li><strong>Qué permanece fijo:</strong> Se conservan BPSK, el paquete y las tasas nominales.</li>
+<li><strong>Qué se observa:</strong> Las transiciones dejan de ser escalones. El cierre permite observar la respuesta del filtro al último símbolo.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> Los ocho ceros no representan bits adicionales. Los parámetros de referencia son roll-off α = 0.35 y 33 coeficientes.</p>
+<p><strong>Error que debe evitarse:</strong> La forma RRC no debe interpretarse como una lista de niveles BPSK constantes entre símbolos.</p>
+<p><a href="../#13-construir-un-pulso-rrc-y-observar-el-cierre-del-paquete">Montaje y procedimiento del paso 13</a>.</p>
+<h2 id="paso-14">Paso 14 — Recibir con filtro y tiempo conocidos</h2>
+<p><strong>Pregunta guía:</strong> ¿En qué instantes recupera el receptor los símbolos?</p>
+<p>El matched filter, filtro adaptado, utiliza la forma RRC del transmisor. La primera selección conoce el retardo y los límites de la PDU.</p>
+<p><img alt="Mapa funcional del enlace BPSK con R1 · RRC RX, R2 · Tiempo resaltado para el paso 14." src="../figures/enlace-mapa-paso-14.png" />
+<strong>Figura 14.</strong> El foco del paso 14 corresponde a R1 · RRC RX, R2 · Tiempo.</p>
+<ul>
+<li><strong>Fila TX:</strong> La rama RRC T6 produce las muestras TX. T3 todavía no añade una envoltura de trama.</li>
+<li><strong>Fila canal:</strong> El recorrido de muestras es ideal. No se introducen las perturbaciones de la fila C.</li>
+<li><strong>Fila RX:</strong> R1 filtra y R2 selecciona con referencias ideales. Todavía no se utiliza Symbol Sync.</li>
+<li><strong>Fila de entorno y observación:</strong> O distingue el registro completo de las muestras seleccionadas.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-14.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Muestras RRC → cierre RX y filtro RRC → selección ideal → 80 símbolos.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se añade el filtro receptor y se compensa el retardo conjunto.</li>
+<li><strong>Qué permanece fijo:</strong> El canal sigue ideal; sps y la fase de selección son conocidos.</li>
+<li><strong>Qué se observa:</strong> Con 33 coeficientes por filtro, el retardo conjunto es 32 muestras. Se seleccionan los índices 32, 36, 40 y siguientes.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> El registro de Hola tiene 384 muestras con ambos cierres. Solo 80 muestras seleccionadas representan los símbolos del paquete.</p>
+<p><strong>Error que debe evitarse:</strong> Esta selección ideal no estima un reloj desconocido. Todavía recibe información de delimitación mediante etiquetas internas.</p>
+<p><a href="../#14-filtrar-en-el-receptor-ideal-y-seleccionar-los-simbolos">Montaje y procedimiento del paso 14</a>.</p>
+<h2 id="paso-15">Paso 15 — Recuperar bits, bytes y el paquete</h2>
+<p><strong>Pregunta guía:</strong> ¿La ruta de muestras conserva el mensaje y permite detectar errores?</p>
+<p>El receptor toma I, decide un bit por su signo, reúne ocho bits por byte y entrega el paquete al comprobador.</p>
+<p><img alt="Mapa funcional del enlace BPSK con R4 · Bits, R5 · Paquete, R6 · Validar resaltado para el paso 15." src="../figures/enlace-mapa-paso-15.png" />
+<strong>Figura 15.</strong> El foco del paso 15 corresponde a R4 · Bits, R5 · Paquete, R6 · Validar.</p>
+<ul>
+<li><strong>Fila TX:</strong> La rama RRC T6 produce las muestras TX. T3 todavía no añade una envoltura de trama.</li>
+<li><strong>Fila canal:</strong> El recorrido de muestras es ideal. No se introducen las perturbaciones de la fila C.</li>
+<li><strong>Fila RX:</strong> R4 decide los bits y R5 reconstruye bytes con límites conocidos. La detección de acceso todavía no interviene.</li>
+<li><strong>Fila de entorno y observación:</strong> O permite comprobar símbolos, bytes y resultado del CRC.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-15.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> 80 símbolos RX → 80 bits → 10 bytes → CRC correcto → Hola.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se cierra la recuperación de datos a través de las muestras.</li>
+<li><strong>Qué permanece fijo:</strong> Se mantiene la selección ideal; los límites del paquete todavía son conocidos.</li>
+<li><strong>Qué se observa:</strong> Hola, SDR y el texto Unicode se recuperan. La alteración deliberada sigue produciendo rechazo.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> R5 agrupa la reconstrucción de bytes. Su detector de acceso se añadirá en el paso 16.</p>
+<p><strong>Error que debe evitarse:</strong> Una constelación con dos grupos no demuestra que los bytes estén ordenados ni que el CRC sea correcto.</p>
+<p><a href="../#15-recuperar-los-bytes-y-comprobar-el-paquete">Montaje y procedimiento del paso 15</a>.</p>
+<h2 id="paso-16">Paso 16 — Detectar acceso y longitud desde los bits</h2>
+<p><strong>Pregunta guía:</strong> ¿Cómo encuentra el receptor dónde empieza el paquete?</p>
+<p>TX añade una palabra de acceso y una cabecera externa duplicada. RX busca el acceso y crea una etiqueta nueva desde los bits recibidos.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T3 · Trama, R5 · Paquete resaltado para el paso 16." src="../figures/enlace-mapa-paso-16.png" />
+<strong>Figura 16.</strong> El foco del paso 16 corresponde a T3 · Trama, R5 · Paquete.</p>
+<ul>
+<li><strong>Fila TX:</strong> T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.</li>
+<li><strong>Fila canal:</strong> El recorrido de muestras es ideal. No se introducen las perturbaciones de la fila C.</li>
+<li><strong>Fila RX:</strong> R5 detecta el acceso; R2 todavía selecciona con referencias ideales.</li>
+<li><strong>Fila de entorno y observación:</strong> O permite inspeccionar la detección y la longitud creada por RX.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-16.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> 10 bytes protegidos → trama de 22 bytes → detección → paquete original de 10 bytes.</p>
+<ul>
+<li><strong>Qué cambia:</strong> La envoltura añade ocho bytes de acceso y cuatro de longitud externa.</li>
+<li><strong>Qué permanece fijo:</strong> La longitud interna de Hola sigue siendo cuatro y su CRC no cambia.</li>
+<li><strong>Qué se observa:</strong> Las dos copias externas valen diez. El detector entrega 80 bits del paquete protegido.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> La palabra de acceso viaja en la señal. packet_len es una etiqueta de GNU Radio y no viaja como muestra.</p>
+<p><strong>Error que debe evitarse:</strong> Este paso resuelve la detección del paquete; la selección de instantes todavía utiliza referencias ideales.</p>
+<p><a href="../#16-detectar-el-comienzo-y-la-longitud-desde-los-bits">Montaje y procedimiento del paso 16</a>.</p>
+<h2 id="paso-17">Paso 17 — Recibir muestras sin etiquetas del transmisor</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué debe descubrir RX y qué sigue suponiendo conocido?</p>
+<p>La frontera elimina las etiquetas de delimitación antes del receptor. Keep M in N conserva una muestra por símbolo con una fase nominal fija.</p>
+<p><img alt="Mapa funcional del enlace BPSK con R2 · Tiempo, R5 · Paquete resaltado para el paso 17." src="../figures/enlace-mapa-paso-17.png" />
+<strong>Figura 17.</strong> El foco del paso 17 corresponde a R2 · Tiempo, R5 · Paquete.</p>
+<ul>
+<li><strong>Fila TX:</strong> T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.</li>
+<li><strong>Fila canal:</strong> El recorrido de muestras es ideal. No se introducen las perturbaciones de la fila C.</li>
+<li><strong>Fila RX:</strong> R2 utiliza selección nominal fija. R5 detecta el paquete y R6 lo comprueba. Costas todavía no interviene.</li>
+<li><strong>Fila de entorno y observación:</strong> O observa el stream; los auxiliares no entregan el texto directamente a RX.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-17.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Stream de muestras sin etiquetas privadas → selección fija → bits → acceso → paquete.</p>
+<ul>
+<li><strong>Qué cambia:</strong> La recepción deja de utilizar la PDU delimitada por TX.</li>
+<li><strong>Qué permanece fijo:</strong> Se conocen la tasa nominal, la fase de selección y el retardo de los filtros.</li>
+<li><strong>Qué se observa:</strong> Cada mensaje, incluido el último, se recibe sin enviar otro para completar buffers.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> El detector genera sus propias etiquetas. El selector fijo todavía no estima un error temporal desconocido.</p>
+<p>El visor puede incluir arranque, cierre y muestras fuera del instante adecuado.
+Los puntos cercanos al origen no añaden un tercer símbolo al alfabeto BPSK.</p>
+<p><strong>Error que debe evitarse:</strong> Un stream sin etiquetas de paquete no implica señal de duración infinita. Durante las pausas no se añaden muestras artificiales.</p>
+<p><a href="../#17-recibir-desde-un-stream-sin-etiquetas-de-delimitacion">Montaje y procedimiento del paso 17</a>.</p>
+<h2 id="paso-18">Paso 18 — Añadir ruido y contar cada etapa</h2>
+<p><strong>Pregunta guía:</strong> ¿En qué etapa se pierde un envío?</p>
+<p>El canal suma ruido gaussiano complejo antes del filtro RX. Los contadores separan envíos, detecciones, paquetes completos y textos aceptados.</p>
+<p><img alt="Mapa funcional del enlace BPSK con C5 · Ruido, X · Ensayar resaltado para el paso 18." src="../figures/enlace-mapa-paso-18.png" />
+<strong>Figura 18.</strong> El foco del paso 18 corresponde a C5 · Ruido, X · Ensayar.</p>
+<ul>
+<li><strong>Fila TX:</strong> T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.</li>
+<li><strong>Fila canal:</strong> Solo C5 añade ruido. Los demás desajustes permanecen en cero.</li>
+<li><strong>Fila RX:</strong> R2 utiliza selección nominal fija. R5 detecta el paquete y R6 lo comprueba. Costas todavía no interviene.</li>
+<li><strong>Fila de entorno y observación:</strong> X incorpora los contadores. O permite relacionar dispersión y resultado de los envíos.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-18.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Muestras limpias + ruido → muestras RX → DET → RX → OK.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se cambia ruido_amplitud y se declara la semilla del ensayo.</li>
+<li><strong>Qué permanece fijo:</strong> Se conserva el corpus y se mantienen los demás desajustes en cero.</li>
+<li><strong>Qué se observa:</strong> Las muestras se dispersan. El resumen permite distinguir ausencia de detección y rechazo del paquete.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> TX cuenta envíos; DET cuenta detecciones; RX cuenta paquetes completos; OK cuenta textos aceptados. La amplitud del generador no es una SNR.</p>
+<p><strong>Error que debe evitarse:</strong> El CRC no elimina ruido. Un lote pequeño tampoco establece una tasa de error estadística para cualquier mensaje.</p>
+<p><a href="../#18-anadir-ruido-gaussiano-y-contar-resultados">Montaje y procedimiento del paso 18</a>.</p>
+<h2 id="paso-19">Paso 19 — Introducir fase y observar Costas</h2>
+<p><strong>Pregunta guía:</strong> ¿Alinear los grupos garantiza interpretar sus bits?</p>
+<p>Una fase constante rota la señal. El Costas Loop, lazo de recuperación de portadora, busca alinear los símbolos BPSK con el eje real.</p>
+<p><img alt="Mapa funcional del enlace BPSK con C1 · Fase, R3 · Costas resaltado para el paso 19." src="../figures/enlace-mapa-paso-19.png" />
+<strong>Figura 19.</strong> El foco del paso 19 corresponde a C1 · Fase, R3 · Costas.</p>
+<ul>
+<li><strong>Fila TX:</strong> T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.</li>
+<li><strong>Fila canal:</strong> C1 aplica una fase constante; los demás desajustes permanecen en cero.</li>
+<li><strong>Fila RX:</strong> R3 recupera portadora después de la selección fija. La segunda hipótesis de polaridad todavía no interviene.</li>
+<li><strong>Fila de entorno y observación:</strong> O compara las constelaciones antes y después de Costas.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-19.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Símbolos rotados → Costas de orden 2 → símbolos alineados, con posible inversión.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se aplica fase constante y se compara el receptor con Costas y sin Costas.</li>
+<li><strong>Qué permanece fijo:</strong> No se introduce todavía desajuste de frecuencia ni deriva de reloj.</li>
+<li><strong>Qué se observa:</strong> Los grupos rotan antes del lazo. Después pueden quedar alineados, pero intercambiados.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> BPSK presenta una ambigüedad de 180°. El control de 120° conserva un fallo que el siguiente paso debe resolver.</p>
+<p><strong>Error que debe evitarse:</strong> Una alineación geométrica correcta no establece cuál grupo significa cero.</p>
+<p><a href="../#19-introducir-una-rotacion-constante-y-recuperar-fase">Montaje y procedimiento del paso 19</a>.</p>
+<h2 id="paso-20">Paso 20 — Resolver la polaridad con el protocolo</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué hipótesis convierte la alineación en bits interpretables?</p>
+<p>El receptor prueba los bits normales y sus complementos. Cada ruta busca la misma palabra de acceso y entrega el paquete al mismo comprobador.</p>
+<p><img alt="Mapa funcional del enlace BPSK con R4 · Bits, R5 · Paquete resaltado para el paso 20." src="../figures/enlace-mapa-paso-20.png" />
+<strong>Figura 20.</strong> El foco del paso 20 corresponde a R4 · Bits, R5 · Paquete.</p>
+<ul>
+<li><strong>Fila TX:</strong> T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.</li>
+<li><strong>Fila canal:</strong> C1 aplica una fase constante; los demás desajustes permanecen en cero.</li>
+<li><strong>Fila RX:</strong> R2 sigue fijo. R3 conserva Costas y R4–R5 prueban las dos polaridades.</li>
+<li><strong>Fila de entorno y observación:</strong> O permite identificar la ruta normal o invertida que entrega el paquete.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-20.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Bits decididos → hipótesis normal e invertida → acceso y CRC → texto aceptado.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se añade la segunda hipótesis de polaridad.</li>
+<li><strong>Qué permanece fijo:</strong> Se conserva Costas, la palabra de acceso, el paquete y el CRC.</li>
+<li><strong>Qué se observa:</strong> El caso de 120° puede recuperar el texto por la ruta invertida.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> El receptor utiliza estructura transmitida y CRC. No recibe la fase exacta del canal para elegir la polaridad.</p>
+<p><strong>Error que debe evitarse:</strong> Invertir los bits resuelve la ambigüedad de signo. No corrige una selección temporal errónea.</p>
+<p><a href="../#20-resolver-la-polaridad-bpsk-y-recuperar-el-caso-de-120">Montaje y procedimiento del paso 20</a>.</p>
+<h2 id="paso-21">Paso 21 — Seguir una diferencia de frecuencia</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué cambia cuando la fase gira durante el mensaje?</p>
+<p>Un frequency offset, desajuste de frecuencia, acumula fase con el tiempo. El Costas existente estima y sigue esa evolución dentro de las condiciones ensayadas.</p>
+<p>El desajuste se expresa en Hz, hertz o ciclos por segundo.</p>
+<p><img alt="Mapa funcional del enlace BPSK con C2 · Frecuencia, R3 · Costas resaltado para el paso 21." src="../figures/enlace-mapa-paso-21.png" />
+<strong>Figura 21.</strong> El foco del paso 21 corresponde a C2 · Frecuencia, R3 · Costas.</p>
+<ul>
+<li><strong>Fila TX:</strong> T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.</li>
+<li><strong>Fila canal:</strong> C2 introduce una diferencia de frecuencia. Se estudia su efecto con los demás desajustes en cero.</li>
+<li><strong>Fila RX:</strong> R2 sigue fijo. R3 conserva Costas y R4–R5 prueban las dos polaridades.</li>
+<li><strong>Fila de entorno y observación:</strong> O incluye la estimación de frecuencia expresada en Hz.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-21.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Muestras con giro progresivo → Costas → símbolos corregidos y estimación de frecuencia.</p>
+<ul>
+<li><strong>Qué cambia:</strong> El Rotator introduce un desajuste en Hz y se observa la estimación del lazo.</li>
+<li><strong>Qué permanece fijo:</strong> Se mantienen el tiempo nominal, ambas polaridades y el formato del paquete.</li>
+<li><strong>Qué se observa:</strong> Con +10 Hz, la estimación debe acercarse a +10 Hz después del arranque.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> La fase constante y la diferencia de frecuencia son magnitudes distintas. Sus unidades son grados o radianes y Hz, respectivamente.</p>
+<p><strong>Error que debe evitarse:</strong> Una fase que cambia durante el paquete no se compensa mediante una sola rotación constante. La fila −10 Hz queda para el alumno.</p>
+<p><a href="../#21-introducir-un-desajuste-de-frecuencia-y-recuperarlo-con-costas">Montaje y procedimiento del paso 21</a>.</p>
+<h2 id="paso-22">Paso 22 — Separar retardo y fase de muestreo</h2>
+<p><strong>Pregunta guía:</strong> ¿Qué ocurre si RX decide entre los instantes adecuados?</p>
+<p>Delay desplaza las muestras. Un selector fijo puede tomar muestras entre símbolos; cambiar offset_muestreo permite un control manual con retardo conocido.</p>
+<p><img alt="Mapa funcional del enlace BPSK con C3 · Retardo, R2 · Tiempo resaltado para el paso 22." src="../figures/enlace-mapa-paso-22.png" />
+<strong>Figura 22.</strong> El foco del paso 22 corresponde a C3 · Retardo, R2 · Tiempo.</p>
+<ul>
+<li><strong>Fila TX:</strong> T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.</li>
+<li><strong>Fila canal:</strong> C3 desplaza la señal; las tasas permanecen iguales.</li>
+<li><strong>Fila RX:</strong> R2 sigue fijo. R3 conserva Costas y R4–R5 prueban las dos polaridades.</li>
+<li><strong>Fila de entorno y observación:</strong> O compara constelaciones y resumen en las tres condiciones temporales.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-22.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Muestras retrasadas → selector fijo desalineado → amplitudes intermedias y posibles pérdidas.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se compara retardo cero, retardo dos con offset cero y retardo dos con offset dos.</li>
+<li><strong>Qué permanece fijo:</strong> Las tasas son iguales y los demás desajustes permanecen en cero.</li>
+<li><strong>Qué se observa:</strong> Dos muestras equivalen a medio símbolo con sps = 4. El control manual recupera Hola al cambiar la selección.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> El ensayo modela un desajuste constante del instante de llegada respecto del muestreo nominal. No incluye ecos ni deriva de reloj.</p>
+<p><strong>Error que debe evitarse:</strong> Costas puede alinear la fase sin corregir el instante de muestreo. El valor manual conocido no constituye sincronización automática.</p>
+<p><a href="../#22-introducir-un-desajuste-temporal-y-reconocer-sus-efectos">Montaje y procedimiento del paso 22</a>.</p>
+<h2 id="paso-23">Paso 23 — Adquirir el instante y seguir el reloj</h2>
+<p><strong>Pregunta guía:</strong> ¿Por qué una corrección temporal inicial puede dejar de servir?</p>
+<p>Symbol Sync con Gardner estima los instantes y ajusta el período. Una diferencia constante entre relojes produce un desplazamiento temporal que se acumula.</p>
+<p>La unidad ppm significa partes por millón. Un error de +1000 ppm corresponde a una diferencia relativa de +0.001.</p>
+<p><img alt="Mapa funcional del enlace BPSK con C4 · Reloj, R2 · Tiempo resaltado para el paso 23." src="../figures/enlace-mapa-paso-23.png" />
+<strong>Figura 23.</strong> El foco del paso 23 corresponde a C4 · Reloj, R2 · Tiempo.</p>
+<ul>
+<li><strong>Fila TX:</strong> T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.</li>
+<li><strong>Fila canal:</strong> El ensayo A varía C3. El ensayo B utiliza C4 y restablece el retardo a cero.</li>
+<li><strong>Fila RX:</strong> R2 utiliza Symbol Sync; R3 conserva Costas. Las dos polaridades alimentan detección y comprobación del paquete.</li>
+<li><strong>Fila de entorno y observación:</strong> O añade el período estimado en muestras/símbolo. X conserva los contadores.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-23.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> Muestras RX → filtro adaptado → Symbol Sync → una muestra por símbolo y período estimado.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se sustituye el selector activo y después se introduce reloj_ppm mediante un remuestreador.</li>
+<li><strong>Qué permanece fijo:</strong> El receptor conoce sps nominal, pero no recibe el retardo ni el error exacto del canal.</li>
+<li><strong>Qué se observa:</strong> El retardo inicial se adquiere con período cercano a cuatro. Con +1000 ppm, el período esperado es 4.004 muestras/símbolo.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> En el ensayo de reloj se envía el texto largo primero y Hola después. El selector fijo rechaza el largo; Symbol Sync recupera ambos.</p>
+<p><strong>Error que debe evitarse:</strong> No se sustituye esa secuencia por dos Hola. La fila −1000 ppm queda para el alumno y el ensayo aún no demuestra seguimiento de jitter.</p>
+<p><a href="../#23-recuperar-el-instante-de-simbolo-y-seguir-la-deriva-de-reloj">Montaje y procedimiento del paso 23</a>.</p>
+<h2 id="paso-24">Paso 24 — Dar tiempo de adquisición e integrar</h2>
+<p><strong>Pregunta guía:</strong> ¿Puede el primer acceso llegar antes de que los lazos se estabilicen?</p>
+<p>La combinación de desajustes reveló una pérdida inicial sin preámbulo. TX añade 32 bytes 0x55 antes del acceso para proporcionar muestras de adquisición.</p>
+<p><img alt="Mapa funcional del enlace BPSK con T3 · Trama resaltado para el paso 24." src="../figures/enlace-mapa-paso-24.png" />
+<strong>Figura 24.</strong> El foco del paso 24 corresponde a T3 · Trama.</p>
+<ul>
+<li><strong>Fila TX:</strong> T3 incorpora el preámbulo. La trama de Hola contiene 54 bytes antes del mapeo.</li>
+<li><strong>Fila canal:</strong> C1–C4 actúan juntos. La tercera condición añade también ruido en C5.</li>
+<li><strong>Fila RX:</strong> R2 utiliza Symbol Sync; R3 conserva Costas. Las dos polaridades alimentan detección y comprobación del paquete.</li>
+<li><strong>Fila de entorno y observación:</strong> O y X reúnen constelaciones, frecuencia, período y resumen. Sus capturas manuales quedan pendientes.</li>
+</ul>
+<p><a href="../figures/enlace-mapa-paso-24.png">Ampliar el mapa</a>.</p>
+<p><strong>Entrada y salida del ensayo:</strong> 32 bytes de preámbulo + 22 de trama anterior → 54 bytes → adquisición → acceso → paquete protegido.</p>
+<ul>
+<li><strong>Qué cambia:</strong> Se combinan fase, frecuencia, retardo y reloj; una ejecución adicional añade ruido de amplitud 0.1.</li>
+<li><strong>Qué permanece fijo:</strong> Se mantienen los parámetros de los lazos, el acceso exacto, las longitudes útiles y el CRC.</li>
+<li><strong>Qué se observa:</strong> La referencia automática recupera el primer texto antes del siguiente envío en los escenarios declarados.</li>
+</ul>
+<p><strong>Comprobación e interpretación:</strong> El preámbulo añade 256 símbolos, equivalentes a 256 ms con 1000 símbolos/s. No cambia el paquete protegido de diez bytes.</p>
+<p><strong>Error que debe evitarse:</strong> Los lazos no corrigen retroactivamente un acceso ya perdido. Las capturas manuales del paso 24 quedan pendientes; QPSK requiere otra validación.</p>
+<p><a href="../#24-cerrar-la-etapa-bpsk-con-el-enlace-integrado">Montaje y procedimiento del paso 24</a>.</p>
+<h2 id="sintesis-que-funcion-trata-cada-dificultad">Síntesis: qué función trata cada dificultad</h2>
+<table>
+<thead>
+<tr>
+<th>Dificultad</th>
+<th>Dónde se introduce</th>
+<th>Función receptora relacionada</th>
+<th>Qué queda por comprobar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Representación incorrecta del texto</td>
+<td>T1 y R6.</td>
+<td>Codificación y decodificación UTF-8.</td>
+<td>Igualdad de bytes y conservación de espacios.</td>
+</tr>
+<tr>
+<td>Paquete alterado</td>
+<td>Auxiliar X o errores de recepción.</td>
+<td>Comprobación de longitud y CRC en R6.</td>
+<td>Rechazo sin presentar el CRC como corrector.</td>
+</tr>
+<tr>
+<td>Comienzo desconocido</td>
+<td>Trama T3 y stream recibido.</td>
+<td>Acceso y cabecera en R5.</td>
+<td>Recepción de mensajes consecutivos y del último envío.</td>
+</tr>
+<tr>
+<td>Ruido</td>
+<td>C5.</td>
+<td>Filtro RRC y decisión; CRC comprueba el paquete resultante.</td>
+<td>Contadores para una amplitud, una semilla y un corpus declarados.</td>
+</tr>
+<tr>
+<td>Fase de portadora</td>
+<td>C1.</td>
+<td>Costas en R3 y polaridad en R4–R5.</td>
+<td>Texto correcto además de alineación geométrica.</td>
+</tr>
+<tr>
+<td>Diferencia de frecuencia</td>
+<td>C2.</td>
+<td>Seguimiento de portadora en R3.</td>
+<td>Estimación en Hz y recuperación dentro de las condiciones ensayadas.</td>
+</tr>
+<tr>
+<td>Instante inicial desconocido</td>
+<td>C3.</td>
+<td>Adquisición temporal en R2.</td>
+<td>Recepción del primer mensaje sin indicar su retardo al receptor.</td>
+</tr>
+<tr>
+<td>Diferencia entre relojes</td>
+<td>C4.</td>
+<td>Seguimiento temporal en R2.</td>
+<td>Texto largo y período estimado coherente.</td>
+</tr>
+<tr>
+<td>Arranque antes del acceso</td>
+<td>Trama T3.</td>
+<td>Preámbulo para adquisición de R2 y R3.</td>
+<td>Primer paquete recibido antes del siguiente envío.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cuatro-funciones-que-deben-nombrarse-por-separado">Cuatro funciones que deben nombrarse por separado</h3>
+<ul>
+<li><strong>Adquisición:</strong> los lazos ajustan sus estimaciones iniciales a partir de las muestras observadas.</li>
+<li><strong>Seguimiento:</strong> los lazos continúan ajustando portadora o instantes de símbolo mientras avanza la señal.</li>
+<li><strong>Detección del paquete:</strong> el detector encuentra el acceso y lee su longitud externa.</li>
+<li><strong>Validación:</strong> el comprobador decide si el paquete reconstruido cumple el formato y el CRC antes de entregar el texto.</li>
+</ul>
+<p>El preámbulo proporciona muestras antes del acceso. La palabra de acceso permite localizar el paquete.
+El CRC comprueba su contenido reconstruido. Esas funciones no se sustituyen entre sí.</p>
+<p>Una pérdida inicial con desajustes combinados no demuestra incapacidad general de los sincronizadores.
+En el control sin preámbulo, los lazos podían estabilizarse después de que hubiera pasado el primer acceso.
+Ese paquete no se recuperaba retroactivamente. El paso 24 modifica el comienzo de la trama y vuelve a comprobar el primer envío.</p>
+<p>La referencia integrada contempla condiciones discretas y semillas declaradas.
+No demuestra recepción con cualquier ruido, desajuste, canal variable o dispersión multipath, propagación por varios caminos.</p>
+<h2 id="ejercicios-de-integracion">Ejercicios de integración</h2>
+<h3 id="ejercicio-a-seguir-las-longitudes-de-hola">Ejercicio A — Seguir las longitudes de Hola</h3>
+<p>El mensaje contiene cuatro bytes UTF-8.
+¿Cuántos bytes tienen el paquete protegido, la trama del paso 16 y la trama del paso 24?
+¿Qué indican las longitudes interna y externa?</p>
+<details class="example">
+<summary>Solución explicada</summary>
+<ul>
+<li><strong>Datos:</strong> texto de cuatro bytes; longitud interna de dos; CRC de cuatro; acceso de ocho; cabecera externa de cuatro; preámbulo de 32.</li>
+<li><strong>Fórmulas:</strong> <span class="arithmatex">\(N_p=2+N_t+4\)</span>; <span class="arithmatex">\(N_{16}=8+4+N_p\)</span>; <span class="arithmatex">\(N_{24}=32+N_{16}\)</span>.</li>
+<li><strong>Sustitución:</strong> <span class="arithmatex">\(N_p=2+4+4\)</span>; <span class="arithmatex">\(N_{16}=8+4+10\)</span>; <span class="arithmatex">\(N_{24}=32+22\)</span>.</li>
+<li><strong>Resultado:</strong> paquete de 10 bytes; tramas de 22 y 54 bytes.</li>
+<li><strong>Interpretación:</strong> la longitud interna indica cuatro bytes de texto. Cada copia externa indica diez bytes de paquete protegido.</li>
+<li>El preámbulo, el acceso y los ceros de cierre no aumentan esas longitudes.</li>
+</ul>
+</details>
+<h3 id="ejercicio-b-separar-simbolos-muestras-y-tiempo">Ejercicio B — Separar símbolos, muestras y tiempo</h3>
+<p>Se utilizan 80 símbolos BPSK, <span class="arithmatex">\(R_s=1000\)</span> símbolos/s y <span class="arithmatex">\(L=4\)</span>.
+¿Cuántas muestras produce el pulso rectangular? ¿Cuánto duran?
+¿Cuánto tiempo representan dos muestras de retardo?</p>
+<details class="example">
+<summary>Solución explicada</summary>
+<ul>
+<li><strong>Datos:</strong> <span class="arithmatex">\(N_s=80\)</span>, <span class="arithmatex">\(R_s=1000\)</span> símbolos/s, <span class="arithmatex">\(L=4\)</span> y retardo de dos muestras.</li>
+<li><strong>Fórmulas:</strong> <span class="arithmatex">\(N_m=L N_s\)</span>; <span class="arithmatex">\(f_s=L R_s\)</span>; <span class="arithmatex">\(t=N_m/f_s\)</span>; <span class="arithmatex">\(\tau=2/f_s\)</span>.</li>
+<li><strong>Sustitución:</strong> <span class="arithmatex">\(N_m=4(80)\)</span>; <span class="arithmatex">\(f_s=4(1000)\)</span>; <span class="arithmatex">\(t=320/4000\)</span>; <span class="arithmatex">\(\tau=2/4000\)</span>.</li>
+<li><strong>Resultado:</strong> 320 muestras; 4000 muestras/s; 80 ms de señal; 0.5 ms de retardo.</li>
+<li><strong>Interpretación:</strong> dos muestras equivalen a medio símbolo. Las cuatro muestras por símbolo no añaden bits.</li>
+<li>El cálculo de duración corresponde al pulso rectangular, sin añadir cierres RRC.</li>
+</ul>
+</details>
+<h3 id="ejercicio-c-encontrar-los-instantes-del-receptor-ideal">Ejercicio C — Encontrar los instantes del receptor ideal</h3>
+<p>Cada filtro RRC simétrico tiene 33 coeficientes. La tasa de muestreo es 4000 muestras/s y <span class="arithmatex">\(L=4\)</span>.
+¿Cuál es el retardo conjunto y cuáles son los tres primeros índices de selección?</p>
+<details class="example">
+<summary>Solución explicada</summary>
+<ul>
+<li><strong>Datos:</strong> dos filtros con <span class="arithmatex">\(N_h=33\)</span>, <span class="arithmatex">\(f_s=4000\)</span> muestras/s y <span class="arithmatex">\(L=4\)</span>.</li>
+<li><strong>Fórmulas:</strong> <span class="arithmatex">\(D=2(N_h-1)/2\)</span>; <span class="arithmatex">\(\tau=D/f_s\)</span>; <span class="arithmatex">\(n_k=D+kL\)</span>.</li>
+<li><strong>Sustitución:</strong> <span class="arithmatex">\(D=2(33-1)/2=32\)</span>; <span class="arithmatex">\(\tau=32/4000\)</span>; <span class="arithmatex">\(n_k=32+4k\)</span>.</li>
+<li><strong>Resultado:</strong> 32 muestras, equivalentes a 8 ms. Los primeros índices son 32, 36 y 40.</li>
+<li><strong>Interpretación:</strong> el receptor ideal utiliza ese retardo conocido. Symbol Sync tendrá que estimar los instantes cuando deje de conocerse la alineación.</li>
+</ul>
+</details>
+<h3 id="ejercicio-d-localizar-un-fallo-con-contadores">Ejercicio D — Localizar un fallo con contadores</h3>
+<p>Un ensayo produce <code>TX=2 DET=2 RX=2 OK=1</code>.
+Otro produce <code>TX=2 DET=0 RX=0 OK=0</code>.
+¿Qué información ofrece cada resumen? ¿Permite atribuir ambos fallos al CRC?</p>
+<details class="example">
+<summary>Solución explicada</summary>
+<ul>
+<li><strong>Datos:</strong> el primer ensayo detecta dos comienzos y entrega dos paquetes completos al comprobador. Solo uno produce texto aceptado.</li>
+<li><strong>Relaciones:</strong> <span class="arithmatex">\(\mathrm{RECH}=\mathrm{RX}-\mathrm{OK}\)</span>; <span class="arithmatex">\(\mathrm{SIN\_PDU}=\mathrm{TX}-\mathrm{RX}\)</span>.</li>
+<li><strong>Sustitución:</strong> primer ensayo: <span class="arithmatex">\(2-1=1\)</span> rechazo y <span class="arithmatex">\(2-2=0\)</span> ausencias. Segundo: cero paquetes completos y dos ausencias.</li>
+<li><strong>Resultado:</strong> el primer ensayo presenta un rechazo. El segundo no llega a entregar un paquete para validarlo.</li>
+<li><strong>Interpretación:</strong> la consola debe precisar el motivo del rechazo del primer ensayo.</li>
+<li>El segundo exige revisar sincronización, polaridad, acceso y cabecera. El resumen no demuestra un rechazo por CRC.</li>
+</ul>
+</details>
+<h3 id="ejercicio-e-relacionar-reloj-y-desplazamiento-acumulado">Ejercicio E — Relacionar reloj y desplazamiento acumulado</h3>
+<p>La trama larga del paso 23 contiene 6536 símbolos.
+Se aplican +1000 ppm y <span class="arithmatex">\(L=4\)</span>. ¿Cuál es el período esperado y cuánto desplazamiento se acumula durante la trama?</p>
+<details class="example">
+<summary>Solución explicada</summary>
+<ul>
+<li><strong>Datos:</strong> <span class="arithmatex">\(N_s=6536\)</span>, <span class="arithmatex">\(L=4\)</span> y diferencia relativa <span class="arithmatex">\(\epsilon=1000\times10^{-6}=0.001\)</span>.</li>
+<li><strong>Fórmulas:</strong> <span class="arithmatex">\(T_{\mathrm{RX}}=L(1+\epsilon)\)</span>; <span class="arithmatex">\(\Delta n=N_s L\epsilon\)</span>.</li>
+<li><strong>Sustitución:</strong> <span class="arithmatex">\(T_{\mathrm{RX}}=4(1.001)\)</span>; <span class="arithmatex">\(\Delta n=6536(4)(0.001)\)</span>.</li>
+<li><strong>Resultado:</strong> período de 4.004 muestras/símbolo y desplazamiento aproximado de 26.144 muestras.</li>
+<li><strong>Interpretación:</strong> el selector fijo no mantiene la alineación a lo largo del paquete.</li>
+<li>Una diferencia de reloj constante produce un desajuste temporal acumulado; no equivale a repetir el mismo retardo constante.</li>
+</ul>
+</details>
+<h3 id="ejercicio-f-explicar-el-preambulo-sin-confundirlo-con-el-acceso">Ejercicio F — Explicar el preámbulo sin confundirlo con el acceso</h3>
+<p>El transmisor añade 32 bytes <code>0x55</code> antes del acceso.
+¿Cuántos símbolos BPSK añade? ¿Cuánto tiempo representan a 1000 símbolos/s?
+¿Por qué el receptor conserva el mismo CRC?</p>
+<details class="example">
+<summary>Solución explicada</summary>
+<ul>
+<li><strong>Datos:</strong> 32 bytes, ocho bits por byte y un bit por símbolo BPSK.</li>
+<li><strong>Fórmulas:</strong> <span class="arithmatex">\(N_s=32(8)\)</span>; <span class="arithmatex">\(t=N_s/R_s\)</span>.</li>
+<li><strong>Sustitución:</strong> <span class="arithmatex">\(N_s=256\)</span>; <span class="arithmatex">\(t=256/1000\)</span>.</li>
+<li><strong>Resultado:</strong> 256 símbolos, equivalentes a 0.256 s o 256 ms de señal.</li>
+<li><strong>Interpretación:</strong> los lazos disponen de muestras anteriores al acceso. Ese tiempo de señal no impone una espera real equivalente al programa.</li>
+<li>El CRC permanece calculado sobre longitud interna y texto. El preámbulo se añade fuera del paquete protegido.</li>
+</ul>
+</details>
+<h2 id="laboratorio-de-lectura-y-explicacion">Laboratorio de lectura y explicación</h2>
+<p>Este recorrido se utiliza junto con la guía de construcción.</p>
+<ol>
+<li>El estudiante selecciona un paso y localiza sus bloques resaltados.</li>
+<li>Describe la representación de entrada y la de salida antes de ejecutar.</li>
+<li>Predice qué cambiará y elige el observador que permitirá comprobarlo.</li>
+<li>Ejecuta el experimento de la guía y registra también los fallos.</li>
+<li>Compara el resultado con la predicción y explica qué función lo produce.</li>
+<li>Propone una comprobación adicional que mantenga las demás variables fijas.</li>
+</ol>
+<p>Para los pasos 18–24, la explicación incluye condiciones del canal, secuencia de mensajes y contadores.
+La constelación por sí sola no sustituye esos datos.</p>
+<p>La fila de −10 Hz y la de −1000 ppm permanecen como actividades del alumno.
+Las capturas manuales del paso 24 se incorporarán después.
+La integración BPSK no certifica todavía QPSK, hardware ni canales con variaciones arbitrarias.</p>
+<h2 id="lecturas-y-fuentes">Lecturas y fuentes</h2>
+<ul>
+<li><a href="../#referencias">Guía de construcción y referencias del laboratorio</a>: formatos, parámetros y evidencias que sustentan este mapa.</li>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/costas_loop_cc.h">Costas Loop en GNU Radio 3.10.12.0</a>: recuperación de portadora y configuración para BPSK.</li>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/symbol_sync_cc.h">Symbol Sync en GNU Radio 3.10.12.0</a>: sincronización temporal y parámetros nominales.</li>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/correlate_access_code_bb_ts.h">Correlate Access Code - Tag Stream en GNU Radio 3.10.12.0</a>: búsqueda del acceso y cabecera de longitud duplicada.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer-model.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

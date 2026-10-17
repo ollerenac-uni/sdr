@@ -1,0 +1,1918 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Comprobación de la convolución y comparación de dos filtros FIR con tonos I/Q conocidos.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/03-sistemas-filtros-digitales/laboratorio-filtrado/">
+      
+      
+        <link rel="prev" href="../../../setup/rtl-sdr/">
+      
+      
+        <link rel="next" href="../../../exams/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Práctica complementaria — Filtros FIR en Python y GNU Radio - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/sdr-mixer.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#practica-complementaria-filtros-fir-en-python-y-gnu-radio" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Práctica complementaria — Filtros FIR en Python y GNU Radio
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../syllabus/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Syllabus
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../syllabus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Syllabus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01-introduccion-sdr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 — Introducción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-introduccion-sdr/laboratorio-muestreo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #1: muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../02-tiempo-frecuencia-iq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 — Señales y espectro en SDR
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    02 — Señales y espectro en SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/mezcla-interactiva/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demostración: mezcla compleja
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/laboratorio-receptor-fm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #2: demodulador FM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 — Laboratorio de enlace digital
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03 — Laboratorio de enlace digital
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clase-enlace-digital/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapa visual de los 24 pasos
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Práctica complementaria: filtros FIR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Práctica complementaria: filtros FIR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preparacion-y-materiales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preparación y materiales
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-a-una-convolucion-que-se-puede-comprobar-a-mano" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A — Una convolución que se puede comprobar a mano
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte A — Una convolución que se puede comprobar a mano">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comprobacion-de-la-parte-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comprobación de la parte A
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-b-predecir-antes-de-observar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B — Predecir antes de observar
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte B — Predecir antes de observar">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comprobacion-de-la-parte-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comprobación de la parte B
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-c-los-mismos-filtros-en-gnu-radio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C — Los mismos filtros en GNU Radio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte C — Los mismos filtros en GNU Radio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c1-reconocer-el-flowgraph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.1. Reconocer el flowgraph
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c2-parametros-que-se-conservan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.2. Parámetros que se conservan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c3-experimento-1-moving-average" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.3. Experimento 1 — Moving average
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-experimento-2-low-pass-preparado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.4. Experimento 2 — Low-pass preparado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c5-como-leer-los-niveles-del-visor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.5. Cómo leer los niveles del visor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comprobacion-de-la-parte-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comprobación de la parte C
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entrega" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entrega
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias-de-implementacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Referencias de implementación
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#preparacion-y-materiales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preparación y materiales
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-a-una-convolucion-que-se-puede-comprobar-a-mano" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A — Una convolución que se puede comprobar a mano
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte A — Una convolución que se puede comprobar a mano">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comprobacion-de-la-parte-a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comprobación de la parte A
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-b-predecir-antes-de-observar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B — Predecir antes de observar
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte B — Predecir antes de observar">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comprobacion-de-la-parte-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comprobación de la parte B
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-c-los-mismos-filtros-en-gnu-radio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C — Los mismos filtros en GNU Radio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte C — Los mismos filtros en GNU Radio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c1-reconocer-el-flowgraph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.1. Reconocer el flowgraph
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c2-parametros-que-se-conservan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.2. Parámetros que se conservan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c3-experimento-1-moving-average" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.3. Experimento 1 — Moving average
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-experimento-2-low-pass-preparado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.4. Experimento 2 — Low-pass preparado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c5-como-leer-los-niveles-del-visor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C.5. Cómo leer los niveles del visor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comprobacion-de-la-parte-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comprobación de la parte C
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entrega" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entrega
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias-de-implementacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Referencias de implementación
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="practica-complementaria-filtros-fir-en-python-y-gnu-radio">Práctica complementaria — Filtros FIR en Python y GNU Radio</h1>
+<ul>
+<li>Esta práctica opcional reúne experimentos de filtrado con sus propias celdas de Python.</li>
+<li>La construcción gradual del <a href="../">Laboratorio #3 — Enlace digital de mensajes</a> tiene su propia guía.</li>
+</ul>
+<h2 id="objetivos">Objetivos</h2>
+<ul>
+<li>Comprobar una convolución FIR con cálculos y código.</li>
+<li>Relacionar los taps con la respuesta al impulso y la respuesta en frecuencia.</li>
+<li>Comparar un moving average y un low-pass preparado, manteniendo fijo el sampling rate.</li>
+<li>Identificar la entrada y la salida complejas de un FIR en GNU Radio.</li>
+</ul>
+<h2 id="preparacion-y-materiales">Preparación y materiales</h2>
+<ul>
+<li>Las dos celdas de esta práctica se ejecutan en orden en un notebook de Google Colab.</li>
+<li>GNU Radio Companion instalado según la <a href="../../../setup/instalacion/">guía del curso</a>. El flowgraph se verifica con GNU Radio 3.10.12.</li>
+<li><a href="../filtros_sesion03.grc">Descargar el flowgraph <code>filtros_sesion03.grc</code></a>. El archivo también se encuentra localmente en <code>docs/sessions/03-sistemas-filtros-digitales/</code>.</li>
+<li>No se necesita RTL-SDR, USRP, archivo <code>.cu8</code> ni conexión con un transmisor. Los tonos se generan en software.</li>
+<li>En Colab se utiliza Python para analizar bloques finitos. GNU Radio Companion se ejecuta en la computadora del estudiante, no dentro de Colab.</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">Distribución sugerida de las 2 h</p>
+<ul>
+<li>Parte A: 25 min.</li>
+<li>Parte B: 30 min.</li>
+<li>Parte C: 45 min.</li>
+<li>Entrega y discusión: 20 min.</li>
+</ul>
+</div>
+<h2 id="parte-a-una-convolucion-que-se-puede-comprobar-a-mano">Parte A — Una convolución que se puede comprobar a mano</h2>
+<ul>
+<li>Se utilizan <span class="arithmatex">\(x=[3,6,3]\)</span> y <span class="arithmatex">\(h=[1/3,1/3,1/3]\)</span>, con entrada nula antes y después del bloque.</li>
+<li>Primero se calcula cada muestra de salida mediante <span class="arithmatex">\(y[n]=\sum h[k]x[n-k]\)</span>.</li>
+<li>Después se compara la salida completa de <code>np.convolve</code> con la salida de <code>lfilter</code> para una entrada de tres muestras y para una entrada prolongada con ceros.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">y_completa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"full"</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">y_stream</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">x</span><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">y_con_cola</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]))</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"Convolución completa:"</span><span class="p">,</span> <span class="n">y_completa</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"Solo tres entradas a lfilter:"</span><span class="p">,</span> <span class="n">y_stream</span><span class="p">)</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nb">print</span><span class="p">(</span><span class="s2">"Entrada prolongada con dos ceros:"</span><span class="p">,</span> <span class="n">y_con_cola</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="comprobacion-de-la-parte-a">Comprobación de la parte A</h3>
+<ul>
+<li>¿Por qué una función devuelve cinco valores y la otra solo tres?</li>
+<li>¿Qué muestras anteriores aportan a <span class="arithmatex">\(y[3]\)</span> y <span class="arithmatex">\(y[4]\)</span>?</li>
+<li>¿Se adquirió una muestra nueva al añadir los ceros para observar la cola?</li>
+</ul>
+<details class="example">
+<summary>Resultados y explicación</summary>
+<ul>
+<li>La convolución completa devuelve <span class="arithmatex">\([1,3,4,3,1]\)</span>, porque su longitud es <span class="arithmatex">\(N+L-1=5\)</span>.</li>
+<li><code>lfilter</code> devuelve <span class="arithmatex">\([1,3,4]\)</span> cuando solo recibe tres muestras: entrega una salida por cada entrada proporcionada, sin añadir automáticamente una cola.</li>
+<li>Con dos ceros adicionales, también se obtienen las últimas salidas: <span class="arithmatex">\(y[3]=(0+3+6)/3=3\)</span> y <span class="arithmatex">\(y[4]=(0+0+3)/3=1\)</span>.</li>
+<li>Los ceros prolongan la entrada de este experimento finito y permiten vaciar la memoria. No son muestras medidas por un ADC.</li>
+<li>No se ha cambiado la separación temporal de las muestras; esta diferencia de longitud no es una decimación ni una modificación del sampling rate.</li>
+</ul>
+</details>
+<h2 id="parte-b-predecir-antes-de-observar">Parte B — Predecir antes de observar</h2>
+<ul>
+<li>Se comparan tonos complejos de 1 y 9 kHz, amplitudes 1 y 0.6, y <span class="arithmatex">\(f_s=24000\)</span> S/s.</li>
+<li>Se conservan el mismo bloque estable de 4800 muestras y el mismo descarte inicial para ambos filtros. Se comparan únicamente los taps.</li>
+<li>Antes de mirar los espectros, se calculan las amplitudes esperadas con <span class="arithmatex">\(A_{\mathrm{salida}}=A_{\mathrm{entrada}}|H(f)|\)</span>.</li>
+<li>Para obtener la tabla, se ejecuta la celda siguiente después de la parte A. Utiliza sus imports, pero define sus propias variables.</li>
+<li>La parte C permite comparar las entradas y salidas mediante los visores del flowgraph.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">fs</span> <span class="o">=</span> <span class="mi">24000</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">N</span> <span class="o">=</span> <span class="mi">4800</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">descarte</span> <span class="o">=</span> <span class="mi">256</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="n">descarte</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">n</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">9000</span> <span class="o">*</span> <span class="n">n</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">frecuencias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">9000</span><span class="p">])</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">f_fft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">))</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f_fft</span> <span class="o">-</span> <span class="n">f0</span><span class="p">))</span> <span class="k">for</span> <span class="n">f0</span> <span class="ow">in</span> <span class="n">frecuencias</span><span class="p">]</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">"Moving average"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Low-pass"</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">firwin</span><span class="p">(</span><span class="mi">65</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">))]:</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">_</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">freqz</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">worN</span><span class="o">=</span><span class="n">frecuencias</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">)</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">prediccion</span> <span class="o">=</span> <span class="n">amplitudes</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lfilter</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">x</span><span class="p">)[</span><span class="n">descarte</span><span class="p">:]</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">/</span> <span class="n">N</span><span class="p">)</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">nombre</span><span class="p">)</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="k">for</span> <span class="n">f0</span><span class="p">,</span> <span class="n">prevista</span><span class="p">,</span> <span class="n">medida</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">frecuencias</span><span class="p">,</span> <span class="n">prediccion</span><span class="p">,</span> <span class="n">Y</span><span class="p">[</span><span class="n">indices</span><span class="p">]):</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">f0</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2"> Hz: prevista=</span><span class="si">{</span><span class="n">prevista</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">, medida=</span><span class="si">{</span><span class="n">medida</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="comprobacion-de-la-parte-b">Comprobación de la parte B</h3>
+<ul>
+<li>¿Coinciden las amplitudes previstas y medidas, dentro del redondeo?</li>
+<li>¿Qué filtro atenúa más el tono de 9 kHz? ¿Lo lleva a otra frecuencia?</li>
+<li>¿Por qué el low-pass puede producir una amplitud ligeramente mayor que 1 a 1 kHz?</li>
+</ul>
+<details class="example">
+<summary>Resultados y explicación</summary>
+<ul>
+<li>Con el moving average, se esperan aproximadamente 0.97728388 a 1 kHz y 0.08284271 a 9 kHz.</li>
+<li>Con el low-pass preparado, se esperan aproximadamente 1.00266084 y 0.00023229, respectivamente.</li>
+<li>Las medidas coinciden porque se analiza el régimen estable y ambos tonos coinciden con bins de la FFT; la normalización por <span class="arithmatex">\(N\)</span> recupera sus amplitudes complejas.</li>
+<li>El low-pass atenúa mucho más el segundo tono. El filtrado conserva la frecuencia del factor temporal <span class="arithmatex">\(e^{j2\pi fn/f_s}\)</span>.</li>
+<li>La normalización de <code>firwin</code> fija la ganancia en DC, no exactamente en todas las frecuencias de su banda. En este ejemplo, <span class="arithmatex">\(|H(1\text{ kHz})|\approx1.00266\)</span>.</li>
+<li>Una amplitud tan pequeña a 9 kHz puede no distinguirse en una gráfica lineal; la tabla evita interpretar esa limitación visual como un cero exacto.</li>
+</ul>
+</details>
+<h2 id="parte-c-los-mismos-filtros-en-gnu-radio">Parte C — Los mismos filtros en GNU Radio</h2>
+<h3 id="c1-reconocer-el-flowgraph">C.1. Reconocer el flowgraph</h3>
+<ul>
+<li><strong>Qué debe seguirse:</strong> el punto donde el mismo stream se divide para comparar entrada y salida. Todas las conexiones llevan muestras complejas a 24 kS/s.</li>
+</ul>
+<p><pre class="mermaid"><code>flowchart LR
+    A["Tono complejo: 1 kHz"] --&gt; C[Add]
+    B["Tono complejo: 9 kHz"] --&gt; C
+    C --&gt; D[Throttle]
+    D --&gt;|Entrada| F["Frequency Sink: dos curvas"]
+    D --&gt; E["FIR: Decimation = 1"]
+    E --&gt;|Salida| F</code></pre>
+<strong>Figura 1.</strong> El mismo stream se observa antes y después del FIR, conservando el sampling rate.</p>
+<ul>
+<li><strong>Izquierda — Generación:</strong> dos fuentes producen los tonos conocidos y Add los suma. No interviene una antena ni un archivo.</li>
+<li><strong>Centro — Bifurcación:</strong> después de Throttle, una rama llega directamente al visor y otra atraviesa el FIR. La rama directa es la referencia para evaluar el cambio.</li>
+<li><strong>Derecha — Comparación:</strong> el visor recibe dos streams distintos: entrada y salida del filtro. Ambos tienen el mismo sampling rate y las mismas frecuencias de tono.</li>
+<li>
+<p><strong>Qué cambia al elegir otro filtro:</strong> solo los taps de la caja FIR. No se modifican las fuentes, el ritmo ni el eje del visor.</p>
+</li>
+<li>
+<p>Se abre el archivo descargado en GNU Radio Companion. No se modifica el flowgraph intencionalmente defectuoso <code>test.grc</code> de otro laboratorio.</p>
+</li>
+<li>Los dos bloques <strong>Signal Source</strong> entregan muestras complejas, uno a 1 kHz y otro a 9 kHz. La selección <code>Cosine</code> con salida <code>Complex</code> genera el tono complejo, no solo un coseno real.</li>
+<li><strong>Add</strong> suma las dos entradas complejas, ambas con el mismo sampling rate.</li>
+<li><strong>Throttle</strong> limita la velocidad de ejecución del stream generado en software. No es un filtro ni cambia los valores; evita que el flowgraph intente ejecutarse a toda la velocidad del procesador.</li>
+<li>La salida de Throttle se bifurca: una rama permite observar la entrada y la otra pasa por el FIR.</li>
+<li><strong>Decimating FIR Filter</strong> se utiliza con <code>Decimation = 1</code>. Aunque el nombre del bloque incluya “Decimating”, en esta configuración <strong>no reduce la tasa</strong>.</li>
+<li>El tipo del FIR es <code>Complex → Complex (Real Taps)</code>, correspondiente a <code>ccf</code>: entrada compleja, salida compleja y coeficientes reales.</li>
+<li><strong>QT GUI Frequency Sink</strong> recibe ambas ramas: <code>Entrada</code> en azul y <code>Salida</code> en rojo. El eje está centrado en 0 Hz y tiene <code>Bandwidth = samp_rate</code>.</li>
+</ul>
+<h3 id="c2-parametros-que-se-conservan">C.2. Parámetros que se conservan</h3>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Valor</th>
+<th>Interpretación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>samp_rate</code></td>
+<td><code>24000</code></td>
+<td>24 000 muestras complejas por segundo.</td>
+</tr>
+<tr>
+<td>Tono útil</td>
+<td>1000 Hz, amplitud 1</td>
+<td>Componente que se desea conservar.</td>
+</tr>
+<tr>
+<td>Tono no deseado</td>
+<td>9000 Hz, amplitud 0.6</td>
+<td>Componente que se desea atenuar.</td>
+</tr>
+<tr>
+<td>FIR <code>Decimation</code></td>
+<td><code>1</code></td>
+<td>Una salida por muestra de entrada.</td>
+</tr>
+<tr>
+<td>Visor <code>Center Frequency</code></td>
+<td><code>0</code></td>
+<td>Se muestran frecuencias baseband, no RF.</td>
+</tr>
+<tr>
+<td>Visor <code>Bandwidth</code></td>
+<td><code>samp_rate</code></td>
+<td>Eje de aproximadamente −12 a +12 kHz.</td>
+</tr>
+<tr>
+<td>Visor <code>FFT Size</code></td>
+<td><code>2048</code></td>
+<td>Separación entre bins: <span class="arithmatex">\(24000/2048=11.71875\)</span> Hz.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Solo se cambiará la variable <code>modo_filtro</code>: <code>0</code> selecciona el moving average; <code>1</code> selecciona el low-pass preparado.</li>
+<li>La variable <code>taps</code> contiene la misma elección de coeficientes utilizada en Python. No es necesario copiar 65 números a mano.</li>
+<li>No se modifica <code>samp_rate</code>, la frecuencia de los tonos ni la decimación durante esta comparación.</li>
+</ul>
+<h3 id="c3-experimento-1-moving-average">C.3. Experimento 1 — Moving average</h3>
+<ul>
+<li>Se deja <code>modo_filtro = 0</code> y se ejecuta el flowgraph.</li>
+<li>Se identifican los dos picos de entrada, próximos a +1 y +9 kHz.</li>
+<li>Se compara la curva roja con la azul <strong>en cada frecuencia</strong>, no la altura del tono de 1 kHz con la del tono de 9 kHz.</li>
+<li><strong>Qué debe notarse:</strong> a 1 kHz las curvas casi se superponen; a 9 kHz la salida queda más abajo, pero conserva un pico.</li>
+<li>Se guarda una captura donde se distingan la leyenda y el eje horizontal.</li>
+</ul>
+<h3 id="c4-experimento-2-low-pass-preparado">C.4. Experimento 2 — Low-pass preparado</h3>
+<ul>
+<li>Se detiene la ejecución, se cambia <code>modo_filtro</code> a <code>1</code> en el bloque Variable y se vuelve a ejecutar. No hay un selector interactivo en la ventana del visor.</li>
+<li>Se mantiene la misma escala del visor para poder comparar con el experimento anterior.</li>
+<li><strong>Qué debe notarse:</strong> el tono de 1 kHz permanece casi sin cambio y el de 9 kHz queda mucho más atenuado.</li>
+<li>Se guarda una segunda captura y se contrasta la observación con la predicción de la parte B.</li>
+<li>La caída no implica que se haya reducido el sampling rate ni que el tono se haya desplazado a 0 Hz.</li>
+</ul>
+<h3 id="c5-como-leer-los-niveles-del-visor">C.5. Cómo leer los niveles del visor</h3>
+<ul>
+<li>La tabla de la parte B utiliza amplitudes lineales. El visor de GNU Radio utiliza una escala de nivel en <strong>dB</strong>; sus valores no se comparan directamente.</li>
+<li>Para una misma frecuencia y con la misma configuración del visor, la diferencia de niveles entre salida y entrada se relaciona con la ganancia de amplitud:</li>
+</ul>
+<div class="arithmatex">\[
+\Delta_{\mathrm{dB}}=20\log_{10}|H(f)|.
+\]</div>
+<ul>
+<li>Una ganancia de amplitud 1 corresponde a 0 dB de diferencia; una de 0.1 corresponde a −20 dB. El signo negativo indica una salida de menor nivel.</li>
+<li>Para el moving average, las diferencias previstas son aproximadamente −0.20 dB a 1 kHz y −17.20 dB a 9 kHz.</li>
+<li>Para el low-pass, son aproximadamente +0.023 dB a 1 kHz y −68.24 dB a 9 kHz.</li>
+<li>Estas cifras son referencias, no una exigencia de lectura exacta del cursor. La FFT del visor no coincide con la de Colab: tiene 2048 puntos, usa ventana Blackman–Harris y los tonos no coinciden exactamente con sus bins.</li>
+<li>El windowing reduce leakage, pero no convierte el visor en una medida exacta de potencia RF. Si el tono atenuado queda oculto por otros componentes o por el rango mostrado, se utiliza la comprobación numérica de la parte B.</li>
+</ul>
+<h3 id="comprobacion-de-la-parte-c">Comprobación de la parte C</h3>
+<ul>
+<li>¿Por qué el FIR se configura como complejo a complejo, aunque sus taps sean reales?</li>
+<li>¿Qué valor de <code>Decimation</code> confirma que la tasa se conserva?</li>
+<li>¿Por qué el eje no se estrecha a ±3 kHz al seleccionar el low-pass?</li>
+</ul>
+<details class="example">
+<summary>Resultados y explicación</summary>
+<ul>
+<li>La entrada representa I/Q. Con taps reales, la ecuación FIR filtra por separado I y Q y conserva <span class="arithmatex">\(I_y+jQ_y\)</span>; no produce automáticamente una salida real.</li>
+<li><code>Decimation = 1</code> indica que no se selecciona una de cada varias salidas. El sampling rate continúa siendo 24 kS/s.</li>
+<li>El eje del visor está determinado por el sampling rate indicado en <code>Bandwidth</code>, no por el cutoff del filtro.</li>
+<li>El cutoff de 3 kHz modifica la respuesta en frecuencia, pero no cambia <code>samp_rate</code>. Sigue existiendo un intervalo de representación baseband de <span class="arithmatex">\([-12,12)\)</span> kHz.</li>
+<li>A ±3 kHz la respuesta de este <code>firwin</code> tiene aproximadamente media amplitud. No es un borde donde todo se conserva hasta un lado y se anula exactamente al otro.</li>
+</ul>
+</details>
+<h2 id="entrega">Entrega</h2>
+<ul>
+<li>Cálculo detallado de las cinco muestras de la parte A y salida de la celda que lo verifica.</li>
+<li>Tabla de amplitudes previstas y medidas de la parte B.</li>
+<li>Dos capturas del visor: <code>modo_filtro = 0</code> y <code>modo_filtro = 1</code>, con leyenda y ejes visibles.</li>
+<li>Una explicación en viñetas: qué se cambió, qué se mantuvo fijo y cómo se relaciona cada resultado con <span class="arithmatex">\(A_{\mathrm{salida}}=A_{\mathrm{entrada}}|H(f)|\)</span>.</li>
+<li>Una conclusión breve que distinga <strong>filtrado, desplazamiento de frecuencia y cambio de sampling rate</strong>.</li>
+</ul>
+<h2 id="referencias-de-implementacion">Referencias de implementación</h2>
+<ul>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/grc/filter_fir_filter_xxx.block.yml">GNU Radio 3.10.12 — definición del bloque FIR</a>: tipos de entrada/salida, taps y decimación.</li>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/lib/sig_source_impl.cc">GNU Radio 3.10.12 — Signal Source</a>: generación del tono con salida compleja.</li>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-blocks/lib/throttle_impl.cc">GNU Radio 3.10.12 — Throttle</a>: control del ritmo de ejecución sin transformación de los valores.</li>
+<li><a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-qtgui/lib/freq_sink_c_impl.cc">GNU Radio 3.10.12 — Frequency Sink</a>: FFT, ventana y presentación de niveles.</li>
+<li><a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.firwin.html">SciPy — <code>firwin</code></a>, <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.freqz.html">SciPy — <code>freqz</code></a> y <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.lfilter.html">SciPy — <code>lfilter</code></a>.</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer-model.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
