@@ -30,7 +30,8 @@ Al finalizar esta sesión, el estudiante será capaz de:
     - Sección 2 y ejercicios: 40 min.
     - Sección 3 y ejercicios: 40 min.
     - Síntesis y preguntas: 15 min.
-    - El [laboratorio #3](laboratorio-filtrado.md) ocupa las 2 h de práctica. Los snippets permiten preparar o repetir las demostraciones en Google Colab; no es necesario escribirlos todos durante la clase.
+    - El [laboratorio #3](laboratorio-enlace-digital.md) inicia la construcción gradual de un enlace digital. No se espera completar el enlace en esta sesión.
+    - La [práctica de filtros](laboratorio-filtrado.md) conserva los experimentos de la clase. Los snippets permiten preparar o repetir las demostraciones en Google Colab.
 
 ## Teoría
 
@@ -431,11 +432,16 @@ plt.show()
 - **Puente hacia la sesión 4:** si después se reduce el sampling rate, también se reduce el intervalo de frecuencias representable sin aliasing. Las componentes que queden fuera del nuevo intervalo pueden plegarse sobre la señal útil; por eso deben atenuarse **antes** de la reducción, como se observó en la sesión 2.
 - **Resultado esperado:** el estudiante debe poder calcular una salida FIR y predecir qué tonos atenúa. Elegir la nueva tasa y el filtro anti-aliasing correspondiente queda para la sesión 4.
 
-## Laboratorio #3 — Filtros FIR en Python y GNU Radio
+## Laboratorio #3 — Enlace digital de mensajes
 
-- [Laboratorio #3 — Filtros FIR en Python y GNU Radio](laboratorio-filtrado.md).
-- Se comparan los mismos dos filtros y los mismos tonos de la clase. No se necesita dongle, transmisión RF ni descarga de una captura.
-- La evidencia consiste en cálculos, figuras y una explicación del resultado; no basta con presentar un flowgraph que ejecute sin errores.
+- [Laboratorio #3 — Enlace digital de mensajes](laboratorio-enlace-digital.md).
+- Se construye el archivo `end-to-end.grc` por pasos, desde texto UTF-8 hasta un enlace BPSK simulado con recepción y comprobación del paquete.
+- Cada paso incluye configuración, observación y ejercicios. El enlace incorpora filtros RRC, desajustes del canal y recuperación de portadora y temporización.
+
+### Práctica complementaria de filtros
+
+- [Filtros FIR en Python y GNU Radio](laboratorio-filtrado.md).
+- Se conservan las comparaciones de los dos filtros y los tonos de la clase, sin hardware.
 
 ## Lecturas y referencias
 

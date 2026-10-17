@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 @pytest.mark.parametrize("numero,carpeta,archivo", [
     (1, "01-introduccion-sdr", "laboratorio-muestreo.md"),
     (2, "02-tiempo-frecuencia-iq", "laboratorio-receptor-fm.md"),
-    (3, "03-sistemas-filtros-digitales", "laboratorio-filtrado.md"),
+    (3, "03-sistemas-filtros-digitales", "laboratorio-enlace-digital.md"),
 ])
 def test_laboratorio_numerado_en_navegacion_y_documentos(numero, carpeta, archivo):
     # BaseLoader lee las etiquetas sin ejecutar los tags de las extensiones.

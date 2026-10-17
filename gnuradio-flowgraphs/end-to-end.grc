@@ -1,0 +1,2325 @@
+options:
+  parameters:
+    author: oellc
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: end_to_end
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Enlace digital de mensajes
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: cierre_rx_muestras
+  id: variable
+  parameters:
+    comment: ''
+    value: rrc_ntaps - 1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [864, 16.0]
+    rotation: 0
+    state: enabled
+- name: costas_bw
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.0628'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [896, 88.0]
+    rotation: 0
+    state: enabled
+- name: fase_grados
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [800, 88.0]
+    rotation: 0
+    state: enabled
+- name: frecuencia_offset_hz
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [520, 168.0]
+    rotation: 0
+    state: enabled
+- name: max_trama_bits
+  id: variable
+  parameters:
+    comment: ''
+    value: max_trama_bytes * 8
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [680, 88.0]
+    rotation: 0
+    state: enabled
+- name: max_trama_bytes
+  id: variable
+  parameters:
+    comment: ''
+    value: 5000 + 6 + len(sync_bytes) + 4
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [552, 88.0]
+    rotation: 0
+    state: enabled
+- name: offset_muestreo
+  id: variable
+  parameters:
+    comment: ''
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [776, 168.0]
+    rotation: 0
+    state: enabled
+- name: reloj_ppm
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 160.0]
+    rotation: 0
+    state: enabled
+- name: retardo_muestras
+  id: variable
+  parameters:
+    comment: ''
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [656, 168.0]
+    rotation: 0
+    state: enabled
+- name: retardo_total
+  id: variable
+  parameters:
+    comment: ''
+    value: rrc_ntaps - 1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [744, 16.0]
+    rotation: 0
+    state: enabled
+- name: rrc_alpha
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.35'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [472, 16.0]
+    rotation: 0
+    state: enabled
+- name: rrc_ntaps
+  id: variable
+  parameters:
+    comment: ''
+    value: rrc_span * sps + 1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [648, 16.0]
+    rotation: 0
+    state: enabled
+- name: rrc_span
+  id: variable
+  parameters:
+    comment: ''
+    value: '8'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 16.0]
+    rotation: 0
+    state: enabled
+- name: ruido_amplitud
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [264, 168.0]
+    rotation: 0
+    state: enabled
+- name: ruido_semilla
+  id: variable
+  parameters:
+    comment: ''
+    value: '42'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [400, 168.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: symbol_rate * sps
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 12]
+    rotation: 0
+    state: enabled
+- name: sps
+  id: variable
+  parameters:
+    comment: ''
+    value: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 16.0]
+    rotation: 0
+    state: enabled
+- name: symbol_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [296, 16.0]
+    rotation: 0
+    state: enabled
+- name: sync_bits
+  id: variable
+  parameters:
+    comment: ''
+    value: '''''.join(format(b, ''08b'') for b in sync_bytes)'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [368, 88.0]
+    rotation: 0
+    state: enabled
+- name: sync_bytes
+  id: variable
+  parameters:
+    comment: ''
+    value: '[0xac, 0xdd, 0xa4, 0xe2, 0xf2, 0x8c, 0x20, 0xfc]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 88.0]
+    rotation: 0
+    state: enabled
+- name: a_stream
+  id: pdu_pdu_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [552, 368.0]
+    rotation: 0
+    state: enabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4256, 736.0]
+    rotation: 0
+    state: enabled
+- name: cierre_rrc
+  id: digital_burst_shaper_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    insert_phasing: 'False'
+    length_tag_name: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    post_padding: rrc_span
+    pre_padding: '0'
+    type: complex
+    window: ([1.0])
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [960, 664.0]
+    rotation: 0
+    state: enabled
+- name: cierre_rx
+  id: digital_burst_shaper_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    insert_phasing: 'False'
+    length_tag_name: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    post_padding: cierre_rx_muestras
+    pre_padding: '0'
+    type: complex
+    window: ([1.0])
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1768, 840.0]
+    rotation: 0
+    state: enabled
+- name: constelacion_fase
+  id: qtgui_const_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'True'
+    gui_hint: vistas@1:2,0,1,2
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    marker1: '0'
+    marker10: '0'
+    marker2: '0'
+    marker3: '0'
+    marker4: '0'
+    marker5: '0'
+    marker6: '0'
+    marker7: '0'
+    marker8: '0'
+    marker9: '0'
+    name: '"Muestras despues de Costas: incluye cierre"'
+    nconnections: '1'
+    size: '64'
+    style1: '0'
+    style10: '0'
+    style2: '0'
+    style3: '0'
+    style4: '0'
+    style5: '0'
+    style6: '0'
+    style7: '0'
+    style8: '0'
+    style9: '0'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3000, 1072.0]
+    rotation: 0
+    state: enabled
+- name: constelacion_rx
+  id: qtgui_const_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'True'
+    gui_hint: vistas@1:1,0,1,2
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    marker1: '0'
+    marker10: '0'
+    marker2: '0'
+    marker3: '0'
+    marker4: '0'
+    marker5: '0'
+    marker6: '0'
+    marker7: '0'
+    marker8: '0'
+    marker9: '0'
+    name: '"Muestras a una por simbolo: incluye cierre"'
+    nconnections: '1'
+    size: '64'
+    style1: '0'
+    style10: '0'
+    style2: '0'
+    style3: '0'
+    style4: '0'
+    style5: '0'
+    style6: '0'
+    style7: '0'
+    style8: '0'
+    style9: '0'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2776, 792.0]
+    rotation: 0
+    state: enabled
+- name: debug_deteccion
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '"packet_len"'
+    name: '"Paquetes detectados"'
+    num_inputs: '1'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3448, 768.0]
+    rotation: 0
+    state: enabled
+- name: debug_invertida
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '"packet_len"'
+    name: '"Paquetes detectados: ruta invertida"'
+    num_inputs: '1'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3664, 1288.0]
+    rotation: 0
+    state: enabled
+- name: debug_muestras
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'False'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1520, 496.0]
+    rotation: 0
+    state: enabled
+- name: debug_paquete_rx
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3984, 744.0]
+    rotation: 0
+    state: enabled
+- name: debug_rrc
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'False'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2128, 504.0]
+    rotation: 0
+    state: enabled
+- name: debug_rx
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'False'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2480, 640.0]
+    rotation: 0
+    state: disabled
+- name: debug_simbolos_rx
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'False'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2792, 624.0]
+    rotation: 0
+    state: disabled
+- name: debug_sin_etiquetas
+  id: blocks_tag_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    display: 'True'
+    filter: '""'
+    name: '"Entrada RX sin etiquetas"'
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1880, 984.0]
+    rotation: 0
+    state: enabled
+- name: debug_trama_tx
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [688, 464.0]
+    rotation: 0
+    state: enabled
+- name: decidir_bits
+  id: digital_binary_slicer_fb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3176, 968.0]
+    rotation: 0
+    state: enabled
+- name: desajustar_frecuencia
+  id: blocks_rotator_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    phase_inc: 2*np.pi*frecuencia_offset_hz/samp_rate
+    tag_inc_update: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1784, 1136.0]
+    rotation: 0
+    state: enabled
+- name: desajustar_reloj
+  id: mmse_resampler_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    phase_shift: '0'
+    resamp_ratio: 1/(1+reloj_ppm*1e-6)
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2048, 1104.0]
+    rotation: 0
+    state: enabled
+- name: descartar_ted
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: ''
+    num_inputs: '2'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2784, 1272.0]
+    rotation: 0
+    state: enabled
+- name: detectar_invertida
+  id: digital_correlate_access_code_xx_ts
+  parameters:
+    access_code: sync_bits
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tagname: '"packet_len"'
+    threshold: '0'
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3344, 1184.0]
+    rotation: 0
+    state: enabled
+- name: detectar_trama
+  id: digital_correlate_access_code_xx_ts
+  parameters:
+    access_code: sync_bits
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tagname: '"packet_len"'
+    threshold: '0'
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3144, 752.0]
+    rotation: 0
+    state: enabled
+- name: empaquetar_bits
+  id: blocks_repack_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    align_output: 'True'
+    comment: ''
+    endianness: gr.GR_MSB_FIRST
+    k: '1'
+    l: '8'
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3352, 952.0]
+    rotation: 0
+    state: enabled
+- name: empaquetar_invertida
+  id: blocks_repack_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    align_output: 'True'
+    comment: ''
+    endianness: gr.GR_MSB_FIRST
+    k: '1'
+    l: '8'
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3576, 1080.0]
+    rotation: 0
+    state: enabled
+- name: envolver_trama
+  id: pdu_pdu_lambda
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    fn: 'lambda x: np.concatenate((np.array(sync_bytes + [len(x) >> 8, len(x) & 0xff]
+      * 2, dtype=np.uint8), x))'
+    key: pmt.intern("key")
+    maxoutbuf: '0'
+    metadict: Uniform Vector
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [320, 488.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.basic_block):\n\
+      \    def __init__(self):\n        gr.basic_block.__init__(\n            self,\
+      \ name=\"Texto a bytes UTF-8\", in_sig=None, out_sig=None\n        )\n\n   \
+      \     self.message_port_register_in(pmt.intern(\"in\"))\n        self.message_port_register_out(pmt.intern(\"\
+      out\"))\n        self.set_msg_handler(pmt.intern(\"in\"), self.convertir)\n\n\
+      \    def convertir(self, mensaje):\n        # El cuadro de texto entrega un\
+      \ s\xEDmbolo PMT.\n        if not pmt.is_symbol(mensaje):\n            print(\"\
+      Texto a bytes: se esperaba un mensaje de texto.\")\n            return\n\n \
+      \       texto = pmt.symbol_to_string(mensaje)\n        datos = texto.encode(\"\
+      utf-8\")\n\n        # PDU: metadatos vac\xEDos y vector de bytes.\n        metadatos\
+      \ = pmt.make_dict()\n        vector = pmt.init_u8vector(len(datos), list(datos))\n\
+      \        pdu = pmt.cons(metadatos, vector)\n\n        self.message_port_pub(pmt.intern(\"\
+      out\"), pdu)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Texto a bytes UTF-8', 'blk', [], [('in', 'message', 1)], [('out',
+      'message', 1)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [224, 264.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.basic_block):\n\
+      \    def __init__(self):\n        gr.basic_block.__init__(\n            self,\
+      \ name=\"Bytes a texto UTF-8\", in_sig=None, out_sig=None\n        )\n\n   \
+      \     self.message_port_register_in(pmt.intern(\"in\"))\n        self.message_port_register_out(pmt.intern(\"\
+      out\"))\n        self.set_msg_handler(pmt.intern(\"in\"), self.convertir)\n\n\
+      \    def convertir(self, mensaje):\n        # La entrada debe ser una PDU con\
+      \ un vector de bytes.\n        if not pmt.is_pdu(mensaje) or not pmt.is_u8vector(pmt.cdr(mensaje)):\n\
+      \            print(\"Bytes a texto: se esperaba una PDU de bytes.\")\n     \
+      \       return\n\n        vector = pmt.cdr(mensaje)\n        datos = bytes(pmt.u8vector_elements(vector))\n\
+      \n        try:\n            texto = datos.decode(\"utf-8\")\n        except\
+      \ UnicodeDecodeError:\n            print(\"Bytes a texto: los bytes no forman\
+      \ un texto UTF-8 v\xE1lido.\")\n            return\n\n        self.message_port_pub(pmt.intern(\"\
+      out\"), pmt.intern(texto))\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Bytes a texto UTF-8', 'blk', [], [('in', 'message', 1)], [('out',
+      'message', 1)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4080, 960.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_2
+  id: epy_block
+  parameters:
+    _source_code: "from gnuradio import gr\nimport pmt\nimport struct\nimport zlib\n\
+      \n\nclass blk(gr.basic_block):\n    def __init__(self):\n        gr.basic_block.__init__(\n\
+      \            self, name=\"Construir paquete\", in_sig=None, out_sig=None\n \
+      \       )\n\n        self.message_port_register_in(pmt.intern(\"in\"))\n   \
+      \     self.message_port_register_out(pmt.intern(\"out\"))\n        self.set_msg_handler(pmt.intern(\"\
+      in\"), self.construir)\n\n    def construir(self, mensaje):\n        if not\
+      \ pmt.is_pdu(mensaje) or not pmt.is_u8vector(pmt.cdr(mensaje)):\n          \
+      \  print(\"Construir paquete: se esperaba una PDU de bytes.\")\n           \
+      \ return\n\n        datos = bytes(pmt.u8vector_elements(pmt.cdr(mensaje)))\n\
+      \        if len(datos) > 5000:\n            print(\"Construir paquete: el texto\
+      \ supera 5000 bytes. No se env\xEDa.\")\n            return\n\n        try:\n\
+      \            texto = datos.decode(\"utf-8\")\n        except UnicodeDecodeError:\n\
+      \            print(\"Construir paquete: los bytes no forman un texto UTF-8 v\xE1\
+      lido.\")\n            return\n\n        palabras = texto.split()\n        if\
+      \ not palabras:\n            print(\"Construir paquete: mensaje vac\xEDo. No\
+      \ se env\xEDa.\")\n            return\n        if len(palabras) > 500:\n   \
+      \         print(\"Construir paquete: el texto supera 500 palabras. No se env\xED\
+      a.\")\n            return\n\n        # La longitud cuenta solo los bytes originales\
+      \ del texto.\n        cabecera = struct.pack(\"!H\", len(datos))\n        contenido\
+      \ = cabecera + datos\n        crc = struct.pack(\"!I\", zlib.crc32(contenido))\n\
+      \        paquete = contenido + crc\n\n        # Los metadatos siguen separados\
+      \ de los bytes del paquete.\n        vector = pmt.init_u8vector(len(paquete),\
+      \ list(paquete))\n        salida = pmt.cons(pmt.car(mensaje), vector)\n    \
+      \    self.message_port_pub(pmt.intern(\"out\"), salida)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Construir paquete', 'blk', [], [('in', 'message', 1)], [('out', 'message',
+      1)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 344.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_3
+  id: epy_block
+  parameters:
+    _source_code: "from gnuradio import gr\nimport pmt\nimport struct\nimport zlib\n\
+      \n\nclass blk(gr.basic_block):\n    def __init__(self):\n        gr.basic_block.__init__(\n\
+      \            self, name=\"Comprobar paquete\", in_sig=None, out_sig=None\n \
+      \       )\n\n        self.message_port_register_in(pmt.intern(\"in\"))\n   \
+      \     self.message_port_register_out(pmt.intern(\"out\"))\n        self.set_msg_handler(pmt.intern(\"\
+      in\"), self.comprobar)\n\n    def comprobar(self, mensaje):\n        if not\
+      \ pmt.is_pdu(mensaje) or not pmt.is_u8vector(pmt.cdr(mensaje)):\n          \
+      \  print(\"Comprobar paquete: se esperaba una PDU de bytes.\")\n           \
+      \ return\n\n        paquete = bytes(pmt.u8vector_elements(pmt.cdr(mensaje)))\n\
+      \n        # Primero debe haber espacio para longitud y CRC.\n        if len(paquete)\
+      \ < 6:\n            print(\"Comprobar paquete: paquete demasiado corto. Se rechaza.\"\
+      )\n            return\n\n        longitud = struct.unpack(\"!H\", paquete[:2])[0]\n\
+      \        if not 1 <= longitud <= 5000:\n            print(\"Comprobar paquete:\
+      \ longitud no permitida. Se rechaza.\")\n            return\n\n        if len(paquete)\
+      \ != longitud + 6:\n            print(\"Comprobar paquete: el tama\xF1o no coincide.\
+      \ Se rechaza.\")\n            return\n\n        crc_recibido = struct.unpack(\"\
+      !I\", paquete[-4:])[0]\n        crc_calculado = zlib.crc32(paquete[:-4])\n \
+      \       if crc_recibido != crc_calculado:\n            print(\"Comprobar paquete:\
+      \ CRC incorrecto. Se rechaza.\")\n            return\n\n        # Solo se entregan\
+      \ los bytes del texto, sin longitud ni CRC.\n        datos = paquete[2:-4]\n\
+      \        vector = pmt.init_u8vector(len(datos), list(datos))\n        salida\
+      \ = pmt.cons(pmt.car(mensaje), vector)\n        self.message_port_pub(pmt.intern(\"\
+      out\"), salida)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Comprobar paquete', 'blk', [], [('in', 'message', 1)], [('out', 'message',
+      1)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3848, 976.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_4
+  id: epy_block
+  parameters:
+    _source_code: "from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.basic_block):\n\
+      \    def __init__(self):\n        gr.basic_block.__init__(\n            self,\
+      \ name=\"Alterar segundo paquete\", in_sig=None, out_sig=None\n        )\n\n\
+      \        self.contador = 0\n        self.message_port_register_in(pmt.intern(\"\
+      in\"))\n        self.message_port_register_out(pmt.intern(\"out\"))\n      \
+      \  self.set_msg_handler(pmt.intern(\"in\"), self.procesar)\n\n    def procesar(self,\
+      \ mensaje):\n        if not pmt.is_pdu(mensaje) or not pmt.is_u8vector(pmt.cdr(mensaje)):\n\
+      \            print(\"Inyector: se esperaba una PDU de bytes.\", flush=True)\n\
+      \            return\n\n        paquete = bytearray(pmt.u8vector_elements(pmt.cdr(mensaje)))\n\
+      \        if len(paquete) < 7:\n            print(\"Inyector: paquete demasiado\
+      \ corto.\", flush=True)\n            return\n\n        self.contador += 1\n\
+      \        if self.contador == 2:\n            # \xCDndices 0 y 1: longitud. \xCD\
+      ndice 2: primer byte del texto.\n            paquete[2] ^= 0x01\n          \
+      \  print(\"Inyector: paquete 2, bit alterado.\", flush=True)\n        else:\n\
+      \            print(f\"Inyector: paquete {self.contador}, sin cambios.\", flush=True)\n\
+      \n        # Se conserva el CRC recibido; no se calcula otro CRC.\n        vector\
+      \ = pmt.init_u8vector(len(paquete), list(paquete))\n        salida = pmt.cons(pmt.car(mensaje),\
+      \ vector)\n        self.message_port_pub(pmt.intern(\"out\"), salida)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Alterar segundo paquete', 'blk', [], [('in', 'message', 1)], [('out',
+      'message', 1)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [336, 424.0]
+    rotation: 0
+    state: disabled
+- name: epy_block_5
+  id: epy_block
+  parameters:
+    _source_code: "from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.basic_block):\n\
+      \    def __init__(self):\n        gr.basic_block.__init__(\n            self,\
+      \ name=\"Bytes a bits\", in_sig=None, out_sig=None\n        )\n\n        self.message_port_register_in(pmt.intern(\"\
+      in\"))\n        self.message_port_register_out(pmt.intern(\"out\"))\n      \
+      \  self.set_msg_handler(pmt.intern(\"in\"), self.convertir)\n\n    def convertir(self,\
+      \ mensaje):\n        if not pmt.is_pdu(mensaje) or not pmt.is_u8vector(pmt.cdr(mensaje)):\n\
+      \            print(\"Bytes a bits: se esperaba una PDU de bytes.\", flush=True)\n\
+      \            return\n\n        datos = pmt.u8vector_elements(pmt.cdr(mensaje))\n\
+      \        if not datos:\n            print(\"Bytes a bits: vector vac\xEDo.\"\
+      , flush=True)\n            return\n\n        bits = []\n        for byte in\
+      \ datos:\n            for posicion in range(7, -1, -1):\n                bits.append((byte\
+      \ >> posicion) & 1)\n\n        vector = pmt.init_u8vector(len(bits), bits)\n\
+      \        salida = pmt.cons(pmt.car(mensaje), vector)\n        self.message_port_pub(pmt.intern(\"\
+      out\"), salida)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Bytes a bits', 'blk', [], [('in', 'message', 1)], [('out', 'message',
+      1)], '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 264.0]
+    rotation: 0
+    state: enabled
+- name: extraer_i
+  id: blocks_complex_to_real
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3008, 968.0]
+    rotation: 0
+    state: enabled
+- name: filtro_rx
+  id: root_raised_cosine_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: rrc_alpha
+    comment: ''
+    decim: '1'
+    gain: '1'
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ntaps: rrc_ntaps
+    samp_rate: samp_rate
+    sym_rate: symbol_rate
+    type: fir_filter_ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2136, 860.0]
+    rotation: 0
+    state: enabled
+- name: frecuencia_a_hz
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: symbol_rate/(2*np.pi)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3000, 1192.0]
+    rotation: 0
+    state: enabled
+- name: frecuencia_estimada
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'False'
+    grid: 'True'
+    gui_hint: vistas@2:0,0,1,2
+    label1: '"Estimacion RX"'
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Frecuencia estimada por Costas"'
+    nconnections: '1'
+    size: '192'
+    srate: symbol_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.01'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: '"Frecuencia estimada"'
+    ymax: '25'
+    ymin: '-25'
+    yunit: '"Hz"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3136, 1304.0]
+    rotation: 0
+    state: enabled
+- name: invertir_bits
+  id: digital_map_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    map: '[1, 0]'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3320, 1080.0]
+    rotation: 0
+    state: enabled
+- name: longitud_muestras
+  id: blocks_tagged_stream_multiply_length
+  parameters:
+    affinity: ''
+    alias: ''
+    c: sps
+    comment: ''
+    lengthtagname: packet_len
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 520.0]
+    rotation: 0
+    state: enabled
+- name: longitud_rrc
+  id: blocks_tagged_stream_multiply_length
+  parameters:
+    affinity: ''
+    alias: ''
+    c: sps
+    comment: ''
+    lengthtagname: packet_len
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1480, 704.0]
+    rotation: 0
+    state: enabled
+- name: mapeador
+  id: digital_chunks_to_symbols_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    dimension: '1'
+    in_type: byte
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    out_type: complex
+    symbol_table: '[-1+0j,1+0j]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [776, 264.0]
+    rotation: 0
+    state: enabled
+- name: muestras_a_pdu
+  id: pdu_tagged_stream_to_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1224, 416.0]
+    rotation: 0
+    state: enabled
+- name: muestrear_rx
+  id: pdu_pdu_lambda
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    fn: 'lambda x: x[retardo_total:-cierre_rx_muestras:sps]'
+    key: pmt.intern("key")
+    maxoutbuf: '0'
+    metadict: Uniform Vector
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2464, 960.0]
+    rotation: 0
+    state: disabled
+- name: muestrear_stream
+  id: blocks_keep_m_in_n
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    m: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n: sps
+    offset: offset_muestreo
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2480, 1064.0]
+    rotation: 0
+    state: disabled
+- name: paquete_rx_a_pdu
+  id: pdu_tagged_stream_to_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3544, 960.0]
+    rotation: 0
+    state: enabled
+- name: pdu_invertida
+  id: pdu_tagged_stream_to_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3664, 1192.0]
+    rotation: 0
+    state: enabled
+- name: pdu_tagged_stream_to_pdu_0
+  id: pdu_tagged_stream_to_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1232, 272.0]
+    rotation: 0
+    state: enabled
+- name: pulso_rect
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 352.0]
+    rotation: 0
+    state: enabled
+- name: pulso_rrc
+  id: root_raised_cosine_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: rrc_alpha
+    comment: ''
+    decim: '1'
+    gain: sps
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ntaps: rrc_ntaps
+    samp_rate: samp_rate
+    sym_rate: symbol_rate
+    type: interp_fir_filter_ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1216, 652.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_const_sink_x_0
+  id: qtgui_const_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    grid: 'True'
+    gui_hint: vistas@0:1,0,1,2
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    marker1: '0'
+    marker10: '0'
+    marker2: '0'
+    marker3: '0'
+    marker4: '0'
+    marker5: '0'
+    marker6: '0'
+    marker7: '0'
+    marker8: '0'
+    marker9: '0'
+    name: '"Simbolos BPSK"'
+    nconnections: '1'
+    size: '1024'
+    style1: '0'
+    style10: '0'
+    style2: '0'
+    style3: '0'
+    style4: '0'
+    style5: '0'
+    style6: '0'
+    style7: '0'
+    style8: '0'
+    style9: '0'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: msg_complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '1.5'
+    xmin: '-1.5'
+    ymax: '1.5'
+    ymin: '-1.5'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1488, 264.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_edit_box_msg_0
+  id: qtgui_edit_box_msg
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    gui_hint: 0,0,1,2
+    is_pair: 'False'
+    is_static: 'True'
+    key: ''
+    label: Mensaje de A
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: string
+    value: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [32, 168.0]
+    rotation: 0
+    state: enabled
+- name: recuperar_fase
+  id: digital_costas_loop_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    order: '2'
+    use_snr: 'False'
+    w: costas_bw
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2744, 1088.0]
+    rotation: 0
+    state: enabled
+- name: reloj_estimado
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'False'
+    grid: 'True'
+    gui_hint: vistas@3:0,0,1,2
+    label1: '"T_avg RX"'
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Periodo estimado por Symbol Sync"'
+    nconnections: '1'
+    size: '128'
+    srate: symbol_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.01'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: '"Periodo estimado"'
+    ymax: '4.06'
+    ymin: '3.94'
+    yunit: '"muestras/simbolo"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2760, 1344.0]
+    rotation: 0
+    state: enabled
+- name: resumen_ensayo
+  id: snippet
+  parameters:
+    alias: ''
+    code: 'n_tx = self.debug_trama_tx.num_messages()
+
+      n_normal = len(self.debug_deteccion.current_tags())
+
+      n_invertida = len(self.debug_invertida.current_tags())
+
+      n_det = n_normal + n_invertida
+
+      n_rx = self.debug_paquete_rx.num_messages()
+
+      n_ok = self.blocks_message_debug_0.num_messages()
+
+      print(f"RESUMEN amplitud={self.ruido_amplitud} semilla={self.ruido_semilla}",
+      flush=True)
+
+      print(f"TX={n_tx} DET={n_det} RX={n_rx} OK={n_ok}", flush=True)
+
+      print(f"RECH={n_rx-n_ok} SIN_PDU={n_tx-n_rx} SIN_TEXTO={n_tx-n_ok}", flush=True)
+
+      print("TEXTOS_OK=", [pmt.symbol_to_string(self.blocks_message_debug_0.get_message(i))
+      for i in range(n_ok)], flush=True)
+
+      print(f"FASE grados={self.fase_grados} costas={''activo'' if hasattr(self, ''recuperar_fase'')
+      else ''sin_lazo''}", flush=True)
+
+      print(f"POLARIDAD normal={n_normal} invertida={n_invertida}", flush=True)
+
+      print(f"FRECUENCIA offset_hz={self.frecuencia_offset_hz}", flush=True)
+
+      print(f"TIEMPO retardo_muestras={self.retardo_muestras} offset_muestreo={self.offset_muestreo}",
+      flush=True)
+
+      print(f"RELOJ ppm={self.reloj_ppm} temporal={''activo'' if hasattr(self, ''sincronizar_simbolos'')
+      else ''fijo''}", flush=True)'
+    comment: ''
+    priority: '0'
+    section: main_after_stop
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1168, 24.0]
+    rotation: 0
+    state: enabled
+- name: retardar_canal
+  id: blocks_delay
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    delay: retardo_muestras
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_ports: '1'
+    showports: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1952, 1216.0]
+    rotation: 0
+    state: disabled
+- name: rotar_fase
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: np.exp(1j*np.deg2rad(fase_grados))
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1568, 1136.0]
+    rotation: 0
+    state: enabled
+- name: rrc_a_pdu
+  id: pdu_tagged_stream_to_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1824, 712.0]
+    rotation: 0
+    state: enabled
+- name: ruido
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: ruido_amplitud
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: ruido_semilla
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1896, 1336.0]
+    rotation: 0
+    state: enabled
+- name: rx_a_pdu
+  id: pdu_tagged_stream_to_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2216, 800.0]
+    rotation: 0
+    state: disabled
+- name: rx_a_stream
+  id: pdu_pdu_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2776, 920.0]
+    rotation: 0
+    state: disabled
+- name: sin_etiquetas
+  id: blocks_tag_gate
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    propagate_tags: 'False'
+    single_key: '""'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1640, 1000.0]
+    rotation: 0
+    state: enabled
+- name: sincronizar_simbolos
+  id: digital_symbol_sync_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: digital.constellation_bpsk().base()
+    damping: '1.0'
+    loop_bw: '0.08'
+    max_dev: '0.05'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nfilters: '128'
+    osps: '1'
+    pfb_mf_taps: '[]'
+    resamp_type: digital.IR_MMSE_8TAP
+    sps: sps
+    ted_gain: '0.5'
+    ted_type: digital.TED_GARDNER
+    type: cc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2400, 1236.0]
+    rotation: 0
+    state: enabled
+- name: snippet_0
+  id: snippet
+  parameters:
+    alias: ''
+    code: 'self.a_stream.set_min_output_buffer(0, self.max_trama_bits * 2)
+
+      self.mapeador.set_min_output_buffer(0, self.max_trama_bits * 2)
+
+      self.pulso_rect.set_min_output_buffer(0, self.max_trama_bits * self.sps * 2)
+
+      self.longitud_muestras.set_min_output_buffer(0, self.max_trama_bits * self.sps
+      * 2)
+
+      self.cierre_rrc.set_min_output_buffer(0, (self.max_trama_bits + self.rrc_span)
+      * 2)
+
+      self.pulso_rrc.set_min_output_buffer(0, (self.max_trama_bits + self.rrc_span)
+      * self.sps * 2)
+
+      self.longitud_rrc.set_min_output_buffer(0, (self.max_trama_bits + self.rrc_span)
+      * self.sps * 2)
+
+      self.cierre_rx.set_min_output_buffer(0, ((self.max_trama_bits + self.rrc_span)
+      * self.sps + self.cierre_rx_muestras) * 2)
+
+      self.filtro_rx.set_min_output_buffer(0, ((self.max_trama_bits + self.rrc_span)
+      * self.sps + self.cierre_rx_muestras) * 2)
+
+      self.decidir_bits.set_min_output_buffer(0, self.max_trama_bits * 2)
+
+      self.detectar_trama.set_min_output_buffer(0, (5000 + 6) * 8 * 2)
+
+      self.debug_deteccion.set_save_all(True)
+
+      self.detectar_invertida.set_min_output_buffer(0, (5000 + 6) * 8 * 2)
+
+      self.debug_invertida.set_save_all(True)'
+    comment: ''
+    priority: '0'
+    section: main_after_init
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1168, 128.0]
+    rotation: 0
+    state: enabled
+- name: sumar_ruido
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2152, 1216.0]
+    rotation: 0
+    state: enabled
+- name: tiempo_bpsk
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: vistas@0:0,0,1,1
+    label1: I
+    label10: Signal 10
+    label2: Q
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '0'
+    marker10: '-1'
+    marker2: '0'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Senal temporal BPSK"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: msg_complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1.5'
+    ymin: '-1.5'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1504, 392.0]
+    rotation: 0
+    state: enabled
+- name: tiempo_rrc
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: vistas@0:0,1,1,1
+    label1: I
+    label10: Signal 10
+    label2: Q
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '0'
+    marker10: '-1'
+    marker2: '0'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Senal temporal BPSK RRC"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: msg_complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '2'
+    ymin: '-2'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2088, 664.0]
+    rotation: 0
+    state: enabled
+- name: tiempo_rx
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: vistas@1:0,0,1,2
+    label1: I
+    label10: Signal 10
+    label2: Q
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '0'
+    marker10: '-1'
+    marker2: '0'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"Senal RX: ventana de 64 ms"'
+    nconnections: '1'
+    size: '256'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '2'
+    ymin: '-2'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2480, 816.0]
+    rotation: 0
+    state: enabled
+- name: vistas
+  id: qtgui_tab_widget
+  parameters:
+    alias: ''
+    comment: ''
+    gui_hint: 1,0,1,2
+    label0: Transmisor
+    label1: Receptor ideal
+    label10: Tab 10
+    label11: Tab 11
+    label12: Tab 12
+    label13: Tab 13
+    label14: Tab 14
+    label15: Tab 15
+    label16: Tab 16
+    label17: Tab 17
+    label18: Tab 18
+    label19: Tab 19
+    label2: Sincronizacion
+    label3: Temporizacion
+    label4: Tab 4
+    label5: Tab 5
+    label6: Tab 6
+    label7: Tab 7
+    label8: Tab 8
+    label9: Tab 9
+    num_tabs: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1008, 24.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [a_stream, '0', mapeador, '0']
+- [cierre_rrc, '0', pulso_rrc, '0']
+- [cierre_rx, '0', sin_etiquetas, '0']
+- [decidir_bits, '0', detectar_trama, '0']
+- [decidir_bits, '0', invertir_bits, '0']
+- [desajustar_frecuencia, '0', desajustar_reloj, '0']
+- [desajustar_frecuencia, '0', retardar_canal, '0']
+- [desajustar_reloj, '0', sumar_ruido, '0']
+- [detectar_invertida, '0', debug_invertida, '0']
+- [detectar_invertida, '0', empaquetar_invertida, '0']
+- [detectar_trama, '0', debug_deteccion, '0']
+- [detectar_trama, '0', empaquetar_bits, '0']
+- [empaquetar_bits, '0', paquete_rx_a_pdu, '0']
+- [empaquetar_invertida, '0', pdu_invertida, '0']
+- [envolver_trama, pdu, debug_trama_tx, print]
+- [envolver_trama, pdu, debug_trama_tx, store]
+- [envolver_trama, pdu, epy_block_5, in]
+- [epy_block_0, out, epy_block_2, in]
+- [epy_block_1, out, blocks_message_debug_0, print]
+- [epy_block_1, out, blocks_message_debug_0, store]
+- [epy_block_2, out, envolver_trama, pdu]
+- [epy_block_3, out, epy_block_1, in]
+- [epy_block_5, out, a_stream, pdus]
+- [extraer_i, '0', decidir_bits, '0']
+- [filtro_rx, '0', muestrear_stream, '0']
+- [filtro_rx, '0', rx_a_pdu, '0']
+- [filtro_rx, '0', sincronizar_simbolos, '0']
+- [filtro_rx, '0', tiempo_rx, '0']
+- [frecuencia_a_hz, '0', frecuencia_estimada, '0']
+- [invertir_bits, '0', detectar_invertida, '0']
+- [longitud_muestras, '0', muestras_a_pdu, '0']
+- [longitud_rrc, '0', cierre_rx, '0']
+- [longitud_rrc, '0', rrc_a_pdu, '0']
+- [mapeador, '0', cierre_rrc, '0']
+- [mapeador, '0', pdu_tagged_stream_to_pdu_0, '0']
+- [mapeador, '0', pulso_rect, '0']
+- [muestras_a_pdu, pdus, debug_muestras, print]
+- [muestras_a_pdu, pdus, tiempo_bpsk, in]
+- [muestrear_rx, pdu, constelacion_rx, '0']
+- [muestrear_rx, pdu, debug_simbolos_rx, print]
+- [muestrear_rx, pdu, rx_a_stream, pdus]
+- [muestrear_stream, '0', constelacion_rx, '0']
+- [muestrear_stream, '0', recuperar_fase, '0']
+- [paquete_rx_a_pdu, pdus, debug_paquete_rx, print]
+- [paquete_rx_a_pdu, pdus, debug_paquete_rx, store]
+- [paquete_rx_a_pdu, pdus, epy_block_3, in]
+- [pdu_invertida, pdus, debug_paquete_rx, print]
+- [pdu_invertida, pdus, debug_paquete_rx, store]
+- [pdu_invertida, pdus, epy_block_3, in]
+- [pdu_tagged_stream_to_pdu_0, pdus, qtgui_const_sink_x_0, in]
+- [pulso_rect, '0', longitud_muestras, '0']
+- [pulso_rrc, '0', longitud_rrc, '0']
+- [qtgui_edit_box_msg_0, msg, epy_block_0, in]
+- [recuperar_fase, '0', constelacion_fase, '0']
+- [recuperar_fase, '0', extraer_i, '0']
+- [recuperar_fase, '1', frecuencia_a_hz, '0']
+- [retardar_canal, '0', sumar_ruido, '0']
+- [rotar_fase, '0', desajustar_frecuencia, '0']
+- [rrc_a_pdu, pdus, debug_rrc, print]
+- [rrc_a_pdu, pdus, tiempo_rrc, in]
+- [ruido, '0', sumar_ruido, '1']
+- [rx_a_pdu, pdus, debug_rx, print]
+- [rx_a_pdu, pdus, muestrear_rx, pdu]
+- [rx_a_pdu, pdus, tiempo_rx, '0']
+- [rx_a_stream, '0', extraer_i, '0']
+- [sin_etiquetas, '0', debug_sin_etiquetas, '0']
+- [sin_etiquetas, '0', rotar_fase, '0']
+- [sincronizar_simbolos, '0', constelacion_rx, '0']
+- [sincronizar_simbolos, '0', recuperar_fase, '0']
+- [sincronizar_simbolos, '1', descartar_ted, '0']
+- [sincronizar_simbolos, '2', descartar_ted, '1']
+- [sincronizar_simbolos, '3', reloj_estimado, '0']
+- [sumar_ruido, '0', filtro_rx, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0

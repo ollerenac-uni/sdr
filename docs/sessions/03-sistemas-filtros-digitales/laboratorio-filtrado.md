@@ -1,11 +1,14 @@
 ---
-title: "Laboratorio #3 — Filtros FIR en Python y GNU Radio"
+title: "Práctica complementaria — Filtros FIR en Python y GNU Radio"
 session: 3
 description: "Comprobación de la convolución y comparación de dos filtros FIR con tonos I/Q conocidos."
 status: draft
 ---
 
-# Laboratorio #3 — Filtros FIR en Python y GNU Radio
+# Práctica complementaria — Filtros FIR en Python y GNU Radio
+
+- Esta práctica conserva los experimentos de filtrado de la sesión 3.
+- La construcción gradual del [Laboratorio #3 — Enlace digital de mensajes](laboratorio-enlace-digital.md) tiene su propia guía.
 
 ## Objetivos
 
