@@ -13,7 +13,9 @@ status: draft
 - El recorrido empieza con BPSK y después incorpora QPSK, modulaciones con dos y cuatro estados de fase, respectivamente.
 - La construcción avanza por pasos. Cada paso introduce pocos bloques y termina con una comprobación.
 - La clase 3 se desarrolla directamente con este laboratorio. Sus 24 pasos se construyen y comprueban en orden.
-- La [clase visual del enlace BPSK](clase-enlace-digital.md) explica cada paso mediante el mismo mapa de bloques con las funciones estudiadas resaltadas.
+- El diagrama de referencia aparece en los pasos principales para situar los bloques de GRC dentro del sistema completo.
+- La [clase visual del enlace BPSK](clase-enlace-digital.md) complementa el laboratorio con un mapa funcional más detallado de los 24 pasos.
+- Las instrucciones de conexión usan los nombres que aparecen en GRC. La notación `Nombre del bloque.puerto` identifica el bloque y su puerto.
 
 !!! info "Alcance de esta entrega"
 
@@ -69,6 +71,34 @@ status: draft
 - Recuperar los instantes de símbolo con Symbol Sync y observar el período estimado ante una diferencia entre relojes.
 - Distinguir un mensaje interno de GNU Radio de una secuencia de muestras I/Q.
 
+## Cómo leer el diagrama de referencia
+
+Los pasos principales conservan el diagrama original de [Software-Defined Radio for Engineers, figura 1.3, página 5](https://www.analog.com/media/en/training-seminars/design-handbooks/Software-Defined-Radio-for-Engineers-2018/SDR4Engineers.pdf#page=22).
+Los resaltados sitúan la función estudiada. Un recuadro funcional puede corresponder a varios bloques de GRC.
+
+- **Fila superior, TX:** el transmisor se lee de izquierda a derecha.
+- **Fila inferior, RX:** el receptor se lee de derecha a izquierda.
+- **Naranja:** función o interfaz estudiada en ese paso. **Azul:** función relacionada.
+- **Sin resaltar:** contexto del sistema. Su presencia no indica que esa etapa esté instalada.
+- **B, Binary data:** datos binarios, como los bits del paquete.
+- **S, Sample data:** muestras digitales. El laboratorio usa muestras complejas I/Q, con componentes en fase y en cuadratura.
+- **A, Analog waveforms:** formas de onda analógicas. El laboratorio no utiliza estas interfaces.
+
+!!! note "Qué partes desarrolla el laboratorio"
+
+    En esta figura, `Source encoder` y `Source decoder` representan compresión y reconstrucción de los datos.
+    La conversión UTF-8 representa caracteres mediante bytes; no realiza esa compresión.
+
+    CRC significa *Cyclic Redundancy Check*, comprobación cíclica de redundancia.
+    El laboratorio usa el CRC para detectar y rechazar paquetes alterados. No implementa un par corrector de errores de canal.
+    Por ello, los recuadros `Channel encoder` y `Channel decoder` no se presentan como etapas correctoras ya construidas.
+
+    El canal simulado conecta las interfaces S de `Symbol mod` y `Symbol demod`.
+    `D/A` convierte de digital a analógico. `A/D` convierte de analógico a digital. `RF chain` representa la cadena de radiofrecuencia.
+    Estas etapas quedan como contexto; no se utiliza hardware de radio.
+
+Los adaptadores de mensajes, los buffers y los visores apoyan la implementación. No tienen necesariamente un recuadro propio en este diagrama.
+
 ## 1. Preparar `end-to-end.grc`
 
 ### 1.1. Archivo y opciones
@@ -109,6 +139,17 @@ status: draft
 
 ## 2. Primer bloque: `QT GUI Message Edit Box`
 
+**Ubicación en el sistema: `Data source`, fuente de datos.**
+
+![Diagrama original del sistema SDR con Data source resaltado en naranja en la fila del transmisor.](figures/enlace-referencia-sdr-datos.png)
+**Figura 1.** `Data source` sitúa la entrada del mensaje dentro del sistema de referencia.
+
+- **Fila TX, naranja:** `QT GUI Message Edit Box` permite escribir el mensaje. El paso 5 añadirá su representación en bytes UTF-8.
+- **Fila RX:** `Data sink` indica el destino final de los datos. Todavía no existe un recorrido de recepción.
+- **Resto del diagrama:** muestra contexto. Este primer bloque no añade modulación ni transmisión por radio.
+
+[Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-datos.svg).
+
 ### 2.1. ¿Para qué sirve?
 
 - El bloque crea un cuadro donde el usuario escribe texto.
@@ -140,7 +181,7 @@ status: draft
 La figura relaciona el bloque del editor con el cuadro que aparece al ejecutar. Es un esquema, no una captura de GRC.
 
 ![Esquema del bloque QT GUI Message Edit Box con los puertos val y msg, junto al cuadro Mensaje de A con el texto Hola.](figures/enlace-01-entrada-texto.png)
-**Figura 1.** El bloque crea un cuadro para escribir texto; sus puertos transportan mensajes, no muestras.
+**Figura 2.** El bloque crea un cuadro para escribir texto; sus puertos transportan mensajes, no muestras.
 
 **Panel izquierdo — En el editor GRC**
 
@@ -167,7 +208,7 @@ La figura relaciona el bloque del editor con el cuadro que aparece al ejecutar. 
 La captura muestra el primer bloque añadido al flowgraph, todavía sin conexiones.
 
 ![Captura de GNU Radio Companion con Options, la variable samp_rate y QT GUI Message Edit Box configurado como String, sin conexiones.](figures/enlace-02-primer-bloque-grc.png)
-**Figura 2.** El cuadro de texto está configurado en GRC; los puertos `val` y `msg` permanecen sin conectar.
+**Figura 3.** El cuadro de texto está configurado en GRC; los puertos `val` y `msg` permanecen sin conectar.
 
 - El bloque inferior muestra `Type: String`, `Label: Mensaje de A`, `Pair Mode: False` y `Static Mode: True`.
 - Arriba aparecen `Options` y la variable `samp_rate`. Esa variable no interviene en este paso.
@@ -242,7 +283,7 @@ Si el cuadro permite escribir `Hola`, ¿ya se demostró que el receptor recupera
 La línea discontinua muestra el recorrido del mensaje entre los dos bloques.
 
 ![QT GUI Message Edit Box conectado desde su salida msg a la entrada print de Message Debug.](figures/enlace-03-conexion-message-debug.png)
-**Figura 3.** La conexión lleva el mensaje del cuadro de texto a la entrada `print` de `Message Debug`.
+**Figura 4.** La conexión lleva el mensaje del cuadro de texto a la entrada `print` de `Message Debug`.
 
 - El bloque izquierdo entrega el texto por `msg`. Conserva la configuración del apartado 2.
 - El bloque derecho recibe el mensaje por `print` y muestra su contenido en la consola de ejecución de GRC.
@@ -262,18 +303,18 @@ La línea discontinua muestra el recorrido del mensaje entre los dos bloques.
 El texto se escribe en la ventana de ejecución, no en las propiedades del bloque.
 
 ![Ventana Enlace digital de mensajes con Hola escrito en el cuadro Mensaje de A.](figures/enlace-04-mensaje-hola.png)
-**Figura 4.** El cuadro `Mensaje de A` contiene `Hola`; Enter publica ese texto como mensaje.
+**Figura 5.** El cuadro `Mensaje de A` contiene `Hola`; Enter publica ese texto como mensaje.
 
 - `Mensaje de A` identifica el campo editable. `Hola` es su contenido actual.
 - La imagen muestra dónde se escribe. Por sí sola, no demuestra que otro bloque haya recibido el texto.
-- La comprobación se realiza en la consola, como muestra la Figura 5.
+- La comprobación se realiza en la consola, como muestra la Figura 6.
 
 ### 4.3. Leer el resultado en consola
 
 La consola permite comprobar qué texto recibió `Message Debug`.
 
 ![Consola de GNU Radio con dos registros MESSAGE DEBUG PRINT que contienen Hola.](figures/enlace-05-consola-message-debug.png)
-**Figura 5.** La consola muestra dos registros con `Hola`, impresos por `Message Debug`.
+**Figura 6.** La consola muestra dos registros con `Hola`, impresos por `Message Debug`.
 
 - `MESSAGE DEBUG PRINT` identifica la salida del bloque. Las filas de asteriscos separan los registros.
 - La línea `Hola` contiene el texto recibido. Los asteriscos no forman parte del mensaje escrito.
@@ -292,11 +333,14 @@ La consola muestra `Hola`. ¿Qué parte funciona? ¿El texto ya pasó por un can
 ??? example "Solución explicada"
 
     - El cuadro de texto publicó un mensaje y `Message Debug` recibió su contenido por `print`.
-    - La línea discontinua conecta puertos de mensajes, como muestra la Figura 3.
+    - La línea discontinua conecta puertos de mensajes, como muestra la Figura 4.
     - El mensaje todavía no pasó por un modulador, un canal ni un receptor de radio.
     - El resultado valida la entrada y la observación del texto. El siguiente paso preparará los bytes para construir el paquete.
 
 ## 5. Convertir texto en bytes UTF-8
+
+**Ubicación en el sistema:** este paso prepara los datos binarios de `Data source`, resaltado en la Figura 1.
+`Texto a bytes UTF-8` representa los caracteres mediante bytes. No realiza la compresión del `Source encoder` de esa figura.
 
 - Se utiliza un `Embedded Python Block`, bloque con código Python integrado en GRC, para convertir el texto mediante UTF-8.
 - UTF-8 es una codificación de caracteres. Por ejemplo, `Hola` produce los bytes `72, 111, 108, 97`, expresados en decimal.
@@ -312,16 +356,16 @@ La consola muestra `Hola`. ¿Qué parte funciona? ¿El texto ya pasó por un can
 El bloque recién añadido todavía contiene la plantilla que se va a reemplazar.
 
 ![Embedded Python Block antes de cargar el código, con el nombre en rojo y Example_Param: None.](figures/enlace-06-embedded-inicial.png)
-**Figura 6.** El bloque inicial todavía no contiene el convertidor de texto a bytes.
+**Figura 7.** El bloque inicial todavía no contiene el convertidor de texto a bytes.
 
 - `Embedded Python Block` es el nombre de la plantilla. El código cambiará el nombre visible a `Texto a bytes UTF-8`.
 - `Example_Param` pertenece al ejemplo inicial. No es un parámetro del convertidor que se construye aquí.
-- Esta captura no muestra la configuración final. El resultado que debe obtenerse aparece en la Figura 9.
+- Esta captura no muestra la configuración final. El resultado que debe obtenerse aparece en la Figura 10.
 
 El botón `Open in Editor` abre el archivo donde se sustituye el código de ejemplo.
 
 ![Propiedades de Embedded Python Block con Open in Editor, Choose Editor y el campo Example_Param.](figures/enlace-07-embedded-propiedades.png)
-**Figura 7.** El código se edita mediante `Open in Editor`, no en el campo `Example_Param`.
+**Figura 8.** El código se edita mediante `Open in Editor`, no en el campo `Example_Param`.
 
 - `Open in Editor` abre el editor de código.
 - `Choose Editor` permite seleccionar el programa de edición si hace falta.
@@ -372,7 +416,7 @@ class blk(gr.basic_block):
 La captura muestra parte del código en el editor; el contenido completo está en el bloque copiable anterior.
 
 ![Editor con la clase blk, los puertos de mensajes in y out y el comienzo de la conversión UTF-8.](figures/enlace-08-editor-texto-bytes.png)
-**Figura 8.** El editor muestra la definición del bloque y el comienzo de la conversión a bytes.
+**Figura 9.** El editor muestra la definición del bloque y el comienzo de la conversión a bytes.
 
 - `name="Texto a bytes UTF-8"` establece el nombre que aparece en el diagrama.
 - `message_port_register_in` y `message_port_register_out` crean los puertos de mensajes.
@@ -380,15 +424,15 @@ La captura muestra parte del código en el editor; el contenido completo está e
 
 ### 5.3. Conectar el convertidor
 
-1. El estudiante elimina la conexión directa entre el cuadro de texto y `Message Debug`.
-2. Conecta `msg` del cuadro de texto a `in` de `Texto a bytes UTF-8`.
-3. Conecta `out` del convertidor a `print` de `Message Debug`.
-4. Conserva `Print PDU contents = On` para observar los bytes.
+1. El estudiante elimina la conexión directa entre `QT GUI Message Edit Box.msg` y `Message Debug.print`.
+2. Conecta `QT GUI Message Edit Box.msg` con `Texto a bytes UTF-8.in`.
+3. Conecta `Texto a bytes UTF-8.out` con `Message Debug.print`.
+4. Conserva `Print PDU contents = On` en `Message Debug` para observar los bytes.
 
 El convertidor queda entre la entrada de texto y el bloque que muestra el resultado.
 
 ![QT GUI Message Edit Box conectado a Texto a bytes UTF-8 y luego a la entrada print de Message Debug.](figures/enlace-09-conexion-texto-bytes.png)
-**Figura 9.** El texto entra por `in`; la PDU sale por `out` y llega a `print` de `Message Debug`.
+**Figura 10.** El texto entra por `in`; la PDU sale por `out` y llega a `print` de `Message Debug`.
 
 - A la izquierda, `msg` entrega el texto con `Type = String` y `Pair Mode = False`.
 - En el centro, el convertidor agrupa los bytes en una PDU. No añade todavía una cabecera de transmisión.
@@ -408,7 +452,7 @@ El convertidor queda entre la entrada de texto y el bloque que muestra el result
 El cuadro de entrada conserva su aspecto; el cambio está en el procesamiento posterior.
 
 ![Ventana Enlace digital de mensajes con Hola escrito en Mensaje de A para probar la conversión a bytes.](figures/enlace-10-entrada-hola-bytes.png)
-**Figura 10.** El usuario escribe `Hola` y pulsa Enter para enviar el texto al convertidor.
+**Figura 11.** El usuario escribe `Hola` y pulsa Enter para enviar el texto al convertidor.
 
 - El cuadro recibe letras, no números hexadecimales.
 - El convertidor obtiene los bytes después de recibir el mensaje.
@@ -419,7 +463,7 @@ El cuadro de entrada conserva su aspecto; el cambio está en el procesamiento po
 El registro completo muestra cuatro bytes para `Hola`; el fragmento superior pertenece a una impresión anterior.
 
 ![Consola con un registro VERBOSE PDU DEBUG PRINT, metadatos vacíos, longitud de cuatro bytes y contenido hexadecimal 48 6f 6c 61.](figures/enlace-11-consola-pdu-bytes.png)
-**Figura 11.** La PDU contiene cuatro bytes: `48 6f 6c 61`, que representan `Hola` en UTF-8.
+**Figura 12.** La PDU contiene cuatro bytes: `48 6f 6c 61`, que representan `Hola` en UTF-8.
 
 - Debajo de `VERBOSE PDU DEBUG PRINT`, `()` representa el campo de metadatos vacío. No es parte del texto escrito.
 - `pdu length = 4 bytes` indica la longitud del vector de bytes, no la cantidad de muestras I/Q.
@@ -496,12 +540,12 @@ class blk(gr.basic_block):
 1. El estudiante elimina la conexión desde `Texto a bytes UTF-8` hacia `Message Debug`.
 2. Conecta `out` de `Texto a bytes UTF-8` a `in` de `Bytes a texto UTF-8`.
 3. Conecta `out` de `Bytes a texto UTF-8` a `print` de `Message Debug`.
-4. Conserva la conexión desde `msg` del cuadro de texto hasta `in` del primer convertidor.
+4. Conserva la conexión desde `QT GUI Message Edit Box.msg` hasta `Texto a bytes UTF-8.in`.
 
 El mensaje recorre los dos convertidores antes de llegar al único visor de esta captura.
 
 ![Cuadro de texto conectado a Texto a bytes UTF-8, después a Bytes a texto UTF-8 y finalmente a print de un único Message Debug.](figures/enlace-12-conexion-bytes-texto.png)
-**Figura 12.** Los dos convertidores reconstruyen el texto y lo entregan a un único `Message Debug`.
+**Figura 13.** Los dos convertidores reconstruyen el texto y lo entregan a un único `Message Debug`.
 
 - `QT GUI Message Edit Box` publica el texto por `msg`. El primer convertidor entrega una PDU de bytes.
 - El segundo convertidor recibe esa PDU y publica el texto recuperado. No recibe el texto original mediante una conexión directa.
@@ -509,14 +553,14 @@ El mensaje recorre los dos convertidores antes de llegar al único visor de esta
 
 ??? note "Para profundizar: observar bytes y texto al mismo tiempo"
 
-    - Un segundo visor es opcional. La cadena de la Figura 12 basta para comprobar el texto final.
+    - Un segundo visor es opcional. La cadena de la Figura 13 basta para comprobar el texto final.
     - Para comparar ambas representaciones, se añade otro `Message Debug` y se conecta a `out` de `Texto a bytes UTF-8` por `print`.
     - Esa rama muestra los bytes; el visor final sigue mostrando texto. No se conecta el texto original directamente al visor final.
 
 ### 6.3. Probar la recuperación
 
 - **Qué cambia:** el texto escrito: `Hola`, `SDR` y `¡Hola, Perú!`.
-- **Qué permanece fijo:** los dos convertidores y las conexiones de la Figura 12.
+- **Qué permanece fijo:** los dos convertidores y las conexiones de la Figura 13.
 - **Qué se observa:** el texto recuperado debe coincidir con el escrito, incluidas las tildes y los espacios.
 
 1. El estudiante guarda y ejecuta el flowgraph.
@@ -527,18 +571,18 @@ El mensaje recorre los dos convertidores antes de llegar al único visor de esta
 El cuadro de entrada no cambia; ahora el mensaje atravesará ambos convertidores.
 
 ![Ventana Enlace digital de mensajes con Hola escrito en Mensaje de A para probar ambos convertidores.](figures/enlace-13-entrada-hola-recuperacion.png)
-**Figura 13.** El usuario escribe `Hola` para comprobar el recorrido texto → bytes → texto.
+**Figura 14.** El usuario escribe `Hola` para comprobar el recorrido texto → bytes → texto.
 
 - `Hola` es la entrada de la prueba. El usuario no necesita escribir sus bytes manualmente.
 - Enter publica el mensaje hacia el primer convertidor.
-- La ventana muestra la entrada, no el texto recuperado. El resultado aparece en la consola de la Figura 14.
+- La ventana muestra la entrada, no el texto recuperado. El resultado aparece en la consola de la Figura 15.
 
 ### 6.4. Interpretar el texto recuperado
 
 La consola muestra el texto que recibe el visor situado después de los dos convertidores.
 
 ![Consola de ejecución con dos registros MESSAGE DEBUG PRINT que contienen Hola tras la conversión de texto a bytes y de bytes a texto.](figures/enlace-14-consola-texto-recuperado.png)
-**Figura 14.** El visor final imprime `Hola`, el texto recuperado desde la PDU.
+**Figura 15.** El visor final imprime `Hola`, el texto recuperado desde la PDU.
 
 - Cada encabezado `MESSAGE DEBUG PRINT` inicia un registro del visor final. La línea `Hola` contiene su mensaje recibido.
 - Los dos registros pertenecen al mismo visor. No representan uno al convertir a bytes y otro al recuperar el texto.
@@ -552,16 +596,22 @@ La consola muestra el texto que recibe el visor situado después de los dos conv
 
 ### Ejercicio 6 — Qué demuestra la salida
 
-La Figura 14 muestra `Hola` dos veces. ¿Cada registro corresponde a un convertidor? ¿Ya funciona el receptor de radio?
+La Figura 15 muestra `Hola` dos veces. ¿Cada registro corresponde a un convertidor? ¿Ya funciona el receptor de radio?
 
 ??? example "Solución explicada"
 
-    - **Datos:** la Figura 12 tiene dos convertidores, pero solo un `Message Debug` conectado al final.
+    - **Datos:** la Figura 13 tiene dos convertidores, pero solo un `Message Debug` conectado al final.
     - **Concepto:** los convertidores publican mensajes por sus salidas. El visor final imprime el texto recuperado.
     - **Resultado:** ambos registros de `Hola` pertenecen a ese visor. No indican dos etapas de observación distintas.
     - **Interpretación:** se ha recuperado el texto después de representarlo mediante bytes. Todavía no existen modulador, canal de radio ni receptor.
 
 ## 7. Construir el paquete
+
+!!! note "Dónde se sitúan la longitud y el CRC"
+
+    `Construir paquete` prepara los datos binarios que después recibirá `Symbol mod`.
+    El diagrama de referencia no incluye una caja independiente para este formato de paquete.
+    El CRC añade información para detectar alteraciones; no instala un algoritmo que corrija los bits recibidos.
 
 - `Construir paquete` recibe la PDU del convertidor y añade información para interpretar y comprobar el mensaje.
 - La salida sigue siendo una PDU. Ahora su vector contiene longitud, texto y CRC, no solamente texto.
@@ -584,7 +634,7 @@ La Figura 14 muestra `Hola` dos veces. ¿Cada registro corresponde a un converti
 Para `Hola`, se conservan los cuatro bytes del texto y se añaden seis bytes de control.
 
 ![Formato con longitud, texto y CRC; ejemplo Hola con bytes 00 04, 48 6f 6c 61 y aa 94 8e c9.](figures/enlace-15-formato-paquete.png)
-**Figura 15.** El paquete de `Hola` contiene dos bytes de longitud, cuatro de texto y cuatro de CRC.
+**Figura 16.** El paquete de `Hola` contiene dos bytes de longitud, cuatro de texto y cuatro de CRC.
 
 - **Izquierda:** `00 04` representa la longitud del texto: cuatro bytes. No indica la longitud total del paquete.
 - **Centro:** `48 6f 6c 61` conserva `Hola`. Estos bytes son el contenido útil, sin cambios.
@@ -670,10 +720,10 @@ class blk(gr.basic_block):
 ### 7.3. Conectar la prueba
 
 1. El estudiante selecciona `Bytes a texto UTF-8` y pulsa `D` para deshabilitarlo, sin borrarlo. El atajo corresponde a `Disable` en GRC 3.10.
-2. Sus conexiones pueden permanecer, como muestra la Figura 16. No se usan mientras el bloque esté deshabilitado.
-3. Conserva la conexión del cuadro de texto con `Texto a bytes UTF-8`.
+2. Sus conexiones pueden permanecer, como muestra la Figura 17. No se usan mientras el bloque esté deshabilitado.
+3. Conserva la conexión de `QT GUI Message Edit Box.msg` con `Texto a bytes UTF-8.in`.
 4. Conecta los puertos según la tabla y conserva `Print PDU contents = On` en `Message Debug`.
-5. Si añadió el visor opcional del apartado 6.2, lo desconecta y deshabilita. En esta prueba, solo se observa la salida del constructor.
+5. Si añadió el segundo `Message Debug` opcional del apartado 6.2, lo desconecta y deshabilita. En esta prueba, solo se observa `Construir paquete.out`.
 
 | Origen | Puerto de salida | Destino | Puerto de entrada |
 |---|---|---|---|
@@ -684,7 +734,7 @@ class blk(gr.basic_block):
 Las conexiones negras llevan el mensaje al constructor; la rama gris conserva el convertidor anterior, deshabilitado.
 
 ![Cuadro de texto conectado a Texto a bytes UTF-8, Construir paquete y Message Debug; Bytes a texto UTF-8 y sus conexiones aparecen deshabilitados.](figures/enlace-16-conexion-construir-paquete.png)
-**Figura 16.** El recorrido activo pasa por `Construir paquete` y termina en `print` de `Message Debug`.
+**Figura 17.** El recorrido activo pasa por `Construir paquete` y termina en `print` de `Message Debug`.
 
 - **Izquierda:** el cuadro entrega texto a `Texto a bytes UTF-8`. Su salida entrega los bytes al constructor situado debajo.
 - **Abajo y derecha:** `Construir paquete` publica la PDU completa. La conexión negra lleva esa PDU a `print` de `Message Debug`.
@@ -713,18 +763,18 @@ El estudiante realiza esta prueba:
 El cuadro de entrada permanece igual; el cambio está en el recorrido del mensaje después de pulsar Enter.
 
 ![Ventana Enlace digital de mensajes con Hola escrito en Mensaje de A para probar la construcción del paquete.](figures/enlace-17-entrada-hola-paquete.png)
-**Figura 17.** El usuario escribe `Hola` para probar el constructor del paquete.
+**Figura 18.** El usuario escribe `Hola` para probar el constructor del paquete.
 
 - El cuadro contiene el texto original. No necesita mostrar ni recibir los bytes de longitud o CRC.
-- Al pulsar Enter, el texto recorre los bloques activos de la Figura 16.
-- Esta ventana no muestra el paquete construido. Ese resultado aparece en la consola de la Figura 18.
+- Al pulsar Enter, el texto recorre los bloques activos de la Figura 17.
+- Esta ventana no muestra el paquete construido. Ese resultado aparece en la consola de la Figura 19.
 
 ### 7.5. Leer el paquete en consola
 
-La consola muestra los mismos diez bytes del ejemplo de la Figura 15.
+La consola muestra los mismos diez bytes del ejemplo de la Figura 16.
 
 ![Consola con VERBOSE PDU DEBUG PRINT, longitud de diez bytes y contenido hexadecimal 00 04 48 6f 6c 61 aa 94 8e c9.](figures/enlace-18-consola-paquete.png)
-**Figura 18.** La PDU de `Hola` contiene diez bytes, con longitud y CRC incluidos.
+**Figura 19.** La PDU de `Hola` contiene diez bytes, con longitud y CRC incluidos.
 
 - **Longitud total:** `pdu length = 10 bytes` cuenta todo el vector. `0000:` indica la posición inicial, no un byte adicional.
 - **Longitud y texto:** `00 04` indica cuatro bytes de texto. Los bytes siguientes, `48 6f 6c 61`, representan `Hola`.
@@ -760,7 +810,7 @@ El texto `Hola` ocupa cuatro bytes UTF-8. ¿Qué longitud lleva la cabecera y cu
 
 ### 8.1. Qué comprueba el bloque
 
-El bloque utiliza el formato de la Figura 15. Para `Hola`, recibe diez bytes y debe entregar cuatro.
+El bloque utiliza el formato de la Figura 16. Para `Hola`, recibe diez bytes y debe entregar cuatro.
 
 | Comprobación | Ejemplo con `Hola` | Si falla |
 |---|---|---|
@@ -847,7 +897,7 @@ class blk(gr.basic_block):
 
 ### 8.3. Reconectar la cadena
 
-El bloque gris de la Figura 16 volverá a utilizarse. Primero se retira su conexión antigua de entrada.
+El bloque gris de la Figura 17 volverá a utilizarse. Primero se retira su conexión antigua de entrada.
 
 1. El estudiante elimina la conexión gris desde `Texto a bytes UTF-8` hacia `Bytes a texto UTF-8`, si todavía existe.
 2. Elimina la conexión desde `Construir paquete` hacia `print` de `Message Debug`.
@@ -869,7 +919,7 @@ La cadena activa debe tener estas conexiones:
 El mensaje pasa por el constructor y el comprobador antes de volver a convertirse en texto.
 
 ![Cadena con cuadro de texto, Texto a bytes UTF-8, Construir paquete, Comprobar paquete, Bytes a texto UTF-8 y Message Debug conectado por print.](figures/enlace-19-conexion-comprobar-paquete.png)
-**Figura 19.** El paquete pasa por `Comprobar paquete` antes de entregar sus bytes al convertidor de texto.
+**Figura 20.** El paquete pasa por `Comprobar paquete` antes de entregar sus bytes al convertidor de texto.
 
 - **Izquierda:** el cuadro publica el texto. `Texto a bytes UTF-8` entrega sus bytes a `Construir paquete`.
 - **Abajo:** el constructor añade longitud y CRC. El comprobador recibe ese paquete y solo publica los bytes del texto si supera las comprobaciones.
@@ -877,8 +927,8 @@ El mensaje pasa por el constructor y el comprobador antes de volver a convertirs
 
 !!! warning "El texto debe pasar por el comprobador"
 
-    - No debe quedar una conexión directa entre ambos convertidores. Esa conexión entregaría texto sin comprobar el paquete.
-    - `Message Debug` recibe únicamente la salida de `Bytes a texto UTF-8`. No se conecta también al constructor ni al comprobador.
+    - No debe quedar una conexión directa de `Texto a bytes UTF-8.out` a `Bytes a texto UTF-8.in`. Esa conexión evitaría la comprobación del paquete.
+    - `Message Debug.print` recibe únicamente la salida de `Bytes a texto UTF-8.out`. No recibe conexiones desde `Construir paquete.out` ni `Comprobar paquete.out`.
     - Si existe un visor opcional anterior, permanece desconectado y deshabilitado durante esta prueba.
 
 ### 8.4. Probar la recuperación
@@ -897,10 +947,10 @@ El estudiante realiza esta prueba:
 La entrada sigue siendo `Hola`; ahora su paquete debe pasar por el comprobador antes de llegar al visor.
 
 ![Ventana Enlace digital de mensajes con Hola escrito en Mensaje de A para probar la comprobación del paquete y recuperar el texto.](figures/enlace-20-entrada-hola-comprobacion.png)
-**Figura 20.** El usuario escribe `Hola` para probar la cadena con el comprobador del paquete.
+**Figura 21.** El usuario escribe `Hola` para probar la cadena con el comprobador del paquete.
 
 - El cuadro muestra el texto de entrada. No muestra el texto recuperado ni el resultado de comprobar el CRC.
-- Enter publica el mensaje hacia la cadena de la Figura 19.
+- Enter publica el mensaje hacia la cadena de la Figura 20.
 - El resultado se busca en la consola, no en este cuadro de entrada.
 
 ### 8.5. Leer el texto recuperado
@@ -908,10 +958,10 @@ La entrada sigue siendo `Hola`; ahora su paquete debe pasar por el comprobador a
 La consola vuelve a mostrar letras porque el visor recibe la salida del convertidor de texto.
 
 ![Consola de GNU Radio con un registro MESSAGE DEBUG PRINT que contiene Hola después de construir y comprobar el paquete.](figures/enlace-21-consola-texto-comprobado.png)
-**Figura 21.** El visor final muestra `Hola`, después del recorrido por el constructor, el comprobador y el convertidor de texto.
+**Figura 22.** El visor final muestra `Hola`, después del recorrido por el constructor, el comprobador y el convertidor de texto.
 
 - `MESSAGE DEBUG PRINT` identifica el registro del visor. La línea siguiente contiene `Hola`, el texto recuperado.
-- La salida coincide con la entrada de la Figura 20. Ya no se muestran los diez bytes del paquete de la Figura 18.
+- La salida coincide con la entrada de la Figura 21. Ya no se muestran los diez bytes del paquete de la Figura 19.
 - Este resultado comprueba la recuperación de `Hola` en esta cadena. No demuestra todavía el rechazo de un paquete alterado ni transmisión por radio.
 
 ??? note "Si la salida no coincide"
@@ -954,7 +1004,7 @@ Llegan diez bytes, pero la cabecera declara cinco bytes de texto. ¿Debe el bloq
 El cambio ocurre después de construir el paquete: `48` pasa a `49`, pero el CRC conserva su valor original.
 
 ![Comparación del paquete de Hola sin cambios y del segundo paquete con 49 en lugar de 48; longitud y CRC permanecen iguales.](figures/enlace-22-error-un-bit.png)
-**Figura 22.** El segundo paquete cambia un bit del texto, pero conserva la longitud y el CRC del paquete original.
+**Figura 23.** El segundo paquete cambia un bit del texto, pero conserva la longitud y el CRC del paquete original.
 
 - **Fila superior:** los paquetes primero y tercero contienen `48 6f 6c 61`, que representa `Hola`. No se altera ningún byte.
 - **Fila inferior:** el segundo paquete contiene `49 6f 6c 61`, que representaría `Iola`. El comprobador debe rechazarlo antes de convertirlo en texto.
@@ -1026,13 +1076,13 @@ class blk(gr.basic_block):
 1. El estudiante elimina la conexión directa entre `Construir paquete.out` y `Comprobar paquete.in`.
 2. Conecta `Construir paquete.out` con `Alterar segundo paquete.in`.
 3. Conecta `Alterar segundo paquete.out` con `Comprobar paquete.in`.
-4. Conserva el resto de la cadena de la Figura 19. `Message Debug` sigue conectado únicamente a la salida del convertidor de texto.
+4. Conserva el resto de la cadena de la Figura 20. `Message Debug.print` sigue conectado únicamente a `Bytes a texto UTF-8.out`.
 5. Comprueba que `Value` de `QT GUI Message Edit Box` permanece vacío.
 
 El paquete debe atravesar el auxiliar antes de llegar al comprobador.
 
 ![Flowgraph con Alterar segundo paquete entre Construir paquete y Comprobar paquete, seguido del convertidor a texto y Message Debug.](figures/enlace-23-conexion-alterar-paquete.png)
-**Figura 23.** El auxiliar altera el paquete antes de comprobarlo; el visor muestra únicamente el texto aceptado.
+**Figura 24.** El auxiliar altera el paquete antes de comprobarlo; el visor muestra únicamente el texto aceptado.
 
 - **Recorrido inferior:** `Construir paquete` entrega el paquete al auxiliar. La salida del auxiliar entra en `Comprobar paquete`.
 - **Recorrido hacia el visor:** el comprobador entrega los bytes aceptados a `Bytes a texto UTF-8`. El texto llega a `Message Debug.print`.
@@ -1041,7 +1091,8 @@ El paquete debe atravesar el auxiliar antes de llegar al comprobador.
 !!! warning "No se recalcula el CRC después del cambio"
 
     - El auxiliar debe quedar después del constructor. Si el cambio ocurre antes, el constructor calculará un CRC para el contenido ya modificado.
-    - No debe quedar una conexión directa que evite el auxiliar. Tampoco una conexión directa entre los dos convertidores de texto.
+    - No debe quedar una conexión directa de `Construir paquete.out` a `Comprobar paquete.in`. Esa conexión evitaría `Alterar segundo paquete`.
+    - Tampoco debe quedar una conexión directa de `Texto a bytes UTF-8.out` a `Bytes a texto UTF-8.in`.
     - `Value` vacío evita un envío inicial automático que cambiaría la numeración de la prueba.
 
 ### 9.4. Enviar tres veces el mismo texto
@@ -1054,7 +1105,7 @@ El paquete debe atravesar el auxiliar antes de llegar al comprobador.
 El texto escrito permanece igual durante los tres envíos.
 
 ![Cuadro Mensaje de A con el texto Hola durante la prueba de alteración.](figures/enlace-24-entrada-hola-alteracion.png)
-**Figura 24.** La entrada permanece en `Hola`; el auxiliar introduce el cambio después de construir el segundo paquete.
+**Figura 25.** La entrada permanece en `Hola`; el auxiliar introduce el cambio después de construir el segundo paquete.
 
 - **Cuadro de entrada:** contiene `Hola`. El estudiante no escribe `Iola` ni cambia el texto entre envíos.
 - **Acción:** cada pulsación de Enter publica otro mensaje. La imagen muestra la entrada, no confirma una recepción.
@@ -1075,7 +1126,7 @@ La consola debe mostrar estos resultados:
 En el primer envío, el auxiliar conserva el paquete y el visor muestra el texto.
 
 ![Consola con Inyector: paquete 1, sin cambios, seguido de MESSAGE DEBUG PRINT y Hola.](figures/enlace-25-primer-paquete-valido.png)
-**Figura 25.** El primer paquete pasa sin cambios y produce un registro con `Hola`.
+**Figura 26.** El primer paquete pasa sin cambios y produce un registro con `Hola`.
 
 - **Aviso del auxiliar:** `paquete 1, sin cambios` identifica el primer envío de esta ejecución.
 - **Salida del visor:** `Hola` aparece bajo `MESSAGE DEBUG PRINT`. El paquete pasó la comprobación.
@@ -1083,7 +1134,7 @@ En el primer envío, el auxiliar conserva el paquete y el visor muestra el texto
 En el segundo envío, el comprobador detecta el cambio y no entrega texto nuevo.
 
 ![Consola con Hola del primer envío, seguida de paquete 2, bit alterado y Comprobar paquete: CRC incorrecto. Se rechaza.](figures/enlace-26-segundo-paquete-rechazado.png)
-**Figura 26.** El segundo paquete se rechaza; el `Hola` anterior permanece visible en la consola.
+**Figura 27.** El segundo paquete se rechaza; el `Hola` anterior permanece visible en la consola.
 
 - **Parte superior:** `Hola` pertenece al primer envío. No es la salida del paquete alterado.
 - **Parte inferior:** `paquete 2, bit alterado` va seguido del rechazo por CRC. No aparece un nuevo registro de texto.
@@ -1112,7 +1163,7 @@ En el segundo envío, el comprobador detecta el cambio y no entrega texto nuevo.
 
 El montaje queda preparado para continuar:
 
-- La cadena activa vuelve a la Figura 19. El auxiliar queda disponible para repetir el experimento después.
+- La cadena activa vuelve a la Figura 20. El auxiliar queda disponible para repetir el experimento después.
 - Este ensayo modifica bytes de forma controlada. No simula todavía ruido, errores de frecuencia ni otros efectos sobre una señal I/Q.
 
 ### Ejercicio 9 — ¿Por qué no recalcular el CRC?
@@ -1129,6 +1180,9 @@ El auxiliar cambia `Hola` por `Iola`. ¿Qué ocurriría si también sustituyera 
 
 ## 10. Representar el paquete mediante bits
 
+**Ubicación en el sistema:** los datos siguen en el dominio B del diagrama.
+`Bytes a bits` separa los bits del paquete para preparar la entrada de `Symbol mod`; todavía no produce símbolos ni muestras.
+
 - Se añade `Bytes a bits` para preparar la entrada del futuro modulador.
 - Los bytes ya contienen bits. El bloque los separa: cada elemento de salida guarda solamente el valor `0` o `1`.
 - Se transforma el paquete completo: longitud, texto y CRC. No se añade información ni se recalcula el CRC.
@@ -1144,7 +1198,7 @@ Se usa **MSB first**, primero el bit más significativo. Cada byte se recorre de
 El ejemplo muestra los primeros tres bytes del paquete, no solamente los bytes del texto.
 
 ![Tres filas muestran 00, 04 y 48, sus ocho bits en orden MSB first y los ocho elementos u8 que almacena cada fila de salida.](figures/enlace-27-bytes-bits.png)
-**Figura 27.** Cada byte se representa mediante ocho valores; el orden empieza por el bit de mayor peso.
+**Figura 28.** Cada byte se representa mediante ocho valores; el orden empieza por el bit de mayor peso.
 
 - **Columna izquierda:** los valores son hexadecimales. `00 04` representa la longitud del texto; `48` corresponde a `H`.
 - **Columnas centrales:** los bits se leen de izquierda a derecha. `04` produce `00000100`; los ceros iniciales se conservan.
@@ -1217,11 +1271,11 @@ class blk(gr.basic_block):
 3. Deshabilita `Comprobar paquete` y `Bytes a texto UTF-8` con `D`, sin borrarlos.
 4. Retira la conexión de `Bytes a texto UTF-8.out` a `Message Debug.print`.
 5. Conecta `Construir paquete.out` con `Bytes a bits.in`.
-6. Conecta `Bytes a bits.out` con `Message Debug.print`. El visor debe tener una sola entrada activa.
-7. Conserva la conexión del cuadro de texto al convertidor y del convertidor al constructor.
-8. Comprueba `Print PDU contents = On` en el visor. Guarda, ejecuta, escribe `Hola` y pulsa Enter.
+6. Conecta `Bytes a bits.out` con `Message Debug.print`. `Message Debug.print` debe recibir una sola conexión activa.
+7. Conserva la conexión de `QT GUI Message Edit Box.msg` a `Texto a bytes UTF-8.in`. Conserva también `Texto a bytes UTF-8.out` → `Construir paquete.in`.
+8. Comprueba `Print PDU contents = On` en `Message Debug`. Guarda, ejecuta, escribe `Hola` y pulsa Enter.
 
-El recorrido activo debe terminar en el visor de bits:
+El recorrido activo debe terminar en `Message Debug.print`:
 
 ```text
 QT GUI Message Edit Box.msg → Texto a bytes UTF-8.in
@@ -1232,7 +1286,7 @@ Bytes a bits.out → Message Debug.print
 
 - Debe aparecer `VERBOSE PDU DEBUG PRINT` y una longitud de **80 bytes**.
 - El contenido debe usar únicamente `00` y `01`. Son los valores hexadecimales de los bits separados, no caracteres de texto.
-- Los primeros 24 elementos corresponden a los tres bytes de la Figura 27, en este orden:
+- Los primeros 24 elementos corresponden a los tres bytes de la Figura 28, en este orden:
 
 | Byte original | Ocho elementos consecutivos de salida |
 |---|---|
@@ -1247,19 +1301,19 @@ Bytes a bits.out → Message Debug.print
 
 ### 10.4. Comprobar el montaje y la salida
 
-El recorrido activo termina en `Bytes a bits` y entrega su salida al visor.
+`Bytes a bits.out` entrega los bits a `Message Debug.print`.
 
 ![Flowgraph con Bytes a bits conectado a Message Debug.print; comprobador, auxiliar de errores y convertidor inverso aparecen deshabilitados.](figures/enlace-28-conexion-bytes-bits.png)
-**Figura 28.** El visor recibe los bits del paquete; los bloques grises no participan en la ejecución.
+**Figura 29.** El visor recibe los bits del paquete; los bloques grises no participan en la ejecución.
 
-- **Ruta activa:** cuadro de texto → convertidor UTF-8 → constructor → `Bytes a bits` → `Message Debug.print`.
+- **Ruta activa:** `QT GUI Message Edit Box` → `Texto a bytes UTF-8` → `Construir paquete` → `Bytes a bits` → `Message Debug.print`.
 - **Bloques grises:** permanecen deshabilitados para conservar el trabajo anterior. Sus conexiones grises no forman parte del recorrido activo.
 - **Salida observada:** el visor recibe una PDU de bits, no texto recuperado ni muestras de radio.
 
 El mensaje utilizado para comprobar esta conversión sigue siendo `Hola`.
 
 ![Cuadro Mensaje de A con Hola antes de observar los bits del paquete.](figures/enlace-29-entrada-hola-bits.png)
-**Figura 29.** El texto `Hola` permite comparar la salida con el paquete conocido de diez bytes.
+**Figura 30.** El texto `Hola` permite comparar la salida con el paquete conocido de diez bytes.
 
 - **Entrada:** contiene cuatro caracteres ASCII, que ocupan cuatro bytes UTF-8.
 - **Paquete:** longitud y CRC añaden seis bytes. El constructor entrega diez bytes al convertidor de bits.
@@ -1267,7 +1321,7 @@ El mensaje utilizado para comprobar esta conversión sigue siendo `Hola`.
 La consola muestra los 80 bits, almacenados como valores `00` y `01`.
 
 ![Consola ordenada con una PDU de 80 bytes, formada por cinco filas completas de valores 00 y 01.](figures/enlace-30-consola-bits.png)
-**Figura 30.** Los 80 valores corresponden al paquete completo de `Hola`, incluidos longitud y CRC.
+**Figura 31.** Los 80 valores corresponden al paquete completo de `Hola`, incluidos longitud y CRC.
 
 - **Cabecera:** `pdu length = 80 bytes` cuenta los elementos del vector. Cada elemento representa un bit del paquete original.
 - **Filas:** `0000`, `0010`, `0020`, `0030` y `0040` son posiciones iniciales en hexadecimal. No forman parte de los datos.
@@ -1294,11 +1348,79 @@ El estudiante escribe `SDR`. ¿Cuántos elementos debe mostrar la PDU de salida 
 
 ## 11. Asociar bits con símbolos BPSK
 
-- Se usa `Chunks to Symbols` para convertir bits en símbolos. `QT GUI Constellation Sink` muestra esos símbolos en el plano I/Q.
-- BPSK significa *Binary Phase Shift Keying*: cada bit selecciona uno de dos estados de fase.
-- Un símbolo es el valor que representa una selección del modulador. En BPSK, cada símbolo representa un bit.
+**Ubicación en el sistema: primera parte de `Symbol mod`, modulación de símbolos.**
 
-### 11.1. Dos bits posibles, dos símbolos posibles
+![Diagrama original del sistema SDR con Symbol mod resaltado en naranja para localizar el mapeo de bits a símbolos BPSK.](figures/enlace-referencia-sdr-modulacion.png)
+**Figura 32.** `Chunks to Symbols` realiza el mapeo BPSK dentro de la función `Symbol mod`.
+
+- **Fila TX, naranja:** `Chunks to Symbols`, con `ID = mapeador`, asigna un símbolo complejo a cada bit.
+- **Entrada y salida del ensayo:** 80 bits del paquete de `Hola` producen 80 símbolos complejos. Los pasos 12 y 13 construirán las muestras del pulso.
+- **Adaptadores y observación:** `PDU to Tagged Stream` y `Tagged Stream to PDU` permiten conectar el mapeo y observar cada envío. No son otras etapas de modulación.
+
+[Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-modulacion.svg).
+
+- El paso 10 entrega una PDU con los bits del paquete. Este paso obtiene otra PDU con los símbolos correspondientes al mismo envío.
+- Primero se adapta la PDU al dominio de stream, conservando los límites del paquete mediante una etiqueta de longitud.
+- Después, `Chunks to Symbols` convierte cada bit en un símbolo BPSK. `Tagged Stream to PDU` reúne los símbolos de cada envío.
+- `QT GUI Constellation Sink` muestra esos símbolos en el plano I/Q.
+
+### 11.1. Conservar el paquete con `PDU to Tagged Stream`
+
+Una PDU, *Protocol Data Unit* o unidad de datos de protocolo, es un mensaje que reúne metadatos y un vector de datos.
+En la salida de `Bytes a bits`, ese vector contiene un elemento `u8` por bit del paquete. Cada elemento vale `0` o `1`.
+
+- **Para `Hola`:** el paquete contiene 2 bytes de longitud, 4 bytes de texto y 4 bytes de CRC. Su PDU contiene 80 elementos binarios.
+- **Límite del envío:** los 80 elementos pertenecen a una sola PDU. La PDU del siguiente envío es otro mensaje independiente.
+- **Metadatos:** describen el vector y pueden estar vacíos. La cabecera y el CRC del paquete forman parte de los datos del vector.
+
+`Chunks to Symbols` recibe los datos por una entrada de stream, una secuencia ordenada de elementos. No recibe la PDU directamente.
+`PDU to Tagged Stream` entrega los elementos del vector por su salida de stream y conserva su orden.
+Además, coloca un tag, etiqueta asociada a una posición, en el primer elemento del paquete.
+
+- **Nombre de la etiqueta:** `packet_len`.
+- **Valor para `Hola`:** `80`, porque el vector contiene 80 elementos. La etiqueta cuenta el paquete completo, no solo los bits del texto.
+- **Delimitación:** la posición de la etiqueta indica el comienzo del conjunto; su valor indica cuántos elementos pertenecen a ese conjunto.
+- **Alcance:** `packet_len` conserva los límites del envío. No contiene la palabra `Hola` ni identifica su significado.
+
+La cadena mantendrá esta correspondencia para `Hola`:
+
+| Bloque | Datos de salida | Delimitación del envío |
+|---|---|---|
+| `Bytes a bits` | Vector de 80 elementos `u8`, con valores `0` o `1` | Una PDU contiene el vector completo. |
+| `PDU to Tagged Stream` | Stream de los mismos 80 elementos `u8` | `packet_len = 80` en el primer elemento. |
+| `Chunks to Symbols`, con `Dimension = 1` | Stream de 80 símbolos complejos | La etiqueta conserva su posición y su valor `80`. |
+| `Tagged Stream to PDU` | Vector de 80 símbolos complejos | Una PDU reúne los símbolos del mismo envío. |
+
+El estudiante añade primero `PDU to Tagged Stream`:
+
+1. El estudiante detiene la ejecución y guarda el flowgraph.
+2. Activa `View → Show All Block IDs` para ver los identificadores de los bloques.
+3. Busca `PDU to Tagged Stream` en el buscador del panel de bloques de GRC.
+4. Arrastra `PDU to Tagged Stream` desde el resultado de búsqueda al área de trabajo. Lo coloca a la derecha de `Bytes a bits`.
+5. Abre las propiedades de `PDU to Tagged Stream` con doble clic y configura los valores de la tabla siguiente.
+6. Confirma las propiedades. Comprueba que el bloque muestre `ID: a_stream`, una entrada de mensajes `pdus` y una salida de stream de tipo `Byte`.
+
+| Campo | Valor |
+|---|---|
+| `ID` | `a_stream` |
+| `Item Type` | `Byte` |
+| `Length tag name` | `packet_len` |
+
+Las conexiones se realizan en el apartado 11.7, después de añadir los demás bloques. Allí se conecta `Bytes a bits.out` con `PDU to Tagged Stream.pdus`.
+
+La etiqueta no añade un elemento número 81. Acompaña al primer elemento como información interna de GNU Radio.
+
+??? note "Para profundizar: etiqueta y cabecera no son lo mismo"
+
+    - La cabecera `00 04` sigue dentro de los datos. Indica cuatro bytes de texto.
+    - `packet_len` acompaña al stream dentro de GNU Radio. No añade bits a los datos ni se transmite como una cabecera RF.
+    - La conservación de límites se aplica a este recorrido interno, mientras los bloques mantengan la etiqueta y su longitud correcta.
+    - El receptor posterior deberá detectar los paquetes desde las muestras recibidas. Esta etiqueta no sustituye esa detección.
+
+### 11.2. Dos bits posibles, dos símbolos posibles
+
+BPSK significa *Binary Phase Shift Keying*: cada bit selecciona uno de dos estados de fase.
+Un símbolo es el valor que representa una selección del modulador. En BPSK, cada símbolo representa un bit.
 
 Se utiliza este mapeo, igual al de `constellation_bpsk` de GNU Radio:
 
@@ -1320,7 +1442,7 @@ $$
 Los símbolos se sitúan en dos posiciones; el orden de los bits determina la secuencia de símbolos.
 
 ![Panel izquierdo con los símbolos BPSK en I igual a menos uno y más uno, Q igual a cero; panel derecho con los ocho símbolos del byte H.](figures/enlace-31-mapeo-bpsk.png)
-**Figura 31.** Cada bit selecciona un punto BPSK; una secuencia de bits produce una secuencia de símbolos.
+**Figura 33.** Cada bit selecciona un punto BPSK; una secuencia de bits produce una secuencia de símbolos.
 
 - **Panel izquierdo:** el eje horizontal es $I$ y el vertical es $Q$. El bit `0` selecciona el punto izquierdo; `1` selecciona el derecho.
 - **Panel derecho:** el eje horizontal indica la posición dentro del byte `H`. Los puntos azules muestran $I$ y los naranjas muestran $Q$.
@@ -1335,30 +1457,6 @@ Los símbolos se sitúan en dos posiciones; el orden de los bits determina la se
     - No se han fijado la duración del símbolo ni las muestras por símbolo. `samp_rate` no determina esos valores en este montaje.
     - Los valores $+1$ y $-1$ son amplitudes normalizadas. No se especifica una potencia física en vatios.
     - Se puede definir el mapeo inverso si el receptor usa la misma convención. Esta guía conserva el mapeo de la tabla.
-
-### 11.2. Pasar de PDU a stream
-
-- `Chunks to Symbols` recibe un stream: una secuencia de elementos. No recibe directamente la PDU de `Bytes a bits`.
-- `PDU to Tagged Stream` entrega esos elementos en orden. Un tag, etiqueta asociada a una posición, indica la longitud del paquete.
-- El nombre elegido para esa etiqueta es `packet_len`. Su valor cuenta elementos, no bytes de texto.
-
-1. El estudiante detiene la ejecución y guarda el flowgraph.
-2. Activa `View → Show All Block IDs`. Añade `PDU to Tagged Stream` y configura la tabla siguiente.
-3. Confirma las propiedades. El bloque debe tener una entrada de mensajes `pdus` y una salida de stream.
-
-| Campo | Valor |
-|---|---|
-| `ID` | `a_stream` |
-| `Item Type` | `Byte` |
-| `Length tag name` | `packet_len` |
-
-Para `Hola`, la PDU contiene 80 elementos `u8`. El adaptador entrega 80 elementos y coloca `packet_len = 80` al inicio.
-
-??? note "Para profundizar: etiqueta y cabecera no son lo mismo"
-
-    - La cabecera `00 04` sigue dentro de los datos. Indica cuatro bytes de texto.
-    - `packet_len` acompaña al stream dentro de GNU Radio. No añade bits a los datos ni se transmite como una cabecera RF.
-    - Esta etiqueta permite comprobar el mapeo. No sustituye la detección de paquetes desde las muestras en el receptor futuro.
 
 ### 11.3. Mapear con `Chunks to Symbols`
 
@@ -1378,6 +1476,9 @@ Para `Hola`, la PDU contiene 80 elementos `u8`. El adaptador entrega 80 elemento
 - El valor de entrada selecciona una posición de `Symbol Table`. `0` selecciona `-1+0j`; `1` selecciona `1+0j`.
 - `Dimension = 1` produce un complejo por bit. El valor debe cambiarse si aparece `2` como valor predeterminado.
 - Los datos entran por el puerto de stream. El puerto `set_symbol_table` cambia la tabla y queda sin conectar.
+- `Chunks to Symbols` aplica el mapeo sin interpretar `packet_len`. Con `Dimension = 1`, conserva un símbolo por elemento y propaga la etiqueta.
+
+`Chunks to Symbols` necesita el stream para recibir los datos. `Tagged Stream to PDU` utilizará la etiqueta para reunir los símbolos de cada envío.
 
 !!! warning "La entrada debe contener bits desempaquetados"
 
@@ -1386,6 +1487,10 @@ Para `Hola`, la PDU contiene 80 elementos `u8`. El adaptador entrega 80 elemento
     - `Dimension` no cuenta las componentes I y Q. Cada complejo ya contiene ambas componentes.
 
 ### 11.4. Reconstruir la PDU de símbolos
+
+`Tagged Stream to PDU` utiliza `packet_len` para determinar cuántos símbolos pertenecen al envío actual.
+Para `Hola`, reúne los 80 símbolos en un vector y publica una PDU por su salida `pdus`.
+Al recibir la siguiente etiqueta de longitud, reúne los símbolos del siguiente envío en otra PDU.
 
 1. El estudiante añade `Tagged Stream to PDU`.
 2. Configura la tabla siguiente y confirma las propiedades.
@@ -1416,13 +1521,58 @@ self.mapeador.set_min_output_buffer(0, (5000 + 6) * 8 * 2)
 - Estas llamadas configuran memoria. No convierten bits ni sustituyen el mapeo estándar.
 - La configuración permite probar también el límite de 5 kB. No basta con comprobar un mensaje corto como `Hola`.
 
-??? note "Para profundizar: tamaño del buffer y versión instalada"
+??? note "Para profundizar: qué hace Python Snippet y por qué se reserva el doble de capacidad"
 
-    - El paquete máximo contiene $(5000+6)\times8=40048$ bits. La configuración solicita $40048\times2=80096$ elementos por buffer.
-    - GNU Radio 3.10.12 limita una operación a la mitad del buffer de salida. El factor 2 reserva espacio para esa condición.
-    - Los tamaños cuentan elementos, no bytes. Cada elemento ocupa un byte antes del mapeo y ocho bytes después.
+    `Python Snippet` inserta un fragmento de código en el programa Python que genera GRC.
+    Con `Main - After Init`, este fragmento se ejecuta una vez por arranque, después de crear los bloques y antes de iniciar el procesamiento.
+    Por eso el bloque queda sin conexiones: configura otros bloques mediante sus IDs.
+
+    **Las dos llamadas configuran memoria temporal.** Un buffer almacena los elementos que un bloque produce y el siguiente consume.
+    En este montaje, el buffer de salida de `PDU to Tagged Stream` contiene los bits que leerá `Chunks to Symbols`.
+    El buffer de salida de `Chunks to Symbols` contiene los símbolos que leerá `Tagged Stream to PDU`.
+
+    La primera llamada se interpreta por partes:
+
+    | Parte del código | Significado |
+    |---|---|
+    | `self` | Objeto Python que contiene el flowgraph. |
+    | `a_stream` | ID de `PDU to Tagged Stream`. |
+    | `set_min_output_buffer` | Solicita la capacidad mínima del buffer de salida. |
+    | Primer argumento, `0` | Selecciona el primer puerto de salida. |
+    | Segundo argumento, `(5000 + 6) * 8 * 2` | Solicita capacidad para al menos 80 096 elementos. |
+
+    La segunda llamada aplica la misma solicitud a `Chunks to Symbols`, cuyo ID es `mapeador`.
+    El significado de cada factor es el siguiente:
+
+    | Factor | Motivo |
+    |---|---|
+    | `5000` | Máximo de bytes UTF-8 de texto que admite `Construir paquete`. Es un límite elegido para este laboratorio. |
+    | `+ 6` | El formato añade 2 bytes de longitud y 4 bytes de CRC. |
+    | `× 8` | Cada byte del paquete produce ocho elementos `u8`, uno por bit. |
+    | `× 2` | Reserva capacidad adicional para el trabajo simultáneo del productor y el consumidor. |
+
+    El paquete máximo contiene $(5000+6)\times8=40048$ elementos antes del mapeo y produce 40 048 símbolos después.
+    Cada llamada solicita capacidad para $40048\times2=80096$ elementos.
+
+    **El factor dos favorece el paralelismo.** Un bloque puede producir datos nuevos mientras el siguiente todavía consume datos anteriores.
+    El espacio adicional permite conservar datos pendientes de lectura y disponer de espacio para el siguiente grupo.
+    El [comentario del código de GNU Radio](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gnuradio-runtime/lib/block.cc#L425-L429) denomina esta estrategia *double buffering*, doble búfer.
+
+    Para favorecer ese funcionamiento, el ejecutor de GNU Radio 3.10.12 limita la producción por llamada a aproximadamente la mitad del buffer de salida.
+    Además, `PDU to Tagged Stream` necesita entregar la PDU completa en una operación.
+    Solicitar el doble permite que esa mitad admita el paquete máximo completo. El [ejecutor](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gnuradio-runtime/lib/block_executor.cc#L53-L80) aplica ese límite.
+
+    GNU Radio utiliza un buffer circular. Las posiciones de lectura y escritura avanzan; no existen dos mitades permanentemente asignadas a cada bloque.
+    El límite por llamada tampoco significa que la ocupación total del buffer deba permanecer siempre por debajo del 50 %.
+
+    **Capacidad y cantidad de datos son magnitudes diferentes.** Para `Hola`, salen 80 elementos `u8` de `PDU to Tagged Stream` y 80 símbolos complejos de `Chunks to Symbols`.
+    La reserva adicional no duplica esos datos, no modifica `packet_len = 80` y no corresponde a las componentes I y Q.
+    Los buffers predeterminados permiten procesar ese mensaje corto; este ajuste prepara el montaje para el máximo de 5000 bytes de texto.
+
+    - Los tamaños solicitados cuentan elementos, no bytes. Cada elemento ocupa un byte antes del mapeo y ocho bytes después.
+    - GNU Radio puede asignar una capacidad mayor por sus requisitos de memoria. `set_min_output_buffer` solicita un mínimo, no un tamaño exacto.
     - En esta versión, `Min Output Buffer` no aplica el ajuste a `Chunks to Symbols` por su declaración de puertos múltiples.
-    - La llamada con `0` selecciona explícitamente el primer puerto. `Python Snippet` ejecuta las llamadas antes de iniciar el flujo.
+    - La llamada con el primer argumento `0` selecciona explícitamente su primer puerto de salida.
 
 ### 11.6. Añadir el visor de constelación
 
@@ -1450,7 +1600,7 @@ self.mapeador.set_min_output_buffer(0, (5000 + 6) * 8 * 2)
 1. El estudiante retira la conexión de `Bytes a bits.out` a `Message Debug.print`.
 2. Conserva `Message Debug` habilitado. Si está gris, lo selecciona y pulsa `E`.
 3. Cambia `Print PDU contents` a `On` en `Message Debug`. Así observa el tamaño y los bytes del vector complejo.
-4. Mantiene deshabilitados los tres bloques grises de la Figura 28. Conserva todas las conexiones anteriores a `Bytes a bits`.
+4. Mantiene deshabilitados `Comprobar paquete`, `Alterar segundo paquete` y `Bytes a texto UTF-8`. Conserva las conexiones anteriores a `Bytes a bits`.
 5. Realiza las conexiones de la tabla. Los puertos de stream corresponden a la única entrada o salida de datos.
 
     | Origen | Destino | Tipo de conexión |
@@ -1464,19 +1614,16 @@ self.mapeador.set_min_output_buffer(0, (5000 + 6) * 8 * 2)
 6. Guarda, ejecuta, escribe `Hola` y pulsa Enter una vez.
 
 El recorrido activo utiliza los tres bloques estándar y entrega la misma PDU a los dos visores.
+`Python Snippet` permanece habilitado y sin conexiones.
 
 ![Flowgraph con Bytes a bits, PDU to Tagged Stream, Chunks to Symbols y Tagged Stream to PDU; la salida alimenta Message Debug y QT GUI Constellation Sink.](figures/enlace-32-conexion-bpsk.png)
-**Figura 32.** Los adaptadores permiten mapear los bits y entregar la PDU compleja a los dos visores.
+**Figura 34.** Los adaptadores permiten mapear los bits y entregar la PDU compleja a los dos visores.
 
 - **Recorrido izquierdo:** el texto pasa por `Texto a bytes UTF-8`, `Construir paquete` y `Bytes a bits`.
-- **Recorrido inferior:** `PDU to Tagged Stream` entrega bits al mapeador. `Tagged Stream to PDU` reúne los símbolos complejos.
+- **Recorrido inferior:** `PDU to Tagged Stream` entrega bits a `Chunks to Symbols`. `Tagged Stream to PDU` reúne los símbolos complejos.
 - **Visores derechos:** la salida `pdus` llega a `Message Debug.print` y a `QT GUI Constellation Sink.in`.
-- **Bloques grises:** comprobador, auxiliar de errores y convertidor inverso permanecen deshabilitados.
+- **Bloques grises:** `Comprobar paquete`, `Alterar segundo paquete` y `Bytes a texto UTF-8` permanecen deshabilitados.
 - **Configuración:** ambos adaptadores usan `packet_len`. `Message Debug` tiene `Print PDU contents = On`.
-
-??? note "Si ya existe el mapeador Python de la versión anterior"
-
-    El estudiante desconecta y deshabilita `Bits a simbolos BPSK`, sin borrarlo. Los tres bloques estándar sustituyen ese recorrido.
 
 ### 11.8. Leer la constelación y la consola
 
@@ -1489,7 +1636,7 @@ La prueba debe mostrar lo siguiente:
 - **Límite:** dos puntos visibles no significan dos símbolos enviados. El paquete contiene 80 símbolos, pero solo utiliza dos valores distintos.
 
 ![Ventana Enlace digital de mensajes con Hola en Mensaje de A y dos puntos BPSK en I igual a menos uno y más uno, Q igual a cero.](figures/enlace-33-constelacion-hola-bpsk.png)
-**Figura 33.** Al enviar `Hola`, los 80 símbolos BPSK se superponen en dos posiciones de la constelación.
+**Figura 35.** Al enviar `Hola`, los 80 símbolos BPSK se superponen en dos posiciones de la constelación.
 
 - **Entrada superior:** `Mensaje de A` contiene `Hola`. Sus cuatro bytes UTF-8 son `48 6f 6c 61`.
 - **Ejes del visor:** `In-phase` muestra la componente $I$; `Quadrature` muestra la componente $Q$.
@@ -1499,7 +1646,7 @@ La prueba debe mostrar lo siguiente:
 La consola permite comprobar cuánto espacio ocupa la PDU de símbolos.
 
 ![Consola con VERBOSE PDU DEBUG PRINT, metadatos vacíos, pdu length igual a 640 bytes y las primeras ocho filas del vector complejo.](figures/enlace-34-consola-simbolos-bpsk.png)
-**Figura 34.** La PDU contiene 80 símbolos complejos y ocupa 640 bytes; la captura muestra el comienzo del vector.
+**Figura 36.** La PDU contiene 80 símbolos complejos y ocupa 640 bytes; la captura muestra el comienzo del vector.
 
 - **Cabecera:** `VERBOSE PDU DEBUG PRINT` identifica la PDU. `()` indica metadatos vacíos.
 - **Tamaño:** `pdu length = 640 bytes` cuenta el almacenamiento de los 80 elementos complejos.
@@ -1517,11 +1664,36 @@ Los tamaños de las tres representaciones se comparan así:
 
 ??? note "Para profundizar: por qué aparecen 640 bytes"
 
-    - El vector `c32` almacena cada complejo mediante dos componentes de 32 bits: I y Q.
-    - Cada complejo ocupa $2\times32/8=8$ bytes. Para `Hola`, $80\times8=640$ bytes.
-    - Para `SDR`, $72\times8=576$ bytes. `Message Debug` informa el almacenamiento del vector, no el número de símbolos.
-    - Con `Print PDU contents = Off`, el tamaño se conserva y aparece `(printing disabled)`. Para reproducir la Figura 34, se usa `On`.
-    - El bloque estándar no imprime el aviso `BPSK: 80 simbolos.` de la versión Python anterior.
+    **Los 640 bytes corresponden al almacenamiento de 80 símbolos complejos.** El recorrido de `Hola` conserva esta cantidad de elementos:
+
+    - `PDU to Tagged Stream` entrega un stream de 80 elementos `u8`, uno por bit.
+    - `Chunks to Symbols`, con `Dimension = 1`, convierte cada bit en un símbolo complejo. Entran 80 elementos y salen 80 símbolos.
+    - `Tagged Stream to PDU` reúne esos 80 símbolos en un vector `c32`. El adaptador conserva los símbolos y su orden.
+
+    **Un símbolo complejo es un solo elemento con dos componentes.** Se escribe como $a=I+jQ$, donde $I$ es la parte real y $Q$ la parte imaginaria.
+
+    | Parte de un símbolo | Representación | Almacenamiento |
+    |---|---|---|
+    | Componente I | Número real de 32 bits | 4 bytes |
+    | Componente Q | Número real de 32 bits | 4 bytes |
+    | Elemento complejo completo, $I+jQ$ | Dos componentes de 32 bits | 8 bytes |
+
+    En la denominación PMT `c32`, el número `32` indica los bits de cada componente. El complejo completo ocupa 64 bits, equivalentes a ocho bytes.
+    Aunque $Q=0$ en estos símbolos BPSK, su almacenamiento sigue ocupando cuatro bytes.
+
+    **Cálculo para `Hola`:**
+
+    - **Datos:** 80 símbolos; dos componentes por símbolo; 32 bits por componente; ocho bits por byte.
+    - **Fórmula:** almacenamiento del vector = número de símbolos × componentes por símbolo × bytes por componente.
+    - **Sustitución:** $80\times2\times(32/8)=640$ bytes.
+    - **Resultado:** el vector contiene 80 elementos `c32`, de ocho bytes cada uno.
+    - **Interpretación:** la cuenta $160\times4=640$ también es válida. Sus 160 unidades son componentes reales que forman 80 símbolos complejos.
+
+    **El mapeo no produce 160 elementos `c32`.** El número de elementos permanece en 80; cambia su tipo y el almacenamiento por elemento.
+
+    - Para `SDR`, el vector contiene 72 elementos `c32`: $72\times8=576$ bytes.
+    - `Message Debug` informa los bytes de datos del vector. La indicación `pdu length = 640 bytes` no significa 640 símbolos ni 640 bytes de texto.
+    - Con `Print PDU contents = Off`, el tamaño se conserva y aparece `(printing disabled)`. Para reproducir la Figura 36, se usa `On`.
 
 El experimento permite cambiar el mensaje sin cambiar el mapeo:
 
@@ -1553,7 +1725,10 @@ El visor muestra dos puntos después de enviar `Hola`. ¿Se han perdido los otro
 
 ## 12. Construir la señal en el dominio del tiempo
 
-- El estudiante continúa desde el canvas de la Figura 32. Añade una rama a la salida de `mapeador`.
+**Ubicación en el sistema:** continúa `Symbol mod`, resaltado en la Figura 32.
+El mapeo ya eligió los símbolos. Ahora `Repeat` construye cuatro muestras por símbolo para representar un pulso rectangular.
+
+- El estudiante continúa desde el canvas de la Figura 34. Añade una rama a la salida de `mapeador`.
 - Esa rama construye un pulso rectangular: conserva el valor de cada símbolo durante cuatro muestras consecutivas.
 - Los visores del apartado 11 conservan su conexión. Permiten comparar los símbolos con las nuevas muestras.
 - Se utiliza pulse shaping, conformación del pulso, rectangular. Un filtro con otra forma de pulso se estudiará después.
@@ -1589,7 +1764,7 @@ El índice $r$ recorre las muestras de un símbolo, desde cero hasta $L-1$.
 El byte `H` empieza después de los 16 bits de longitud. Su fragmento temporal ocupa desde 16 ms hasta 24 ms.
 
 ![Panel superior con los ocho símbolos de H y panel inferior con cuatro muestras por símbolo; los ejes indican tiempo entre 16 y 24 ms e I y Q normalizadas.](figures/enlace-35-pulso-rectangular.png)
-**Figura 35.** Cada símbolo de `H` produce cuatro muestras; las líneas verticales separan intervalos de un milisegundo.
+**Figura 37.** Cada símbolo de `H` produce cuatro muestras; las líneas verticales separan intervalos de un milisegundo.
 
 - **Panel superior:** los ocho bits de `H`, `01001000`, seleccionan ocho valores de $I$. Los puntos indican el comienzo de cada símbolo.
 - **Panel inferior:** los puntos azules muestran 32 muestras de $I$. Los puntos naranjas muestran $Q=0$.
@@ -1734,7 +1909,7 @@ self.longitud_muestras.set_min_output_buffer(0, (5000 + 6) * 8 * self.sps * 2)
 
 ### 12.9. Conectar desde el canvas actual
 
-1. El estudiante conserva las conexiones y los bloques grises de la Figura 32.
+1. El estudiante conserva las conexiones y los bloques grises de la Figura 34.
 2. Añade una segunda conexión desde la salida de stream de `mapeador` hacia `Repeat`.
 3. Completa la rama nueva según la tabla. Los puertos de stream corresponden a la única entrada o salida de datos.
 
@@ -1749,7 +1924,7 @@ self.longitud_muestras.set_min_output_buffer(0, (5000 + 6) * 8 * self.sps * 2)
 La salida de `mapeador` alimenta dos ramas. Cada rama permite observar una representación diferente del mismo paquete.
 
 ![Diagrama con una rama existente para observar los símbolos y una rama nueva con Repeat, Tagged Stream Multiply Length Tag y Tagged Stream to PDU, seguida de los visores temporal y de tamaño.](figures/enlace-36-conexion-senal-temporal.png)
-**Figura 36.** La rama nueva construye y reúne las muestras; la rama anterior permite observar los símbolos originales.
+**Figura 38.** La rama nueva construye y reúne las muestras; la rama anterior permite observar los símbolos originales.
 
 - **Origen izquierdo:** `mapeador` entrega los símbolos complejos del paquete a las dos ramas.
 - **Rama superior:** conserva el adaptador y los visores del apartado 11. Para `Hola`, observa 80 símbolos.
@@ -1774,7 +1949,7 @@ La salida de `mapeador` alimenta dos ramas. Cada rama permite observar una repre
 - **Consola de muestras:** indica `pdu length = 2560 bytes (printing disabled)` para `Hola`. Para `SDR`, indica 2304 bytes.
 - **Gráfica temporal:** `I` toma los valores $-1$ y $+1$. Cada símbolo aporta cuatro puntos consecutivos; `Q` permanece en cero.
 - **Comienzo de `Hola`:** los ocho bits del primer byte de longitud son cero. Las primeras 32 muestras tienen $I=-1$.
-- **Campo de texto:** el fragmento de `H` aparece desde 16 ms, como en la Figura 35. El paquete no empieza por `H`.
+- **Campo de texto:** el fragmento de `H` aparece desde 16 ms, como en la Figura 37. El paquete no empieza por `H`.
 - **Pausas:** no se añaden muestras que representen el tiempo entre pulsaciones de Enter. Cada PDU describe su propio paquete desde tiempo cero.
 
 ??? note "Si el resultado no coincide"
@@ -1787,10 +1962,10 @@ La salida de `mapeador` alimenta dos ramas. Cada rama permite observar una repre
 
 ### 12.11. Leer las capturas de ejecución
 
-La Figura 37 muestra el envío de `Hola` con `sps = 4`. Los dos visores presentan el mismo paquete en representaciones diferentes.
+La Figura 39 muestra el envío de `Hola` con `sps = 4`. Los dos visores presentan el mismo paquete en representaciones diferentes.
 
 ![Ejecución con Hola: el panel temporal muestra I en menos uno o más uno y Q en cero hasta unos 80 ms; la constelación muestra dos posiciones.](figures/enlace-37-senal-temporal-hola.png)
-**Figura 37.** Con `sps = 4`, la señal temporal de `Hola` identifica sus componentes I/Q y conserva las dos posiciones BPSK.
+**Figura 39.** Con `sps = 4`, la señal temporal de `Hola` identifica sus componentes I/Q y conserva las dos posiciones BPSK.
 
 - **Panel superior:** la curva azul representa $I$. La curva roja representa $Q=0$. Los marcadores indican las muestras.
 - **Eje horizontal:** muestra tiempo en milisegundos. La última muestra está en 79.75 ms, con 320 muestras a 4000 muestras/s. El paquete dura 80 ms.
@@ -1800,10 +1975,10 @@ La Figura 37 muestra el envío de `Hola` con `sps = 4`. Los dos visores presenta
 - **Líneas del visor:** unen muestras discretas. Los trazos entre $-1$ y $+1$ no representan muestras adicionales generadas por `Repeat`.
 - **Leyenda:** `I` identifica la componente real azul. `Q` identifica la componente imaginaria roja, según el apartado 12.7.
 
-La Figura 38 muestra los tamaños de las dos ramas con `sps = 4`.
+La Figura 40 muestra los tamaños de las dos ramas con `sps = 4`.
 
 ![Consola con sps igual a cuatro: 640 bytes de símbolos y un registro intercalado de 2560 bytes de muestras, con la impresión del contenido temporal desactivada.](figures/enlace-38-consola-simbolos-paso12.png)
-**Figura 38.** Con `sps = 4`, la consola muestra 640 bytes de símbolos y 2560 bytes de muestras temporales.
+**Figura 40.** Con `sps = 4`, la consola muestra 640 bytes de símbolos y 2560 bytes de muestras temporales.
 
 - **Primer tamaño:** $80\times8=640$ bytes. Cada símbolo complejo `c32` utiliza ocho bytes de almacenamiento.
 - **Volcado hexadecimal:** pertenece al visor de símbolos, que conserva `Print PDU contents = On`.
@@ -1839,20 +2014,20 @@ La Figura 38 muestra los tamaños de las dos ramas con `sps = 4`.
 Las Figuras 39 y 40 muestran el resultado del mismo envío con `sps = 8`.
 
 ![Envío de Hola con sps igual a ocho: I azul en menos uno o más uno, Q roja en cero, duración de unos 80 ms y constelación con dos posiciones.](figures/enlace-39-senal-temporal-hola-sps8.png)
-**Figura 39.** Con `sps = 8`, `Hola` conserva su duración y sus valores BPSK; cada símbolo contiene ocho muestras.
+**Figura 41.** Con `sps = 8`, `Hola` conserva su duración y sus valores BPSK; cada símbolo contiene ocho muestras.
 
-- **Panel superior:** muestra $I$ en $-1$ o $+1$, y $Q=0$. Los valores y el orden coinciden con la Figura 37.
+- **Panel superior:** muestra $I$ en $-1$ o $+1$, y $Q=0$. Los valores y el orden coinciden con la Figura 39.
 - **Eje horizontal:** conserva unos 80 ms. Las 640 muestras utilizan $f_s=8000$ muestras/s; la última muestra está en 79.875 ms.
 - **Marcadores:** representan muestras separadas por 0.125 ms. La escala del visor puede superponerlos; la consola permite comprobar la cantidad.
 - **Cuadro central:** conserva `Hola`. Cambia `sps`, pero se conserva `symbol_rate = 1000`.
 - **Panel inferior:** mantiene las posiciones $(-1,0)$ y $(1,0)$. La rama de símbolos no pasa por `Repeat`.
 
 ![Consola con sps igual a ocho: 640 bytes de símbolos y un registro intercalado de 5120 bytes de muestras, con impresión del contenido temporal desactivada.](figures/enlace-40-consola-simbolos-muestras-sps8.png)
-**Figura 40.** Con `sps = 8`, la consola conserva 640 bytes de símbolos y muestra 5120 bytes de muestras temporales.
+**Figura 42.** Con `sps = 8`, la consola conserva 640 bytes de símbolos y muestra 5120 bytes de muestras temporales.
 
 - **Símbolos:** el primer tamaño sigue siendo $80\times8=640$ bytes. El contenido del paquete y el mapeo permanecen iguales.
 - **Muestras:** `pdu length = 5120 bytes (printing disabled)` corresponde a $640\times8$ bytes de almacenamiento.
-- **Intercalado:** el registro de muestras interrumpe visualmente el volcado de símbolos. Se aplica la misma lectura de la Figura 38.
+- **Intercalado:** el registro de muestras interrumpe visualmente el volcado de símbolos. Se aplica la misma lectura de la Figura 40.
 - **Final:** `>>> Done` aparece después de los registros. El fragmento mostrado no contiene un error de ejecución.
 
 La comparación conserva `Hola` y `symbol_rate = 1000`:
@@ -1879,8 +2054,19 @@ El estudiante envía `SDR` con `symbol_rate = 1000` y `sps = 8`. ¿Cuántas mues
 
 ## 13. Construir un pulso RRC y observar el cierre del paquete
 
+**Ubicación en el sistema: conformación del pulso dentro de `Symbol mod`.**
+
+![Diagrama original del sistema SDR con Symbol mod resaltado en naranja para situar la construcción de muestras con el filtro RRC transmisor.](figures/enlace-referencia-sdr-modulacion.png)
+**Figura 43.** El filtro de pulsos desarrolla la salida de muestras de `Symbol mod`.
+
+- **Fila TX, naranja:** `Chunks to Symbols` conserva el mapeo. `Root Raised Cosine Filter`, con `ID = pulso_rrc`, construye las muestras del pulso RRC.
+- **Interfaz S de salida:** transporta muestras complejas. La tasa de muestras puede ser mayor que la tasa de símbolos.
+- **Etapas analógicas:** `D/A` y `RF chain` siguen fuera del montaje. El ensayo observa directamente las muestras digitales.
+
+[Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-modulacion.svg).
+
 - El estudiante continúa desde el paso 12, con `sps = 4` y las leyendas I/Q configuradas.
-- Añade una rama RRC desde `mapeador`. Conserva las ramas de símbolos y de pulso rectangular para comparar sus resultados.
+- Añade una rama RRC desde `Chunks to Symbols`, con `ID = mapeador`. Conserva las ramas de símbolos y de pulso rectangular para comparar sus resultados.
 - RRC significa *root raised cosine*, raíz de coseno alzado. Es una forma de pulso utilizada con un filtro correspondiente en el receptor.
 - Este paso construye y observa la señal del transmisor. El filtro del receptor se añadirá después.
 
@@ -1902,18 +2088,20 @@ $$
 - El índice $n$ cuenta muestras. El desplazamiento $kL$ sitúa cada pulso en el instante de su símbolo.
 - Se utiliza `rrc_alpha = 0.35`. El parámetro $\alpha$, *roll-off*, controla el exceso de banda del pulso ideal; no es una ganancia.
 - Se utiliza `rrc_span = 8`: la respuesta diseñada abarca ocho intervalos de símbolo entre sus extremos.
-- El número de coeficientes es `rrc_ntaps = rrc_span * sps + 1`: aquí, 33.
+- El número de coeficientes se calcula con `rrc_ntaps = rrc_span * sps + 1`.
+- En las ecuaciones, $N_h$ representa el número de coeficientes guardado en `rrc_ntaps`. Aquí, $N_h=33$.
 
+La variable `samp_rate` representa la tasa de muestreo $f_s=4000$ muestras/s.
 Los coeficientes son simétricos. El retardo de grupo $D$ desplaza el centro de cada pulso:
 
 $$
 D=\frac{N_h-1}{2}=16\ \text{muestras},\qquad \frac{D}{f_s}=\frac{16}{4000}=4\ \text{ms}.
 $$
 
-Aquí, $N_h$ cuenta coeficientes y $f_s$ es la tasa de muestreo. El centro del pulso del primer símbolo aparece a los 4 ms.
+El centro del pulso del primer símbolo aparece a los 4 ms.
 
 ![Referencia calculada con tres paneles: respuesta RRC de 33 coeficientes centrada en 4 ms, Hola rectangular de 80 ms y Hola filtrado con cierre hasta 88 ms.](figures/enlace-41-pulso-rrc-hola.png)
-**Figura 41.** El filtro RRC extiende y suma los pulsos; los ceros de cierre permiten observar su respuesta completa.
+**Figura 44.** El filtro RRC extiende y suma los pulsos; los ceros de cierre permiten observar su respuesta completa.
 
 - **Panel superior:** muestra los 33 coeficientes del pulso producido por un símbolo `+1`. La línea vertical marca su centro a los 4 ms.
 - **Panel central:** conserva la referencia rectangular del paso 12. Sus 320 muestras representan 80 ms.
@@ -1959,17 +2147,22 @@ Aquí, $N_h$ cuenta coeficientes y $f_s$ es la tasa de muestreo. El centro del p
 
 - En esta configuración, la ventana de valor uno conserva los símbolos de los extremos. No aplica una rampa de amplitud.
 - El bloque añade ocho elementos `0+j0` después de cada paquete de símbolos. No añade elementos antes del paquete.
+- Cada elemento añadido es un valor complejo nulo. Un bit `0` del paquete produciría el símbolo BPSK `-1+j0`, que es diferente.
 - Para `Hola`, la etiqueta `packet_len` pasa de 80 a 88. El bloque actualiza esa longitud automáticamente.
 - Los ceros permiten terminar la respuesta del filtro y vaciar su memoria antes del siguiente paquete.
 - Estos elementos no representan bits del texto ni campos nuevos. El paquete de bytes conserva su cabecera y su CRC.
 
 ??? note "Por qué se añaden ocho ceros"
 
-    - Con 33 coeficientes e interpolación cuatro, el filtro estándar organiza nueve coeficientes por fase.
-    - Su implementación añade tres coeficientes cero para completar las fases. No modifica los 33 coeficientes diseñados.
-    - La memoria requiere los ocho elementos anteriores. Ocho ceros al final permiten completar la respuesta sin usar el mensaje siguiente.
+    - El diseño produce 33 coeficientes. El FIR interpolador organiza el cálculo en cuatro fases, una por muestra de salida de cada intervalo de símbolo.
+    - La implementación conserva esos 33 valores y añade tres coeficientes nulos internos: $33+3=36$. Cada fase utiliza $36/4=9$ coeficientes.
+    - El cálculo utiliza el elemento actual y hasta ocho elementos anteriores de entrada. El bloque conserva esa historia para calcular la respuesta.
+    - Los ocho ceros complejos añadidos por `Burst Shaper` permiten procesar la cola del último símbolo y dejar nula la historia del filtro.
+    - Los tres coeficientes nulos internos y los ocho ceros de entrada cumplen funciones diferentes. Los primeros organizan el cálculo; los segundos completan la salida.
     - Si se filtra el paquete sin ese cierre, la respuesta final puede aparecer dentro del paquete siguiente.
     - El cierre añade 8 ms de señal modelada. No fija la pausa de reloj entre pulsaciones de Enter.
+
+    La [implementación del FIR interpolador](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/lib/interp_fir_filter_impl.cc#L55-L95) define esta organización y la historia requerida.
 
 ### 13.4. Añadir `Root Raised Cosine Filter`
 
@@ -1988,6 +2181,7 @@ Aquí, $N_h$ cuenta coeficientes y $f_s$ es la tasa de muestreo. El centro del p
 | `Num Taps` | `rrc_ntaps` |
 
 - La entrada recibe símbolos y ceros de cierre. La salida produce cuatro muestras por elemento de entrada.
+- El filtro combina los símbolos con sus coeficientes. Las cuatro muestras de salida de un intervalo pueden tener valores diferentes.
 - `Sample Rate` corresponde a la salida: 4000 muestras/s. `Symbol Rate` vale 1000 símbolos/s.
 - `Gain = sps` normaliza la suma de los coeficientes a cuatro. No obliga a que los máximos del pulso valgan uno.
 - El valor predeterminado de `Num Taps` se reemplaza por `rrc_ntaps`. No se usa un número de coeficientes proporcional a miles de símbolos.
@@ -1995,7 +2189,8 @@ Aquí, $N_h$ cuenta coeficientes y $f_s$ es la tasa de muestreo. El centro del p
 
 !!! warning "La rama RRC parte de los símbolos"
 
-    La entrada de `cierre_rrc` sale de `mapeador`. No sale de `Repeat` ni de `longitud_muestras`.
+    Se conecta `Chunks to Symbols.out` (`ID = mapeador`) a `Burst Shaper.in` (`ID = cierre_rrc`).
+    La rama rectangular conserva su conexión independiente a `Repeat` (`ID = pulso_rect`).
     El filtro RRC realiza su propia interpolación; alimentar esa rama con muestras repetidas cambiaría las tasas y las cantidades.
 
 ### 13.5. Actualizar la longitud y reunir la PDU RRC
@@ -2020,6 +2215,18 @@ Aquí, $N_h$ cuenta coeficientes y $f_s$ es la tasa de muestreo. El centro del p
 - `rrc_a_pdu` reúne esas 352 muestras en una sola PDU compleja. La salida `pdus` sirve para observar el registro completo.
 - Los bloques `longitud_muestras` y `muestras_a_pdu` conservan la rama rectangular anterior.
 - Los puertos de configuración `set_scalar` y `set_taps`, si aparecen, quedan sin conectar.
+
+La cantidad de datos y el valor de la etiqueta se distinguen así para `Hola`:
+
+| Salida del bloque | Datos del paquete en esa salida | Valor de `packet_len` |
+|---|---|---|
+| `Chunks to Symbols` (`ID = mapeador`) | 80 símbolos BPSK | 80 |
+| `Burst Shaper` (`ID = cierre_rrc`) | 80 símbolos y 8 valores complejos nulos | 88 |
+| `Root Raised Cosine Filter` (`ID = pulso_rrc`) | 352 muestras complejas | 88, pendiente de actualizar |
+| `Tagged Stream Multiply Length Tag` (`ID = longitud_rrc`) | Las mismas 352 muestras | 352 |
+
+`Tagged Stream Multiply Length Tag` actualiza el valor de la etiqueta; no vuelve a interpolar las muestras.
+`Tagged Stream to PDU`, con `ID = rrc_a_pdu`, busca `packet_len` y reúne las 352 muestras indicadas por su valor.
 
 ### 13.6. Ampliar los buffers de la rama RRC
 
@@ -2078,8 +2285,8 @@ Para comparar los dos visores temporales en la misma fila, el estudiante asigna 
 
 | Bloque | `GUI Hint` |
 |---|---|
-| `tiempo_bpsk` | `0,0,1,1` |
-| `tiempo_rrc` | `0,1,1,1` |
+| `QT GUI Time Sink` (`ID = tiempo_bpsk`) | `0,0,1,1` |
+| `QT GUI Time Sink` (`ID = tiempo_rrc`) | `0,1,1,1` |
 | `QT GUI Message Edit Box` existente | `1,0,1,2` |
 | `QT GUI Constellation Sink` existente | `2,0,1,2` |
 
@@ -2089,19 +2296,19 @@ Para comparar los dos visores temporales en la misma fila, el estudiante asigna 
 ### 13.8. Conectar la nueva rama
 
 1. El estudiante conserva las conexiones anteriores y los bloques deshabilitados del canvas.
-2. Añade la tercera conexión desde `mapeador`. Completa la tabla y guarda el flowgraph.
+2. Añade la tercera conexión desde `Chunks to Symbols.out` (`ID = mapeador`). Completa la tabla y guarda el flowgraph.
 
 | Origen | Destino | Tipo de conexión |
 |---|---|---|
-| Salida de `mapeador` | Entrada de `cierre_rrc` | Stream `Complex` |
-| Salida de `cierre_rrc` | Entrada de `pulso_rrc` | Stream `Complex` |
-| Salida de `pulso_rrc` | Entrada de `longitud_rrc` | Stream `Complex` |
-| Salida de `longitud_rrc` | Entrada de `rrc_a_pdu` | Stream `Complex` |
-| `rrc_a_pdu.pdus` | `tiempo_rrc.in` | Mensaje |
-| `rrc_a_pdu.pdus` | `debug_rrc.print` | Mensaje |
+| `Chunks to Symbols.out`<br>`ID = mapeador` | `Burst Shaper.in`<br>`ID = cierre_rrc` | Stream `Complex` |
+| `Burst Shaper.out`<br>`ID = cierre_rrc` | `Root Raised Cosine Filter.in`<br>`ID = pulso_rrc` | Stream `Complex` |
+| `Root Raised Cosine Filter.out`<br>`ID = pulso_rrc` | `Tagged Stream Multiply Length Tag.in`<br>`ID = longitud_rrc` | Stream `Complex` |
+| `Tagged Stream Multiply Length Tag.out`<br>`ID = longitud_rrc` | `Tagged Stream to PDU.in`<br>`ID = rrc_a_pdu` | Stream `Complex` |
+| `Tagged Stream to PDU.pdus`<br>`ID = rrc_a_pdu` | `QT GUI Time Sink.in`<br>`ID = tiempo_rrc` | Mensaje |
+| `Tagged Stream to PDU.pdus`<br>`ID = rrc_a_pdu` | `Message Debug.print`<br>`ID = debug_rrc` | Mensaje |
 
 ![Diagrama con las dos ramas existentes y una tercera rama desde mapeador: Burst Shaper, Root Raised Cosine Filter, longitud, PDU y visores RRC.](figures/enlace-42-conexion-rrc.png)
-**Figura 42.** La rama RRC añade el cierre antes de filtrar y actualiza la longitud antes de formar la PDU de muestras.
+**Figura 45.** La rama RRC añade el cierre antes de filtrar y actualiza la longitud antes de formar la PDU de muestras.
 
 - **Origen izquierdo:** `mapeador` entrega el mismo paquete de símbolos a las tres ramas.
 - **Ramas superiores:** conservan los símbolos y el pulso rectangular. Sus cantidades siguen siendo las del paso 12.
@@ -2130,10 +2337,10 @@ Para comparar los dos visores temporales en la misma fila, el estudiante asigna 
 - **Duración:** los símbolos de `Hola` conservan 80 ms nominales. La PDU RRC incluye 8 ms adicionales de cierre; el registro completo dura 88 ms.
 - **Pausa:** el montaje no genera nuevas muestras durante la espera del usuario. La gráfica anterior puede permanecer visible.
 
-La Figura 43 muestra el envío de `Hola` con los parámetros de este paso y la disposición del apartado 13.7.
+La Figura 46 muestra el envío de `Hola` con los parámetros de este paso y la disposición del apartado 13.7.
 
 ![Ejecución con Hola: pulso rectangular a la izquierda, pulso RRC con oscilaciones y cierre a la derecha, cuadro de mensaje central y constelación BPSK inferior.](figures/enlace-43-ejecucion-hola-rrc.png)
-**Figura 43.** El mismo paquete produce un pulso rectangular y un pulso RRC; la constelación conserva los símbolos anteriores al filtro.
+**Figura 46.** El mismo paquete produce un pulso rectangular y un pulso RRC; la constelación conserva los símbolos anteriores al filtro.
 
 - **Panel superior izquierdo:** $I$ azul toma los valores $-1$ y $+1$; $Q$ roja permanece en cero. El registro alcanza unos 80 ms.
 - **Panel superior derecho:** $I$ presenta valores intermedios y extremos cercanos a $\pm1.55$. Los pulsos de varios símbolos se suman; $Q$ permanece en cero.
@@ -2142,12 +2349,12 @@ La Figura 43 muestra el envío de `Hola` con los parámetros de este paso y la d
 - **Ejes temporales:** cada panel adapta su eje a su PDU. La rama RRC contiene más muestras y tiene un retardo de 4 ms.
 - **Cuadro central:** contiene `Hola`, con `H` mayúscula. La disposición permite comparar las dos representaciones del mismo envío.
 - **Panel inferior:** muestra los símbolos de la rama anterior al RRC. Las posiciones $(-1,0)$ y $(1,0)$ conservan el mapeo BPSK.
-- **Comprobación de tamaño:** la Figura 44 confirma los tamaños de las tres ramas para este envío.
+- **Comprobación de tamaño:** la Figura 47 confirma los tamaños de las tres ramas para este envío.
 
-La consola registra las tres PDUs del mismo paquete. La Figura 44 permite comprobar sus cantidades.
+La consola registra las tres PDUs del mismo paquete. La Figura 47 permite comprobar sus cantidades.
 
 ![Consola del envío de Hola con 2560 bytes del pulso rectangular, 640 bytes de símbolos y un registro intercalado de 2816 bytes del pulso RRC.](figures/enlace-44-consola-hola-rrc.png)
-**Figura 44.** La consola confirma 2560 bytes rectangulares, 640 bytes de símbolos y 2816 bytes RRC para `Hola`.
+**Figura 47.** La consola confirma 2560 bytes rectangulares, 640 bytes de símbolos y 2816 bytes RRC para `Hola`.
 
 - **Primer registro:** `pdu length = 2560 bytes (printing disabled)` corresponde a $2560/8=320$ muestras complejas del pulso rectangular.
 - **Segundo registro:** `pdu length = 640 bytes` corresponde a $640/8=80$ símbolos complejos. El volcado hexadecimal pertenece a esta rama.
@@ -2194,6 +2401,17 @@ El estudiante envía `Hola` con `sps = 4` y los parámetros de este paso. ¿Cuá
 
 ## 14. Filtrar en el receptor ideal y seleccionar los símbolos
 
+**Ubicación en el sistema: comienzo de `Symbol demod`, demodulación de símbolos.**
+
+![Diagrama original del sistema SDR con Symbol demod resaltado en naranja en la fila del receptor para situar el filtrado y la selección de símbolos.](figures/enlace-referencia-sdr-recepcion.png)
+**Figura 48.** El filtro receptor y la selección temporal desarrollan la entrada de `Symbol demod`.
+
+- **Fila RX, de derecha a izquierda:** `Symbol demod` recibe muestras por S. En este paso se observan los símbolos seleccionados; todavía no se reconstruyen los bits.
+- **Bloques de GRC:** `Root Raised Cosine Filter`, con `ID = filtro_rx`, filtra las muestras. `PDU Lambda`, con `ID = muestrear_rx`, selecciona los instantes conocidos.
+- **Límite del ensayo:** se usan referencias ideales de tiempo. La recuperación automática de fase y reloj se añadirá en los pasos 19 y 23.
+
+[Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-recepcion.svg).
+
 - El estudiante continúa desde el paso 13, con `sps = 4` y `rrc_alpha = 0.35`.
 - Añade un filtro RRC del receptor a la salida de `longitud_rrc`. Conserva las tres ramas anteriores.
 - El receptor recibe las muestras del transmisor por una conexión ideal, sin ruido ni cambios de fase o frecuencia.
@@ -2229,7 +2447,7 @@ $$
 - Con los parámetros de referencia, todos los signos de `Hola` coinciden con los símbolos transmitidos.
 
 ![Referencia calculada con respuesta conjunta de los dos RRC centrada en 8 ms, registro del receptor de 96 ms con muestras seleccionadas y constelación de los 80 símbolos recuperados.](figures/enlace-45-receptor-ideal-hola.png)
-**Figura 45.** Los dos filtros acumulan 8 ms de retardo; seleccionar cada cuarta muestra recupera los instantes de los símbolos.
+**Figura 49.** Los dos filtros acumulan 8 ms de retardo; seleccionar cada cuarta muestra recupera los instantes de los símbolos.
 
 - **Panel superior:** muestra la respuesta conjunta a un símbolo `+1`. Su centro está en 8 ms; los marcadores identifican intervalos de 1 ms.
 - **Panel central:** muestra $I$ azul y $Q=0$ roja. Los marcadores verdes señalan las 80 muestras que se conservarán.
@@ -2443,7 +2661,7 @@ self.filtro_rx.set_min_output_buffer(0, (((5000 + 6) * 8 + self.rrc_span) * self
 | `muestrear_rx.pdu` | `debug_simbolos_rx.print` | Mensaje |
 
 ![Diagrama de la rama ideal: longitud_rrc alimenta cierre_rx, filtro_rx y rx_a_pdu; la PDU completa va al visor temporal y PDU Lambda selecciona los símbolos para la constelación.](figures/enlace-46-conexion-receptor-ideal.png)
-**Figura 46.** El receptor completa el cierre, filtra las muestras y selecciona los instantes de símbolo dentro de cada PDU.
+**Figura 50.** El receptor completa el cierre, filtra las muestras y selecciona los instantes de símbolo dentro de cada PDU.
 
 - **Origen izquierdo:** `longitud_rrc` conserva la conexión a los visores del transmisor. Otra conexión alimenta la rama nueva.
 - **Centro:** `cierre_rx` añade 32 ceros y actualiza la longitud. `filtro_rx` procesa las 384 muestras de `Hola` sin cambiar la tasa.
@@ -2476,7 +2694,7 @@ self.filtro_rx.set_min_output_buffer(0, (((5000 + 6) * 8 + self.rrc_span) * self
 Las Figuras 47–50 muestran la construcción y la ejecución del profesor con `Hola`, `sps = 4` y `rrc_alpha = 0.35`.
 
 ![Canvas completo con las ramas de símbolos, pulso rectangular, RRC transmisor y receptor ideal con selección de muestras.](figures/enlace-47-canvas-receptor-ideal.png)
-**Figura 47.** El montaje conserva las ramas anteriores y añade el filtro receptor, la selección de muestras y sus visores.
+**Figura 51.** El montaje conserva las ramas anteriores y añade el filtro receptor, la selección de muestras y sus visores.
 
 - **Parte superior:** las variables fijan 1000 símbolos/s, 4000 muestras/s, cuatro muestras por símbolo y 33 coeficientes por filtro RRC.
 - **Ramas del transmisor:** `mapeador` alimenta la observación de símbolos, la repetición rectangular y el filtrado RRC.
@@ -2486,7 +2704,7 @@ Las Figuras 47–50 muestran la construcción y la ejecución del profesor con `
 - **Bloques grises:** el comprobador de paquete y el convertidor a texto todavía están deshabilitados.
 
 ![Pestaña Transmisor con Hola, señal rectangular I en menos uno y más uno, señal RRC variable y constelación de dos puntos.](figures/enlace-48-transmisor-hola.png)
-**Figura 48.** La pestaña Transmisor muestra las tres representaciones de `Hola` conservadas del paso anterior.
+**Figura 52.** La pestaña Transmisor muestra las tres representaciones de `Hola` conservadas del paso anterior.
 
 - **Panel superior izquierdo:** el eje horizontal indica tiempo en milisegundos. I azul toma valores $-1$ y $+1$ durante 80 ms.
 - **Panel superior derecho:** el RRC produce valores intermedios y picos entre símbolos. El registro incluye el cierre y abarca 88 ms.
@@ -2495,7 +2713,7 @@ Las Figuras 47–50 muestran la construcción y la ejecución del profesor con `
 - **Ventana:** la captura recorta la parte inferior del visor. El estudiante puede ampliar la ventana o usar la barra de desplazamiento.
 
 ![Pestaña Receptor ideal con Hola, señal temporal RRC con Q cero y dos grupos pequeños de símbolos seleccionados cerca de menos uno y más uno.](figures/enlace-49-receptor-hola.png)
-**Figura 49.** El receptor muestra el registro completo y dos grupos de muestras seleccionadas próximos a los símbolos BPSK ideales.
+**Figura 53.** El receptor muestra el registro completo y dos grupos de muestras seleccionadas próximos a los símbolos BPSK ideales.
 
 - **Panel superior:** el eje horizontal indica tiempo en milisegundos. I azul conserva el transitorio, los picos y el cierre del registro de 96 ms.
 - **Curva roja:** Q permanece en cero. Los dos filtros usan coeficientes reales y la entrada BPSK tiene Q cero.
@@ -2504,7 +2722,7 @@ Las Figuras 47–50 muestran la construcción y la ejecución del profesor con `
 - **Alcance:** la captura confirma la selección de símbolos. La recuperación del paquete y su CRC todavía no aparecen en esta salida.
 
 ![Consola de Hola con registros de 2560, 640, 2816, 3072 y 640 bytes correspondientes a las cinco ramas de observación.](figures/enlace-50-consola-receptor-hola.png)
-**Figura 50.** Los cinco tamaños de la consola coinciden con las representaciones de `Hola` antes y después del filtrado receptor.
+**Figura 54.** Los cinco tamaños de la consola coinciden con las representaciones de `Hola` antes y después del filtrado receptor.
 
 | Registro en la captura | Origen | Elementos complejos | Bytes almacenados | Contenido impreso |
 |---|---|---|---|---|
@@ -2557,6 +2775,17 @@ El receptor procesa `SDR` con los parámetros de referencia. ¿Cuántas muestras
 
 ## 15. Recuperar los bytes y comprobar el paquete
 
+**Ubicación en el sistema: decisiones de `Symbol demod` y entrega a `Data sink`.**
+
+![Diagrama original del sistema SDR con Data sink resaltado en naranja y Symbol demod en azul para relacionar las decisiones con la entrega del texto.](figures/enlace-referencia-sdr-entrega.png)
+**Figura 55.** La recuperación de bits permite reconstruir el paquete y entregar el mensaje a `Data sink`.
+
+- **Fila RX, azul:** `Complex To Real` y `Binary Slicer` obtienen bits desde los símbolos seleccionados. `Repack Bits` reconstruye los bytes del paquete.
+- **Destino, naranja:** `Message Debug`, con `ID = blocks_message_debug_0`, recibe el texto después de `Comprobar paquete` y `Bytes a texto UTF-8`.
+- **Procesamiento de datos:** la reconstrucción del paquete y su CRC no se dibujan como cajas independientes en esta figura. La comprobación detecta alteraciones; no corrige bits.
+
+[Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-entrega.svg).
+
 - El receptor decide un bit por símbolo seleccionado y reconstruye el paquete completo.
 - Se añaden bloques estándar para extraer I, decidir los bits y empaquetarlos. Los adaptadores conservan la separación entre mensajes y streams.
 - Se reutilizan `Comprobar paquete` y `Bytes a texto UTF-8`. El texto aceptado llega al visor existente.
@@ -2579,7 +2808,7 @@ $$
 - Los bits se agrupan mediante MSB first, el mismo orden usado por `Bytes a bits` en transmisión.
 
 ![Referencia calculada de las ocho amplitudes seleccionadas de H, sus decisiones binarias y la reconstrucción de los campos del paquete de Hola.](figures/enlace-51-decisiones-bytes-hola.png)
-**Figura 51.** Las decisiones del receptor reconstruyen los bytes originales sin calcular un CRC nuevo.
+**Figura 56.** Las decisiones del receptor reconstruyen los bytes originales sin calcular un CRC nuevo.
 
 - **Panel superior:** el eje horizontal identifica las ocho posiciones de bit del primer byte del texto. El eje vertical muestra I seleccionada.
 - **Umbral horizontal:** los puntos inferiores a cero producen `0`. Los puntos superiores producen `1`.
@@ -2602,7 +2831,7 @@ El estudiante reutiliza este bloque; no lo añade desde el catálogo.
 7. Habilita `Comprobar paquete` y `Bytes a texto UTF-8`. Conserva sus códigos revisados.
 8. Retira la conexión de la PDU de símbolos TX a `Message Debug.print` del visor original.
 9. Conserva o restablece `Bytes a texto UTF-8.out` → `Message Debug.print` del visor original.
-10. Conserva `Alterar segundo paquete` deshabilitado. Comprueba que `Value` del cuadro de texto esté vacío.
+10. Conserva `Alterar segundo paquete` deshabilitado. Comprueba que `Value` de `QT GUI Message Edit Box` esté vacío.
 
 - En el canvas actual, `Comprobar paquete` tiene ID `epy_block_3` y `Bytes a texto UTF-8` tiene ID `epy_block_1`.
 - El visor original tiene ID `blocks_message_debug_0`. La PDU de símbolos TX procede de `pdu_tagged_stream_to_pdu_0`.
@@ -2672,8 +2901,8 @@ El estudiante añade cada bloque, abre sus propiedades y confirma los valores de
 
 1. El estudiante conserva las conexiones de `muestrear_rx.pdu` a los visores de símbolos recuperados.
 2. Añade las conexiones de la cadena siguiente. Los cinco bloques nuevos tienen un único puerto de stream de entrada o salida.
-3. Comprueba que el comprobador tenga una única entrada activa, desde `paquete_rx_a_pdu.pdus`.
-4. Comprueba que el visor original tenga una única entrada activa, desde el convertidor UTF-8.
+3. Comprueba que `Comprobar paquete.in` reciba una única conexión activa, desde `paquete_rx_a_pdu.pdus`.
+4. Comprueba que `Message Debug.print` del bloque original reciba una única conexión activa, desde `Bytes a texto UTF-8.out`.
 
 ```text
 muestrear_rx.pdu → rx_a_stream.pdus
@@ -2699,7 +2928,7 @@ El estudiante añade otro `Message Debug` para observar el paquete antes de comp
 - Los visores de símbolos y muestras conservan `Print PDU contents = Off` para evitar volcados extensos.
 
 ![Conexiones desde muestrear_rx hacia los adaptadores, extracción de I, Binary Slicer, Repack Bits, comprobador de paquete y convertidor UTF-8.](figures/enlace-52-conexion-recuperar-paquete.png)
-**Figura 52.** La nueva rama recupera el paquete desde los símbolos RX y reutiliza los bloques de comprobación y texto.
+**Figura 57.** La nueva rama recupera el paquete desde los símbolos RX y reutiliza los bloques de comprobación y texto.
 
 - **Fila superior, de izquierda a derecha:** la PDU seleccionada pasa a stream complejo. `extraer_i` entrega la componente real.
 - **Fila central, de derecha a izquierda:** el decisor entrega bits separados. `empaquetar_bits` reconstruye bytes y el adaptador crea la PDU.
@@ -2776,7 +3005,7 @@ La prueba del paso 9 puede recorrer ahora el transmisor y el receptor completos.
 1. El estudiante detiene la ejecución. Habilita `Alterar segundo paquete` sin cambiar su código.
 2. Retira `Construir paquete.out` → `Bytes a bits.in`.
 3. Conecta `Construir paquete.out` → `Alterar segundo paquete.in` → `Bytes a bits.in`.
-4. Comprueba que no exista una conexión desde el auxiliar al comprobador. El recorrido continúa por símbolos, filtros y recuperación de bytes.
+4. Comprueba que no exista una conexión desde `Alterar segundo paquete.out` a `Comprobar paquete.in`. El recorrido continúa por símbolos, filtros y recuperación de bytes.
 5. Guarda y ejecuta de nuevo, con `Value` vacío. Envía `Hola` tres veces en la misma ejecución.
 6. Espera texto aceptado, rechazo por CRC y texto aceptado, en ese orden.
 
@@ -2803,7 +3032,7 @@ El diagrama agrupa los bloques del montaje por función. Las cantidades correspo
 El estudiante sigue las flechas. Las tres ramas reciben los mismos símbolos del bloque `mapeador`.
 
 ![Mapa conceptual del enlace: texto, paquete, bits y símbolos BPSK; tres ramas de observación, pulso rectangular y pulso RRC; receptor ideal, decisiones, bytes y texto.](figures/enlace-53-mapa-conceptos.png)
-**Figura 53.** Las tres ramas comparten los símbolos BPSK; la rama RRC continúa hacia el receptor ideal y la recuperación del texto.
+**Figura 58.** Las tres ramas comparten los símbolos BPSK; la rama RRC continúa hacia el receptor ideal y la recuperación del texto.
 
 - **Franja superior:** el texto ocupa cuatro bytes. El paquete añade longitud y CRC; sus diez bytes producen 80 bits y 80 símbolos BPSK.
 - **Rama A, azul:** reúne los símbolos para observar la constelación. El recorrido termina en el visor.
@@ -2822,21 +3051,21 @@ El estudiante puede ampliar la [versión vectorial del diagrama](figures/enlace-
 Las capturas muestran la ejecución manual con `Hola`, `SDR` y `¡Hola, Perú!`. El receptor reconstruye cada paquete y entrega el texto aceptado.
 
 ![Consola de Hola con 2560, 2816, 3072 y 640 bytes de observación, paquete RX de diez bytes 00 04 48 6f 6c 61 aa 94 8e c9 y texto Hola.](figures/enlace-54-consola-recuperacion-hola.png)
-**Figura 54.** El receptor reconstruye el paquete de diez bytes de `Hola` y entrega el texto después de comprobar longitud y CRC.
+**Figura 59.** El receptor reconstruye el paquete de diez bytes de `Hola` y entrega el texto después de comprobar longitud y CRC.
 
 - **Parte superior:** los registros indican 2560 bytes rectangulares, 2816 bytes RRC TX, 3072 bytes RX completos y 640 bytes de símbolos seleccionados.
 - **Paquete reconstruido:** `pdu length = 10 bytes`. El contenido es `00 04 48 6f 6c 61 aa 94 8e c9`.
 - **Parte inferior:** `MESSAGE DEBUG PRINT` muestra `Hola`. El comprobador aceptó el paquete antes de convertir sus bytes UTF-8.
 
 ![Consola de SDR con 2304, 2560, 2816 y 576 bytes de observación, paquete RX de nueve bytes 00 03 53 44 52 ab 1d 72 c3 y texto SDR.](figures/enlace-55-consola-recuperacion-sdr.png)
-**Figura 55.** El texto de tres bytes `SDR` produce un paquete de nueve bytes que el receptor acepta y convierte correctamente.
+**Figura 60.** El texto de tres bytes `SDR` produce un paquete de nueve bytes que el receptor acepta y convierte correctamente.
 
 - **Parte superior:** los tamaños son 2304, 2560, 2816 y 576 bytes. La selección contiene 72 símbolos complejos.
 - **Paquete reconstruido:** `00 03` indica tres bytes de texto. `53 44 52` representa `SDR`; el CRC recibido es `ab 1d 72 c3`.
 - **Parte inferior:** el visor muestra `SDR`. La recuperación conserva el contenido aunque cambie la longitud respecto de `Hola`.
 
 ![Consola de ¡Hola, Perú! con 5120, 5376, 5632 y 1280 bytes de observación, paquete RX de veinte bytes con longitud 00 0e, CRC a5 ca 42 3d y texto Unicode completo.](figures/enlace-56-consola-recuperacion-unicode.png)
-**Figura 56.** El receptor acepta el paquete de veinte bytes y conserva los caracteres UTF-8 de `¡Hola, Perú!`.
+**Figura 61.** El receptor acepta el paquete de veinte bytes y conserva los caracteres UTF-8 de `¡Hola, Perú!`.
 
 - **Parte superior:** los tamaños son 5120, 5376, 5632 y 1280 bytes. La selección contiene 160 símbolos complejos.
 - **Paquete reconstruido:** `00 0e` indica 14 bytes de texto. El CRC recibido es `a5 ca 42 3d`.
@@ -2853,14 +3082,14 @@ Las capturas muestran tres envíos de `Hola` en una misma ejecución. El auxilia
 Los paquetes atraviesan el transmisor RRC, el receptor y la reconstrucción de bytes antes de llegar al comprobador.
 
 ![Primer envío con Inyector: paquete 1, sin cambios, tamaños de observación 2560, 2816, 3072 y 640 bytes, paquete RX de diez bytes y texto Hola aceptado.](figures/enlace-57-primer-envio-rx-valido.png)
-**Figura 57.** El primer paquete atraviesa la cadena TX/RX sin alteraciones y produce el texto `Hola`.
+**Figura 62.** El primer paquete atraviesa la cadena TX/RX sin alteraciones y produce el texto `Hola`.
 
 - **Parte superior:** `Inyector: paquete 1, sin cambios.` identifica el primer envío.
 - **Paquete RX:** el contenido reconstruido es `00 04 48 6f 6c 61 aa 94 8e c9`. La longitud y el CRC corresponden al texto recibido.
 - **Parte inferior:** `MESSAGE DEBUG PRINT` muestra `Hola` después de aceptar el paquete.
 
 ![Segundo envío con Inyector: paquete 2, bit alterado, paquete RX 00 04 49 6f 6c 61 aa 94 8e c9 y aviso Comprobar paquete: CRC incorrecto. Se rechaza.](figures/enlace-58-segundo-envio-rx-rechazado.png)
-**Figura 58.** El segundo paquete conserva el CRC original, pero contiene un bit alterado; el comprobador lo rechaza después de reconstruirlo desde RX.
+**Figura 63.** El segundo paquete conserva el CRC original, pero contiene un bit alterado; el comprobador lo rechaza después de reconstruirlo desde RX.
 
 - **Parte superior:** `Inyector: paquete 2, bit alterado.` identifica la única alteración de esta ejecución.
 - **Paquete RX:** el primer byte del texto cambia de `48` a `49`. La longitud sigue en `00 04`; el CRC recibido sigue en `aa 94 8e c9`.
@@ -2868,7 +3097,7 @@ Los paquetes atraviesan el transmisor RRC, el receptor y la reconstrucción de b
 - **Interpretación:** los filtros y las decisiones recuperan el contenido alterado. El comprobador detecta la discrepancia y evita entregar `Iola` como texto aceptado.
 
 ![Tercer envío con Inyector: paquete 3, sin cambios, paquete RX original de diez bytes y un nuevo MESSAGE DEBUG PRINT con Hola después del rechazo anterior.](figures/enlace-59-tercer-envio-rx-valido.png)
-**Figura 59.** El tercer paquete vuelve a producir `Hola`; el rechazo anterior no bloquea la recuperación del siguiente mensaje.
+**Figura 64.** El tercer paquete vuelve a producir `Hola`; el rechazo anterior no bloquea la recuperación del siguiente mensaje.
 
 - **Parte superior:** `Inyector: paquete 3, sin cambios.` identifica el tercer envío.
 - **Paquete RX:** se recupera otra vez `00 04 48 6f 6c 61 aa 94 8e c9`.
@@ -2890,6 +3119,9 @@ El receptor ideal recupera `¡Hola, Perú!`. ¿Cuántos bytes ocupan los símbol
     - **Interpretación:** los tamaños de memoria cambian con la representación. Los bytes de longitud y CRC se retiran solo después de aceptar el paquete.
 
 ## 16. Detectar el comienzo y la longitud desde los bits
+
+**Ubicación en el sistema:** después de las decisiones de `Symbol demod`, el detector trabaja sobre los datos binarios B.
+La palabra de acceso y la longitud permiten delimitar el paquete. Esta función de protocolo no tiene una caja propia en el diagrama general.
 
 - El estudiante continúa después de recuperar los textos y comprobar el rechazo por CRC del paso 15.
 - Añade una palabra de acceso y una cabecera externa antes del paquete protegido. Esta envoltura se llama **trama**.
@@ -2919,7 +3151,7 @@ Para `Hola`, las tres longitudes tienen funciones diferentes:
 | Trama completa | 22 bytes | Ocho de acceso, cuatro de cabecera externa y diez de paquete. |
 
 ![Formato de Hola con palabra de acceso de ocho bytes, dos copias 00 0a de longitud externa y paquete original de diez bytes con longitud 00 04, texto y CRC.](figures/enlace-60-formato-trama.png)
-**Figura 60.** La envoltura añade acceso y longitud externa; el paquete de `Hola` y su CRC permanecen sin cambios.
+**Figura 65.** La envoltura añade acceso y longitud externa; el paquete de `Hola` y su CRC permanecen sin cambios.
 
 - **Franja superior:** la palabra de acceso permite buscar un comienzo. La cabecera externa indica cuánto contenido debe entregar el detector.
 - **Bytes inferiores:** `00 0a 00 0a` cuenta el paquete; `00 04` cuenta el texto. No se intercambian esos valores.
@@ -3006,10 +3238,10 @@ El segundo visor es `Tag Debug`. Observa las etiquetas creadas por el detector, 
 6. Conecta `decidir_bits.out` → `detectar_trama.in` → `empaquetar_bits.in`.
 7. Conecta también `detectar_trama.out` → `debug_deteccion.in`.
 8. Conserva las conexiones desde `empaquetar_bits` hasta el visor de texto. Conserva los filtros y las ramas de observación anteriores.
-9. Comprueba que `Value` del cuadro de texto permanezca vacío.
+9. Comprueba que `Value` de `QT GUI Message Edit Box` permanezca vacío.
 
 ![Conexiones nuevas con PDU Lambda envolviendo el paquete en TX y Correlate Access Code - Tag Stream entre Binary Slicer y Repack Bits en RX, seguido del comprobador y UTF-8.](figures/enlace-61-conexion-deteccion.png)
-**Figura 61.** TX transmite la envoltura; RX la interpreta y crea la longitud del paquete antes de reconstruir los bytes.
+**Figura 66.** TX transmite la envoltura; RX la interpreta y crea la longitud del paquete antes de reconstruir los bytes.
 
 - **Rama TX:** `envolver_trama` se coloca antes de `Bytes a bits`. La trama completa atraviesa BPSK y los filtros.
 - **Rama RX:** `detectar_trama` se coloca después de las decisiones binarias y antes de `Repack Bits`.
@@ -3091,21 +3323,21 @@ El recorrido es `Construir paquete.out` → `Alterar segundo paquete.in` → `en
 Las tres capturas muestran envíos consecutivos de `Hola`, `SDR` y `¡Hola, Perú!`. El detector recupera los paquetes y crea sus etiquetas de longitud.
 
 ![Consola de Hola con trama TX de 22 bytes, muestras de 5632, 5888, 6144 y 1408 bytes, etiqueta packet_len 80 en offset 0, paquete RX de diez bytes y texto Hola.](figures/enlace-62-trama-hola-detectada.png)
-**Figura 62.** La trama de `Hola` contiene 22 bytes; el detector entrega 80 bits y el receptor recupera el paquete original de diez bytes.
+**Figura 67.** La trama de `Hola` contiene 22 bytes; el detector entrega 80 bits y el receptor recupera el paquete original de diez bytes.
 
 - **Parte superior:** aparecen la palabra de acceso, las dos copias `00 0a` y el paquete protegido, en ese orden.
 - **Detección:** `Tag Debug` muestra `Offset: 0`, `Key: packet_len` y `Value: 80`. La longitud cuenta bits del paquete, sin la envoltura.
 - **Parte inferior:** el paquete RX es `00 04 48 6f 6c 61 aa 94 8e c9`. El visor de texto muestra `Hola` después de comprobar el CRC.
 
 ![Consola de SDR con trama de 21 bytes, longitud externa duplicada 00 09, etiqueta packet_len 72 en offset 80, paquete RX de nueve bytes y texto SDR.](figures/enlace-63-trama-sdr-detectada.png)
-**Figura 63.** La trama de `SDR` contiene 21 bytes; el detector genera una longitud de 72 bits y el receptor entrega `SDR`.
+**Figura 68.** La trama de `SDR` contiene 21 bytes; el detector genera una longitud de 72 bits y el receptor entrega `SDR`.
 
 - **Parte superior:** la cabecera externa contiene `00 09 00 09`. La longitud interna del paquete es `00 03`.
 - **Detección:** el offset 80 sigue a los 80 bits del paquete anterior. El valor nuevo, 72, cuenta los bits del paquete de nueve bytes.
 - **Parte inferior:** se recupera `00 03 53 44 52 ab 1d 72 c3`. El visor muestra el texto exacto `SDR`.
 
 ![Consola de ¡Hola, Perú! con trama de 32 bytes, longitud externa duplicada 00 14, etiqueta packet_len 160 en offset 152 y paquete RX de veinte bytes con su volcado intercalado por Tag Debug.](figures/enlace-64-trama-unicode-detectada.png)
-**Figura 64.** El detector entrega los 160 bits del paquete de `¡Hola, Perú!`; el receptor conserva los caracteres UTF-8.
+**Figura 69.** El detector entrega los 160 bits del paquete de `¡Hola, Perú!`; el receptor conserva los caracteres UTF-8.
 
 - **Parte superior:** la trama tiene 32 bytes. La longitud externa es `00 14`, veinte bytes; la interna es `00 0e`, 14 bytes de texto.
 - **Detección:** el offset 152 equivale a `80 + 72` bits anteriores. El valor de `packet_len` es 160.
@@ -3125,14 +3357,14 @@ Los cuatro tamaños de observación también coinciden con las cantidades previs
 La segunda ejecución conecta el auxiliar antes de `envolver_trama`, como indica 16.8. Los tres envíos mantienen la palabra de acceso y la cabecera externa.
 
 ![Primer envío del ensayo con auxiliar: Inyector paquete 1 sin cambios, trama de 22 bytes, packet_len 80 en offset 0, paquete RX original y texto Hola aceptado.](figures/enlace-65-trama-primer-envio-valido.png)
-**Figura 65.** El primer envío conserva el paquete; el detector lo encuentra y el comprobador entrega `Hola`.
+**Figura 70.** El primer envío conserva el paquete; el detector lo encuentra y el comprobador entrega `Hola`.
 
 - **Parte superior:** `Inyector: paquete 1, sin cambios.` precede a la trama original de 22 bytes.
 - **Detección:** aparece `packet_len = 80` en el offset 0 de esta ejecución.
 - **Parte inferior:** el paquete RX conserva `48` como primer byte del texto y `aa 94 8e c9` como CRC. Se entrega `Hola`.
 
 ![Segundo envío del ensayo con auxiliar: Inyector paquete 2 bit alterado, trama con 49 en lugar de 48, etiqueta packet_len 80 en offset 80 y rechazo por CRC del paquete reconstruido.](figures/enlace-66-trama-segundo-envio-rechazado.png)
-**Figura 66.** El detector encuentra el segundo paquete, pero el comprobador rechaza su contenido porque el CRC original no corresponde al byte alterado.
+**Figura 71.** El detector encuentra el segundo paquete, pero el comprobador rechaza su contenido porque el CRC original no corresponde al byte alterado.
 
 - **Parte superior:** `Inyector: paquete 2, bit alterado.` identifica el cambio. La trama conserva el acceso y ambas copias `00 0a`.
 - **Detección:** aparece otra etiqueta `packet_len = 80`, ahora en el offset 80. Detectar el paquete no demuestra que su CRC sea válido.
@@ -3140,7 +3372,7 @@ La segunda ejecución conecta el auxiliar antes de `envolver_trama`, como indica
 - **Parte inferior:** aparece `Comprobar paquete: CRC incorrecto. Se rechaza.` No se entrega texto nuevo.
 
 ![Tercer envío del ensayo con auxiliar: Inyector paquete 3 sin cambios, etiqueta packet_len 80 en offset 160, paquete RX original y nuevo texto Hola tras el rechazo anterior.](figures/enlace-67-trama-tercer-envio-valido.png)
-**Figura 67.** El tercer paquete vuelve a entregar `Hola`; el rechazo del segundo no bloquea el detector ni la recuperación posterior.
+**Figura 72.** El tercer paquete vuelve a entregar `Hola`; el rechazo del segundo no bloquea el detector ni la recuperación posterior.
 
 - **Parte superior:** `Inyector: paquete 3, sin cambios.` precede a la trama original.
 - **Detección:** `packet_len = 80` aparece en el offset 160. El detector ya entregó dos paquetes anteriores de 80 bits, incluido el rechazado después por CRC.
@@ -3163,6 +3395,10 @@ Un bit de la palabra de acceso cambia y `Threshold = 0`. El paquete protegido pe
 
 ## 17. Recibir desde un stream sin etiquetas de delimitación
 
+**Ubicación en el sistema:** se conserva el recorrido de recepción de la Figura 48, desde muestras S hacia decisiones binarias B.
+`Tag Gate` retira las etiquetas internas del transmisor; no realiza una conversión A/D.
+El receptor deberá reconstruir los límites del envío desde los datos detectados.
+
 - El estudiante continúa con la conexión normal del paso 16: `Construir paquete.out` → `envolver_trama.pdu`.
 - Retira las etiquetas antes del filtro receptor. Selecciona una muestra de cada grupo de `sps` muestras directamente en el stream.
 - La recuperación del texto deja de utilizar `rx_a_pdu`, `muestrear_rx` y `rx_a_stream`.
@@ -3183,7 +3419,7 @@ La frontera de recepción queda en `sin_etiquetas`, entre ese cierre y `filtro_r
 El RRC receptor procesa el stream sin conocer dónde empieza ni cuánto ocupa cada paquete.
 
 ![Diagrama de generación de la ráfaga, cierre, Tag Gate sin etiquetas, RRC receptor y Keep M in N, seguido de decisiones, detector y recuperación de texto.](figures/enlace-68-conexion-receptor-stream.png)
-**Figura 68.** El receptor filtra y selecciona muestras sin etiquetas; el detector de bits reconstruye después los límites de cada paquete.
+**Figura 73.** El receptor filtra y selecciona muestras sin etiquetas; el detector de bits reconstruye después los límites de cada paquete.
 
 - **Zona TX:** `cierre_rx` añade la cola de ceros antes de la frontera. Su nombre se conserva para mantener los IDs del montaje.
 - **Frontera:** `Tag Gate` copia todas las muestras y retira todas las etiquetas.
@@ -3323,7 +3559,7 @@ El selector conserva también las ocho posiciones finales del registro. Para `Ho
 El detector encuentra la palabra y la cabecera, y entrega únicamente los 80 bits del paquete protegido.
 
 ![Referencia calculada del receptor de Hola con 768 muestras, selección global cada cuatro muestras para obtener 192 valores y región útil de trama con 176 valores entre arranque y cierre.](figures/enlace-69-muestras-stream-hola.png)
-**Figura 69.** El selector conserva arranque, trama y cierre; el detector separa después los bits del paquete protegido.
+**Figura 74.** El selector conserva arranque, trama y cierre; el detector separa después los bits del paquete protegido.
 
 - **Panel superior:** las 768 muestras RX contienen la respuesta de los filtros. Los puntos seleccionados utilizan una fase global conocida.
 - **Panel inferior:** hay 192 valores seleccionados. Las primeras y últimas ocho posiciones quedan fuera de la trama útil.
@@ -3349,7 +3585,7 @@ El detector encuentra la palabra y la cabecera, y entrega únicamente los 80 bit
 4. Comprueba la conexión y `Display = On` de `debug_sin_etiquetas`. En consola no debe aparecer un registro `Tag Debug: Entrada RX sin etiquetas`.
 5. Hace una pausa y reenvía `Hola`. Comprueba una nueva entrega, sin pedir otro mensaje para terminar el anterior.
 6. **Opcional: repetir el ensayo de CRC.** El estudiante sigue el procedimiento complementario indicado debajo.
-7. **Solo si realizó el punto 6:** detiene la ejecución, retira las conexiones del auxiliar y lo deshabilita. Restablece constructor → `envolver_trama`.
+7. **Solo si realizó el punto 6:** detiene la ejecución, retira las conexiones de `Alterar segundo paquete` y lo deshabilita. Restablece `Construir paquete.out` → `envolver_trama.pdu`.
 
 - Los puntos 1–5 corresponden a la prueba normal, con el auxiliar deshabilitado desde 17.2. No se activa el auxiliar para enviar esos textos.
 - El punto 6 permite volver a comprobar el rechazo con la nueva rama de stream. No es obligatorio para completar la prueba normal.
@@ -3364,7 +3600,7 @@ El detector encuentra la palabra y la cabecera, y entrega únicamente los 80 bit
     3. Conecta `Construir paquete.out` → `Alterar segundo paquete.in` y `Alterar segundo paquete.out` → `envolver_trama.pdu`.
     4. Guarda y ejecuta con el cuadro vacío. Envía `Hola` tres veces en la misma ejecución.
     5. Comprueba aceptación, rechazo por CRC y aceptación, en ese orden. El detector encuentra los tres paquetes.
-    6. Detiene la ejecución y retira las dos conexiones del auxiliar. Lo deshabilita con `D` y restablece constructor → `envolver_trama`.
+    6. Detiene la ejecución y retira las conexiones de `Alterar segundo paquete`. Lo deshabilita con `D` y restablece `Construir paquete.out` → `envolver_trama.pdu`.
 
 !!! note "Qué permanece ideal"
 
@@ -3387,14 +3623,14 @@ El detector encuentra la palabra y la cabecera, y entrega únicamente los 80 bit
 Las capturas muestran el transmisor, dos entregas de `Hola` y la conexión normal del constructor. El auxiliar permanece deshabilitado.
 
 ![Pestaña Transmisor con Hola, señal rectangular de la trama, muestras RRC y constelación BPSK en menos uno y más uno con Q igual a cero.](figures/enlace-70-transmisor-stream-hola.png)
-**Figura 70.** Las ramas TX conservan el pulso rectangular, el pulso RRC y los símbolos BPSK al cambiar la recepción a stream.
+**Figura 75.** Las ramas TX conservan el pulso rectangular, el pulso RRC y los símbolos BPSK al cambiar la recepción a stream.
 
 - **Panel superior izquierdo:** el tiempo se expresa en milisegundos. I azul toma valores de menos uno o más uno; Q roja permanece en cero.
 - **Panel superior derecho:** las muestras RRC incluyen transiciones y cierre. I puede superar la amplitud de los símbolos originales.
 - **Panel inferior:** la constelación anterior al filtro conserva las dos posiciones BPSK. Esta captura no muestra los visores de la pestaña RX.
 
 ![Consola de Hola con trama TX de 22 bytes, observaciones de 5632 y 5888 bytes, etiqueta packet_len 80 en offset cero, paquete RX de diez bytes y texto Hola.](figures/enlace-71-consola-stream-primer-hola.png)
-**Figura 71.** El receptor detecta 80 bits, reconstruye el paquete de diez bytes y entrega `Hola` después de comprobarlo.
+**Figura 76.** El receptor detecta 80 bits, reconstruye el paquete de diez bytes y entrega `Hola` después de comprobarlo.
 
 - **Parte superior:** TX muestra la trama de 22 bytes. Las observaciones rectangular y RRC TX ocupan 5632 y 5888 bytes.
 - **Detección:** `Tag Debug: Paquetes detectados` imprime `packet_len = 80` en el offset cero.
@@ -3402,7 +3638,7 @@ Las capturas muestran el transmisor, dos entregas de `Hola` y la conexión norma
 - **Registros ausentes:** no aparecen los resúmenes de los antiguos visores PDU RX. `debug_sin_etiquetas` tampoco imprime registros si no recibe etiquetas.
 
 ![Nueva entrega de Hola con trama TX de 22 bytes, etiqueta packet_len 80 en offset 312, paquete RX original de diez bytes y texto Hola aceptado.](figures/enlace-72-consola-stream-otro-hola.png)
-**Figura 72.** Otra entrega de `Hola` conserva el paquete original; el offset 312 expresa la posición acumulada en la salida del detector.
+**Figura 77.** Otra entrega de `Hola` conserva el paquete original; el offset 312 expresa la posición acumulada en la salida del detector.
 
 - **Detección:** la longitud sigue en 80 bits. El offset 312 indica que el detector ya había entregado 312 bits de paquetes anteriores.
 - **Interpretación:** el profesor confirmó los envíos intermedios de `SDR` y `¡Hola, Perú!`. Los paquetes anteriores suman `80 + 72 + 160 = 312` bits.
@@ -3410,7 +3646,7 @@ Las capturas muestran el transmisor, dos entregas de `Hola` y la conexión norma
 - **Parte inferior:** el paquete reconstruido y el texto aceptado coinciden con el primer `Hola`.
 
 ![Rama TX con Alterar segundo paquete deshabilitado y conexión directa desde Construir paquete a envolver_trama, seguida de Bytes a bits y mapeador.](figures/enlace-73-conexion-stream-auxiliar-deshabilitado.png)
-**Figura 73.** La prueba normal utiliza constructor → `envolver_trama` y mantiene el auxiliar de alteración deshabilitado.
+**Figura 78.** La prueba normal utiliza constructor → `envolver_trama` y mantiene el auxiliar de alteración deshabilitado.
 
 - **Zona central:** `Construir paquete.out` alimenta `envolver_trama.pdu`. El auxiliar gris no interviene.
 - **Continuación TX:** la envoltura pasa a `Bytes a bits`, al adaptador de stream y al mapeador BPSK.
@@ -3430,7 +3666,19 @@ El texto se recupera después de seleccionar una muestra cada cuatro. ¿Demuestr
 
 ## 18. Añadir ruido gaussiano y contar resultados
 
-- El estudiante continúa después de comprobar el paso 17. Conserva el auxiliar deshabilitado y constructor → `envolver_trama`.
+**Ubicación en el sistema: canal simulado entre las interfaces S.**
+
+![Diagrama original del sistema SDR con las dos interfaces S resaltadas en naranja y los bloques Symbol mod y Symbol demod en azul.](figures/enlace-referencia-sdr-canal.png)
+**Figura 79.** El canal simulado del laboratorio conecta las interfaces digitales de muestras del transmisor y del receptor.
+
+- **Fila TX:** la S naranja identifica las muestras que salen de `Symbol mod`.
+- **Fila RX:** la S naranja identifica las muestras que entran en `Symbol demod`.
+- **Entre ambas interfaces:** `Noise Source` y `Add` modelan el ruido en las muestras complejas. El diagrama original no dibuja una caja de canal.
+- **Alcance:** el recorrido simulado conecta estas interfaces sin `D/A`, `A/D` ni `RF chain`.
+
+[Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-canal.svg).
+
+- El estudiante continúa después de comprobar el paso 17. Conserva `Alterar segundo paquete` deshabilitado y la conexión `Construir paquete.out` → `envolver_trama.pdu`.
 - Añade dos bloques estándar: `Noise Source`, fuente de ruido, y `Add`, suma de dos streams complejos.
 - Introduce AWGN, *additive white Gaussian noise*: ruido aditivo blanco gaussiano, antes del filtro receptor.
 - Conserva trama, filtros, tasas y selección temporal. No introduce errores de frecuencia, fase ni reloj en este paso.
@@ -3452,7 +3700,7 @@ El ruido se suma después de `sin_etiquetas`. El receptor sigue sin recibir etiq
 Se usan dos bloques para estudiar únicamente la suma de ruido, manteniendo el recorrido temporal del paso 17.
 
 ![Conexión desde Tag Gate a Add, con Noise Source en la segunda entrada, RRC y selector en RX, más observadores store y resumen de resultados.](figures/enlace-74-conexion-ruido.png)
-**Figura 74.** El ruido se suma antes del RRC receptor; los observadores cuentan eventos sin proporcionar referencias al receptor.
+**Figura 80.** El ruido se suma antes del RRC receptor; los observadores cuentan eventos sin proporcionar referencias al receptor.
 
 - **Recorrido superior:** la salida limpia de `sin_etiquetas` entra por el puerto cero de `sumar_ruido`.
 - **Rama de ruido:** `ruido` alimenta el puerto uno. La suma pasa a `filtro_rx`; el selector conserva su configuración.
@@ -3462,7 +3710,7 @@ Se usan dos bloques para estudiar únicamente la suma de ruido, manteniendo el r
 ### 18.2. Preparar y definir los parámetros
 
 1. El estudiante detiene la ejecución y guarda el montaje del paso 17.
-2. Comprueba que el auxiliar esté deshabilitado y que constructor → `envolver_trama` sea la única ruta activa de esos mensajes.
+2. Comprueba que `Alterar segundo paquete` esté deshabilitado y que `Construir paquete.out` → `envolver_trama.pdu` sea la única ruta activa de esos mensajes.
 3. Conserva `sin_etiquetas`, los dos RRC, `muestrear_stream`, el comprobador, los convertidores y los visores.
 4. Añade dos variables con estos valores iniciales.
 
@@ -3545,7 +3793,7 @@ $$
 - El generador reproducible calcula esa referencia; las pruebas verifican su correspondencia con los filtros reales.
 
 ![Referencia calculada de las muestras antes del RRC RX y de la constelación seleccionada, comparando ausencia de ruido con ruido complejo de amplitud uno.](figures/enlace-75-referencia-ruido.png)
-**Figura 75.** El ruido modifica I y Q antes del filtro; el RRC y la selección producen una nube de valores alrededor de los símbolos ideales.
+**Figura 81.** El ruido modifica I y Q antes del filtro; el RRC y la selección producen una nube de valores alrededor de los símbolos ideales.
 
 - **Panel superior:** muestra una ventana temporal de la entrada RX. Compara I limpia con I y Q después de sumar ruido.
 - **Panel inferior:** compara 176 posiciones de trama de la referencia, sin ruido y con ruido. Los ejes indican I y Q normalizadas.
@@ -3714,13 +3962,13 @@ El montaje revisado transmite `Hola`, `SDR`, `¡Hola, Perú!` y otro `Hola`. Cad
 Esta comprobación abreviada observa dos formas de fallo. No sustituye la matriz completa de 18.8 ni constituye una medición estadística.
 
 ![Resumen manual sin ruido: cuatro tramas detectadas, cuatro paquetes reconstruidos y cuatro textos aceptados](figures/enlace-76-resumen-manual-ruido-cero.png)
-**Figura 76.** Resumen manual de cuatro envíos con amplitud de ruido cero.
+**Figura 82.** Resumen manual de cuatro envíos con amplitud de ruido cero.
 
 - `TX=4 DET=4 RX=4 OK=4`: los cuatro textos se recuperan exactamente.
 - `RECH=0 SIN_PDU=0 SIN_TEXTO=0`: no se observan rechazos ni pérdidas en esta ejecución.
 
 ![Resumen manual con amplitud uno: cuatro paquetes completos y un texto rechazado por longitud interna alterada](figures/enlace-77-resumen-manual-ruido-uno.png)
-**Figura 77.** Resumen manual con amplitud uno y un paquete completo rechazado.
+**Figura 83.** Resumen manual con amplitud uno y un paquete completo rechazado.
 
 - `TX=4 DET=4 RX=4 OK=3`: el primer `Hola` no produce texto aceptado; los otros tres envíos sí.
 - La revisión del paquete recibido identifica `08 04` donde se transmitió `00 04`. El campo interno declara 2052 bytes de texto, en vez de cuatro.
@@ -3728,7 +3976,7 @@ Esta comprobación abreviada observa dos formas de fallo. No sustituye la matriz
 - El segundo `Hola` usa otro tramo de la secuencia de ruido y llega correctamente. La semilla no reinicia la secuencia en cada mensaje.
 
 ![Resumen manual con amplitud dos: cuatro envíos sin detecciones ni paquetes completos ni textos publicados](figures/enlace-78-resumen-manual-ruido-dos.png)
-**Figura 78.** Resumen manual con amplitud dos y cuatro envíos sin paquete completo.
+**Figura 84.** Resumen manual con amplitud dos y cuatro envíos sin paquete completo.
 
 - `TX=4 DET=0 RX=0 OK=0`: el detector no produce etiquetas de paquete y el comprobador no recibe paquetes completos.
 - `RECH=0` no indica recepción correcta. Los cuatro envíos quedan registrados en `SIN_PDU=4` y `SIN_TEXTO=4`.
@@ -3736,6 +3984,17 @@ Esta comprobación abreviada observa dos formas de fallo. No sustituye la matriz
 - Después de esta comprobación se restablece `ruido_amplitud = 0.0`, con la cadena nueva y el auxiliar deshabilitado.
 
 ## 19. Introducir una rotación constante y recuperar fase
+
+**Ubicación en el sistema: recuperación de portadora dentro de `Symbol demod`.**
+
+![Diagrama original del sistema SDR con Symbol demod resaltado en naranja para localizar la recuperación de fase mediante Costas Loop.](figures/enlace-referencia-sdr-recepcion.png)
+**Figura 85.** `Costas Loop` desarrolla la recuperación de fase dentro de `Symbol demod`.
+
+- **Fila RX, naranja:** `Costas Loop`, con `ID = recuperar_fase`, ajusta la orientación de los símbolos antes de decidir sus bits.
+- **Canal simulado:** `Multiply Const`, con `ID = rotar_fase`, introduce la perturbación. Es una operación sobre muestras, no una etapa RF del montaje.
+- **Límite del paso:** la alineación puede conservar una inversión de polaridad BPSK. El paso 20 tratará esa ambigüedad.
+
+[Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-recepcion.svg).
 
 ### 19.1. Propósito y condiciones del experimento
 
@@ -3835,7 +4094,7 @@ El estudiante añade un `QT GUI Constellation Sink`. Conserva el visor anterior 
 Conecta la primera salida compleja de `recuperar_fase` también a `constelacion_fase.in`.
 
 ![Conexiones de la rotación del canal y del Costas Loop con observación de muestras antes y después de la corrección](figures/enlace-79-conexion-fase.png)
-**Figura 79.** Rotación de fase en el canal y recuperación después del selector nominal de símbolos.
+**Figura 86.** Rotación de fase en el canal y recuperación después del selector nominal de símbolos.
 
 - **Canal:** `rotar_fase` modifica las muestras antes de sumar ruido. El filtro RX y su selección conservan la configuración anterior.
 - **Receptor:** el lazo recibe muestras complejas; la extracción de I y la decisión de bits ocurren después de su salida.
@@ -3919,7 +4178,7 @@ I_k\approx a_k\cos\varepsilon_k,\qquad Q_k\approx a_k\sin\varepsilon_k.
 $$
 
 ![Constelaciones de referencia con fase de sesenta y ciento veinte grados antes y después del Costas Loop; los colores siguen los bits transmitidos](figures/enlace-80-referencia-fase.png)
-**Figura 80.** Corrección de 60° y ambigüedad de 180° observadas con el bloque Costas Loop real.
+**Figura 87.** Corrección de 60° y ambigüedad de 180° observadas con el bloque Costas Loop real.
 
 - **Panel superior izquierdo:** entrada del lazo a 60°. I y Q son valores normalizados; los símbolos aparecen cerca de $(0.5,0.866)$ y $(-0.5,-0.866)$.
 - **Panel superior derecho:** salida posterior a la convergencia. Los mismos bits se aproximan a $+1$ y $-1$ sobre el eje I.
@@ -3973,22 +4232,22 @@ El montaje revisado ejecuta los cuatro casos de 19.7. Cada ejecución envía dos
 - El control de 120° conserva el fallo antes de resolver la ambigüedad. Sus capturas se interpretan a continuación.
 
 ![Primer Hola con fase de ciento veinte grados: constelación rotada antes del lazo y transitorio de adquisición después del lazo](figures/enlace-81-control-120-primer-hola.png)
-**Figura 81.** Primer envío de `Hola` con fase de 120° y Costas Loop activo.
+**Figura 88.** Primer envío de `Hola` con fase de 120° y Costas Loop activo.
 
 - **Panel superior:** I es el eje horizontal y Q es el vertical. Las muestras se agrupan cerca de $(-0.5,0.866)$ y $(0.5,-0.866)$.
 - **Panel inferior:** aparecen posiciones intermedias mientras el lazo ajusta su corrección. La dispersión observada corresponde al transitorio del lazo con ruido desactivado.
 - **Origen:** ambos visores incluyen muestras de cierre y transitorios cerca de cero. Esos puntos no constituyen un tercer símbolo BPSK.
 
 ![Segundo Hola con fase de ciento veinte grados: la entrada conserva su rotación y la salida del lazo se agrupa sobre el eje real](figures/enlace-82-control-120-segundo-hola.png)
-**Figura 82.** Segundo envío de `Hola` con la salida del lazo alineada y sin texto recuperado.
+**Figura 89.** Segundo envío de `Hola` con la salida del lazo alineada y sin texto recuperado.
 
 - **Panel superior:** la entrada conserva la rotación de 120°. El canal permanece igual entre mensajes.
 - **Panel inferior:** las muestras aparecen cerca de $I=\pm1$, con Q próxima a cero. El lazo conserva su estado entre envíos.
 - **Límite de la imagen:** todos los puntos tienen el mismo color. Este visor no identifica qué bit transmitido corresponde a cada posición.
-- **Interpretación conjunta:** la referencia de la Figura 80 identifica los bits y muestra la inversión esperada. El resumen siguiente confirma la falta de recuperación manual.
+- **Interpretación conjunta:** la referencia de la Figura 87 identifica los bits y muestra la inversión esperada. El resumen siguiente confirma la falta de recuperación manual.
 
 ![Resumen manual del control de ciento veinte grados: dos tramas transmitidas, ninguna detección y ningún paquete ni texto recuperados](figures/enlace-83-control-120-resumen.png)
-**Figura 83.** Resumen manual del control de ambigüedad con dos envíos y cero textos aceptados.
+**Figura 90.** Resumen manual del control de ambigüedad con dos envíos y cero textos aceptados.
 
 - `TX=2 DET=0 RX=0 OK=0`: el transmisor publica dos tramas, pero el detector no produce etiquetas y no se reconstruyen paquetes completos.
 - `RECH=0` indica que ningún paquete completo llegó a ser rechazado. `SIN_PDU=2` y `SIN_TEXTO=2` registran los dos envíos sin entrega.
@@ -4013,6 +4272,9 @@ Un símbolo BPSK $a_k=+1$ llega con un desfase constante de 120°. ¿Qué signo 
     - El receptor necesita resolver la inversión antes de afirmar recuperación de texto para ese escenario.
 
 ## 20. Resolver la polaridad BPSK y recuperar el caso de 120°
+
+**Ubicación en el sistema:** este paso completa la correspondencia símbolo-bit de `Symbol demod`, resaltado en la Figura 85.
+Las dos hipótesis de polaridad permiten comprobar candidatos con el mismo acceso, longitud y CRC.
 
 ### 20.1. Continuar el ensayo de fase del paso 19
 
@@ -4158,7 +4420,7 @@ self.debug_invertida.set_save_all(True)
 - Se conserva también `self.debug_deteccion.set_save_all(True)`. Ambos contadores se reinician con cada ejecución nueva.
 
 ![Dos hipótesis de polaridad desde Binary Slicer, con Map en la ruta invertida y unión de candidatos mediante mensajes PDU](figures/enlace-84-conexion-polaridad.png)
-**Figura 84.** Dos rutas estándar reconstruyen candidatos que comparten el comprobador de longitud y CRC.
+**Figura 91.** Dos rutas estándar reconstruyen candidatos que comparten el comprobador de longitud y CRC.
 
 - **Origen:** ambas rutas reciben las decisiones binarias posteriores al lazo. Ninguna recibe el texto TX ni el ángulo configurado en el canal.
 - **Ruta normal:** conserva el detector, el empaquetado y el adaptador anteriores.
@@ -4234,7 +4496,7 @@ Para cada bit decidido $b_k\in\{0,1\}$, las dos hipótesis son $b_k$ y $1-b_k$. 
 Cuando el lazo conserva una inversión de 180°, la segunda hipótesis restaura el acceso, las longitudes, el texto y el CRC.
 
 ![Bytes de la trama Hola transmitida, decisiones con polaridad invertida y recuperación mediante el bloque Map antes de detectar el acceso](figures/enlace-85-bytes-polaridad.png)
-**Figura 85.** Recuperación de los bytes de la trama de `Hola` desde decisiones invertidas de la referencia de 120°.
+**Figura 92.** Recuperación de los bytes de la trama de `Hola` desde decisiones invertidas de la referencia de 120°.
 
 - **Fila TX:** muestra los bytes originales de acceso, cabecera externa, longitud interna, texto y CRC.
 - **Fila de decisiones:** las muestras del Costas Loop real producen los bits invertidos de esta referencia. Los bytes se agrupan solo para facilitar la lectura.
@@ -4284,7 +4546,7 @@ Ambos resúmenes indican `TX=1`, ruido cero, semilla 42 y Costas activo.
 - Los lotes contienen cantidades distintas de envíos. Esta comparación documenta el resultado funcional; no mide una tasa estadística de errores.
 
 ![Constelaciones del envío manual de Hola a ciento veinte grados, antes de Costas y durante su ajuste, con resolución de polaridad instalada](figures/enlace-86-manual-polaridad-120-constelaciones.png)
-**Figura 86.** Constelaciones del envío manual de `Hola` a 120° con resolución de polaridad instalada.
+**Figura 93.** Constelaciones del envío manual de `Hola` a 120° con resolución de polaridad instalada.
 
 - **Panel superior:** I es el eje horizontal y Q el vertical. Los grupos permanecen cerca de $(-0.5,0.866)$ y $(0.5,-0.866)$.
 - **Panel inferior:** la salida de Costas muestra posiciones intermedias y grupos próximos al eje I, compatibles con el transitorio de adquisición.
@@ -4292,7 +4554,7 @@ Ambos resúmenes indican `TX=1`, ruido cero, semilla 42 y Costas activo.
 - **Límite del visor:** los puntos comparten color. La constelación por sí sola no identifica qué bit transmitido ocupa cada posición.
 
 ![Resumen manual de un Hola a ciento veinte grados con una detección invertida, un paquete completo y un texto aceptado](figures/enlace-87-manual-polaridad-120-resumen.png)
-**Figura 87.** Resumen manual de un envío a 120° recuperado por la ruta invertida.
+**Figura 94.** Resumen manual de un envío a 120° recuperado por la ruta invertida.
 
 - `TX=1 DET=1 RX=1 OK=1`: la única trama transmitida produce una detección, un paquete completo y un texto aceptado.
 - `POLARIDAD normal=0 invertida=1`: la detección procede de la hipótesis invertida.
@@ -4300,14 +4562,14 @@ Ambos resúmenes indican `TX=1`, ruido cero, semilla 42 y Costas activo.
 - La consola identifica `Paquetes detectados: ruta invertida`, con `packet_len=80`. El adaptador entrega una PDU de 10 bytes.
 
 ![Constelaciones del envío manual de Hola con fase cero, con grupos sobre el eje real antes y después de Costas](figures/enlace-88-manual-polaridad-cero-constelaciones.png)
-**Figura 88.** Constelaciones del control manual a 0° con ambas rutas de polaridad instaladas.
+**Figura 95.** Constelaciones del control manual a 0° con ambas rutas de polaridad instaladas.
 
 - **Panel superior:** I es el eje horizontal y Q el vertical. Los símbolos aparecen cerca de $I=-1$ e $I=+1$, con Q próxima a cero.
 - **Panel inferior:** la salida de Costas conserva la alineación sobre el eje real.
 - **Origen:** los puntos cercanos a cero incluyen cierre y transitorios. No constituyen un tercer símbolo BPSK.
 
 ![Resumen manual de un Hola con fase cero, una detección normal, ninguna invertida y un texto aceptado](figures/enlace-89-manual-polaridad-cero-resumen.png)
-**Figura 89.** Resumen manual de un envío a 0° recuperado por la ruta normal.
+**Figura 96.** Resumen manual de un envío a 0° recuperado por la ruta normal.
 
 - `TX=1 DET=1 RX=1 OK=1` y `TEXTOS_OK=['Hola']`: el mensaje llega completo y coincide con el enviado.
 - `POLARIDAD normal=1 invertida=0`: la ruta normal produce la detección y la invertida no registra detecciones.
@@ -4339,6 +4601,9 @@ Tras añadir la resolución de polaridad, se obtiene `TX=2 DET=2 RX=2 OK=2` y `P
     - El CRC comprueba el paquete reconstruido. No calcula los bits correctos ni corrige errores aislados.
 
 ## 21. Introducir un desajuste de frecuencia y recuperarlo con Costas
+
+**Ubicación en el sistema:** continúa la recuperación de portadora de `Symbol demod`, resaltado en la Figura 85.
+`Rotator` introduce el desajuste en el canal simulado. El `Costas Loop` existente sigue la rotación de fase que cambia con el tiempo.
 
 ### 21.1. Propósito y diferencia respecto de una fase constante
 
@@ -4477,7 +4742,7 @@ Conecta `frecuencia_a_hz.out → frecuencia_estimada.in`.
 - Los visores complejos muestran el efecto sobre los símbolos. Este visor permite comprobar qué frecuencia estima el lazo.
 
 ![Conexiones del Rotator antes del filtro receptor y de la salida de frecuencia de Costas hacia un conversor a Hz y un visor independiente](figures/enlace-90-conexion-frecuencia.png)
-**Figura 90.** Desajuste de frecuencia en el canal y observación de su seguimiento mediante el Costas Loop existente.
+**Figura 97.** Desajuste de frecuencia en el canal y observación de su seguimiento mediante el Costas Loop existente.
 
 - **Canal:** `Rotator` añade un incremento de fase a 4000 muestras/s, antes del RRC receptor.
 - **Receptor:** el selector entrega 1000 valores/s a Costas. La salida compleja continúa hacia las decisiones y las dos rutas de polaridad.
@@ -4545,7 +4810,7 @@ Los resultados de referencia no sustituyen las medidas del alumno. Una diferenci
 ### 21.8. Interpretar la referencia automática y la medida
 
 ![Constelaciones antes y después de Costas con diez Hz de desajuste y evolución temporal de las estimaciones de frecuencia para cero y más o menos diez Hz](figures/enlace-91-referencia-frecuencia.png)
-**Figura 91.** Constelaciones y frecuencia estimada con Rotator y Costas Loop reales, sin ruido y con fase inicial cero.
+**Figura 98.** Constelaciones y frecuencia estimada con Rotator y Costas Loop reales, sin ruido y con fase inicial cero.
 
 - **Panel superior izquierdo:** I y Q representan la entrada de Costas con +10 Hz. Los puntos ocupan distintas orientaciones porque la fase cambia entre símbolos.
 - **Panel superior derecho:** muestra los mismos instantes después de Costas. Tras la adquisición, los símbolos se aproximan al eje real.
@@ -4597,6 +4862,9 @@ El canal trabaja a 4000 muestras/s y Costas recibe 1000 valores/s. Su salida `fr
     - El incremento del Rotator sí utiliza 4000 muestras/s, porque ese bloque se encuentra antes del selector.
 
 ## 22. Introducir un desajuste temporal y reconocer sus efectos
+
+**Ubicación en el sistema:** la selección temporal pertenece al procesamiento de `Symbol demod`, mostrado en la Figura 48.
+El selector fijo todavía usa un instante conocido. `Delay` modifica el retardo del canal simulado sin añadir una etapa A/D.
 
 ### 22.1. Propósito y diferencia respecto de una rotación
 
@@ -4710,7 +4978,7 @@ sin_etiquetas → rotar_fase → desajustar_frecuencia → retardar_canal
 - El cierre existente se conserva. La prueba comprobará el primer mensaje antes de enviar el segundo.
 
 ![Conexiones del Delay complejo antes del ruido y del filtro receptor, con controles independientes de retardo del canal y offset del selector](figures/enlace-92-conexion-tiempo.png)
-**Figura 92.** Retardo constante del canal y selección temporal fija, con un ajuste manual independiente para el control diagnóstico.
+**Figura 99.** Retardo constante del canal y selección temporal fija, con un ajuste manual independiente para el control diagnóstico.
 
 - **Canal:** `Delay` desplaza las muestras a 4000 muestras/s. `retardo_muestras` controla únicamente ese bloque.
 - **Selector:** `Keep M in N` conserva una muestra de cada cuatro. `offset_muestreo` selecciona su posición dentro del grupo.
@@ -4793,7 +5061,7 @@ TIEMPO retardo_muestras=2 offset_muestreo=0
 ### 22.8. Interpretar la referencia reproducible
 
 ![Comparación temporal y de constelación para retardo cero, dos muestras con selección cero y dos muestras con selección manual dos](figures/enlace-93-referencia-tiempo.png)
-**Figura 93.** El retardo desplaza la forma temporal; el offset del selector determina qué amplitudes llegan al receptor.
+**Figura 100.** El retardo desplaza la forma temporal; el offset del selector determina qué amplitudes llegan al receptor.
 
 - **Columna izquierda:** el eje horizontal representa tiempo en períodos de símbolo, desde el inicio nominal de la trama tras los filtros. El vertical muestra I.
 - **Curvas:** representan la salida real del filtro RX. Las líneas que unen muestras solo facilitan su lectura; no añaden muestras adquiridas.
@@ -4833,14 +5101,14 @@ Las condiciones coinciden con las tres filas de 22.7.
 **Referencia temporal, retardo cero y offset cero.**
 
 ![Constelaciones manuales de referencia temporal con grupos próximos a menos uno y más uno sobre el eje I, antes y después de Costas](figures/enlace-94-manual-tiempo-referencia-constelaciones.png)
-**Figura 94.** Constelaciones del primer `Hola` de referencia, con retardo y offset cero.
+**Figura 101.** Constelaciones del primer `Hola` de referencia, con retardo y offset cero.
 
 - **Panel superior:** muestra las muestras seleccionadas antes de Costas. Los grupos útiles permanecen próximos a $I=\pm1$, con $Q=0$.
 - **Panel inferior:** muestra la salida de Costas con la misma orientación. No existe una rotación que corregir en este control.
 - **Origen:** los visores incluyen arranque y cierre; los puntos próximos a cero no representan un tercer símbolo BPSK.
 
 ![Resumen manual de referencia temporal con dos mensajes enviados, detectados y recuperados, y retardo y offset cero](figures/enlace-95-manual-tiempo-referencia-resumen.png)
-**Figura 95.** La referencia temporal recupera ambos mensajes sin rechazos ni ausencias de texto.
+**Figura 102.** La referencia temporal recupera ambos mensajes sin rechazos ni ausencias de texto.
 
 - El resumen indica `TX=2 DET=2 RX=2 OK=2` y `TEXTOS_OK= ['Hola', 'Hola']`.
 - Ambas detecciones corresponden a la ruta normal. La línea `TIEMPO` confirma retardo cero y offset cero.
@@ -4848,14 +5116,14 @@ Las condiciones coinciden con las tres filas de 22.7.
 **Medio símbolo sin ajuste temporal, retardo dos y offset cero.**
 
 ![Constelaciones manuales con dos muestras de retardo y offset cero, con amplitudes dispersas sobre I antes y después de Costas](figures/enlace-96-manual-tiempo-sin-ajuste-constelaciones.png)
-**Figura 96.** Con medio símbolo de retardo, las muestras permanecen sobre el eje I pero sus amplitudes se dispersan.
+**Figura 103.** Con medio símbolo de retardo, las muestras permanecen sobre el eje I pero sus amplitudes se dispersan.
 
 - **Panel superior:** el selector mantiene sus instantes. Las amplitudes dejan de concentrarse en los dos grupos de referencia.
 - **Panel inferior:** Costas conserva la orientación, pero no restablece los instantes de selección.
 - La alineación sobre el eje I no demuestra que los bits permitan detectar la trama.
 
 ![Resumen manual con dos muestras de retardo y offset cero, dos envíos y ningún paquete detectado ni texto recuperado](figures/enlace-97-manual-tiempo-sin-ajuste-resumen.png)
-**Figura 97.** Los dos envíos con medio símbolo de retardo no producen detecciones con el selector fijo en cero.
+**Figura 104.** Los dos envíos con medio símbolo de retardo no producen detecciones con el selector fijo en cero.
 
 - El resumen indica `TX=2 DET=0 RX=0 OK=0`, `SIN_PDU=2` y `SIN_TEXTO=2`.
 - `RECH=0` significa que no se rechazaron candidatos. El detector no entregó paquetes al comprobador CRC.
@@ -4867,14 +5135,14 @@ La constelación siguiente pertenece al primer ensayo del control manual, con un
 El resumen posterior corresponde a una repetición con dos envíos y los mismos valores de retardo y offset.
 
 ![Constelaciones del control manual con retardo dos y offset dos, con grupos próximos a menos uno y más uno antes y después de Costas](figures/enlace-98-manual-tiempo-control-constelaciones.png)
-**Figura 98.** El ajuste manual del selector recupera los grupos de referencia aunque el retardo del canal permanece.
+**Figura 105.** El ajuste manual del selector recupera los grupos de referencia aunque el retardo del canal permanece.
 
 - **Panel superior:** el offset dos desplaza los instantes seleccionados. Las amplitudes vuelven a los grupos próximos a $\pm1$.
 - **Panel inferior:** Costas mantiene esos grupos sobre el eje I. Los visores siguen incluyendo arranque y cierre.
 - El operador eligió el ajuste conociendo el retardo. La figura no demuestra estimación temporal automática.
 
 ![Resumen del ensayo posterior del control manual con dos Hola recuperados y retardo y offset dos](figures/enlace-99-manual-tiempo-control-resumen.png)
-**Figura 99.** La repetición del control manual recupera ambos mensajes con retardo dos y offset dos.
+**Figura 106.** La repetición del control manual recupera ambos mensajes con retardo dos y offset dos.
 
 - El resumen indica `TX=2 DET=2 RX=2 OK=2`, dos textos `Hola` y `RECH=0 SIN_PDU=0 SIN_TEXTO=0`.
 - Ambas detecciones corresponden a la ruta normal. La línea `TIEMPO` confirma que el canal conserva el retardo de dos muestras.
@@ -4897,6 +5165,17 @@ El canal retrasa dos muestras a 4000 muestras/s. El receptor conserva una de cad
     - Las tasas permanecen iguales. El modelo introduce un retardo constante, no una diferencia entre relojes.
 
 ## 23. Recuperar el instante de símbolo y seguir la deriva de reloj
+
+**Ubicación en el sistema: recuperación temporal dentro de `Symbol demod`.**
+
+![Diagrama original del sistema SDR con Symbol demod resaltado en naranja para situar la recuperación del instante de símbolo y el seguimiento del reloj.](figures/enlace-referencia-sdr-recepcion.png)
+**Figura 107.** `Symbol Sync` desarrolla la recuperación temporal dentro de `Symbol demod`.
+
+- **Entrada S del receptor:** contiene varias muestras por símbolo. El instante adecuado de decisión puede ser desconocido o cambiar durante el envío.
+- **Bloque estudiado:** `Symbol Sync`, con `ID = sincronizar_simbolos`, estima esos instantes y entrega una muestra por símbolo a `Costas Loop`.
+- **Alcance:** el ajuste ocurre sobre muestras digitales recibidas. No configura un convertidor A/D ni cambia el reloj físico de un equipo de radio.
+
+[Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-recepcion.svg).
 
 ### 23.1. Propósito y dos ensayos del mismo sincronizador
 
@@ -5016,7 +5295,7 @@ En `frecuencia_estimada`, cambia `Number of Points` de `192` a `128`. Conserva s
 - `tiempo_rx` conserva su conexión al filtro RX, antes de la recuperación temporal. No cambia su `GUI Hint`.
 
 ![Conexiones de Symbol Sync después del RRC RX, sus salidas de diagnóstico y la inserción posterior del simulador de reloj en el canal](figures/enlace-100-conexion-reloj.png)
-**Figura 100.** El sincronizador temporal sustituye al selector fijo y conserva la recuperación de fase y el protocolo existentes.
+**Figura 108.** El sincronizador temporal sustituye al selector fijo y conserva la recuperación de fase y el protocolo existentes.
 
 - **Ruta superior:** el canal entrega muestras al filtro RX. El remuestreador del canal se añadirá después del ensayo A.
 - **Ruta central:** `Symbol Sync` interpola los instantes de símbolo. Su salida compleja alimenta Costas y la constelación superior.
@@ -5062,7 +5341,7 @@ El remuestreador del canal todavía no está instalado. Las tasas permanecen igu
 - La recepción del primer texto es el criterio principal. No se espera al segundo envío para completar el primero.
 
 ![Constelación del primer Hola con medio símbolo de retardo, selección fija y recuperación Gardner; período estimado durante la adquisición](figures/enlace-101-adquisicion-reloj.png)
-**Figura 101.** Gardner recupera el primer paquete con retardo de dos muestras y sin conocer ese retardo.
+**Figura 109.** Gardner recupera el primer paquete con retardo de dos muestras y sin conocer ese retardo.
 
 - **Panel izquierdo:** I y Q muestran la selección fija en cero. Las amplitudes se dispersan sobre I y el detector no encuentra este paquete.
 - **Panel central:** I y Q muestran la salida compleja real de `Symbol Sync`. Incluye el transitorio y los valores de arranque y cierre.
@@ -5153,7 +5432,7 @@ Después habilita `sincronizar_simbolos`, `descartar_ted` y `reloj_estimado`, si
 - `T_avg` es una estimación con fluctuaciones. El ensayo no exige leer exactamente 4.004 en cada punto del visor.
 
 ![Período estimado por Symbol Sync durante un paquete largo con diferencias de reloj cero, más mil y menos mil ppm](figures/enlace-102-seguimiento-reloj.png)
-**Figura 102.** El mismo sincronizador sigue una diferencia constante entre relojes y estima un período distinto de cuatro muestras/símbolo.
+**Figura 110.** El mismo sincronizador sigue una diferencia constante entre relojes y estima un período distinto de cuatro muestras/símbolo.
 
 - **Panel superior:** el eje horizontal cuenta símbolos de salida. El vertical muestra el período estimado durante el texto largo, con adquisición incluida.
 - **Panel inferior:** muestra un promedio móvil de 256 valores de `T_avg` en el tramo final. Las líneas discontinuas marcan 4.000, 4.004 y 3.996 muestras/símbolo.
@@ -5194,21 +5473,21 @@ En ambos casos se mantienen ruido, fase, frecuencia y reloj en cero, semilla 42 
 **Retardo cero, referencia con adquisición.**
 
 ![Constelaciones del primer Hola con retardo cero y Symbol Sync activo, antes y después de Costas](figures/enlace-103-manual-adquisicion-retardo0-constelaciones-primer-hola.png)
-**Figura 103.** Con retardo cero, la salida del sincronizador presenta grupos alrededor de los dos niveles BPSK.
+**Figura 111.** Con retardo cero, la salida del sincronizador presenta grupos alrededor de los dos niveles BPSK.
 
 - **Panel superior:** I y Q representan la salida de `Symbol Sync`, antes de Costas. Las muestras permanecen sobre el eje I.
 - **Panel inferior:** muestra la salida de Costas con la misma orientación. Fase y frecuencia del canal permanecen en cero.
 - Los grupos tienen dispersión de amplitudes. El visor incluye la adquisición, el arranque y el cierre; no se exigen dos puntos ideales.
 
 ![Período estimado durante el primer Hola con retardo cero, con un transitorio y valores posteriores próximos a cuatro muestras por símbolo](figures/enlace-104-manual-adquisicion-retardo0-periodo-primer-hola.png)
-**Figura 104.** La estimación del período presenta un transitorio incluso con retardo y diferencia de reloj cero.
+**Figura 112.** La estimación del período presenta un transitorio incluso con retardo y diferencia de reloj cero.
 
 - El eje vertical representa muestras de entrada por símbolo. La curva azul corresponde a `T_avg` del sincronizador.
 - La curva parte cerca de cuatro, sube y vuelve hacia valores próximos a cuatro durante la ventana mostrada.
 - La captura no incluye el eje horizontal completo. No permite medir un tiempo de convergencia ni deducir precisión en ppm.
 
 ![Resumen de dos Hola recuperados con retardo cero, offset cero y sincronización temporal activa](figures/enlace-105-manual-adquisicion-retardo0-resumen.png)
-**Figura 105.** La referencia con adquisición recupera ambos textos sin rechazos ni ausencias.
+**Figura 113.** La referencia con adquisición recupera ambos textos sin rechazos ni ausencias.
 
 - El resumen indica `TX=2 DET=2 RX=2 OK=2` y `TEXTOS_OK= ['Hola', 'Hola']`.
 - Ambas detecciones corresponden a la ruta normal. `TIEMPO` declara retardo cero y offset cero; `RELOJ` declara temporización activa y cero ppm.
@@ -5216,14 +5495,14 @@ En ambos casos se mantienen ruido, fase, frecuencia y reloj en cero, semilla 42 
 **Retardo dos, adquisición de medio símbolo.**
 
 ![Constelaciones del primer Hola con retardo dos, offset cero y Symbol Sync activo, antes y después de Costas](figures/enlace-106-manual-adquisicion-retardo2-constelaciones-primer-hola.png)
-**Figura 106.** El sincronizador entrega grupos alrededor de los niveles BPSK con dos muestras de retardo y sin ajuste manual del offset.
+**Figura 114.** El sincronizador entrega grupos alrededor de los niveles BPSK con dos muestras de retardo y sin ajuste manual del offset.
 
 - **Panel superior:** muestra la salida de `Symbol Sync`. Los grupos se concentran alrededor de I igual a −1 y +1, con Q próxima a cero.
 - **Panel inferior:** muestra la salida de Costas. El lazo mantiene la orientación y conserva la dispersión temporal de amplitudes observada.
 - El offset sigue en cero y su selector está deshabilitado. El receptor no recibe el retardo conocido como ajuste.
 
 ![Período estimado durante el primer Hola con retardo dos, con un transitorio bajo cuatro y fluctuaciones posteriores próximas al período nominal](figures/enlace-107-manual-adquisicion-retardo2-periodo-primer-hola.png)
-**Figura 107.** La adquisición con medio símbolo de retardo produce un transitorio distinto, con período nominal de cuatro muestras por símbolo.
+**Figura 115.** La adquisición con medio símbolo de retardo produce un transitorio distinto, con período nominal de cuatro muestras por símbolo.
 
 - El eje vertical representa muestras por símbolo. La curva azul muestra `T_avg`, no el retardo del canal en muestras.
 - La curva baja durante el transitorio y después fluctúa cerca de cuatro en la ventana mostrada.
@@ -5231,7 +5510,7 @@ En ambos casos se mantienen ruido, fase, frecuencia y reloj en cero, semilla 42 
 - La diferencia entre relojes permanece en cero. Este ensayo comprueba adquisición inicial; el seguimiento de deriva corresponde a 23.7.
 
 ![Resumen de dos Hola recuperados con retardo dos, offset cero y sincronización temporal activa](figures/enlace-108-manual-adquisicion-retardo2-resumen.png)
-**Figura 108.** Con retardo dos y offset cero, ambos textos se recuperan mediante la sincronización temporal activa.
+**Figura 116.** Con retardo dos y offset cero, ambos textos se recuperan mediante la sincronización temporal activa.
 
 - El resumen indica `TX=2 DET=2 RX=2 OK=2`, dos textos `Hola` y `RECH=0 SIN_PDU=0 SIN_TEXTO=0`.
 - `TIEMPO` confirma retardo dos y offset cero. `RELOJ` confirma cero ppm y temporización activa; ambas detecciones utilizan la polaridad normal.
@@ -5259,21 +5538,21 @@ La identificación de los mensajes corresponde a la descripción del profesor y 
 **Referencia de reloj, con Symbol Sync y cero ppm.**
 
 ![Constelaciones del texto largo en la referencia de reloj, antes y después de Costas](figures/enlace-109-manual-reloj-referencia-constelaciones-largo.png)
-**Figura 109.** La ventana del texto largo de referencia muestra amplitudes dispersas sobre I, antes y después de Costas.
+**Figura 117.** La ventana del texto largo de referencia muestra amplitudes dispersas sobre I, antes y después de Costas.
 
 - **Panel superior:** representa la salida de `Symbol Sync` mediante I y Q. La ventana incluye valores alrededor de los niveles BPSK y valores intermedios.
 - **Panel inferior:** representa la salida de Costas. Las muestras conservan Q próxima a cero con fase y frecuencia del canal en cero.
 - La forma de esta ventana no sustituye la comprobación del paquete. El resumen siguiente registra la aceptación de ambos textos.
 
 ![Período estimado después de Hola en la referencia de reloj, con fluctuaciones próximas a cuatro muestras por símbolo](figures/enlace-110-manual-reloj-referencia-periodo-hola.png)
-**Figura 110.** Después de `Hola`, el período estimado de referencia fluctúa cerca de cuatro muestras por símbolo.
+**Figura 118.** Después de `Hola`, el período estimado de referencia fluctúa cerca de cuatro muestras por símbolo.
 
 - El eje vertical indica muestras de entrada por símbolo. La curva azul muestra `T_avg`.
 - La ventana presenta fluctuaciones asociadas al estado del lazo y al patrón de datos. La diferencia de reloj configurada es cero.
 - La captura no incluye el eje horizontal completo. No se mide precisión en ppm ni duración del transitorio desde esta imagen.
 
 ![Resumen de referencia con dos textos aceptados, el texto SDR repetido y Hola, y reloj cero](figures/enlace-111-manual-reloj-referencia-resumen.png)
-**Figura 111.** La referencia de reloj recupera el texto largo y `Hola`, sin rechazos ni ausencias.
+**Figura 119.** La referencia de reloj recupera el texto largo y `Hola`, sin rechazos ni ausencias.
 
 - El resumen indica `TX=2 DET=2 RX=2 OK=2` y muestra el texto `SDR` repetido seguido de `Hola` entre los textos aceptados.
 - `RELOJ` declara cero ppm y temporización activa. Las dos detecciones utilizan la ruta de polaridad normal.
@@ -5284,21 +5563,21 @@ Este control utiliza una secuencia distinta de la fila sin seguimiento de 23.7.
 No se sustituye la referencia largo/Hola por el resultado de dos mensajes cortos.
 
 ![Constelaciones del primer Hola con selector fijo y desajuste de reloj de más mil ppm](figures/enlace-112-manual-reloj-dos-hola-sin-seguimiento-constelaciones-primer-hola.png)
-**Figura 112.** El primer `Hola` con selector fijo presenta amplitudes dispersas sobre I.
+**Figura 120.** El primer `Hola` con selector fijo presenta amplitudes dispersas sobre I.
 
 - **Panel superior:** representa las muestras conservadas por `Keep M in N`. No existe recuperación temporal activa en esta ejecución.
 - **Panel inferior:** representa la salida de Costas. El lazo mantiene la orientación, pero conserva las amplitudes seleccionadas.
 - El visor de temporización está deshabilitado durante este control. Su ausencia corresponde a la ruta fija prevista.
 
 ![Constelaciones del segundo Hola con selector fijo y más mil ppm, con otra distribución de amplitudes sobre I](figures/enlace-113-manual-reloj-dos-hola-sin-seguimiento-constelaciones-segundo-hola.png)
-**Figura 113.** El segundo `Hola` conserva dispersión de amplitudes con el mismo selector fijo.
+**Figura 121.** El segundo `Hola` conserva dispersión de amplitudes con el mismo selector fijo.
 
 - **Panel superior:** muestra la selección temporal del segundo envío. La distribución difiere de la ventana del primer envío.
 - **Panel inferior:** muestra la salida de Costas. La orientación sobre I no demuestra recuperación de los bits ni del texto.
 - El canal mantiene su desajuste durante el stream. Los dos envíos no reinician automáticamente el remuestreador.
 
 ![Resumen de dos Hola con selector fijo y más mil ppm, una detección, un rechazo y ningún texto aceptado](figures/enlace-114-manual-reloj-dos-hola-sin-seguimiento-resumen.png)
-**Figura 114.** El control de dos `Hola` produce una PDU rechazada y ninguna entrega de texto.
+**Figura 122.** El control de dos `Hola` produce una PDU rechazada y ninguna entrega de texto.
 
 - El resumen indica `TX=2 DET=1 RX=1 OK=0`, `RECH=1`, `SIN_PDU=1` y `SIN_TEXTO=2`.
 - `TEXTOS_OK` está vacío. `RELOJ` confirma +1000 ppm y selección temporal fija.
@@ -5315,21 +5594,21 @@ El sondeo automático conserva ambas secuencias. La repetición manual posterior
 **Seguimiento de reloj, con Symbol Sync y +1000 ppm.**
 
 ![Constelaciones del texto largo con Symbol Sync y desajuste de reloj de más mil ppm](figures/enlace-115-manual-reloj-con-seguimiento-constelaciones-largo.png)
-**Figura 115.** La ventana del texto largo con seguimiento conserva amplitudes intermedias, aunque el receptor acepta el paquete.
+**Figura 123.** La ventana del texto largo con seguimiento conserva amplitudes intermedias, aunque el receptor acepta el paquete.
 
 - **Panel superior:** muestra la salida del sincronizador temporal. El visor presenta una ventana limitada de la secuencia, con Q próxima a cero.
 - **Panel inferior:** muestra la salida de Costas. Fase y frecuencia del canal permanecen en cero.
 - El resumen de esta ejecución confirma el texto largo y `Hola`. No se concluye fallo a partir de la dispersión de una ventana.
 
 ![Período estimado después de Hola con Symbol Sync y más mil ppm, con fluctuaciones cerca de la referencia de 4.004 muestras por símbolo](figures/enlace-116-manual-reloj-con-seguimiento-periodo-hola.png)
-**Figura 116.** El período estimado con seguimiento se observa alrededor de la referencia de 4.004 muestras por símbolo.
+**Figura 124.** El período estimado con seguimiento se observa alrededor de la referencia de 4.004 muestras por símbolo.
 
 - El eje vertical representa muestras por símbolo. La curva azul muestra `T_avg`, con fluctuaciones durante el mensaje.
 - La referencia 4.004 procede de `sps = 4` y +1000 ppm. No es una media calculada desde los píxeles de la captura.
-- La comparación con la Figura 110 permite observar el pequeño desplazamiento. Una lectura cuantitativa precisa requiere las muestras del estimador.
+- La comparación con la Figura 118 permite observar el pequeño desplazamiento. Una lectura cuantitativa precisa requiere las muestras del estimador.
 
 ![Resumen de texto largo y Hola recuperados con Symbol Sync y desajuste de reloj de más mil ppm](figures/enlace-117-manual-reloj-con-seguimiento-resumen.png)
-**Figura 117.** El seguimiento temporal recupera ambos textos con +1000 ppm, sin rechazos ni ausencias.
+**Figura 125.** El seguimiento temporal recupera ambos textos con +1000 ppm, sin rechazos ni ausencias.
 
 - El resumen indica `TX=2 DET=2 RX=2 OK=2`, el texto `SDR` repetido y `Hola` entre los textos aceptados.
 - `RECH=0 SIN_PDU=0 SIN_TEXTO=0`. `RELOJ` confirma +1000 ppm y temporización activa; ambas detecciones utilizan la ruta normal.
@@ -5339,21 +5618,21 @@ El sondeo automático conserva ambas secuencias. La repetición manual posterior
 Esta ejecución utiliza la secuencia prevista en 23.7. El selector fijo permanece activo y `Symbol Sync` está deshabilitado.
 
 ![Constelaciones del texto largo con selector fijo y más mil ppm, antes y después de Costas](figures/enlace-118-manual-reloj-sin-seguimiento-constelaciones-largo.png)
-**Figura 118.** El texto largo con selector fijo presenta amplitudes dispersas sobre I.
+**Figura 126.** El texto largo con selector fijo presenta amplitudes dispersas sobre I.
 
 - **Panel superior:** muestra las muestras conservadas por `Keep M in N`, sin recuperación temporal activa.
 - **Panel inferior:** muestra la salida de Costas. La orientación permanece sobre I, con fase y frecuencia del canal en cero.
 - La dispersión de amplitudes continúa después de Costas. El resumen final registra el rechazo de un paquete.
 
 ![Constelaciones de Hola enviado después del texto largo, con selector fijo y más mil ppm](figures/enlace-119-manual-reloj-sin-seguimiento-constelaciones-hola.png)
-**Figura 119.** La ventana de `Hola` conserva amplitudes intermedias, aunque este mensaje se recupera correctamente.
+**Figura 127.** La ventana de `Hola` conserva amplitudes intermedias, aunque este mensaje se recupera correctamente.
 
 - **Panel superior:** muestra la selección fija durante el segundo envío. La ventana incluye valores cercanos al origen y amplitudes intermedias.
 - **Panel inferior:** muestra la salida de Costas con Q próxima a cero. El lazo no cambia los instantes seleccionados.
 - La aceptación de `Hola` se comprueba con el resumen. No se exige que una ventana con arranque y cierre contenga solo dos puntos.
 
 ![Resumen de texto largo y Hola con selector fijo, más mil ppm, dos paquetes candidatos y solo Hola aceptado](figures/enlace-120-manual-reloj-sin-seguimiento-resumen.png)
-**Figura 120.** El selector fijo detecta ambos paquetes candidatos, rechaza uno y entrega únicamente `Hola`.
+**Figura 128.** El selector fijo detecta ambos paquetes candidatos, rechaza uno y entrega únicamente `Hola`.
 
 - El resumen indica `TX=2 DET=2 RX=2 OK=1`, `RECH=1 SIN_PDU=0 SIN_TEXTO=1` y `TEXTOS_OK= ['Hola']`.
 - `RELOJ` confirma +1000 ppm y selección temporal fija. Ambas detecciones utilizan la polaridad normal.
@@ -5381,6 +5660,18 @@ El transmisor usa cuatro muestras por símbolo. El reloj RX es 1000 ppm más rá
     - La adquisición determina el instante inicial. El seguimiento mantiene la alineación mientras cambian las posiciones relativas de muestreo.
 
 ## 24. Cerrar la etapa BPSK con el enlace integrado
+
+**Ubicación en el sistema: recorrido digital BPSK integrado.**
+
+![Diagrama original del sistema SDR con Data source, Symbol mod, Symbol demod y Data sink resaltados en naranja como funciones del enlace simulado.](figures/enlace-referencia-sdr-integrado.png)
+**Figura 129.** Las funciones resaltadas sitúan el enlace BPSK integrado dentro del sistema de referencia.
+
+- **Fila TX, de izquierda a derecha:** `Data source` prepara el mensaje; `Symbol mod` convierte sus bits en símbolos y muestras.
+- **Conexión simulada:** el canal aplica las perturbaciones sobre las muestras, entre la S del transmisor y la S del receptor.
+- **Fila RX, de derecha a izquierda:** `Symbol demod` reúne filtrado, sincronización y decisiones. El texto validado llega a `Data sink`.
+- **Contexto del diagrama:** las etapas de compresión, el par corrector de canal y el hardware analógico/RF no se añaden en este cierre.
+
+[Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-integrado.svg).
 
 ### 24.1. Propósito y alcance del cierre
 
@@ -5555,6 +5846,8 @@ Se añaden 32 bytes de preámbulo antes del acceso, con BPSK a 1000 símbolos/s.
 
 ## Referencias
 
+- Collins, Getz, Pu y Wyglinski (2018), [Software-Defined Radio for Engineers, figura 1.3, p. 5](https://www.analog.com/media/en/training-seminars/design-handbooks/Software-Defined-Radio-for-Engineers-2018/SDR4Engineers.pdf#page=22): diagrama original del sistema. Los resaltados y las lecturas guiadas corresponden al curso.
+
 - [Symbol Sync, GNU Radio 3.10.12.0](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/symbol_sync_cc.h) y [definición del bloque](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/grc/digital_symbol_sync_xx.block.yml): parámetros, interpolación y salidas de diagnóstico.
 - [Implementación de Symbol Sync](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/lib/symbol_sync_cc_impl.cc) y [detector Gardner](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/lib/timing_error_detector.cc): actualización temporal, período estimado y muestras necesarias.
 - [Fractional Resampler](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/include/gnuradio/filter/mmse_resampler_cc.h) y [su implementación](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/lib/mmse_resampler_cc_impl.cc): relación entre tasas de entrada y salida e interpolación fraccionaria.
@@ -5583,6 +5876,8 @@ Se añaden 32 bytes de preámbulo antes del acceso, con BPSK a 1000 símbolos/s.
 
 - [GNU Radio — QT GUI](https://wiki.gnuradio.org/index.php/QT_GUI): significado de los modos y eventos del cuadro de texto.
 - [GNU Radio — Message Passing](https://wiki.gnuradio.org/index.php/Message_Passing): mensajes internos y diferencia respecto de los streams.
+- [GNU Radio — PDU to Tagged Stream](https://wiki.gnuradio.org/index.php/PDU_to_Tagged_Stream): adaptación de una PDU a un stream con etiqueta de longitud.
+- [GNU Radio — Tagged Stream Blocks](https://wiki.gnuradio.org/index.php/Tagged_Stream_Blocks): posición de la etiqueta de longitud y delimitación de paquetes.
 - [Definición de Message Edit Box, GNU Radio 3.10.12.0](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-qtgui/grc/qtgui_edit_box_msg.block.yml): campos y puertos del bloque.
 - [Definición de Options, GNU Radio 3.10.12.0](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/grc/blocks/options.block.yml): programa generado y selección de la interfaz.
 - [Implementación de Message Debug, GNU Radio 3.10.12.0](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-blocks/lib/message_debug_impl.cc): impresión de mensajes y separación de los registros.

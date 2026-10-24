@@ -402,9 +402,13 @@ Bytes a bits entrega un elemento por bit, en orden MSB first: primero el bit má
 
 ## Paso 11 — Mapear los bits a símbolos BPSK { #paso-11 }
 
-**Pregunta guía:** ¿Qué valor complejo representa cada bit?
+**Pregunta guía:** ¿Cómo se convierte cada bit en un símbolo y se conservan los límites del envío?
+
+`Bytes a bits` entrega una PDU con 80 elementos para el paquete de `Hola`, incluidos longitud, texto y CRC.
+Primero, `PDU to Tagged Stream` entrega esos elementos en orden y coloca `packet_len = 80` en el primero.
 
 BPSK, Binary Phase Shift Keying, asigna dos estados de fase. El laboratorio utiliza 0 → −1 y 1 → +1, con componente imaginaria cero.
+Después del mapeo, `Tagged Stream to PDU` reúne los 80 símbolos complejos del mismo envío en otra PDU.
 
 ![Mapa funcional del enlace BPSK con T5 · BPSK resaltado para el paso 11.](figures/enlace-mapa-paso-11.png)
 **Figura 11.** El foco del paso 11 corresponde a T5 · BPSK.
@@ -418,11 +422,14 @@ BPSK, Binary Phase Shift Keying, asigna dos estados de fase. El laboratorio util
 
 **Entrada y salida del ensayo:** 80 bits → 80 símbolos complejos, situados en (−1, 0) y (+1, 0).
 
-- **Qué cambia:** El adaptador pasa de PDU a tagged stream, flujo con etiquetas, y Chunks to Symbols aplica el mapeo.
-- **Qué permanece fijo:** Cada bit conserva su posición; todavía no se forman varios valores temporales por símbolo.
+- **Qué cambia:** `PDU to Tagged Stream` adapta el mensaje a un flujo con etiquetas. `Chunks to Symbols` aplica el mapeo.
+- **Qué permanece fijo:** Se conservan el orden y los límites del envío. Cada bit produce un símbolo; todavía no se construye su forma temporal.
 - **Qué se observa:** La constelación TX tiene dos posiciones posibles.
 
 **Comprobación e interpretación:** Un símbolo es una elección del alfabeto de modulación. Una muestra es un valor de la señal en un instante.
+
+`Chunks to Symbols` recibe los datos como stream. `Tagged Stream to PDU` usa la etiqueta para reunir los símbolos de cada envío.
+La etiqueta es interna de GNU Radio; el receptor posterior deberá detectar los paquetes desde la señal recibida.
 
 **Error que debe evitarse:** La constelación no muestra por sí sola el orden temporal de los símbolos.
 
