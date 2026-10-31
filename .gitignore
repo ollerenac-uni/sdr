@@ -45,3 +45,5 @@ referencia/
 
 # Backups locales
 /backups/
+
+.playwright*
