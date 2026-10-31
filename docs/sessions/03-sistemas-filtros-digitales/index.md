@@ -3130,6 +3130,18 @@ La palabra de acceso y la longitud permiten delimitar el paquete. Esta función 
 - Los filtros, el comprobador y los convertidores UTF-8 conservan su código y configuración.
 - La selección temporal permanece ideal: `muestrear_rx` todavía trabaja sobre PDUs con retardo y fase conocidos.
 
+### Animación: del paquete a la detección de trama
+
+Pulsa **Reproducir** para seguir el envío de `Hola`, o utiliza **Anterior** y
+**Siguiente** para revisar cada etapa. Primero se muestra el propósito de la
+envoltura y después la tarea de `PDU Lambda` y del detector de acceso.
+Las explicaciones de la longitud duplicada, los 64 bits de acceso y la búsqueda
+por distancia de Hamming aparecen en los apartados 16.1 y 16.4.
+
+<iframe src="animacion-seccion-16.html" title="Animación de la sección 16: detectar el comienzo y la longitud del paquete" width="100%" height="1200" style="border: 0;" loading="lazy"></iframe>
+
+[Abrir la animación en una pestaña independiente](animacion-seccion-16.html){ target="_blank" rel="noopener" }
+
 ### 16.1. Distinguir trama, paquete y etiquetas
 
 - **Qué cambia:** la transmisión incluye 12 bytes nuevos. El receptor detecta la palabra de acceso y genera una etiqueta de longitud nueva.
