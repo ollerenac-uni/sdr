@@ -51,9 +51,18 @@ commits del repositorio público.
 ```bash
 git clone https://github.com/ollerenac-uni/sdr.git
 cd sdr
-pip install -r requirements.txt
-mkdocs serve    # vista previa en http://127.0.0.1:8000
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m mkdocs serve    # vista previa en http://127.0.0.1:8000
 ```
+
+En Debian/Ubuntu, si la creación del entorno falla porque falta `ensurepip`,
+instala `python3-venv` con `sudo apt install python3-venv` y vuelve a crearlo.
+Activa el entorno con `source .venv/bin/activate` en cada terminal nueva.
+Si aparece `No module named 'material'`, ejecuta de nuevo la instalación de
+`requirements.txt` dentro del entorno: el tema y sus extensiones los proporciona
+`mkdocs-material`.
 
 El sitio se publica automáticamente en GitHub Pages con cada push a `main` (ver `.github/workflows/deploy.yml`).
 
