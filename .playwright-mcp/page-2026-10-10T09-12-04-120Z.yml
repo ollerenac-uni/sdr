@@ -1,0 +1,1202 @@
+- generic [active] [ref=f11e1]:
+  - link "Saltar a contenido" [ref=f11e2] [cursor=pointer]:
+    - /url: "#mezcla-compleja-muestra-por-muestra"
+  - banner [ref=f11e3]:
+    - navigation "Cabecera" [ref=f11e4]:
+      - generic [ref=f11e5] [cursor=pointer]
+      - generic [ref=f11e9]:
+        - generic: Radio Definida por Software
+        - generic [ref=f11e10]: Mezcla compleja — demostración interactiva
+      - generic [ref=f11e12]:
+        - radio "Cambiar a modo oscuro"
+        - generic "Cambiar a modo oscuro" [ref=f11e13] [cursor=pointer]
+        - radio "Cambiar a modo claro"
+      - generic [ref=f11e16] [cursor=pointer]
+      - dialog:
+        - search:
+          - generic:
+            - textbox "Búsqueda" [ref=f11e19]
+            - generic [ref=f11e20] [cursor=pointer]
+            - navigation "Buscar":
+              - button "Limpiar"
+          - generic: Inicializando búsqueda
+  - generic [ref=f11e25]:
+    - main [ref=f11e26]:
+      - generic [ref=f11e27]:
+        - navigation "Navegación" [ref=f11e30]:
+          - generic [ref=f11e31] [cursor=pointer]:
+            - link "Radio Definida por Software" [ref=f11e32]:
+              - /url: ../../..
+            - text: Radio Definida por Software
+          - link [ref=f11e36] [cursor=pointer]:
+            - /url: https://github.com/ollerenac-uni/sdr
+            - generic [ref=f11e40]:
+              - text: ollerenac-uni/sdr
+              - list [ref=f11e41]:
+                - listitem [ref=f11e42]: "0"
+                - listitem [ref=f11e43]: "0"
+          - list [ref=f11e44]:
+            - listitem [ref=f11e45]:
+              - link "Inicio" [ref=f11e46] [cursor=pointer]:
+                - /url: ../../..
+            - listitem [ref=f11e48]:
+              - link "Syllabus" [ref=f11e49] [cursor=pointer]:
+                - /url: ../../../syllabus/
+            - listitem [ref=f11e51]:
+              - link "Sesiones" [ref=f11e53] [cursor=pointer]:
+                - /url: ../../
+              - navigation [ref=f11e57]:
+                - generic [ref=f11e58] [cursor=pointer]: Sesiones
+                - list [ref=f11e60]:
+                  - listitem [ref=f11e61]:
+                    - link "01 — Introducción" [ref=f11e63] [cursor=pointer]:
+                      - /url: ../../01-introduccion-sdr/
+                      - generic "En desarrollo" [ref=f11e65]
+                    - navigation [ref=f11e68]:
+                      - generic [ref=f11e69] [cursor=pointer]: 01 — Introducción
+                      - list [ref=f11e71]:
+                        - listitem [ref=f11e72]:
+                          - 'link "Laboratorio #1: muestreo" [ref=f11e73] [cursor=pointer]':
+                            - /url: ../../01-introduccion-sdr/laboratorio-muestreo/
+                            - generic "En desarrollo" [ref=f11e75]
+                  - listitem [ref=f11e76]:
+                    - link "02 — Señales y espectro en SDR" [ref=f11e78] [cursor=pointer]:
+                      - /url: ../
+                    - navigation [ref=f11e82]:
+                      - generic [ref=f11e83] [cursor=pointer]: 02 — Señales y espectro en SDR
+                      - list [ref=f11e85]:
+                        - listitem [ref=f11e86]:
+                          - generic [ref=f11e87]: "Demostración: mezcla compleja"
+                          - navigation "Tabla de contenidos" [ref=f11e90]:
+                            - list [ref=f11e93]:
+                              - listitem [ref=f11e94]:
+                                - link "Recorrido guiado" [ref=f11e95] [cursor=pointer]:
+                                  - /url: "#recorrido-guiado"
+                              - listitem [ref=f11e97]:
+                                - link "1. Una muestra es un punto con dos coordenadas" [ref=f11e98] [cursor=pointer]:
+                                  - /url: "#1-una-muestra-es-un-punto-con-dos-coordenadas"
+                                - navigation "1. Una muestra es un punto con dos coordenadas" [ref=f11e100]:
+                                  - list [ref=f11e101]:
+                                    - listitem [ref=f11e102]:
+                                      - link "Comprobación" [ref=f11e103] [cursor=pointer]:
+                                        - /url: "#comprobacion"
+                              - listitem [ref=f11e105]:
+                                - link "2. Las curvas I/Q son las coordenadas de esa flecha" [ref=f11e106] [cursor=pointer]:
+                                  - /url: "#2-las-curvas-iq-son-las-coordenadas-de-esa-flecha"
+                                - navigation "2. Las curvas I/Q son las coordenadas de esa flecha" [ref=f11e108]:
+                                  - list [ref=f11e109]:
+                                    - listitem [ref=f11e110]:
+                                      - link "Comprobación" [ref=f11e111] [cursor=pointer]:
+                                        - /url: "#comprobacion_1"
+                              - listitem [ref=f11e113]:
+                                - link "3. El espectro permite comprobar el desplazamiento" [ref=f11e114] [cursor=pointer]:
+                                  - /url: "#3-el-espectro-permite-comprobar-el-desplazamiento"
+                                - navigation "3. El espectro permite comprobar el desplazamiento" [ref=f11e116]:
+                                  - list [ref=f11e117]:
+                                    - listitem [ref=f11e118]:
+                                      - link "Comprobación" [ref=f11e119] [cursor=pointer]:
+                                        - /url: "#comprobacion_2"
+                              - listitem [ref=f11e121]:
+                                - link "Qué se calcula y qué no" [ref=f11e122] [cursor=pointer]:
+                                  - /url: "#que-se-calcula-y-que-no"
+                                - navigation "Qué se calcula y qué no" [ref=f11e124]:
+                                  - list [ref=f11e125]:
+                                    - listitem [ref=f11e126]:
+                                      - link "Por qué la fórmula representa FM" [ref=f11e127] [cursor=pointer]:
+                                        - /url: "#por-que-la-formula-representa-fm"
+                              - listitem [ref=f11e129]:
+                                - link "Referencias y continuación" [ref=f11e130] [cursor=pointer]:
+                                  - /url: "#referencias-y-continuacion"
+                        - listitem [ref=f11e132]:
+                          - 'link "Laboratorio #2: demodulador FM" [ref=f11e133] [cursor=pointer]':
+                            - /url: ../laboratorio-receptor-fm/
+                  - listitem [ref=f11e135]:
+                    - link "03 — Sistemas y filtros digitales" [ref=f11e137] [cursor=pointer]:
+                      - /url: ../../03-sistemas-filtros-digitales/
+                      - generic "En desarrollo" [ref=f11e139]
+                    - navigation [ref=f11e142]:
+                      - generic [ref=f11e143] [cursor=pointer]: 03 — Sistemas y filtros digitales
+                      - list [ref=f11e145]:
+                        - listitem [ref=f11e146]:
+                          - 'link "Laboratorio #3: filtros FIR" [ref=f11e147] [cursor=pointer]':
+                            - /url: ../../03-sistemas-filtros-digitales/laboratorio-filtrado/
+                            - generic "En desarrollo" [ref=f11e149]
+            - listitem [ref=f11e150]:
+              - link "Guías" [ref=f11e152] [cursor=pointer]:
+                - /url: ../../../setup/
+              - navigation [ref=f11e156]:
+                - generic [ref=f11e157] [cursor=pointer]: Guías
+                - list [ref=f11e159]:
+                  - listitem [ref=f11e160]:
+                    - link "Instalar GNU Radio" [ref=f11e161] [cursor=pointer]:
+                      - /url: ../../../setup/instalacion/
+                  - listitem [ref=f11e163]:
+                    - link "Configurar el RTL-SDR" [ref=f11e164] [cursor=pointer]:
+                      - /url: ../../../setup/rtl-sdr/
+            - listitem [ref=f11e166]:
+              - link "Exámenes" [ref=f11e168] [cursor=pointer]:
+                - /url: ../../../exams/
+              - navigation [ref=f11e170]:
+                - generic [ref=f11e171] [cursor=pointer]: Exámenes
+                - list [ref=f11e173]
+        - article [ref=f11e175]:
+          - heading "Mezcla compleja, muestra por muestra" [level=1] [ref=f11e176]
+          - list [ref=f11e177]:
+            - listitem [ref=f11e178]:
+              - strong [ref=f11e179]: "Propósito:"
+              - text: relacionar una misma señal con su flecha en el plano I/Q, sus muestras en el tiempo y su espectro.
+            - listitem [ref=f11e180]:
+              - strong [ref=f11e181]: "Pregunta principal:"
+              - text: ¿por qué un tono de +400 kHz puede quedar como I = 1 y Q = 0 después de centrarlo, y por qué ese resultado no se aplica a cualquier señal?
+            - listitem [ref=f11e182]:
+              - strong [ref=f11e183]: "Alcance:"
+              - text: esta primera demostración desarrolla la
+              - link "sección 6.3 de la sesión 2" [ref=f11e184] [cursor=pointer]:
+                - /url: ../#63-experimento-b-trasladar-una-componente-al-cero-mediante-mezcla-compleja
+              - text: . No necesita dongle ni archivos
+              - code [ref=f11e185]: .cu8
+              - text: .
+          - generic [ref=f11e186]:
+            - heading "Recorrido guiado" [level=2] [ref=f11e187]
+            - list [ref=f11e188]:
+              - listitem [ref=f11e189]:
+                - strong [ref=f11e190]: "1. Sin mezcla:"
+                - text: al avanzar las muestras, las dos flechas se mueven igual. No se ha cambiado la señal.
+              - listitem [ref=f11e191]:
+                - strong [ref=f11e192]: "2. Centrar en 0 Hz:"
+                - text: la flecha de entrada sigue girando; la de salida queda fija. Se canceló la frecuencia del tono, no la cuadratura entre los ejes I y Q.
+              - listitem [ref=f11e193]:
+                - strong [ref=f11e194]: "3. Fase de 45°:"
+                - text: la salida sigue centrada, pero ahora I y Q son distintas de cero. Centrar no significa eliminar Q.
+              - listitem [ref=f11e195]:
+                - strong [ref=f11e196]: "4. Con modulación:"
+                - text: incluso después de centrar el canal, su flecha y sus componentes siguen cambiando. Esa variación no se elimina con la mezcla.
+            - generic [ref=f11e197]:
+              - group "Casos del recorrido guiado" [ref=f11e198]:
+                - button "1. Sin mezcla" [pressed] [ref=f11e199] [cursor=pointer]
+                - button "2. Centrar en 0 Hz" [ref=f11e200] [cursor=pointer]
+                - button "3. Fase de 45°" [ref=f11e201] [cursor=pointer]
+                - button "4. Con modulación" [ref=f11e202] [cursor=pointer]
+              - status [ref=f11e203]: "Sin mezcla: la salida coincide con la entrada."
+              - generic [ref=f11e204]:
+                - generic [ref=f11e205]:
+                  - generic [ref=f11e206]:
+                    - text: Frecuencia del objetivo
+                    - status [ref=f11e207]: +400 kHz
+                  - slider "Frecuencia del objetivo" [ref=f11e208] [cursor=pointer]: "400"
+                - generic [ref=f11e209]:
+                  - generic [ref=f11e210]:
+                    - text: Frecuencia de mezcla
+                    - status [ref=f11e211]: 0 kHz
+                  - slider "Frecuencia de mezcla" [ref=f11e212] [cursor=pointer]: "0"
+                - generic [ref=f11e213]:
+                  - generic [ref=f11e214]:
+                    - text: Fase inicial del objetivo
+                    - status [ref=f11e215]: 0°
+                  - slider "Fase inicial del objetivo" [ref=f11e216] [cursor=pointer]: "0"
+                - generic [ref=f11e217]:
+                  - generic [ref=f11e218]: Tipo de objetivo
+                  - combobox "Tipo de objetivo" [ref=f11e219]:
+                    - option "Tono puro, sin mensaje" [selected]
+                    - option "Señal FM didáctica"
+              - generic [ref=f11e220]:
+                - checkbox "Incluir los otros dos tonos en el espectro" [checked] [ref=f11e221]
+                - text: Incluir los otros dos tonos en el espectro
+              - group "Avance de las muestras" [ref=f11e222]:
+                - button "Muestra anterior" [ref=f11e223] [cursor=pointer]
+                - button "Siguiente muestra" [ref=f11e224] [cursor=pointer]
+                - button "Reproducir lentamente" [ref=f11e225] [cursor=pointer]
+              - generic [ref=f11e226]:
+                - text: "Muestra seleccionada:"
+                - status [ref=f11e227]: n = 1; t = 0.417 µs
+              - slider "Muestra seleccionada:" [ref=f11e228] [cursor=pointer]: "1"
+              - paragraph [ref=f11e229]: La reproducción avanza 5 muestras por segundo para observarlas. El sample rate del modelo sigue siendo 2.4 MS/s; no es una reproducción en tiempo real. Después de n = 36 se vuelve a n = 0.
+              - generic [ref=f11e230]:
+                - paragraph [ref=f11e231]:
+                  - text: Antes, x₀[n]
+                  - status [ref=f11e232]: 0.500 + j0.866
+                - paragraph [ref=f11e233]:
+                  - text: Después, y₀[n]
+                  - status [ref=f11e234]: 0.500 + j0.866
+                - paragraph [ref=f11e235]:
+                  - text: "Frecuencia del tono o centro de la banda: entrada + mezcla"
+                  - status [ref=f11e236]: +400 kHz + (0 kHz) = +400 kHz
+                - paragraph [ref=f11e237]:
+                  - text: "Fase de esta muestra: entrada + mezcla = salida"
+                  - status [ref=f11e238]: 60.0° + (0.0°) = 60.0°
+            - heading "1. Una muestra es un punto con dos coordenadas" [level=2] [ref=f11e239]
+            - generic [ref=f11e240]:
+              - generic [ref=f11e241]:
+                - text: Caso
+                - combobox "Caso" [ref=f11e242]:
+                  - option "Parámetros modificados" [disabled]
+                  - option "1. Sin mezcla" [selected]
+                  - option "2. Centrar en 0 Hz"
+                  - option "3. Fase de 45°"
+                  - option "4. Con modulación"
+              - button "Muestra anterior" [ref=f11e243] [cursor=pointer]
+              - button "Siguiente muestra" [ref=f11e244] [cursor=pointer]
+              - status "Muestra seleccionada" [ref=f11e245]: n = 1
+            - generic [ref=f11e246]:
+              - generic [ref=f11e247]:
+                - 'heading "Antes: muestra del objetivo" [level=4] [ref=f11e248]'
+                - 'img "Antes: muestra del objetivo" [ref=f11e249]':
+                  - generic [ref=f11e251]: I
+                  - generic [ref=f11e252]: Q
+                  - generic [ref=f11e253]: "-1"
+                  - generic [ref=f11e254]: "-1"
+                  - generic [ref=f11e255]: "1"
+                  - generic [ref=f11e256]: "1"
+                  - generic [ref=f11e257]: "0"
+                  - generic [ref=f11e261]: I = 0.500; Q = 0.866; magnitud = 1.000
+              - generic [ref=f11e262]:
+                - 'heading "Después: la misma muestra mezclada" [level=4] [ref=f11e263]'
+                - 'img "Después: la misma muestra mezclada" [ref=f11e264]':
+                  - generic [ref=f11e266]: I
+                  - generic [ref=f11e267]: Q
+                  - generic [ref=f11e268]: "-1"
+                  - generic [ref=f11e269]: "-1"
+                  - generic [ref=f11e270]: "1"
+                  - generic [ref=f11e271]: "1"
+                  - generic [ref=f11e272]: "0"
+                  - generic [ref=f11e276]: I = 0.500; Q = 0.866; magnitud = 1.000
+            - paragraph [ref=f11e277]:
+              - strong [ref=f11e278]: Figura 1.
+              - text: Una misma muestra del objetivo antes y después de la mezcla, con sus proyecciones sobre los ejes I y Q.
+            - list [ref=f11e280]:
+              - listitem [ref=f11e281]: Cada flecha representa una sola muestra del objetivo. La posición horizontal es I; la vertical es Q. Se observa n = 1, no dos instantes distintos.
+              - listitem [ref=f11e282]: "Antes: I = 0.500 y Q = 0.866. Después: I = 0.500 y Q = 0.866."
+              - listitem [ref=f11e283]: El oscilador suma 0.0° a la fase de esta muestra. Los ejes I y Q siguen siendo perpendiculares; no se elimina su cuadratura.
+              - listitem [ref=f11e284]: La longitud de ambas flechas es 1. La mezcla modifica su orientación, no su magnitud.
+            - heading "Comprobación" [level=3] [ref=f11e285]
+            - list [ref=f11e286]:
+              - listitem [ref=f11e287]:
+                - text: Se selecciona
+                - strong [ref=f11e288]: «3. Fase de 45°»
+                - text: . ¿La flecha centrada queda sobre el eje I? ¿Q desaparece?
+            - group [ref=f11e289]:
+              - generic "Solución explicada" [ref=f11e290] [cursor=pointer]
+              - text: e j π / 4 = c o s ( π / 4 ) + j s i n ( π / 4 ) e j π / 4 = c o s ( π / 4 ) + j s i n ( π / 4 )
+            - heading "2. Las curvas I/Q son las coordenadas de esa flecha" [level=2] [ref=f11e291]
+            - generic [ref=f11e292]:
+              - generic [ref=f11e293]:
+                - text: Caso
+                - combobox "Caso" [ref=f11e294]:
+                  - option "Parámetros modificados" [disabled]
+                  - option "1. Sin mezcla" [selected]
+                  - option "2. Centrar en 0 Hz"
+                  - option "3. Fase de 45°"
+                  - option "4. Con modulación"
+              - button "Muestra anterior" [ref=f11e295] [cursor=pointer]
+              - button "Siguiente muestra" [ref=f11e296] [cursor=pointer]
+              - status "Muestra seleccionada" [ref=f11e297]: n = 1
+            - generic [ref=f11e298]:
+              - generic [ref=f11e299]:
+                - 'heading "Antes: I y Q del objetivo" [level=4] [ref=f11e300]'
+                - 'img "Antes: I y Q del objetivo" [ref=f11e301]':
+                  - generic [ref=f11e302]: "-1"
+                  - generic [ref=f11e303]: "0"
+                  - generic [ref=f11e304]: "1"
+                  - generic [ref=f11e305]: "0"
+                  - generic [ref=f11e306]: "5"
+                  - generic [ref=f11e307]: "10"
+                  - generic [ref=f11e308]: "15"
+                  - generic [ref=f11e309]: Tiempo (µs)
+                  - generic [ref=f11e310]: I
+                  - generic [ref=f11e311]: Q
+              - generic [ref=f11e388]:
+                - 'heading "Después: I y Q del objetivo" [level=4] [ref=f11e389]'
+                - 'img "Después: I y Q del objetivo" [ref=f11e390]':
+                  - generic [ref=f11e391]: "-1"
+                  - generic [ref=f11e392]: "0"
+                  - generic [ref=f11e393]: "1"
+                  - generic [ref=f11e394]: "0"
+                  - generic [ref=f11e395]: "5"
+                  - generic [ref=f11e396]: "10"
+                  - generic [ref=f11e397]: "15"
+                  - generic [ref=f11e398]: Tiempo (µs)
+                  - generic [ref=f11e399]: I
+                  - generic [ref=f11e400]: Q
+            - paragraph [ref=f11e477]:
+              - strong [ref=f11e478]: Figura 2.
+              - text: Las componentes I y Q del objetivo durante 37 muestras; la línea vertical identifica la muestra del plano I/Q.
+            - list [ref=f11e480]:
+              - listitem [ref=f11e481]: Las curvas muestran las coordenadas de la flecha durante 37 muestras. Azul corresponde a I y naranja a Q; no son dos emisoras.
+              - listitem [ref=f11e482]: La línea vertical señala la muestra que aparece en el plano I/Q. Al avanzar una muestra, los puntos destacados y la flecha cambian juntos.
+              - listitem [ref=f11e483]: La frecuencia de salida es +400 kHz. Las muestras de salida siguen girando; todavía no se centró este tono.
+              - listitem [ref=f11e484]: Las líneas rectas solo unen las muestras para facilitar la lectura. No representan una nueva señal triangular.
+            - heading "Comprobación" [level=3] [ref=f11e485]
+            - list [ref=f11e486]:
+              - listitem [ref=f11e487]:
+                - text: Se selecciona
+                - strong [ref=f11e488]: «2. Centrar en 0 Hz»
+                - text: ", se cambia la fase inicial a"
+                - strong [ref=f11e489]: 90°
+                - text: y se avanzan varias muestras. ¿Qué valores deberían mantenerse?
+            - group [ref=f11e490]:
+              - generic "Solución explicada" [ref=f11e491] [cursor=pointer]
+              - text: y 0 [ n ] = e j ϕ y 0 [ n ] = e j ϕ ϕ = 9 0 ° = π / 2 ϕ = 9 0 ° = π / 2 c o s ( π / 2 ) = 0 c o s ( π / 2 ) = 0 s i n ( π / 2 ) = 1 s i n ( π / 2 ) = 1
+            - heading "3. El espectro permite comprobar el desplazamiento" [level=2] [ref=f11e492]
+            - generic [ref=f11e493]:
+              - generic [ref=f11e494]:
+                - text: Caso
+                - combobox "Caso" [ref=f11e495]:
+                  - option "Parámetros modificados" [disabled]
+                  - option "1. Sin mezcla" [selected]
+                  - option "2. Centrar en 0 Hz"
+                  - option "3. Fase de 45°"
+                  - option "4. Con modulación"
+              - button "Muestra anterior" [ref=f11e496] [cursor=pointer]
+              - button "Siguiente muestra" [ref=f11e497] [cursor=pointer]
+              - status "Muestra seleccionada" [ref=f11e498]: n = 1
+            - generic [ref=f11e499]:
+              - generic [ref=f11e500]:
+                - heading "Antes de la mezcla" [level=4] [ref=f11e501]
+                - img "Antes de la mezcla" [ref=f11e502]:
+                  - generic [ref=f11e503]: "0.0"
+                  - generic [ref=f11e504]: "0.5"
+                  - generic [ref=f11e505]: "1.0"
+                  - generic [ref=f11e506]: "-1200"
+                  - generic [ref=f11e507]: "-600"
+                  - generic [ref=f11e508]: "0"
+                  - generic [ref=f11e509]: "600"
+                  - generic [ref=f11e510]: "1200"
+                  - generic [ref=f11e514]: Frecuencia en baseband (kHz)
+                  - generic [ref=f11e515]: Magnitud
+              - generic [ref=f11e516]:
+                - heading "Después de la mezcla" [level=4] [ref=f11e517]
+                - img "Después de la mezcla" [ref=f11e518]:
+                  - generic [ref=f11e519]: "0.0"
+                  - generic [ref=f11e520]: "0.5"
+                  - generic [ref=f11e521]: "1.0"
+                  - generic [ref=f11e522]: "-1200"
+                  - generic [ref=f11e523]: "-600"
+                  - generic [ref=f11e524]: "0"
+                  - generic [ref=f11e525]: "600"
+                  - generic [ref=f11e526]: "1200"
+                  - generic [ref=f11e530]: Frecuencia en baseband (kHz)
+                  - generic [ref=f11e531]: Magnitud
+            - paragraph [ref=f11e532]:
+              - strong [ref=f11e533]: Figura 3.
+              - text: Espectros del bloque completo antes y después de la mezcla; centrar el objetivo no elimina las otras componentes.
+            - list [ref=f11e535]:
+              - listitem [ref=f11e536]: "Aquí sí aparecen todas las componentes: el objetivo en morado y los otros tonos en gris. Las gráficas I/Q anteriores siguen mostrando solo el objetivo, aislado por construcción."
+              - listitem [ref=f11e537]: El centro del objetivo pasa de +400 kHz a +400 kHz. Cada línea vertical es un tono en frecuencia, no un pulso en el tiempo.
+              - listitem [ref=f11e538]: El espectro usa un bloque completo de 240 muestras (100 µs); el avance de la muestra seleccionada no cambia ese bloque ni su espectro.
+              - listitem [ref=f11e539]: La mezcla no elimina las otras componentes ni selecciona el canal. Para seleccionar una banda todavía hace falta filtrar.
+            - heading "Comprobación" [level=3] [ref=f11e540]
+            - list [ref=f11e541]:
+              - listitem [ref=f11e542]:
+                - text: Se selecciona
+                - strong [ref=f11e543]: «4. Con modulación»
+                - text: y se desmarca
+                - strong [ref=f11e544]: «Incluir los otros dos tonos en el espectro»
+                - text: . Si el centro está en 0 Hz, ¿por qué siguen variando I y Q?
+            - group [ref=f11e545]:
+              - generic "Solución explicada" [ref=f11e546] [cursor=pointer]
+              - text: x 0 [ n ] = s [ n ] e j 2 π f 0 n / f s x 0 [ n ] = s [ n ] e j 2 π f 0 n / f s f m i x = − f 0 f m i x = − f 0 y 0 [ n ] = s [ n ] y 0 [ n ] = s [ n ] s [ n ] = e j [ ϕ + 1 . 2 s i n ( 2 π 1 0 0 0 0 0 n / f s ) ] s [ n ] = e j [ ϕ + 1 . 2 s i n ( 2 π 1 0 0 0 0 0 n / f s ) ]
+          - heading "Qué se calcula y qué no" [level=2] [ref=f11e547]
+          - list [ref=f11e548]:
+            - listitem [ref=f11e549]:
+              - strong [ref=f11e550]: "Sample rate:"
+              - generic [ref=f11e552]:
+                - generic [aria-hidden] [ref=f11e553]:
+                  - generic [ref=f11e554]:
+                    - generic [ref=f11e555]: f
+                    - generic [ref=f11e557]: s
+                  - generic [ref=f11e560]: =
+                  - generic [ref=f11e562]:
+                    - generic [ref=f11e563]: "2"
+                    - generic [ref=f11e564]: .
+                    - generic [ref=f11e565]: "4"
+                - generic [ref=f11e567]:
+                  - generic [aria-hidden] [ref=f11e568]:
+                    - generic [ref=f11e569]:
+                      - generic [ref=f11e570]: f
+                      - generic [ref=f11e572]: s
+                    - generic [ref=f11e575]: =
+                    - generic [ref=f11e577]:
+                      - generic [ref=f11e578]: "2"
+                      - generic [ref=f11e579]: .
+                      - generic [ref=f11e580]: "4"
+                  - math [ref=f11e582]:
+                    - generic [ref=f11e583]:
+                      - generic [ref=f11e584]: f
+                      - generic [ref=f11e585]: s
+                    - generic [ref=f11e586]: =
+                    - generic [ref=f11e587]: "2.4"
+              - text: MS/s, fijo. El avance lento de la interfaz no lo modifica.
+            - listitem [ref=f11e588]:
+              - strong [ref=f11e589]: "Tono puro:"
+              - generic [ref=f11e591]:
+                - generic [aria-hidden] [ref=f11e592]:
+                  - generic [ref=f11e593]:
+                    - generic [ref=f11e594]: x
+                    - generic [ref=f11e596]: "0"
+                  - generic [ref=f11e599]: "["
+                  - generic [ref=f11e601]: "n"
+                  - generic [ref=f11e603]: "]"
+                  - generic [ref=f11e605]: =
+                  - generic [ref=f11e607]:
+                    - generic [ref=f11e608]: e
+                    - generic [ref=f11e611]:
+                      - generic [ref=f11e612]: j
+                      - generic [ref=f11e614]: (
+                      - generic [ref=f11e616]: "2"
+                      - generic [ref=f11e618]: π
+                      - generic [ref=f11e620]:
+                        - generic [ref=f11e621]: f
+                        - generic [ref=f11e623]: "0"
+                      - generic [ref=f11e626]: "n"
+                      - generic [ref=f11e628]: /
+                      - generic [ref=f11e631]:
+                        - generic [ref=f11e632]: f
+                        - generic [ref=f11e634]: s
+                      - generic [ref=f11e637]: +
+                      - generic [ref=f11e639]: ϕ
+                      - generic [ref=f11e641]: )
+                - generic [ref=f11e644]:
+                  - generic [aria-hidden] [ref=f11e645]:
+                    - generic [ref=f11e646]:
+                      - generic [ref=f11e647]: x
+                      - generic [ref=f11e649]: "0"
+                    - generic [ref=f11e652]: "["
+                    - generic [ref=f11e654]: "n"
+                    - generic [ref=f11e656]: "]"
+                    - generic [ref=f11e658]: =
+                    - generic [ref=f11e660]:
+                      - generic [ref=f11e661]: e
+                      - generic [ref=f11e664]:
+                        - generic [ref=f11e665]: j
+                        - generic [ref=f11e667]: (
+                        - generic [ref=f11e669]: "2"
+                        - generic [ref=f11e671]: π
+                        - generic [ref=f11e673]:
+                          - generic [ref=f11e674]: f
+                          - generic [ref=f11e676]: "0"
+                        - generic [ref=f11e679]: "n"
+                        - generic [ref=f11e681]: /
+                        - generic [ref=f11e684]:
+                          - generic [ref=f11e685]: f
+                          - generic [ref=f11e687]: s
+                        - generic [ref=f11e690]: +
+                        - generic [ref=f11e692]: ϕ
+                        - generic [ref=f11e694]: )
+                  - math [ref=f11e697]:
+                    - generic [ref=f11e698]:
+                      - generic [ref=f11e699]: x
+                      - generic [ref=f11e700]: "0"
+                    - generic [ref=f11e701]: "["
+                    - generic [ref=f11e702]: "n"
+                    - generic [ref=f11e703]: "]"
+                    - generic [ref=f11e704]: =
+                    - generic [ref=f11e705]:
+                      - generic [ref=f11e706]: e
+                      - generic [ref=f11e707]:
+                        - generic [ref=f11e708]: j
+                        - generic [ref=f11e709]: (
+                        - generic [ref=f11e710]: "2"
+                        - generic [ref=f11e711]: π
+                        - generic [ref=f11e712]:
+                          - generic [ref=f11e713]: f
+                          - generic [ref=f11e714]: "0"
+                        - generic [ref=f11e715]: "n"
+                        - generic [ref=f11e716]: /
+                        - generic [ref=f11e718]:
+                          - generic [ref=f11e719]: f
+                          - generic [ref=f11e720]: s
+                        - generic [ref=f11e721]: +
+                        - generic [ref=f11e722]: ϕ
+                        - generic [ref=f11e723]: )
+              - text: ", de magnitud 1."
+            - listitem [ref=f11e724]:
+              - strong [ref=f11e725]: "Mezcla:"
+              - generic [ref=f11e727]:
+                - generic [aria-hidden] [ref=f11e728]:
+                  - generic [ref=f11e729]:
+                    - generic [ref=f11e730]: "y"
+                    - generic [ref=f11e732]: "0"
+                  - generic [ref=f11e735]: "["
+                  - generic [ref=f11e737]: "n"
+                  - generic [ref=f11e739]: "]"
+                  - generic [ref=f11e741]: =
+                  - generic [ref=f11e743]:
+                    - generic [ref=f11e744]: x
+                    - generic [ref=f11e746]: "0"
+                  - generic [ref=f11e749]: "["
+                  - generic [ref=f11e751]: "n"
+                  - generic [ref=f11e753]: "]"
+                  - generic [ref=f11e755]:
+                    - generic [ref=f11e756]: e
+                    - generic [ref=f11e759]:
+                      - generic [ref=f11e760]: j
+                      - generic [ref=f11e762]: "2"
+                      - generic [ref=f11e764]: π
+                      - generic [ref=f11e766]:
+                        - generic [ref=f11e767]: f
+                        - generic [ref=f11e772]:
+                          - generic [ref=f11e773]: m
+                          - generic [ref=f11e774]: i
+                          - generic [ref=f11e775]: x
+                      - generic [ref=f11e776]: "n"
+                      - generic [ref=f11e778]: /
+                      - generic [ref=f11e781]:
+                        - generic [ref=f11e782]: f
+                        - generic [ref=f11e784]: s
+                - generic [ref=f11e788]:
+                  - generic [aria-hidden] [ref=f11e789]:
+                    - generic [ref=f11e790]:
+                      - generic [ref=f11e791]: "y"
+                      - generic [ref=f11e793]: "0"
+                    - generic [ref=f11e796]: "["
+                    - generic [ref=f11e798]: "n"
+                    - generic [ref=f11e800]: "]"
+                    - generic [ref=f11e802]: =
+                    - generic [ref=f11e804]:
+                      - generic [ref=f11e805]: x
+                      - generic [ref=f11e807]: "0"
+                    - generic [ref=f11e810]: "["
+                    - generic [ref=f11e812]: "n"
+                    - generic [ref=f11e814]: "]"
+                    - generic [ref=f11e816]:
+                      - generic [ref=f11e817]: e
+                      - generic [ref=f11e820]:
+                        - generic [ref=f11e821]: j
+                        - generic [ref=f11e823]: "2"
+                        - generic [ref=f11e825]: π
+                        - generic [ref=f11e827]:
+                          - generic [ref=f11e828]: f
+                          - generic [ref=f11e833]:
+                            - generic [ref=f11e834]: m
+                            - generic [ref=f11e835]: i
+                            - generic [ref=f11e836]: x
+                        - generic [ref=f11e837]: "n"
+                        - generic [ref=f11e839]: /
+                        - generic [ref=f11e842]:
+                          - generic [ref=f11e843]: f
+                          - generic [ref=f11e845]: s
+                  - math [ref=f11e849]:
+                    - generic [ref=f11e850]:
+                      - generic [ref=f11e851]: "y"
+                      - generic [ref=f11e852]: "0"
+                    - generic [ref=f11e853]: "["
+                    - generic [ref=f11e854]: "n"
+                    - generic [ref=f11e855]: "]"
+                    - generic [ref=f11e856]: =
+                    - generic [ref=f11e857]:
+                      - generic [ref=f11e858]: x
+                      - generic [ref=f11e859]: "0"
+                    - generic [ref=f11e860]: "["
+                    - generic [ref=f11e861]: "n"
+                    - generic [ref=f11e862]: "]"
+                    - generic [ref=f11e863]:
+                      - generic [ref=f11e864]: e
+                      - generic [ref=f11e865]:
+                        - generic [ref=f11e866]: j
+                        - generic [ref=f11e867]: "2"
+                        - generic [ref=f11e868]: π
+                        - generic [ref=f11e869]:
+                          - generic [ref=f11e870]: f
+                          - generic [ref=f11e871]: mix
+                        - generic [ref=f11e874]: "n"
+                        - generic [ref=f11e875]: /
+                        - generic [ref=f11e877]:
+                          - generic [ref=f11e878]: f
+                          - generic [ref=f11e879]: s
+              - text: . Se suman fases; no se anula la separación de 90° entre las referencias I/Q.
+            - listitem [ref=f11e880]:
+              - strong [ref=f11e881]: "Otros tonos:"
+              - text: son los de −600 y 0 kHz, de amplitudes 0.6 y 0.4 utilizados en la sección 6.3. Si coinciden con componentes del objetivo, el espectro muestra su suma compleja, no dos picos separados.
+            - listitem [ref=f11e882]:
+              - strong [ref=f11e883]: "Bloque del espectro:"
+              - text: 240 muestras, duración 100 µs y separación entre bins de 10 kHz. La interfaz calcula una DFT directa normalizada; una FFT del mismo bloque obtiene los mismos coeficientes. Se omiten residuos numéricos menores que
+              - generic [ref=f11e885]:
+                - generic [ref=f11e887]:
+                  - generic [ref=f11e888]:
+                    - generic [ref=f11e889]: "1"
+                    - generic [ref=f11e890]: "0"
+                  - generic [ref=f11e892]:
+                    - generic [ref=f11e893]: −
+                    - generic [ref=f11e895]: "7"
+                - generic [ref=f11e898]:
+                  - generic [ref=f11e900]:
+                    - generic [ref=f11e901]:
+                      - generic [ref=f11e902]: "1"
+                      - generic [ref=f11e903]: "0"
+                    - generic [ref=f11e905]:
+                      - generic [ref=f11e906]: −
+                      - generic [ref=f11e908]: "7"
+                  - math [ref=f11e911]:
+                    - generic [ref=f11e912]:
+                      - generic [ref=f11e913]: "10"
+                      - generic [ref=f11e914]:
+                        - generic [ref=f11e915]: −
+                        - generic [ref=f11e916]: "7"
+              - text: ", no señales de una captura real."
+            - listitem [ref=f11e917]:
+              - strong [ref=f11e918]: "FM didáctica:"
+              - text: el mensaje es un coseno de frecuencia
+              - generic [ref=f11e920]:
+                - generic [aria-hidden] [ref=f11e921]:
+                  - generic [ref=f11e922]:
+                    - generic [ref=f11e923]: f
+                    - generic [ref=f11e925]: m
+                  - generic [ref=f11e928]: =
+                  - generic [ref=f11e930]:
+                    - generic [ref=f11e931]: "1"
+                    - generic [ref=f11e932]: "0"
+                    - generic [ref=f11e933]: "0"
+                - generic [ref=f11e935]:
+                  - generic [aria-hidden] [ref=f11e936]:
+                    - generic [ref=f11e937]:
+                      - generic [ref=f11e938]: f
+                      - generic [ref=f11e940]: m
+                    - generic [ref=f11e943]: =
+                    - generic [ref=f11e945]:
+                      - generic [ref=f11e946]: "1"
+                      - generic [ref=f11e947]: "0"
+                      - generic [ref=f11e948]: "0"
+                  - math [ref=f11e950]:
+                    - generic [ref=f11e951]:
+                      - generic [ref=f11e952]: f
+                      - generic [ref=f11e953]: m
+                    - generic [ref=f11e954]: =
+                    - generic [ref=f11e955]: "100"
+              - text: kHz. El índice de modulación es
+              - generic [ref=f11e957]:
+                - generic [aria-hidden] [ref=f11e958]:
+                  - generic [ref=f11e959]: β
+                  - generic [ref=f11e961]: =
+                  - generic [ref=f11e963]:
+                    - generic [ref=f11e964]: "1"
+                    - generic [ref=f11e965]: .
+                    - generic [ref=f11e966]: "2"
+                - generic [ref=f11e968]:
+                  - generic [aria-hidden] [ref=f11e969]:
+                    - generic [ref=f11e970]: β
+                    - generic [ref=f11e972]: =
+                    - generic [ref=f11e974]:
+                      - generic [ref=f11e975]: "1"
+                      - generic [ref=f11e976]: .
+                      - generic [ref=f11e977]: "2"
+                  - math [ref=f11e979]:
+                    - generic [ref=f11e980]: β
+                    - generic [ref=f11e981]: =
+                    - generic [ref=f11e982]: "1.2"
+              - text: ", sin unidades."
+            - listitem [ref=f11e983]:
+              - strong [ref=f11e984]: "Desviación:"
+              - generic [ref=f11e986]:
+                - generic [aria-hidden] [ref=f11e987]:
+                  - generic [ref=f11e988]: Δ
+                  - generic [ref=f11e990]: f
+                  - generic [ref=f11e992]: =
+                  - generic [ref=f11e994]: β
+                  - generic [ref=f11e996]:
+                    - generic [ref=f11e997]: f
+                    - generic [ref=f11e999]: m
+                  - generic [ref=f11e1002]: =
+                  - generic [ref=f11e1004]:
+                    - generic [ref=f11e1005]: "1"
+                    - generic [ref=f11e1006]: "2"
+                    - generic [ref=f11e1007]: "0"
+                - generic [ref=f11e1009]:
+                  - generic [aria-hidden] [ref=f11e1010]:
+                    - generic [ref=f11e1011]: Δ
+                    - generic [ref=f11e1013]: f
+                    - generic [ref=f11e1015]: =
+                    - generic [ref=f11e1017]: β
+                    - generic [ref=f11e1019]:
+                      - generic [ref=f11e1020]: f
+                      - generic [ref=f11e1022]: m
+                    - generic [ref=f11e1025]: =
+                    - generic [ref=f11e1027]:
+                      - generic [ref=f11e1028]: "1"
+                      - generic [ref=f11e1029]: "2"
+                      - generic [ref=f11e1030]: "0"
+                  - math [ref=f11e1032]:
+                    - generic [ref=f11e1033]: Δ
+                    - generic [ref=f11e1034]: f
+                    - generic [ref=f11e1035]: =
+                    - generic [ref=f11e1036]: β
+                    - generic [ref=f11e1037]:
+                      - generic [ref=f11e1038]: f
+                      - generic [ref=f11e1039]: m
+                    - generic [ref=f11e1040]: =
+                    - generic [ref=f11e1041]: "120"
+              - text: kHz. Este valor permite observar la variación en la interfaz; no es la referencia de 75 kHz del laboratorio.
+            - listitem [ref=f11e1042]:
+              - strong [ref=f11e1043]: "Límite:"
+              - text: centrar no equivale a filtrar, decimar ni demodular. La recuperación del mensaje necesita etapas adicionales.
+          - heading "Por qué la fórmula representa FM" [level=3] [ref=f11e1044]
+          - list [ref=f11e1045]:
+            - listitem [ref=f11e1046]:
+              - strong [ref=f11e1047]: "Fase:"
+              - text: el modelo continuo del objetivo es
+              - generic [ref=f11e1049]:
+                - generic [aria-hidden] [ref=f11e1050]:
+                  - generic [ref=f11e1051]: θ
+                  - generic [ref=f11e1053]: (
+                  - generic [ref=f11e1055]: t
+                  - generic [ref=f11e1057]: )
+                  - generic [ref=f11e1059]: =
+                  - generic [ref=f11e1061]: "2"
+                  - generic [ref=f11e1063]: π
+                  - generic [ref=f11e1065]:
+                    - generic [ref=f11e1066]: f
+                    - generic [ref=f11e1068]: "0"
+                  - generic [ref=f11e1071]: t
+                  - generic [ref=f11e1073]: +
+                  - generic [ref=f11e1075]: ϕ
+                  - generic [ref=f11e1077]: +
+                  - generic [ref=f11e1079]: β
+                  - generic [ref=f11e1081]:
+                    - generic [ref=f11e1082]: s
+                    - generic [ref=f11e1083]: i
+                    - generic [ref=f11e1084]: "n"
+                  - generic [ref=f11e1085]: (
+                  - generic [ref=f11e1087]: "2"
+                  - generic [ref=f11e1089]: π
+                  - generic [ref=f11e1091]:
+                    - generic [ref=f11e1092]: f
+                    - generic [ref=f11e1094]: m
+                  - generic [ref=f11e1097]: t
+                  - generic [ref=f11e1099]: )
+                - generic [ref=f11e1102]:
+                  - generic [aria-hidden] [ref=f11e1103]:
+                    - generic [ref=f11e1104]: θ
+                    - generic [ref=f11e1106]: (
+                    - generic [ref=f11e1108]: t
+                    - generic [ref=f11e1110]: )
+                    - generic [ref=f11e1112]: =
+                    - generic [ref=f11e1114]: "2"
+                    - generic [ref=f11e1116]: π
+                    - generic [ref=f11e1118]:
+                      - generic [ref=f11e1119]: f
+                      - generic [ref=f11e1121]: "0"
+                    - generic [ref=f11e1124]: t
+                    - generic [ref=f11e1126]: +
+                    - generic [ref=f11e1128]: ϕ
+                    - generic [ref=f11e1130]: +
+                    - generic [ref=f11e1132]: β
+                    - generic [ref=f11e1134]:
+                      - generic [ref=f11e1135]: s
+                      - generic [ref=f11e1136]: i
+                      - generic [ref=f11e1137]: "n"
+                    - generic [ref=f11e1138]: (
+                    - generic [ref=f11e1140]: "2"
+                    - generic [ref=f11e1142]: π
+                    - generic [ref=f11e1144]:
+                      - generic [ref=f11e1145]: f
+                      - generic [ref=f11e1147]: m
+                    - generic [ref=f11e1150]: t
+                    - generic [ref=f11e1152]: )
+                  - math [ref=f11e1155]:
+                    - generic [ref=f11e1156]: θ
+                    - generic [ref=f11e1157]: (
+                    - generic [ref=f11e1158]: t
+                    - generic [ref=f11e1159]: )
+                    - generic [ref=f11e1160]: =
+                    - generic [ref=f11e1161]: "2"
+                    - generic [ref=f11e1162]: π
+                    - generic [ref=f11e1163]:
+                      - generic [ref=f11e1164]: f
+                      - generic [ref=f11e1165]: "0"
+                    - generic [ref=f11e1166]: t
+                    - generic [ref=f11e1167]: +
+                    - generic [ref=f11e1168]: ϕ
+                    - generic [ref=f11e1169]: +
+                    - generic [ref=f11e1170]: β
+                    - generic [ref=f11e1171]: sin
+                    - generic: ⁡
+                    - generic [ref=f11e1172]: (
+                    - generic [ref=f11e1173]: "2"
+                    - generic [ref=f11e1174]: π
+                    - generic [ref=f11e1175]:
+                      - generic [ref=f11e1176]: f
+                      - generic [ref=f11e1177]: m
+                    - generic [ref=f11e1178]: t
+                    - generic [ref=f11e1179]: )
+              - text: ", con"
+              - generic [ref=f11e1181]:
+                - generic [ref=f11e1183]: t
+                - generic [ref=f11e1186]:
+                  - generic [ref=f11e1188]: t
+                  - math [ref=f11e1191]:
+                    - generic [ref=f11e1192]: t
+              - text: en segundos y
+              - generic [ref=f11e1194]:
+                - generic [aria-hidden] [ref=f11e1195]:
+                  - generic [ref=f11e1196]: θ
+                  - generic [ref=f11e1198]: (
+                  - generic [ref=f11e1200]: t
+                  - generic [ref=f11e1202]: )
+                - generic [ref=f11e1205]:
+                  - generic [aria-hidden] [ref=f11e1206]:
+                    - generic [ref=f11e1207]: θ
+                    - generic [ref=f11e1209]: (
+                    - generic [ref=f11e1211]: t
+                    - generic [ref=f11e1213]: )
+                  - math [ref=f11e1216]:
+                    - generic [ref=f11e1217]: θ
+                    - generic [ref=f11e1218]: (
+                    - generic [ref=f11e1219]: t
+                    - generic [ref=f11e1220]: )
+              - text: en radianes.
+            - listitem [ref=f11e1221]:
+              - strong [ref=f11e1222]: "Frecuencia instantánea:"
+              - text: "mide qué tan rápido cambia la fase. La derivada expresa esa rapidez:"
+          - generic [ref=f11e1224]:
+            - generic [aria-hidden] [ref=f11e1225]:
+              - generic [ref=f11e1226]:
+                - generic [ref=f11e1227]: f
+                - generic [ref=f11e1229]: i
+              - generic [ref=f11e1232]: (
+              - generic [ref=f11e1234]: t
+              - generic [ref=f11e1236]: )
+              - generic [ref=f11e1238]: =
+              - generic [ref=f11e1241]:
+                - generic [ref=f11e1242]: "1"
+                - generic [ref=f11e1250]:
+                  - generic [ref=f11e1251]: "2"
+                  - generic [ref=f11e1253]: π
+              - generic [ref=f11e1256]:
+                - generic [ref=f11e1258]:
+                  - generic [ref=f11e1259]: d
+                  - generic [ref=f11e1261]: θ
+                  - generic [ref=f11e1263]: (
+                  - generic [ref=f11e1265]: t
+                  - generic [ref=f11e1267]: )
+                - generic [ref=f11e1274]:
+                  - generic [ref=f11e1275]: d
+                  - generic [ref=f11e1277]: t
+              - generic [ref=f11e1279]: =
+              - generic [ref=f11e1281]:
+                - generic [ref=f11e1282]: f
+                - generic [ref=f11e1284]: "0"
+              - generic [ref=f11e1287]: +
+              - generic [ref=f11e1289]: β
+              - generic [ref=f11e1291]:
+                - generic [ref=f11e1292]: f
+                - generic [ref=f11e1294]: m
+              - generic [ref=f11e1297]:
+                - generic [ref=f11e1298]: c
+                - generic [ref=f11e1299]: o
+                - generic [ref=f11e1300]: s
+              - generic [ref=f11e1301]: (
+              - generic [ref=f11e1303]: "2"
+              - generic [ref=f11e1305]: π
+              - generic [ref=f11e1307]:
+                - generic [ref=f11e1308]: f
+                - generic [ref=f11e1310]: m
+              - generic [ref=f11e1313]: t
+              - generic [ref=f11e1315]: )
+              - generic [ref=f11e1317]: =
+              - generic [ref=f11e1319]:
+                - generic [ref=f11e1320]: f
+                - generic [ref=f11e1322]: "0"
+              - generic [ref=f11e1325]: +
+              - generic [ref=f11e1327]: Δ
+              - generic [ref=f11e1329]: f
+              - generic [ref=f11e1331]:
+                - generic [ref=f11e1332]: c
+                - generic [ref=f11e1333]: o
+                - generic [ref=f11e1334]: s
+              - generic [ref=f11e1335]: (
+              - generic [ref=f11e1337]: "2"
+              - generic [ref=f11e1339]: π
+              - generic [ref=f11e1341]:
+                - generic [ref=f11e1342]: f
+                - generic [ref=f11e1344]: m
+              - generic [ref=f11e1347]: t
+              - generic [ref=f11e1349]: )
+              - generic [ref=f11e1351]: .
+            - generic [ref=f11e1354]:
+              - generic [aria-hidden] [ref=f11e1355]:
+                - generic [ref=f11e1356]:
+                  - generic [ref=f11e1357]: f
+                  - generic [ref=f11e1359]: i
+                - generic [ref=f11e1362]: (
+                - generic [ref=f11e1364]: t
+                - generic [ref=f11e1366]: )
+                - generic [ref=f11e1368]: =
+                - generic [ref=f11e1371]:
+                  - generic [ref=f11e1372]: "1"
+                  - generic [ref=f11e1380]:
+                    - generic [ref=f11e1381]: "2"
+                    - generic [ref=f11e1383]: π
+                - generic [ref=f11e1386]:
+                  - generic [ref=f11e1388]:
+                    - generic [ref=f11e1389]: d
+                    - generic [ref=f11e1391]: θ
+                    - generic [ref=f11e1393]: (
+                    - generic [ref=f11e1395]: t
+                    - generic [ref=f11e1397]: )
+                  - generic [ref=f11e1404]:
+                    - generic [ref=f11e1405]: d
+                    - generic [ref=f11e1407]: t
+                - generic [ref=f11e1409]: =
+                - generic [ref=f11e1411]:
+                  - generic [ref=f11e1412]: f
+                  - generic [ref=f11e1414]: "0"
+                - generic [ref=f11e1417]: +
+                - generic [ref=f11e1419]: β
+                - generic [ref=f11e1421]:
+                  - generic [ref=f11e1422]: f
+                  - generic [ref=f11e1424]: m
+                - generic [ref=f11e1427]:
+                  - generic [ref=f11e1428]: c
+                  - generic [ref=f11e1429]: o
+                  - generic [ref=f11e1430]: s
+                - generic [ref=f11e1431]: (
+                - generic [ref=f11e1433]: "2"
+                - generic [ref=f11e1435]: π
+                - generic [ref=f11e1437]:
+                  - generic [ref=f11e1438]: f
+                  - generic [ref=f11e1440]: m
+                - generic [ref=f11e1443]: t
+                - generic [ref=f11e1445]: )
+                - generic [ref=f11e1447]: =
+                - generic [ref=f11e1449]:
+                  - generic [ref=f11e1450]: f
+                  - generic [ref=f11e1452]: "0"
+                - generic [ref=f11e1455]: +
+                - generic [ref=f11e1457]: Δ
+                - generic [ref=f11e1459]: f
+                - generic [ref=f11e1461]:
+                  - generic [ref=f11e1462]: c
+                  - generic [ref=f11e1463]: o
+                  - generic [ref=f11e1464]: s
+                - generic [ref=f11e1465]: (
+                - generic [ref=f11e1467]: "2"
+                - generic [ref=f11e1469]: π
+                - generic [ref=f11e1471]:
+                  - generic [ref=f11e1472]: f
+                  - generic [ref=f11e1474]: m
+                - generic [ref=f11e1477]: t
+                - generic [ref=f11e1479]: )
+                - generic [ref=f11e1481]: .
+              - math [ref=f11e1484]:
+                - generic [ref=f11e1485]:
+                  - generic [ref=f11e1486]: f
+                  - generic [ref=f11e1487]: i
+                - generic [ref=f11e1488]: (
+                - generic [ref=f11e1489]: t
+                - generic [ref=f11e1490]: )
+                - generic [ref=f11e1491]: =
+                - generic [ref=f11e1492]:
+                  - generic [ref=f11e1493]: "1"
+                  - generic [ref=f11e1494]:
+                    - generic [ref=f11e1495]: "2"
+                    - generic [ref=f11e1496]: π
+                - generic [ref=f11e1497]:
+                  - generic [ref=f11e1498]:
+                    - generic [ref=f11e1499]: d
+                    - generic [ref=f11e1500]: θ
+                    - generic [ref=f11e1501]: (
+                    - generic [ref=f11e1502]: t
+                    - generic [ref=f11e1503]: )
+                  - generic [ref=f11e1504]:
+                    - generic [ref=f11e1505]: d
+                    - generic [ref=f11e1506]: t
+                - generic [ref=f11e1507]: =
+                - generic [ref=f11e1508]:
+                  - generic [ref=f11e1509]: f
+                  - generic [ref=f11e1510]: "0"
+                - generic [ref=f11e1511]: +
+                - generic [ref=f11e1512]: β
+                - generic [ref=f11e1513]:
+                  - generic [ref=f11e1514]: f
+                  - generic [ref=f11e1515]: m
+                - generic [ref=f11e1516]: cos
+                - generic: ⁡
+                - generic [ref=f11e1517]: (
+                - generic [ref=f11e1518]: "2"
+                - generic [ref=f11e1519]: π
+                - generic [ref=f11e1520]:
+                  - generic [ref=f11e1521]: f
+                  - generic [ref=f11e1522]: m
+                - generic [ref=f11e1523]: t
+                - generic [ref=f11e1524]: )
+                - generic [ref=f11e1525]: =
+                - generic [ref=f11e1526]:
+                  - generic [ref=f11e1527]: f
+                  - generic [ref=f11e1528]: "0"
+                - generic [ref=f11e1529]: +
+                - generic [ref=f11e1530]: Δ
+                - generic [ref=f11e1531]: f
+                - generic [ref=f11e1532]: cos
+                - generic: ⁡
+                - generic [ref=f11e1533]: (
+                - generic [ref=f11e1534]: "2"
+                - generic [ref=f11e1535]: π
+                - generic [ref=f11e1536]:
+                  - generic [ref=f11e1537]: f
+                  - generic [ref=f11e1538]: m
+                - generic [ref=f11e1539]: t
+                - generic [ref=f11e1540]: )
+                - generic [ref=f11e1541]: .
+          - list [ref=f11e1542]:
+            - listitem [ref=f11e1543]:
+              - strong [ref=f11e1544]: "Mensaje:"
+              - text: el coseno hace variar la frecuencia alrededor de
+              - generic [ref=f11e1546]:
+                - generic [ref=f11e1548]:
+                  - generic [ref=f11e1549]: f
+                  - generic [ref=f11e1551]: "0"
+                - generic [ref=f11e1555]:
+                  - generic [ref=f11e1557]:
+                    - generic [ref=f11e1558]: f
+                    - generic [ref=f11e1560]: "0"
+                  - math [ref=f11e1564]:
+                    - generic [ref=f11e1565]:
+                      - generic [ref=f11e1566]: f
+                      - generic [ref=f11e1567]: "0"
+              - text: . La fase contiene un seno porque acumula esa variación de frecuencia.
+            - listitem [ref=f11e1568]:
+              - strong [ref=f11e1569]: "Muestreo:"
+              - text: la interfaz evalúa
+              - generic [ref=f11e1571]:
+                - generic [ref=f11e1573]:
+                  - generic [ref=f11e1574]: e
+                  - generic [ref=f11e1577]:
+                    - generic [ref=f11e1578]: j
+                    - generic [ref=f11e1580]: θ
+                    - generic [ref=f11e1582]: (
+                    - generic [ref=f11e1584]: t
+                    - generic [ref=f11e1586]: )
+                - generic [ref=f11e1589]:
+                  - generic [ref=f11e1591]:
+                    - generic [ref=f11e1592]: e
+                    - generic [ref=f11e1595]:
+                      - generic [ref=f11e1596]: j
+                      - generic [ref=f11e1598]: θ
+                      - generic [ref=f11e1600]: (
+                      - generic [ref=f11e1602]: t
+                      - generic [ref=f11e1604]: )
+                  - math [ref=f11e1607]:
+                    - generic [ref=f11e1608]:
+                      - generic [ref=f11e1609]: e
+                      - generic [ref=f11e1610]:
+                        - generic [ref=f11e1611]: j
+                        - generic [ref=f11e1612]: θ
+                        - generic [ref=f11e1613]: (
+                        - generic [ref=f11e1614]: t
+                        - generic [ref=f11e1615]: )
+              - text: en
+              - generic [ref=f11e1617]:
+                - generic [aria-hidden] [ref=f11e1618]:
+                  - generic [ref=f11e1619]: t
+                  - generic [ref=f11e1621]: =
+                  - generic [ref=f11e1623]: "n"
+                  - generic [ref=f11e1625]: /
+                  - generic [ref=f11e1628]:
+                    - generic [ref=f11e1629]: f
+                    - generic [ref=f11e1631]: s
+                - generic [ref=f11e1635]:
+                  - generic [aria-hidden] [ref=f11e1636]:
+                    - generic [ref=f11e1637]: t
+                    - generic [ref=f11e1639]: =
+                    - generic [ref=f11e1641]: "n"
+                    - generic [ref=f11e1643]: /
+                    - generic [ref=f11e1646]:
+                      - generic [ref=f11e1647]: f
+                      - generic [ref=f11e1649]: s
+                  - math [ref=f11e1653]:
+                    - generic [ref=f11e1654]: t
+                    - generic [ref=f11e1655]: =
+                    - generic [ref=f11e1656]: "n"
+                    - generic [ref=f11e1657]: /
+                    - generic [ref=f11e1659]:
+                      - generic [ref=f11e1660]: f
+                      - generic [ref=f11e1661]: s
+              - text: . Así obtiene las muestras de la fórmula anterior.
+            - listitem [ref=f11e1662]:
+              - strong [ref=f11e1663]: "Después de centrar:"
+              - text: la mezcla elimina
+              - generic [ref=f11e1665]:
+                - generic [ref=f11e1667]:
+                  - generic [ref=f11e1668]: f
+                  - generic [ref=f11e1670]: "0"
+                - generic [ref=f11e1674]:
+                  - generic [ref=f11e1676]:
+                    - generic [ref=f11e1677]: f
+                    - generic [ref=f11e1679]: "0"
+                  - math [ref=f11e1683]:
+                    - generic [ref=f11e1684]:
+                      - generic [ref=f11e1685]: f
+                      - generic [ref=f11e1686]: "0"
+              - text: . Permanece la variación
+              - generic [ref=f11e1688]:
+                - generic [aria-hidden] [ref=f11e1689]:
+                  - generic [ref=f11e1690]: Δ
+                  - generic [ref=f11e1692]: f
+                  - generic [ref=f11e1694]:
+                    - generic [ref=f11e1695]: c
+                    - generic [ref=f11e1696]: o
+                    - generic [ref=f11e1697]: s
+                  - generic [ref=f11e1698]: (
+                  - generic [ref=f11e1700]: "2"
+                  - generic [ref=f11e1702]: π
+                  - generic [ref=f11e1704]:
+                    - generic [ref=f11e1705]: f
+                    - generic [ref=f11e1707]: m
+                  - generic [ref=f11e1710]: t
+                  - generic [ref=f11e1712]: )
+                - generic [ref=f11e1715]:
+                  - generic [aria-hidden] [ref=f11e1716]:
+                    - generic [ref=f11e1717]: Δ
+                    - generic [ref=f11e1719]: f
+                    - generic [ref=f11e1721]:
+                      - generic [ref=f11e1722]: c
+                      - generic [ref=f11e1723]: o
+                      - generic [ref=f11e1724]: s
+                    - generic [ref=f11e1725]: (
+                    - generic [ref=f11e1727]: "2"
+                    - generic [ref=f11e1729]: π
+                    - generic [ref=f11e1731]:
+                      - generic [ref=f11e1732]: f
+                      - generic [ref=f11e1734]: m
+                    - generic [ref=f11e1737]: t
+                    - generic [ref=f11e1739]: )
+                  - math [ref=f11e1742]:
+                    - generic [ref=f11e1743]: Δ
+                    - generic [ref=f11e1744]: f
+                    - generic [ref=f11e1745]: cos
+                    - generic: ⁡
+                    - generic [ref=f11e1746]: (
+                    - generic [ref=f11e1747]: "2"
+                    - generic [ref=f11e1748]: π
+                    - generic [ref=f11e1749]:
+                      - generic [ref=f11e1750]: f
+                      - generic [ref=f11e1751]: m
+                    - generic [ref=f11e1752]: t
+                    - generic [ref=f11e1753]: )
+              - text: ; por eso I y Q siguen cambiando.
+            - listitem [ref=f11e1754]:
+              - strong [ref=f11e1755]: "Alcance:"
+              - text: este ejemplo genera muestras sintéticas. No reproduce una emisora FM ni simula el filtro analógico de un receptor.
+          - heading "Referencias y continuación" [level=2] [ref=f11e1756]
+          - list [ref=f11e1757]:
+            - listitem [ref=f11e1758]:
+              - 'link "Sesión 2, sección 6.3: mezcla compleja" [ref=f11e1759] [cursor=pointer]':
+                - /url: ../#63-experimento-b-trasladar-una-componente-al-cero-mediante-mezcla-compleja
+              - text: .
+            - listitem [ref=f11e1760]:
+              - 'link "MathWorks: representación I/Q mediante complex envelope y traslación con una exponencial compleja" [ref=f11e1761] [cursor=pointer]':
+                - /url: https://www.mathworks.com/help/signal/ug/visualize-complex-signals.html
+              - text: .
+            - listitem [ref=f11e1762]:
+              - 'link "MathWorks: relación entre mensaje, fase y desviación en FM" [ref=f11e1763] [cursor=pointer]':
+                - /url: https://www.mathworks.com/help/comm/ref/comm.fmmodulator-system-object.html
+              - text: .
+            - listitem [ref=f11e1764]:
+              - 'link "Continuar con la sección 6.4: cambiar etiquetas RF no es volver a sintonizar" [ref=f11e1765] [cursor=pointer]':
+                - /url: ../#64-experimento-c-reetiquetar-el-visor-no-es-volver-a-sintonizar
+              - text: .
+      - button "Volver al principio"
+    - contentinfo [ref=f11e1766]:
+      - generic [ref=f11e1769]:
+        - text: Made with
+        - link "Material for MkDocs" [ref=f11e1770] [cursor=pointer]:
+          - /url: https://squidfunk.github.io/mkdocs-material/

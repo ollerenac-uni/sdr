@@ -93,7 +93,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [560, 640.0]
+    coordinate: [560, 632.0]
     rotation: 0
     state: enabled
 - name: audio_sink_0
@@ -338,7 +338,88 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 424.0]
+    coordinate: [576, 296.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_freq_sink_canal_0
+  id: qtgui_freq_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    average: '1.0'
+    axislabels: 'True'
+    bw: 192000/4
+    color1: '"green"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label: Relative Gain
+    label1: ''
+    label10: ''''''
+    label2: ''''''
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Canal: 192 kS/s"'
+    nconnections: '1'
+    norm_window: 'False'
+    showports: 'False'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_tag: '""'
+    type: float
+    units: dB
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-140'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [848, 672.0]
     rotation: 0
     state: enabled
 - name: qtgui_freq_sink_rf
@@ -376,7 +457,7 @@ blocks:
     fftsize: '4096'
     freqhalf: 'True'
     grid: 'False'
-    gui_hint: '0,0,1,1'
+    gui_hint: 0,0,1,1
     label: Relative Gain
     label1: ''
     label10: ''''''
@@ -422,6 +503,67 @@ blocks:
     coordinate: [352, 424.0]
     rotation: 0
     state: enabled
+- name: qtgui_waterfall_sink_rf
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: freq
+    fftsize: '4096'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 1,0,1,2
+    int_max: '-20'
+    int_min: '-100'
+    label1: ''''''
+    label10: ''''''
+    label2: ''''''
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '"Waterfall RF: 2.4 MS/s"'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.10'
+    wintype: window.WIN_HANN
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [776, 480.0]
+    rotation: 0
+    state: enabled
 - name: rational_resampler_xxx_0
   id: rational_resampler_xxx
   parameters:
@@ -451,7 +593,8 @@ blocks:
     bias: 'False'
     bufflen: '16384'
     center_freq: freq
-    comment: 'Alternativa con dongle: activar esta fuente y desactivar los siete bloques CU8.'
+    comment: 'Alternativa con dongle: activar esta fuente y desactivar los siete bloques
+      CU8.'
     dev_args: ''
     freq_correction: '0'
     gain: '30'
@@ -467,69 +610,15 @@ blocks:
     rotation: 0
     state: disabled
 
-- name: qtgui_waterfall_sink_rf
-  id: qtgui_waterfall_sink_x
-  parameters:
-    type: complex
-    name: '"Waterfall RF: 2.4 MS/s"'
-    fftsize: '4096'
-    wintype: window.WIN_HANN
-    fc: freq
-    bw: samp_rate
-    int_min: '-100'
-    int_max: '-20'
-    grid: 'False'
-    nconnections: '1'
-    update_time: '0.10'
-    showports: 'False'
-    gui_hint: '1,0,1,2'
-    legend: 'True'
-    axislabels: 'True'
-    freqhalf: 'True'
-    label1: "''"
-    color1: '0'
-    alpha1: '1.0'
-    label2: "''"
-    color2: '0'
-    alpha2: '1.0'
-    label3: "''"
-    color3: '0'
-    alpha3: '1.0'
-    label4: "''"
-    color4: '0'
-    alpha4: '1.0'
-    label5: "''"
-    color5: '0'
-    alpha5: '1.0'
-    label6: "''"
-    color6: '0'
-    alpha6: '1.0'
-    label7: "''"
-    color7: '0'
-    alpha7: '1.0'
-    label8: "''"
-    color8: '0'
-    alpha8: '1.0'
-    label9: "''"
-    color9: '0'
-    alpha9: '1.0'
-    label10: "''"
-    color10: '0'
-    alpha10: '1.0'
-  states:
-    coordinate: [800, 424]
-    rotation: 0
-    state: enabled
-
 connections:
-- [blocks_float_to_complex_0, '0', qtgui_waterfall_sink_rf, '0']
-- [soapy_rtlsdr_source_0, '0', qtgui_waterfall_sink_rf, '0']
 - [analog_wfm_rcv_0, '0', blocks_multiply_const_vxx_1, '0']
+- [analog_wfm_rcv_0, '0', qtgui_freq_sink_canal_0, '0']
 - [blocks_add_const_vxx_0, '0', blocks_multiply_const_vxx_0, '0']
 - [blocks_deinterleave_0, '0', blocks_float_to_complex_0, '0']
 - [blocks_deinterleave_0, '1', blocks_float_to_complex_0, '1']
 - [blocks_file_source_0, '0', blocks_throttle2_0, '0']
 - [blocks_float_to_complex_0, '0', qtgui_freq_sink_rf, '0']
+- [blocks_float_to_complex_0, '0', qtgui_waterfall_sink_rf, '0']
 - [blocks_float_to_complex_0, '0', rational_resampler_xxx_0, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_deinterleave_0, '0']
 - [blocks_multiply_const_vxx_1, '0', audio_sink_0, '0']
@@ -537,7 +626,7 @@ connections:
 - [blocks_uchar_to_float_0, '0', blocks_add_const_vxx_0, '0']
 - [rational_resampler_xxx_0, '0', analog_wfm_rcv_0, '0']
 - [rational_resampler_xxx_0, '0', qtgui_freq_sink_canal, '0']
-- [soapy_rtlsdr_source_0, '0', qtgui_freq_sink_rf, '0']
+- [soapy_rtlsdr_source_0, '0', qtgui_waterfall_sink_rf, '0']
 - [soapy_rtlsdr_source_0, '0', rational_resampler_xxx_0, '0']
 
 metadata:

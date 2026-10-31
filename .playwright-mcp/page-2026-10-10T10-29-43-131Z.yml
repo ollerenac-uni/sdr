@@ -1,0 +1,993 @@
+- generic [active] [ref=f48e1]:
+  - link "Saltar a contenido" [ref=f48e2] [cursor=pointer]:
+    - /url: "#laboratorio-2-demodulador-fm-en-gnu-radio"
+  - banner [ref=f48e3]:
+    - navigation "Cabecera" [ref=f48e4]:
+      - link "Radio Definida por Software" [ref=f48e5] [cursor=pointer]:
+        - /url: ../../..
+      - generic [ref=f48e9]:
+        - generic [ref=f48e10]: Radio Definida por Software
+        - generic: "Laboratorio #2 — Demodulador FM en GNU Radio"
+      - generic [ref=f48e12]:
+        - radio "Cambiar a modo oscuro"
+        - generic "Cambiar a modo oscuro" [ref=f48e13] [cursor=pointer]
+        - radio "Cambiar a modo claro"
+      - dialog [ref=f48e16]:
+        - search [ref=f48e17]:
+          - generic [ref=f48e18]:
+            - textbox "Búsqueda" [ref=f48e19]
+            - navigation "Buscar":
+              - button "Limpiar"
+          - generic: Inicializando búsqueda
+      - link [ref=f48e24] [cursor=pointer]:
+        - /url: https://github.com/ollerenac-uni/sdr
+        - generic [ref=f48e28]:
+          - text: ollerenac-uni/sdr
+          - list [ref=f48e29]:
+            - listitem [ref=f48e30]: "0"
+            - listitem [ref=f48e31]: "0"
+  - generic [ref=f48e32]:
+    - navigation "Pestañas" [ref=f48e33]:
+      - list [ref=f48e35]:
+        - listitem [ref=f48e36]:
+          - link "Inicio" [ref=f48e37] [cursor=pointer]:
+            - /url: ../../..
+        - listitem [ref=f48e38]:
+          - link "Syllabus" [ref=f48e39] [cursor=pointer]:
+            - /url: ../../../syllabus/
+        - listitem [ref=f48e40]:
+          - link "Sesiones" [ref=f48e41] [cursor=pointer]:
+            - /url: ../../
+        - listitem [ref=f48e42]:
+          - link "Guías" [ref=f48e43] [cursor=pointer]:
+            - /url: ../../../setup/
+        - listitem [ref=f48e44]:
+          - link "Exámenes" [ref=f48e45] [cursor=pointer]:
+            - /url: ../../../exams/
+    - main [ref=f48e46]:
+      - generic [ref=f48e47]:
+        - navigation "Navegación" [ref=f48e51]:
+          - list [ref=f48e52]:
+            - listitem [ref=f48e53]:
+              - link "Sesiones" [ref=f48e55] [cursor=pointer]:
+                - /url: ../../
+              - navigation [ref=f48e57]:
+                - list [ref=f48e58]:
+                  - listitem [ref=f48e59]:
+                    - link "01 — Introducción" [ref=f48e61] [cursor=pointer]:
+                      - /url: ../../01-introduccion-sdr/
+                      - generic "En desarrollo" [ref=f48e63]
+                  - listitem [ref=f48e66]:
+                    - link "02 — Señales y espectro en SDR" [ref=f48e68] [cursor=pointer]:
+                      - /url: ../
+                    - navigation [ref=f48e72]:
+                      - list [ref=f48e73]:
+                        - listitem [ref=f48e74]:
+                          - 'link "Demostración: mezcla compleja" [ref=f48e75] [cursor=pointer]':
+                            - /url: ../mezcla-interactiva/
+                        - listitem [ref=f48e77]:
+                          - 'link "Laboratorio #2: demodulador FM" [ref=f48e78] [cursor=pointer]':
+                            - /url: ./
+                  - listitem [ref=f48e80]:
+                    - link "03 — Sistemas y filtros digitales" [ref=f48e82] [cursor=pointer]:
+                      - /url: ../../03-sistemas-filtros-digitales/
+                      - generic "En desarrollo" [ref=f48e84]
+        - navigation "Tabla de contenidos" [ref=f48e90]:
+          - list [ref=f48e92]:
+            - listitem [ref=f48e93]:
+              - link "Objetivos" [ref=f48e94] [cursor=pointer]:
+                - /url: "#objetivos"
+            - listitem [ref=f48e96]:
+              - link "Archivos y requisitos" [ref=f48e97] [cursor=pointer]:
+                - /url: "#archivos-y-requisitos"
+            - listitem [ref=f48e99]:
+              - link "1. Seguir las tasas antes de conectar bloques" [ref=f48e100] [cursor=pointer]:
+                - /url: "#1-seguir-las-tasas-antes-de-conectar-bloques"
+            - listitem [ref=f48e102]:
+              - link "2. Reconstruir I/Q desde CU8" [ref=f48e103] [cursor=pointer]:
+                - /url: "#2-reconstruir-iq-desde-cu8"
+            - listitem [ref=f48e105]:
+              - link "3. Reducir la tasa y observar el canal" [ref=f48e106] [cursor=pointer]:
+                - /url: "#3-reducir-la-tasa-y-observar-el-canal"
+            - listitem [ref=f48e108]:
+              - link "4. Del giro entre muestras al audio FM" [ref=f48e109] [cursor=pointer]:
+                - /url: "#4-del-giro-entre-muestras-al-audio-fm"
+            - listitem [ref=f48e111]:
+              - link "5. Ejecutar y registrar observaciones" [ref=f48e112] [cursor=pointer]:
+                - /url: "#5-ejecutar-y-registrar-observaciones"
+            - listitem [ref=f48e114]:
+              - link "6. Extensión opcional con RTL-SDR" [ref=f48e115] [cursor=pointer]:
+                - /url: "#6-extension-opcional-con-rtl-sdr"
+            - listitem [ref=f48e117]:
+              - link "7. Diagnóstico breve" [ref=f48e118] [cursor=pointer]:
+                - /url: "#7-diagnostico-breve"
+            - listitem [ref=f48e120]:
+              - link "Entrega" [ref=f48e121] [cursor=pointer]:
+                - /url: "#entrega"
+            - listitem [ref=f48e123]:
+              - link "Lecturas y referencias" [ref=f48e124] [cursor=pointer]:
+                - /url: "#lecturas-y-referencias"
+        - article [ref=f48e127]:
+          - 'heading "Laboratorio #2 — Demodulador FM en GNU Radio" [level=1] [ref=f48e128]'
+          - list [ref=f48e129]:
+            - listitem [ref=f48e130]: El laboratorio utiliza la misma captura de 2.4 MS/s que S01 y la teoría de S02.
+            - listitem [ref=f48e131]: La cadena selecciona la banda central y entrega audio mono a 48 kS/s.
+            - listitem [ref=f48e132]: El estudiante observa la captura mediante un espectro y un waterfall. No necesita un dongle.
+          - heading "Objetivos" [level=2] [ref=f48e133]
+          - list [ref=f48e134]:
+            - listitem [ref=f48e135]: Reconstruir muestras complejas desde bytes CU8.
+            - listitem [ref=f48e136]: Calcular las tasas de entrada, canal y audio.
+            - listitem [ref=f48e137]: Relacionar espectro y waterfall con los metadatos de la captura.
+            - listitem [ref=f48e138]: Explicar cómo el giro entre muestras permite demodular FM.
+            - listitem [ref=f48e139]: Implementar y verificar la cadena en GNU Radio Companion.
+          - paragraph [ref=f48e140]: El diseño detallado de los filtros queda para S03 y S04. Aquí se utilizan bloques con parámetros conocidos y límites explícitos.
+          - heading "Archivos y requisitos" [level=2] [ref=f48e141]
+          - table [ref=f48e144]:
+            - rowgroup [ref=f48e145]:
+              - row [ref=f48e146]:
+                - columnheader "Recurso" [ref=f48e147]
+                - columnheader "Ubicación" [ref=f48e148]
+                - columnheader "Uso" [ref=f48e149]
+            - rowgroup [ref=f48e150]:
+              - row [ref=f48e151]:
+                - cell "Grafo de referencia" [ref=f48e152]
+                - cell [ref=f48e153]:
+                  - code [ref=f48e154]: gnuradio-flowgraphs/receptor_fm_99p1_2p4Msps.grc
+                - cell "Comparar parámetros y conexiones." [ref=f48e155]
+              - row [ref=f48e156]:
+                - cell "Captura oficial" [ref=f48e157]
+                - cell [ref=f48e158]:
+                  - code [ref=f48e159]: samples/fm_99p1MHz_2p4Msps_g30.cu8
+                - cell "I/Q a 2.4 MS/s, con referencia RF de 99.1 MHz." [ref=f48e160]
+              - row [ref=f48e161]:
+                - cell "GNU Radio Companion" [ref=f48e162]
+                - cell "Equipo local" [ref=f48e163]
+                - cell "Construir y ejecutar el grafo." [ref=f48e164]
+              - row [ref=f48e165]:
+                - cell "Parlantes o audífonos" [ref=f48e166]
+                - cell "Equipo local" [ref=f48e167]
+                - cell "Escuchar audio mono a 48 kS/s." [ref=f48e168]
+          - list [ref=f48e169]:
+            - listitem [ref=f48e170]:
+              - text: Las grabaciones se distribuyen por la
+              - link "carpeta de muestras" [ref=f48e171] [cursor=pointer]:
+                - /url: https://drive.google.com/drive/folders/1tP8u1tQZDnvi_-ZAxZ3J8tehdKwi92an?usp=drive_link
+              - text: ", fuera de Git."
+            - listitem [ref=f48e172]:
+              - text: La
+              - link "sesión 1" [ref=f48e173] [cursor=pointer]:
+                - /url: ../../01-introduccion-sdr/#descargar-la-grabacion
+              - text: explica la descarga de la captura oficial.
+            - listitem [ref=f48e174]:
+              - text: El grafo utiliza
+              - code [ref=f48e175]: ../samples/fm_99p1MHz_2p4Msps_g30.cu8
+              - text: ", porque se ejecuta desde"
+              - code [ref=f48e176]: gnuradio-flowgraphs/
+              - text: .
+            - listitem [ref=f48e177]: La fuente RTL-SDR queda desactivada. Solo se utiliza en la extensión opcional.
+          - heading "1. Seguir las tasas antes de conectar bloques" [level=2] [ref=f48e178]
+          - generic [ref=f48e180]:
+            - navigation [ref=f48e181]:
+              - button "Copiar al portapapeles" [ref=f48e182] [cursor=pointer]
+            - code [ref=f48e183]: "Archivo CU8: 4 800 000 bytes/s → reconstrucción I/Q: 2.4 MS/s complejas → Rational Resampler, 2/25: 192 kS/s complejas → WBFM Receive, audio decimation 4: 48 kS/s reales → volumen → Audio Sink"
+          - table [ref=f48e186]:
+            - rowgroup [ref=f48e187]:
+              - row [ref=f48e188]:
+                - columnheader "Punto" [ref=f48e189]
+                - columnheader "Tipo de item" [ref=f48e190]
+                - columnheader "Tasa de items" [ref=f48e191]
+            - rowgroup [ref=f48e192]:
+              - row [ref=f48e193]:
+                - cell "File Source y Throttle" [ref=f48e194]
+                - cell "Un byte I o Q" [ref=f48e195]
+                - cell "4 800 000 items/s" [ref=f48e196]
+              - row [ref=f48e197]:
+                - cell "Después de UChar to Float, antes de Deinterleave" [ref=f48e198]
+                - cell "Un float I o Q" [ref=f48e199]
+                - cell "4 800 000 items/s" [ref=f48e200]
+              - row [ref=f48e201]:
+                - cell "Cada salida de Deinterleave" [ref=f48e202]
+                - cell "Un float I o un float Q" [ref=f48e203]
+                - cell "2 400 000 items/s" [ref=f48e204]
+              - row [ref=f48e205]:
+                - cell "Float to Complex" [ref=f48e206]
+                - cell "Una muestra I+jQ" [ref=f48e207]
+                - cell "2.4 MS/s" [ref=f48e208]
+              - row [ref=f48e209]:
+                - cell "Rational Resampler" [ref=f48e210]
+                - cell "Una muestra compleja" [ref=f48e211]
+                - cell "192 kS/s" [ref=f48e212]
+              - row [ref=f48e213]:
+                - cell "WBFM Receive" [ref=f48e214]
+                - cell "Una muestra real de audio" [ref=f48e215]
+                - cell "48 kS/s" [ref=f48e216]
+          - list [ref=f48e217]:
+            - listitem [ref=f48e218]: I y Q corresponden al mismo instante. Dos bytes CU8 forman una muestra compleja.
+            - listitem [ref=f48e219]:
+              - text: El Throttle de tipo Byte utiliza
+              - code [ref=f48e220]: Sample Rate = 2*samp_rate
+              - text: .
+            - listitem [ref=f48e221]: Throttle limita el ritmo de suministro. No cambia los valores, no filtra ni convierte el sampling rate de la señal.
+          - generic [ref=f48e223]:
+            - generic [aria-hidden] [ref=f48e224]:
+              - generic [ref=f48e225]:
+                - generic [ref=f48e226]: f
+                - generic [ref=f48e229]:
+                  - generic [ref=f48e230]: s
+                  - generic [ref=f48e232]: ","
+                  - generic [ref=f48e235]:
+                    - generic [ref=f48e236]: c
+                    - generic [ref=f48e237]: a
+                    - generic [ref=f48e238]: "n"
+                    - generic [ref=f48e239]: a
+                    - generic [ref=f48e240]: l
+              - generic [ref=f48e241]: =
+              - generic [ref=f48e243]:
+                - generic [ref=f48e244]: "2"
+                - generic [ref=f48e245]: "4"
+                - generic [ref=f48e246]: "0"
+                - generic [ref=f48e247]: "0"
+                - generic [ref=f48e248]: "0"
+                - generic [ref=f48e249]: "0"
+                - generic [ref=f48e250]: "0"
+              - generic [ref=f48e252]:
+                - generic [ref=f48e253]: "2"
+                - generic [ref=f48e261]:
+                  - generic [ref=f48e262]: "2"
+                  - generic [ref=f48e263]: "5"
+              - generic [ref=f48e264]: =
+              - generic [ref=f48e266]:
+                - generic [ref=f48e267]: "1"
+                - generic [ref=f48e268]: "9"
+                - generic [ref=f48e269]: "2"
+                - generic [ref=f48e270]: "0"
+                - generic [ref=f48e271]: "0"
+                - generic [ref=f48e272]: "0"
+              - generic [ref=f48e273]:
+                - generic [ref=f48e274]: S
+                - generic [ref=f48e276]: /
+                - generic [ref=f48e279]: s
+              - generic [ref=f48e281]: ","
+              - generic [ref=f48e283]:
+                - generic [ref=f48e284]: f
+                - generic [ref=f48e287]:
+                  - generic [ref=f48e288]: s
+                  - generic [ref=f48e290]: ","
+                  - generic [ref=f48e293]:
+                    - generic [ref=f48e294]: a
+                    - generic [ref=f48e295]: u
+                    - generic [ref=f48e296]: d
+                    - generic [ref=f48e297]: i
+                    - generic [ref=f48e298]: o
+              - generic [ref=f48e299]: =
+              - generic [ref=f48e302]:
+                - generic [ref=f48e304]:
+                  - generic [ref=f48e305]: "1"
+                  - generic [ref=f48e306]: "9"
+                  - generic [ref=f48e307]: "2"
+                  - generic [ref=f48e308]: "0"
+                  - generic [ref=f48e309]: "0"
+                  - generic [ref=f48e310]: "0"
+                - generic [ref=f48e311]: "4"
+              - generic [ref=f48e318]: =
+              - generic [ref=f48e320]:
+                - generic [ref=f48e321]: "4"
+                - generic [ref=f48e322]: "8"
+                - generic [ref=f48e323]: "0"
+                - generic [ref=f48e324]: "0"
+                - generic [ref=f48e325]: "0"
+              - generic [ref=f48e326]:
+                - generic [ref=f48e327]: S
+                - generic [ref=f48e329]: /
+                - generic [ref=f48e332]: s
+              - generic [ref=f48e334]: .
+            - generic [ref=f48e337]:
+              - generic [aria-hidden] [ref=f48e338]:
+                - generic [ref=f48e339]:
+                  - generic [ref=f48e340]: f
+                  - generic [ref=f48e343]:
+                    - generic [ref=f48e344]: s
+                    - generic [ref=f48e346]: ","
+                    - generic [ref=f48e349]:
+                      - generic [ref=f48e350]: c
+                      - generic [ref=f48e351]: a
+                      - generic [ref=f48e352]: "n"
+                      - generic [ref=f48e353]: a
+                      - generic [ref=f48e354]: l
+                - generic [ref=f48e355]: =
+                - generic [ref=f48e357]:
+                  - generic [ref=f48e358]: "2"
+                  - generic [ref=f48e359]: "4"
+                  - generic [ref=f48e360]: "0"
+                  - generic [ref=f48e361]: "0"
+                  - generic [ref=f48e362]: "0"
+                  - generic [ref=f48e363]: "0"
+                  - generic [ref=f48e364]: "0"
+                - generic [ref=f48e366]:
+                  - generic [ref=f48e367]: "2"
+                  - generic [ref=f48e375]:
+                    - generic [ref=f48e376]: "2"
+                    - generic [ref=f48e377]: "5"
+                - generic [ref=f48e378]: =
+                - generic [ref=f48e380]:
+                  - generic [ref=f48e381]: "1"
+                  - generic [ref=f48e382]: "9"
+                  - generic [ref=f48e383]: "2"
+                  - generic [ref=f48e384]: "0"
+                  - generic [ref=f48e385]: "0"
+                  - generic [ref=f48e386]: "0"
+                - generic [ref=f48e387]:
+                  - generic [ref=f48e388]: S
+                  - generic [ref=f48e390]: /
+                  - generic [ref=f48e393]: s
+                - generic [ref=f48e395]: ","
+                - generic [ref=f48e397]:
+                  - generic [ref=f48e398]: f
+                  - generic [ref=f48e401]:
+                    - generic [ref=f48e402]: s
+                    - generic [ref=f48e404]: ","
+                    - generic [ref=f48e407]:
+                      - generic [ref=f48e408]: a
+                      - generic [ref=f48e409]: u
+                      - generic [ref=f48e410]: d
+                      - generic [ref=f48e411]: i
+                      - generic [ref=f48e412]: o
+                - generic [ref=f48e413]: =
+                - generic [ref=f48e416]:
+                  - generic [ref=f48e418]:
+                    - generic [ref=f48e419]: "1"
+                    - generic [ref=f48e420]: "9"
+                    - generic [ref=f48e421]: "2"
+                    - generic [ref=f48e422]: "0"
+                    - generic [ref=f48e423]: "0"
+                    - generic [ref=f48e424]: "0"
+                  - generic [ref=f48e425]: "4"
+                - generic [ref=f48e432]: =
+                - generic [ref=f48e434]:
+                  - generic [ref=f48e435]: "4"
+                  - generic [ref=f48e436]: "8"
+                  - generic [ref=f48e437]: "0"
+                  - generic [ref=f48e438]: "0"
+                  - generic [ref=f48e439]: "0"
+                - generic [ref=f48e440]:
+                  - generic [ref=f48e441]: S
+                  - generic [ref=f48e443]: /
+                  - generic [ref=f48e446]: s
+                - generic [ref=f48e448]: .
+              - math [ref=f48e451]:
+                - generic [ref=f48e452]:
+                  - generic [ref=f48e453]: f
+                  - generic [ref=f48e454]:
+                    - generic [ref=f48e455]: s
+                    - generic [ref=f48e456]: ","
+                    - generic [ref=f48e457]: canal
+                - generic [ref=f48e459]: =
+                - generic [ref=f48e460]: "2400000"
+                - generic [ref=f48e461]:
+                  - generic [ref=f48e462]: "2"
+                  - generic [ref=f48e463]: "25"
+                - generic [ref=f48e464]: =
+                - generic [ref=f48e465]: "192000"
+                - generic [ref=f48e466]:
+                  - generic [ref=f48e467]: S
+                  - generic [ref=f48e468]: /
+                  - generic [ref=f48e470]: s
+                - generic [ref=f48e471]: ","
+                - generic [ref=f48e472]:
+                  - generic [ref=f48e473]: f
+                  - generic [ref=f48e474]:
+                    - generic [ref=f48e475]: s
+                    - generic [ref=f48e476]: ","
+                    - generic [ref=f48e477]: audio
+                - generic [ref=f48e479]: =
+                - generic [ref=f48e480]:
+                  - generic [ref=f48e481]: "192000"
+                  - generic [ref=f48e482]: "4"
+                - generic [ref=f48e483]: =
+                - generic [ref=f48e484]: "48000"
+                - generic [ref=f48e485]:
+                  - generic [ref=f48e486]: S
+                  - generic [ref=f48e487]: /
+                  - generic [ref=f48e489]: s
+                - generic [ref=f48e490]: .
+          - group [ref=f48e491]:
+            - generic "Comprobación 1.1 — Throttle incorrecto" [ref=f48e492] [cursor=pointer]
+            - text: 2 4 0 0 0 0 0 / 2 = 1 2 0 0 0 0 0 2 4 0 0 0 0 0 / 2 = 1 2 0 0 0 0 0
+          - group [ref=f48e493]:
+            - generic "Comprobación 1.2 — Tamaño y duración" [ref=f48e494] [cursor=pointer]
+            - text: f s = 2 4 0 0 0 0 0 f s = 2 4 0 0 0 0 0 N = 4 8 0 0 0 0 0 0 / 2 = 2 4 0 0 0 0 0 0 N = 4 8 0 0 0 0 0 0 / 2 = 2 4 0 0 0 0 0 0 T = N / f s = 2 4 0 0 0 0 0 0 / 2 4 0 0 0 0 0 = 1 0 T = N / f s = 2 4 0 0 0 0 0 0 / 2 4 0 0 0 0 0 = 1 0
+          - heading "2. Reconstruir I/Q desde CU8" [level=2] [ref=f48e495]
+          - list [ref=f48e496]:
+            - listitem [ref=f48e497]:
+              - text: El estudiante crea un grafo con salida
+              - code [ref=f48e498]: QT GUI
+              - text: y lo guarda en
+              - code [ref=f48e499]: gnuradio-flowgraphs/
+              - text: .
+            - listitem [ref=f48e500]:
+              - text: Asigna un ID propio, como
+              - code [ref=f48e501]: lab02_fm_estudiante
+              - text: ", distinto del ID de la referencia."
+            - listitem [ref=f48e502]:
+              - text: Define
+              - code [ref=f48e503]: samp_rate = 2400000
+              - text: ","
+              - code [ref=f48e504]: freq = 99.1e6
+              - text: "y"
+              - code [ref=f48e505]: volume = 0.2
+              - text: .
+            - listitem [ref=f48e506]: Conecta los siete bloques de la ruta CU8 en el orden de la tabla.
+          - table [ref=f48e509]:
+            - rowgroup [ref=f48e510]:
+              - row [ref=f48e511]:
+                - columnheader "Bloque" [ref=f48e512]
+                - columnheader "Parámetros" [ref=f48e513]
+                - columnheader "Operación" [ref=f48e514]
+            - rowgroup [ref=f48e515]:
+              - row [ref=f48e516]:
+                - cell "File Source" [ref=f48e517]
+                - 'cell "Byte; Repeat: Yes; ruta relativa de la captura" [ref=f48e518]'
+                - cell "Leer I,Q,I,Q,…" [ref=f48e519]
+              - row [ref=f48e520]:
+                - cell "Throttle" [ref=f48e521]
+                - cell [ref=f48e522]:
+                  - text: "Byte; Sample Rate:"
+                  - code [ref=f48e523]: 2*samp_rate
+                - cell "Limitar el suministro." [ref=f48e524]
+              - row [ref=f48e525]:
+                - cell "UChar to Float" [ref=f48e526]
+                - cell "Valores predeterminados" [ref=f48e527]
+                - cell "Representar cada byte unsigned como float." [ref=f48e528]
+              - row [ref=f48e529]:
+                - cell "Add Const" [ref=f48e530]
+                - cell [ref=f48e531]:
+                  - text: "Float; Constant:"
+                  - code [ref=f48e532]: "-127.5"
+                - cell "Centrar cada componente." [ref=f48e533]
+              - row [ref=f48e534]:
+                - cell "Multiply Const" [ref=f48e535]
+                - cell [ref=f48e536]:
+                  - text: "Float; Constant:"
+                  - code [ref=f48e537]: 1/127.5
+                - cell "Normalizar cada componente." [ref=f48e538]
+              - row [ref=f48e539]:
+                - cell "Deinterleave" [ref=f48e540]
+                - 'cell "Float; Streams: 2; Block Size: 1" [ref=f48e541]'
+                - cell "Separar I y Q alternados." [ref=f48e542]
+              - row [ref=f48e543]:
+                - cell "Float to Complex" [ref=f48e544]
+                - 'cell "Vector Length: 1" [ref=f48e545]'
+                - cell "Reconstruir I+jQ." [ref=f48e546]
+          - list [ref=f48e547]:
+            - listitem [ref=f48e548]: La salida 0 de Deinterleave entra en el puerto real 0 de Float to Complex.
+            - listitem [ref=f48e549]: La salida 1 entra en el puerto imaginario 1. Los dos puertos representan el mismo índice de muestra.
+            - listitem [ref=f48e550]:
+              - text: Para bytes
+              - generic [ref=f48e552]:
+                - generic [aria-hidden] [ref=f48e553]:
+                  - generic [ref=f48e554]:
+                    - generic [ref=f48e555]: u
+                    - generic [ref=f48e557]: I
+                  - generic [ref=f48e560]: "["
+                  - generic [ref=f48e562]: "n"
+                  - generic [ref=f48e564]: "]"
+                - generic [ref=f48e567]:
+                  - generic [aria-hidden] [ref=f48e568]:
+                    - generic [ref=f48e569]:
+                      - generic [ref=f48e570]: u
+                      - generic [ref=f48e572]: I
+                    - generic [ref=f48e575]: "["
+                    - generic [ref=f48e577]: "n"
+                    - generic [ref=f48e579]: "]"
+                  - math [ref=f48e582]:
+                    - generic [ref=f48e583]:
+                      - generic [ref=f48e584]: u
+                      - generic [ref=f48e585]: I
+                    - generic [ref=f48e586]: "["
+                    - generic [ref=f48e587]: "n"
+                    - generic [ref=f48e588]: "]"
+              - text: "y"
+              - generic [ref=f48e590]:
+                - generic [aria-hidden] [ref=f48e591]:
+                  - generic [ref=f48e592]:
+                    - generic [ref=f48e593]: u
+                    - generic [ref=f48e595]: Q
+                  - generic [ref=f48e598]: "["
+                  - generic [ref=f48e600]: "n"
+                  - generic [ref=f48e602]: "]"
+                - generic [ref=f48e605]:
+                  - generic [aria-hidden] [ref=f48e606]:
+                    - generic [ref=f48e607]:
+                      - generic [ref=f48e608]: u
+                      - generic [ref=f48e610]: Q
+                    - generic [ref=f48e613]: "["
+                    - generic [ref=f48e615]: "n"
+                    - generic [ref=f48e617]: "]"
+                  - math [ref=f48e620]:
+                    - generic [ref=f48e621]:
+                      - generic [ref=f48e622]: u
+                      - generic [ref=f48e623]: Q
+                    - generic [ref=f48e624]: "["
+                    - generic [ref=f48e625]: "n"
+                    - generic [ref=f48e626]: "]"
+              - text: ", la conversión es:"
+          - generic [ref=f48e628]:
+            - generic [aria-hidden] [ref=f48e629]:
+              - generic [ref=f48e630]: z
+              - generic [ref=f48e632]: "["
+              - generic [ref=f48e634]: "n"
+              - generic [ref=f48e636]: "]"
+              - generic [ref=f48e638]: =
+              - generic [ref=f48e641]:
+                - generic [ref=f48e643]:
+                  - generic [ref=f48e644]:
+                    - generic [ref=f48e645]: u
+                    - generic [ref=f48e647]: I
+                  - generic [ref=f48e650]: "["
+                  - generic [ref=f48e652]: "n"
+                  - generic [ref=f48e654]: "]"
+                  - generic [ref=f48e656]: −
+                  - generic [ref=f48e658]:
+                    - generic [ref=f48e659]: "1"
+                    - generic [ref=f48e660]: "2"
+                    - generic [ref=f48e661]: "7"
+                    - generic [ref=f48e662]: .
+                    - generic [ref=f48e663]: "5"
+                - generic [ref=f48e669]:
+                  - generic [ref=f48e670]: "1"
+                  - generic [ref=f48e671]: "2"
+                  - generic [ref=f48e672]: "7"
+                  - generic [ref=f48e673]: .
+                  - generic [ref=f48e674]: "5"
+              - generic [ref=f48e675]: +
+              - generic [ref=f48e677]: j
+              - generic [ref=f48e680]:
+                - generic [ref=f48e682]:
+                  - generic [ref=f48e683]:
+                    - generic [ref=f48e684]: u
+                    - generic [ref=f48e686]: Q
+                  - generic [ref=f48e689]: "["
+                  - generic [ref=f48e691]: "n"
+                  - generic [ref=f48e693]: "]"
+                  - generic [ref=f48e695]: −
+                  - generic [ref=f48e697]:
+                    - generic [ref=f48e698]: "1"
+                    - generic [ref=f48e699]: "2"
+                    - generic [ref=f48e700]: "7"
+                    - generic [ref=f48e701]: .
+                    - generic [ref=f48e702]: "5"
+                - generic [ref=f48e708]:
+                  - generic [ref=f48e709]: "1"
+                  - generic [ref=f48e710]: "2"
+                  - generic [ref=f48e711]: "7"
+                  - generic [ref=f48e712]: .
+                  - generic [ref=f48e713]: "5"
+              - generic [ref=f48e714]: .
+            - generic [ref=f48e717]:
+              - generic [aria-hidden] [ref=f48e718]:
+                - generic [ref=f48e719]: z
+                - generic [ref=f48e721]: "["
+                - generic [ref=f48e723]: "n"
+                - generic [ref=f48e725]: "]"
+                - generic [ref=f48e727]: =
+                - generic [ref=f48e730]:
+                  - generic [ref=f48e732]:
+                    - generic [ref=f48e733]:
+                      - generic [ref=f48e734]: u
+                      - generic [ref=f48e736]: I
+                    - generic [ref=f48e739]: "["
+                    - generic [ref=f48e741]: "n"
+                    - generic [ref=f48e743]: "]"
+                    - generic [ref=f48e745]: −
+                    - generic [ref=f48e747]:
+                      - generic [ref=f48e748]: "1"
+                      - generic [ref=f48e749]: "2"
+                      - generic [ref=f48e750]: "7"
+                      - generic [ref=f48e751]: .
+                      - generic [ref=f48e752]: "5"
+                  - generic [ref=f48e758]:
+                    - generic [ref=f48e759]: "1"
+                    - generic [ref=f48e760]: "2"
+                    - generic [ref=f48e761]: "7"
+                    - generic [ref=f48e762]: .
+                    - generic [ref=f48e763]: "5"
+                - generic [ref=f48e764]: +
+                - generic [ref=f48e766]: j
+                - generic [ref=f48e769]:
+                  - generic [ref=f48e771]:
+                    - generic [ref=f48e772]:
+                      - generic [ref=f48e773]: u
+                      - generic [ref=f48e775]: Q
+                    - generic [ref=f48e778]: "["
+                    - generic [ref=f48e780]: "n"
+                    - generic [ref=f48e782]: "]"
+                    - generic [ref=f48e784]: −
+                    - generic [ref=f48e786]:
+                      - generic [ref=f48e787]: "1"
+                      - generic [ref=f48e788]: "2"
+                      - generic [ref=f48e789]: "7"
+                      - generic [ref=f48e790]: .
+                      - generic [ref=f48e791]: "5"
+                  - generic [ref=f48e797]:
+                    - generic [ref=f48e798]: "1"
+                    - generic [ref=f48e799]: "2"
+                    - generic [ref=f48e800]: "7"
+                    - generic [ref=f48e801]: .
+                    - generic [ref=f48e802]: "5"
+                - generic [ref=f48e803]: .
+              - math [ref=f48e806]:
+                - generic [ref=f48e807]: z
+                - generic [ref=f48e808]: "["
+                - generic [ref=f48e809]: "n"
+                - generic [ref=f48e810]: "]"
+                - generic [ref=f48e811]: =
+                - generic [ref=f48e812]:
+                  - generic [ref=f48e813]:
+                    - generic [ref=f48e814]:
+                      - generic [ref=f48e815]: u
+                      - generic [ref=f48e816]: I
+                    - generic [ref=f48e817]: "["
+                    - generic [ref=f48e818]: "n"
+                    - generic [ref=f48e819]: "]"
+                    - generic [ref=f48e820]: −
+                    - generic [ref=f48e821]: "127.5"
+                  - generic [ref=f48e822]: "127.5"
+                - generic [ref=f48e823]: +
+                - generic [ref=f48e824]: j
+                - generic [ref=f48e825]:
+                  - generic [ref=f48e826]:
+                    - generic [ref=f48e827]:
+                      - generic [ref=f48e828]: u
+                      - generic [ref=f48e829]: Q
+                    - generic [ref=f48e830]: "["
+                    - generic [ref=f48e831]: "n"
+                    - generic [ref=f48e832]: "]"
+                    - generic [ref=f48e833]: −
+                    - generic [ref=f48e834]: "127.5"
+                  - generic [ref=f48e835]: "127.5"
+                - generic [ref=f48e836]: .
+          - group [ref=f48e837]:
+            - generic "Para profundizar" [ref=f48e838] [cursor=pointer]
+            - text: "| z | ≤ 1 | z | ≤ 1 | − 1 + j | = √ 2 | − 1 + j | = √ 2"
+          - group [ref=f48e839]:
+            - generic "Comprobación 2.1 — File Source no debe ser Complex" [ref=f48e840] [cursor=pointer]
+          - heading "3. Reducir la tasa y observar el canal" [level=2] [ref=f48e841]
+          - list [ref=f48e842]:
+            - listitem [ref=f48e843]: Se conecta Float to Complex a Rational Resampler.
+            - listitem [ref=f48e844]:
+              - text: Se configura entrada y salida Complex,
+              - code [ref=f48e845]: Interpolation = 2
+              - text: ","
+              - code [ref=f48e846]: Decimation = 25
+              - text: ","
+              - code [ref=f48e847]: Taps = []
+              - text: "y"
+              - code [ref=f48e848]: Fractional BW = 0
+              - text: .
+            - listitem [ref=f48e849]: Se añaden los tres visores de la tabla como ramas de observación.
+          - table [ref=f48e852]:
+            - rowgroup [ref=f48e853]:
+              - row [ref=f48e854]:
+                - columnheader "Visor" [ref=f48e855]
+                - columnheader "Entrada" [ref=f48e856]
+                - columnheader "Bandwidth" [ref=f48e857]
+                - columnheader "FFT y ventana" [ref=f48e858]
+                - columnheader "Intervalo RF nominal" [ref=f48e859]
+            - rowgroup [ref=f48e860]:
+              - row [ref=f48e861]:
+                - cell "QT GUI Frequency Sink, RF" [ref=f48e862]
+                - cell "Antes del resampler" [ref=f48e863]
+                - cell [ref=f48e864]:
+                  - code [ref=f48e865]: samp_rate
+                - cell "4096, Hann" [ref=f48e866]
+                - cell "[97.9, 100.3) MHz" [ref=f48e867]
+              - row [ref=f48e868]:
+                - cell "QT GUI Waterfall Sink, RF" [ref=f48e869]
+                - cell "Antes del resampler" [ref=f48e870]
+                - cell [ref=f48e871]:
+                  - code [ref=f48e872]: samp_rate
+                - cell "4096, Hann" [ref=f48e873]
+                - cell "[97.9, 100.3) MHz" [ref=f48e874]
+              - row [ref=f48e875]:
+                - cell "QT GUI Frequency Sink, Canal" [ref=f48e876]
+                - cell "Después del resampler" [ref=f48e877]
+                - cell [ref=f48e878]:
+                  - code [ref=f48e879]: "192000"
+                - cell "1024, Blackman-Harris" [ref=f48e880]
+                - cell "[99.004, 99.196) MHz" [ref=f48e881]
+          - list [ref=f48e882]:
+            - listitem [ref=f48e883]:
+              - text: Los tres visores utilizan
+              - code [ref=f48e884]: Type = Complex
+              - text: "y"
+              - code [ref=f48e885]: Center Frequency = freq
+              - text: .
+            - listitem [ref=f48e886]: El resampler filtra y cambia la tasa. No toma simplemente una de cada 25 muestras.
+            - listitem [ref=f48e887]: La cadena permite una práctica de audio mono. Los 192 kS/s no garantizan conservar toda emisión FM completa y sin distorsión.
+          - paragraph [ref=f48e888]:
+            - strong [ref=f48e889]: "Lectura de los visores:"
+          - list [ref=f48e890]:
+            - listitem [ref=f48e891]:
+              - strong [ref=f48e892]: "RF:"
+              - text: las bandas aparecen respecto a 99.1 MHz. La separación entre bins es
+              - generic [ref=f48e894]:
+                - generic [aria-hidden] [ref=f48e895]:
+                  - generic [ref=f48e896]:
+                    - generic [ref=f48e897]: "2"
+                    - generic [ref=f48e898]: "4"
+                    - generic [ref=f48e899]: "0"
+                    - generic [ref=f48e900]: "0"
+                    - generic [ref=f48e901]: "0"
+                    - generic [ref=f48e902]: "0"
+                    - generic [ref=f48e903]: "0"
+                  - generic [ref=f48e904]: /
+                  - generic [ref=f48e907]:
+                    - generic [ref=f48e908]: "4"
+                    - generic [ref=f48e909]: "0"
+                    - generic [ref=f48e910]: "9"
+                    - generic [ref=f48e911]: "6"
+                  - generic [ref=f48e912]: =
+                  - generic [ref=f48e914]:
+                    - generic [ref=f48e915]: "5"
+                    - generic [ref=f48e916]: "8"
+                    - generic [ref=f48e917]: "5"
+                    - generic [ref=f48e918]: .
+                    - generic [ref=f48e919]: "9"
+                    - generic [ref=f48e920]: "3"
+                    - generic [ref=f48e921]: "7"
+                    - generic [ref=f48e922]: "5"
+                - generic [ref=f48e924]:
+                  - generic [aria-hidden] [ref=f48e925]:
+                    - generic [ref=f48e926]:
+                      - generic [ref=f48e927]: "2"
+                      - generic [ref=f48e928]: "4"
+                      - generic [ref=f48e929]: "0"
+                      - generic [ref=f48e930]: "0"
+                      - generic [ref=f48e931]: "0"
+                      - generic [ref=f48e932]: "0"
+                      - generic [ref=f48e933]: "0"
+                    - generic [ref=f48e934]: /
+                    - generic [ref=f48e937]:
+                      - generic [ref=f48e938]: "4"
+                      - generic [ref=f48e939]: "0"
+                      - generic [ref=f48e940]: "9"
+                      - generic [ref=f48e941]: "6"
+                    - generic [ref=f48e942]: =
+                    - generic [ref=f48e944]:
+                      - generic [ref=f48e945]: "5"
+                      - generic [ref=f48e946]: "8"
+                      - generic [ref=f48e947]: "5"
+                      - generic [ref=f48e948]: .
+                      - generic [ref=f48e949]: "9"
+                      - generic [ref=f48e950]: "3"
+                      - generic [ref=f48e951]: "7"
+                      - generic [ref=f48e952]: "5"
+                  - math [ref=f48e954]:
+                    - generic [ref=f48e955]: "2400000"
+                    - generic [ref=f48e956]: /
+                    - generic [ref=f48e958]: "4096"
+                    - generic [ref=f48e959]: =
+                    - generic [ref=f48e960]: "585.9375"
+              - text: Hz.
+            - listitem [ref=f48e961]:
+              - strong [ref=f48e962]: "Waterfall:"
+              - text: el color muestra potencia y su variación temporal. Una línea estable no identifica por sí sola un transmisor o una interferencia.
+            - listitem [ref=f48e963]:
+              - strong [ref=f48e964]: "Canal:"
+              - text: la nueva banda es más estrecha por el filtro y la reducción de tasa. La separación entre bins es
+              - generic [ref=f48e966]:
+                - generic [aria-hidden] [ref=f48e967]:
+                  - generic [ref=f48e968]:
+                    - generic [ref=f48e969]: "1"
+                    - generic [ref=f48e970]: "9"
+                    - generic [ref=f48e971]: "2"
+                    - generic [ref=f48e972]: "0"
+                    - generic [ref=f48e973]: "0"
+                    - generic [ref=f48e974]: "0"
+                  - generic [ref=f48e975]: /
+                  - generic [ref=f48e978]:
+                    - generic [ref=f48e979]: "1"
+                    - generic [ref=f48e980]: "0"
+                    - generic [ref=f48e981]: "2"
+                    - generic [ref=f48e982]: "4"
+                  - generic [ref=f48e983]: =
+                  - generic [ref=f48e985]:
+                    - generic [ref=f48e986]: "1"
+                    - generic [ref=f48e987]: "8"
+                    - generic [ref=f48e988]: "7"
+                    - generic [ref=f48e989]: .
+                    - generic [ref=f48e990]: "5"
+                - generic [ref=f48e992]:
+                  - generic [aria-hidden] [ref=f48e993]:
+                    - generic [ref=f48e994]:
+                      - generic [ref=f48e995]: "1"
+                      - generic [ref=f48e996]: "9"
+                      - generic [ref=f48e997]: "2"
+                      - generic [ref=f48e998]: "0"
+                      - generic [ref=f48e999]: "0"
+                      - generic [ref=f48e1000]: "0"
+                    - generic [ref=f48e1001]: /
+                    - generic [ref=f48e1004]:
+                      - generic [ref=f48e1005]: "1"
+                      - generic [ref=f48e1006]: "0"
+                      - generic [ref=f48e1007]: "2"
+                      - generic [ref=f48e1008]: "4"
+                    - generic [ref=f48e1009]: =
+                    - generic [ref=f48e1011]:
+                      - generic [ref=f48e1012]: "1"
+                      - generic [ref=f48e1013]: "8"
+                      - generic [ref=f48e1014]: "7"
+                      - generic [ref=f48e1015]: .
+                      - generic [ref=f48e1016]: "5"
+                  - math [ref=f48e1018]:
+                    - generic [ref=f48e1019]: "192000"
+                    - generic [ref=f48e1020]: /
+                    - generic [ref=f48e1022]: "1024"
+                    - generic [ref=f48e1023]: =
+                    - generic [ref=f48e1024]: "187.5"
+              - text: Hz.
+          - group [ref=f48e1025]:
+            - generic "Para profundizar" [ref=f48e1026] [cursor=pointer]
+          - group [ref=f48e1027]:
+            - generic "Comprobación 3.1 — Cambiar freq con un archivo fijo" [ref=f48e1028] [cursor=pointer]
+            - text: 9 9 . 1 + 0 . 2 5 0 = 9 9 . 3 5 9 9 . 1 + 0 . 2 5 0 = 9 9 . 3 5 9 9 . 5 + 0 . 2 5 0 = 9 9 . 7 5 9 9 . 5 + 0 . 2 5 0 = 9 9 . 7 5
+          - heading "4. Del giro entre muestras al audio FM" [level=2] [ref=f48e1029]
+          - list [ref=f48e1030]:
+            - listitem [ref=f48e1031]:
+              - text: La
+              - link "teoría de 6.5" [ref=f48e1032] [cursor=pointer]:
+                - /url: ../#65-como-permite-fm-recuperar-el-audio
+              - text: muestra cómo el mensaje modifica el giro entre muestras.
+            - listitem [ref=f48e1033]: WBFM Receive recibe la banda central seleccionada, en formato complejo, y entrega audio mono real.
+            - listitem [ref=f48e1034]:
+              - text: Se configura
+              - strong [ref=f48e1035]:
+                - code [ref=f48e1036]: Quadrature Rate = 192000
+              - text: "y"
+              - strong [ref=f48e1037]:
+                - code [ref=f48e1038]: Audio Decimation = 4
+              - text: .
+            - listitem [ref=f48e1039]:
+              - text: Después se conecta Multiply Const de tipo Float, con constante
+              - code [ref=f48e1040]: volume
+              - text: .
+            - listitem [ref=f48e1041]:
+              - text: "La salida entra en Audio Sink: una entrada,"
+              - code [ref=f48e1042]: Sample Rate = 48000
+              - text: "y"
+              - code [ref=f48e1043]: OK to Block = No
+              - text: .
+            - listitem [ref=f48e1044]:
+              - code [ref=f48e1045]: volume
+              - text: "utiliza QT GUI Range: mínimo 0, máximo 1, paso 0.05 y valor inicial 0.2."
+          - group [ref=f48e1046]:
+            - generic "Para profundizar" [ref=f48e1047] [cursor=pointer]
+            - text: z [ n ] = A e j θ [ n ] z [ n ] = A e j θ [ n ] A > 0 A > 0 z [ n ] z ∗ [ n − 1 ] = A 2 e j ( θ [ n ] − θ [ n − 1 ] ) z [ n ] z ∗ [ n − 1 ] = A 2 e j ( θ [ n ] − θ [ n − 1 ] ) ˆ f [ n ] = f s 2 π a r g ( z [ n ] z ∗ [ n − 1 ] ) . ˆ f [ n ] = f s 2 π a r g ( z [ n ] z ∗ [ n − 1 ] ) . f s = 1 9 2 0 0 0 f s = 1 9 2 0 0 0 G = f s / ( 2 π 7 5 0 0 0 ) ≈ 0 . 4 0 7 4 G = f s / ( 2 π 7 5 0 0 0 ) ≈ 0 . 4 0 7 4 G G
+          - group [ref=f48e1048]:
+            - generic "Comprobación 4.1 — Tasa de Audio Sink" [ref=f48e1049] [cursor=pointer]
+            - text: 1 9 2 0 0 0 / 4 = 4 8 0 0 0 1 9 2 0 0 0 / 4 = 4 8 0 0 0
+          - heading "5. Ejecutar y registrar observaciones" [level=2] [ref=f48e1050]
+          - list [ref=f48e1051]:
+            - listitem [ref=f48e1052]: Se comprueban archivo, ruta relativa, sampling rate e ID propio del grafo.
+            - listitem [ref=f48e1053]: Se comprueba que la ruta CU8 está activa y Soapy RTLSDR Source está desactivado.
+            - listitem [ref=f48e1054]: Se comparan parámetros y conexiones con la referencia de 2.4 MS/s.
+            - listitem [ref=f48e1055]: Se ejecuta con F6 y se aumenta el volumen gradualmente.
+            - listitem [ref=f48e1056]: Se registra cada visor, con sus ejes y su escala. Se compara el waterfall con la sección 6.3 de la teoría.
+            - listitem [ref=f48e1057]:
+              - paragraph [ref=f48e1058]: Se explica por separado qué muestra el espectro y qué se escucha en el audio.
+            - listitem [ref=f48e1059]:
+              - paragraph [ref=f48e1060]: Repeat de valor Yes vuelve al inicio del archivo. Puede aparecer una discontinuidad; no es una adquisición nueva.
+            - listitem [ref=f48e1061]: La cadena debe producir muestras complejas a 192 kS/s y audio real a 48 kS/s.
+            - listitem [ref=f48e1062]: La compilación no garantiza una calidad de recepción determinada. La audición y las observaciones se documentan por separado.
+          - group [ref=f48e1063]:
+            - 'generic "Variante anterior: captura a 2.048 MS/s" [ref=f48e1064] [cursor=pointer]'
+            - text: 2 ( 2 0 4 8 0 0 0 ) = 4 0 9 6 0 0 0 2 ( 2 0 4 8 0 0 0 ) = 4 0 9 6 0 0 0 2 0 4 8 0 0 0 ( 3 / 3 2 ) = 1 9 2 0 0 0 2 0 4 8 0 0 0 ( 3 / 3 2 ) = 1 9 2 0 0 0
+          - heading "6. Extensión opcional con RTL-SDR" [level=2] [ref=f48e1065]
+          - list [ref=f48e1066]:
+            - listitem [ref=f48e1067]: Se detiene el grafo antes de cambiar la fuente.
+            - listitem [ref=f48e1068]: Se desactivan los siete bloques de la ruta CU8, desde File Source hasta Float to Complex. El control de volumen permanece activo.
+            - listitem [ref=f48e1069]:
+              - text: Se activa Soapy RTLSDR Source con salida
+              - code [ref=f48e1070]: Complex Float32
+              - text: ","
+              - code [ref=f48e1071]: Sample Rate = samp_rate
+              - text: "y"
+              - code [ref=f48e1072]: Center Frequency = freq
+              - text: .
+            - listitem [ref=f48e1073]: Se conservan ganancia manual de 30 dB y AGC desactivado, como en la referencia.
+            - listitem [ref=f48e1074]: Su salida se conecta al resampler, al Frequency Sink RF y al Waterfall Sink RF.
+            - listitem [ref=f48e1075]:
+              - paragraph [ref=f48e1076]:
+                - text: Se revisa la
+                - link "configuración del RTL-SDR" [ref=f48e1077] [cursor=pointer]:
+                  - /url: ../../../setup/rtl-sdr/
+                - text: y se ejecuta nuevamente.
+            - listitem [ref=f48e1078]:
+              - paragraph [ref=f48e1079]: La fuente de hardware proporciona el ritmo de adquisición. No se añade Throttle a esa ruta.
+            - listitem [ref=f48e1080]:
+              - text: En esta variante,
+              - code [ref=f48e1081]: freq
+              - text: sí configura el receptor. Con el archivo fijo solo modifica las etiquetas de los visores.
+            - listitem [ref=f48e1082]: Se pueden recibir señales y niveles distintos. Cambiar de fuente no equivale a cambiar únicamente el procesamiento.
+          - group [ref=f48e1083]:
+            - generic "Comprobación 6.1 — Una fuente activa" [ref=f48e1084] [cursor=pointer]
+          - heading "7. Diagnóstico breve" [level=2] [ref=f48e1085]
+          - table [ref=f48e1088]:
+            - rowgroup [ref=f48e1089]:
+              - row [ref=f48e1090]:
+                - columnheader "Síntoma" [ref=f48e1091]
+                - columnheader "Revisión inicial" [ref=f48e1092]
+            - rowgroup [ref=f48e1093]:
+              - row [ref=f48e1094]:
+                - cell "El archivo no abre" [ref=f48e1095]
+                - cell "Nombre, ubicación en samples y ruta relativa." [ref=f48e1096]
+              - row [ref=f48e1097]:
+                - cell "Hay underruns o cortes" [ref=f48e1098]
+                - cell [ref=f48e1099]:
+                  - text: Throttle de bytes a
+                  - code [ref=f48e1100]: 2*samp_rate
+                  - text: ", tasas y carga del equipo."
+              - row [ref=f48e1101]:
+                - cell "El audio o los tiempos no corresponden" [ref=f48e1102]
+                - cell "Sampling rate documentado de la captura, no solo el rótulo del visor." [ref=f48e1103]
+              - row [ref=f48e1104]:
+                - cell "Hay espectro, pero no audio" [ref=f48e1105]
+                - cell "Quadrature Rate, decimación 4, Audio Sink a 48000, volumen y salida del sistema." [ref=f48e1106]
+              - row [ref=f48e1107]:
+                - cell "El waterfall tiene un solo color" [ref=f48e1108]
+                - cell "Intensidad mínima y máxima; presencia de datos; Bandwidth y tipo Complex." [ref=f48e1109]
+              - row [ref=f48e1110]:
+                - cell "La señal parece ruido" [ref=f48e1111]
+                - cell "Tipo Byte, normalización y orden I/Q." [ref=f48e1112]
+              - row [ref=f48e1113]:
+                - cell "Las etiquetas RF parecen desplazadas" [ref=f48e1114]
+                - cell [ref=f48e1115]:
+                  - text: Correspondencia entre
+                  - code [ref=f48e1116]: freq
+                  - text: y los metadatos.
+              - row [ref=f48e1117]:
+                - cell "Soapy no abre el dongle" [ref=f48e1118]
+                - cell "Volver a la ruta de archivo y revisar el dispositivo por separado." [ref=f48e1119]
+          - heading "Entrega" [level=2] [ref=f48e1120]
+          - list [ref=f48e1121]:
+            - listitem [ref=f48e1122]:
+              - text: Grafo
+              - code [ref=f48e1123]: .grc
+              - text: con ID propio, rutas relativas y sin grabaciones añadidas a Git.
+            - listitem [ref=f48e1124]: Tabla de tasas con sus cálculos, distinguiendo bytes, componentes, muestras complejas y audio.
+            - listitem [ref=f48e1125]: Capturas de los tres visores con ejes y escalas. En el waterfall se señalan una banda y una línea estable.
+            - listitem [ref=f48e1126]: Explicación en viñetas de conversión CU8, resampling, demodulación y volumen. Se identifica dónde la salida deja de ser I/Q.
+            - listitem [ref=f48e1127]: Justificación de por qué cambiar las etiquetas RF no sintoniza otra señal del archivo.
+            - listitem [ref=f48e1128]: Si se utiliza la variante anterior o el dongle, descripción de los cambios y los metadatos correspondientes.
+          - heading "Lecturas y referencias" [level=2] [ref=f48e1129]
+          - list [ref=f48e1130]:
+            - listitem [ref=f48e1131]:
+              - 'link "Teoría de S02: lectura de una captura SDR" [ref=f48e1132] [cursor=pointer]':
+                - /url: ../#6-leer-una-captura-sdr-real
+              - text: .
+            - listitem [ref=f48e1133]:
+              - 'link "GNU Radio: Rational Resampler" [ref=f48e1134] [cursor=pointer]':
+                - /url: https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-filter/lib/rational_resampler_impl.cc
+              - text: .
+            - listitem [ref=f48e1135]:
+              - 'link "GNU Radio: Quadrature Demod" [ref=f48e1136] [cursor=pointer]':
+                - /url: https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/lib/quadrature_demod_cf_impl.cc
+              - text: .
+            - listitem [ref=f48e1137]:
+              - 'link "GNU Radio: WBFM Receive" [ref=f48e1138] [cursor=pointer]':
+                - /url: https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/wfm_rcv.py
+              - text: .
+            - listitem [ref=f48e1139]:
+              - 'link "GNU Radio: FM de-emphasis" [ref=f48e1140] [cursor=pointer]':
+                - /url: https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-analog/python/analog/fm_emph.py
+              - text: .
+            - listitem [ref=f48e1141]:
+              - 'link "GNU Radio: QT GUI Waterfall Sink" [ref=f48e1142] [cursor=pointer]':
+                - /url: https://wiki.gnuradio.org/index.php/QT_GUI_Waterfall_Sink
+              - text: .
+      - button "Volver al principio"
+    - contentinfo [ref=f48e1143]:
+      - generic [ref=f48e1146]:
+        - text: Made with
+        - link "Material for MkDocs" [ref=f48e1147] [cursor=pointer]:
+          - /url: https://squidfunk.github.io/mkdocs-material/

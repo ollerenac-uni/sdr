@@ -1,0 +1,327 @@
+- generic [active] [ref=e1]:
+  - link "Saltar a contenido" [ref=e2] [cursor=pointer]:
+    - /url: "#radio-definida-por-software"
+  - banner [ref=e3]:
+    - navigation "Cabecera" [ref=e4]:
+      - generic [ref=e5] [cursor=pointer]
+      - generic [ref=e9]:
+        - generic [ref=e10]: Radio Definida por Software
+        - generic: Inicio
+      - generic [ref=e12]:
+        - radio "Cambiar a modo oscuro"
+        - generic "Cambiar a modo oscuro" [ref=e13] [cursor=pointer]
+        - radio "Cambiar a modo claro"
+      - generic [ref=e16] [cursor=pointer]
+      - dialog:
+        - search:
+          - generic:
+            - textbox "Búsqueda" [ref=e19]
+            - generic [ref=e20] [cursor=pointer]
+            - navigation "Buscar":
+              - button "Limpiar"
+          - generic: Inicializando búsqueda
+  - generic [ref=e25]:
+    - main [ref=e26]:
+      - generic [ref=e27]:
+        - navigation "Navegación" [ref=e30]:
+          - generic [ref=e31] [cursor=pointer]:
+            - link "Radio Definida por Software" [ref=e32]:
+              - /url: .
+            - text: Radio Definida por Software
+          - link "ollerenac-uni/sdr" [ref=e36] [cursor=pointer]:
+            - /url: https://github.com/ollerenac-uni/sdr
+          - list [ref=e41]:
+            - listitem [ref=e42]:
+              - generic [ref=e43]: Inicio
+              - navigation "Tabla de contenidos" [ref=e46]:
+                - list [ref=e49]:
+                  - listitem [ref=e50]:
+                    - link "Curso de Pregrado · Acceso Abierto · CC BY 4.0" [ref=e51] [cursor=pointer]:
+                      - /url: "#curso-de-pregrado-acceso-abierto-cc-by-40"
+                  - listitem [ref=e53]:
+                    - link "Arcos Temáticos" [ref=e54] [cursor=pointer]:
+                      - /url: "#arcos-tematicos"
+                  - listitem [ref=e56]:
+                    - link "Sesiones del Curso" [ref=e57] [cursor=pointer]:
+                      - /url: "#sesiones-del-curso"
+                  - listitem [ref=e59]:
+                    - link "Prerrequisitos" [ref=e60] [cursor=pointer]:
+                      - /url: "#prerrequisitos"
+                  - listitem [ref=e62]:
+                    - link "Hardware y Software" [ref=e63] [cursor=pointer]:
+                      - /url: "#hardware-y-software"
+                  - listitem [ref=e65]:
+                    - link "Cómo Usar Este Curso" [ref=e66] [cursor=pointer]:
+                      - /url: "#como-usar-este-curso"
+                  - listitem [ref=e68]:
+                    - link "Licencia" [ref=e69] [cursor=pointer]:
+                      - /url: "#licencia"
+            - listitem [ref=e71]:
+              - link "Syllabus" [ref=e72] [cursor=pointer]:
+                - /url: syllabus/
+            - listitem [ref=e74]:
+              - link "Sesiones" [ref=e76] [cursor=pointer]:
+                - /url: sessions/
+              - navigation [ref=e80]:
+                - generic [ref=e81] [cursor=pointer]: Sesiones
+                - list [ref=e83]:
+                  - listitem [ref=e84]:
+                    - link "01 — Introducción" [ref=e86] [cursor=pointer]:
+                      - /url: sessions/01-introduccion-sdr/
+                      - generic "En desarrollo" [ref=e88]
+                    - navigation [ref=e91]:
+                      - generic [ref=e92] [cursor=pointer]: 01 — Introducción
+                      - list [ref=e94]:
+                        - listitem [ref=e95]:
+                          - 'link "Laboratorio #1: muestreo" [ref=e96] [cursor=pointer]':
+                            - /url: sessions/01-introduccion-sdr/laboratorio-muestreo/
+                            - generic "En desarrollo" [ref=e98]
+                  - listitem [ref=e99]:
+                    - link "02 — Señales y espectro en SDR" [ref=e101] [cursor=pointer]:
+                      - /url: sessions/02-tiempo-frecuencia-iq/
+                    - navigation [ref=e105]:
+                      - generic [ref=e106] [cursor=pointer]: 02 — Señales y espectro en SDR
+                      - list [ref=e108]:
+                        - listitem [ref=e109]:
+                          - 'link "Demostración: mezcla compleja" [ref=e110] [cursor=pointer]':
+                            - /url: sessions/02-tiempo-frecuencia-iq/mezcla-interactiva/
+                        - listitem [ref=e112]:
+                          - 'link "Laboratorio #2: demodulador FM" [ref=e113] [cursor=pointer]':
+                            - /url: sessions/02-tiempo-frecuencia-iq/laboratorio-receptor-fm/
+                  - listitem [ref=e115]:
+                    - link "03 — Laboratorio de enlace digital" [ref=e117] [cursor=pointer]:
+                      - /url: sessions/03-sistemas-filtros-digitales/
+                      - generic "En desarrollo" [ref=e119]
+                    - navigation [ref=e122]:
+                      - generic [ref=e123] [cursor=pointer]: 03 — Laboratorio de enlace digital
+                      - list [ref=e125]:
+                        - listitem [ref=e126]:
+                          - link "Mapa visual de los 24 pasos" [ref=e127] [cursor=pointer]:
+                            - /url: sessions/03-sistemas-filtros-digitales/clase-enlace-digital/
+                            - generic "En desarrollo" [ref=e129]
+            - listitem [ref=e130]:
+              - link "Guías" [ref=e132] [cursor=pointer]:
+                - /url: setup/
+              - navigation [ref=e136]:
+                - generic [ref=e137] [cursor=pointer]: Guías
+                - list [ref=e139]:
+                  - listitem [ref=e140]:
+                    - link "Instalar GNU Radio" [ref=e141] [cursor=pointer]:
+                      - /url: setup/instalacion/
+                  - listitem [ref=e143]:
+                    - link "Configurar el RTL-SDR" [ref=e144] [cursor=pointer]:
+                      - /url: setup/rtl-sdr/
+                  - listitem [ref=e146]:
+                    - 'link "Práctica complementaria: filtros FIR" [ref=e147] [cursor=pointer]':
+                      - /url: sessions/03-sistemas-filtros-digitales/laboratorio-filtrado/
+                      - generic "En desarrollo" [ref=e149]
+            - listitem [ref=e150]:
+              - link "Exámenes" [ref=e152] [cursor=pointer]:
+                - /url: exams/
+              - navigation [ref=e154]:
+                - generic [ref=e155] [cursor=pointer]: Exámenes
+                - list [ref=e157]
+        - article [ref=e159]:
+          - heading "Radio Definida por Software" [level=1] [ref=e160]
+          - heading "Curso de Pregrado · Acceso Abierto · CC BY 4.0" [level=3] [ref=e161]
+          - paragraph [ref=e162]:
+            - text: "Un curso práctico de radio definida por software (SDR): desde las muestras I/Q y el procesamiento digital hasta la construcción guiada de un receptor QPSK sencillo. El curso comprende 16 sesiones, con tiempo de integración y consolidación. No se requiere hardware SDR individual: se utilizan archivos de muestras"
+            - code [ref=e163]: .cu8
+            - text: y señales generadas en Python o GNU Radio.
+          - paragraph [ref=e164]:
+            - link "Ver syllabus" [ref=e165] [cursor=pointer]:
+              - /url: syllabus/
+            - link "Ver sesiones" [ref=e166] [cursor=pointer]:
+              - /url: sessions/
+            - link "Guías de instalación" [ref=e167] [cursor=pointer]:
+              - /url: setup/
+            - link "Exámenes" [ref=e168] [cursor=pointer]:
+              - /url: exams/
+            - link "Repositorio GitHub" [ref=e169] [cursor=pointer]:
+              - /url: https://github.com/ollerenac-uni/sdr
+          - separator [ref=e170]
+          - heading "Arcos Temáticos" [level=2] [ref=e171]
+          - list [ref=e173]:
+            - listitem [ref=e174]:
+              - paragraph [ref=e175]:
+                - strong [ref=e179]: Fundamentos y procesamiento de muestras
+              - separator [ref=e180]
+              - paragraph [ref=e181]: Sesiones 1–4
+              - paragraph [ref=e182]: Arquitectura SDR, muestras I/Q, espectro, sistemas, filtros y cambios de sampling rate.
+            - listitem [ref=e183]:
+              - paragraph [ref=e184]:
+                - strong [ref=e188]: Enlace digital y sincronización
+              - separator [ref=e189]
+              - paragraph [ref=e190]: Sesiones 5–11
+              - paragraph [ref=e191]: BPSK/QPSK, pulse shaping, enlace ideal, ruido y recuperación de frecuencia, fase y timing con bloques preparados.
+            - listitem [ref=e192]:
+              - paragraph [ref=e193]:
+                - strong [ref=e197]: Mensaje, integración y práctica
+              - separator [ref=e198]
+              - paragraph [ref=e199]: Sesiones 12–16
+              - paragraph [ref=e200]: Recuperación de tramas, integración del receptor QPSK, capturas reales, diagnóstico y consolidación. Multipath, equalization adaptativa y OFDM quedan como temas complementarios.
+          - separator [ref=e201]
+          - heading "Sesiones del Curso" [level=2] [ref=e202]
+          - paragraph [ref=e203]:
+            - text: El
+            - link "syllabus" [ref=e204] [cursor=pointer]:
+              - /url: syllabus/
+            - text: describe el tema principal y el laboratorio de cada sesión. El
+            - 'link "pre-lab: instalar el entorno" [ref=e205] [cursor=pointer]':
+              - /url: setup/
+            - text: es una preparación previa, fuera de las 16 sesiones.
+          - table [ref=e208]:
+            - rowgroup [ref=e209]:
+              - row [ref=e210]:
+                - columnheader "#" [ref=e211]
+                - columnheader "Título" [ref=e212]
+                - columnheader "Estado" [ref=e213]
+            - rowgroup [ref=e214]:
+              - row [ref=e215]:
+                - cell "01" [ref=e216]
+                - cell [ref=e217]:
+                  - link "Introducción" [ref=e218] [cursor=pointer]:
+                    - /url: sessions/01-introduccion-sdr/
+                - cell "En desarrollo" [ref=e219]
+              - row [ref=e220]:
+                - cell "02" [ref=e221]
+                - cell [ref=e222]:
+                  - link "Señales y espectro en SDR" [ref=e223] [cursor=pointer]:
+                    - /url: sessions/02-tiempo-frecuencia-iq/
+                - cell "Disponible" [ref=e224]
+              - row [ref=e225]:
+                - cell "03" [ref=e226]
+                - cell [ref=e227]:
+                  - link "Laboratorio de enlace digital" [ref=e228] [cursor=pointer]:
+                    - /url: sessions/03-sistemas-filtros-digitales/
+                - cell "En desarrollo" [ref=e229]
+              - row [ref=e230]:
+                - cell "04" [ref=e231]
+                - cell "Selección de canal y decimación" [ref=e232]
+                - cell "Próximamente" [ref=e233]
+              - row [ref=e234]:
+                - cell "05" [ref=e235]
+                - 'cell "De bits a símbolos: BPSK y QPSK" [ref=e236]'
+                - cell "Próximamente" [ref=e237]
+              - row [ref=e238]:
+                - cell "06" [ref=e239]
+                - cell "Pulse shaping y matched filtering" [ref=e240]
+                - cell "Próximamente" [ref=e241]
+              - row [ref=e242]:
+                - cell "07" [ref=e243]
+                - cell "Enlace digital ideal" [ref=e244]
+                - cell "Próximamente" [ref=e245]
+              - row [ref=e246]:
+                - cell "08" [ref=e247]
+                - cell "Ruido y medición de errores" [ref=e248]
+                - cell "Próximamente" [ref=e249]
+              - row [ref=e250]:
+                - cell "09" [ref=e251]
+                - cell "Offset de frecuencia y fase" [ref=e252]
+                - cell "Próximamente" [ref=e253]
+              - row [ref=e254]:
+                - cell "10" [ref=e255]
+                - cell "Corrección de frecuencia y fase" [ref=e256]
+                - cell "Próximamente" [ref=e257]
+              - row [ref=e258]:
+                - cell "11" [ref=e259]
+                - cell "Symbol timing recovery" [ref=e260]
+                - cell "Próximamente" [ref=e261]
+              - row [ref=e262]:
+                - cell "12" [ref=e263]
+                - cell "Tramas y recuperación del mensaje" [ref=e264]
+                - cell "Próximamente" [ref=e265]
+              - row [ref=e266]:
+                - cell "13" [ref=e267]
+                - cell "Integración del receptor QPSK" [ref=e268]
+                - cell "Próximamente" [ref=e269]
+              - row [ref=e270]:
+                - cell "14" [ref=e271]
+                - cell "Recepción desde una captura I/Q" [ref=e272]
+                - cell "Próximamente" [ref=e273]
+              - row [ref=e274]:
+                - cell "15" [ref=e275]
+                - cell "Evaluación y diagnóstico del receptor" [ref=e276]
+                - cell "Próximamente" [ref=e277]
+              - row [ref=e278]:
+                - cell "16" [ref=e279]
+                - cell "Síntesis y demostración del enlace" [ref=e280]
+                - cell "Próximamente" [ref=e281]
+          - separator [ref=e282]
+          - heading "Prerrequisitos" [level=2] [ref=e283]
+          - table [ref=e286]:
+            - rowgroup [ref=e287]:
+              - row [ref=e288]:
+                - columnheader "Área" [ref=e289]
+                - columnheader "Contenidos clave" [ref=e290]
+            - rowgroup [ref=e291]:
+              - row [ref=e292]:
+                - cell "Señales y Sistemas" [ref=e293]
+                - cell "Transformada de Fourier, convolución, muestreo, filtrado" [ref=e294]
+              - row [ref=e295]:
+                - cell "Programación" [ref=e296]
+                - cell "Python básico (NumPy, Matplotlib), cuadernos Jupyter" [ref=e297]
+              - row [ref=e298]:
+                - cell "Comunicaciones Digitales (recomendado)" [ref=e299]
+                - cell "Modulación básica, SNR; puede cursarse en paralelo" [ref=e300]
+          - separator [ref=e301]
+          - heading "Hardware y Software" [level=2] [ref=e302]
+          - table [ref=e305]:
+            - rowgroup [ref=e306]:
+              - row [ref=e307]:
+                - columnheader "Herramienta" [ref=e308]
+                - columnheader "Uso en el curso" [ref=e309]
+            - rowgroup [ref=e310]:
+              - row [ref=e311]:
+                - cell "radioconda 2025.03.14 (GNU Radio 3.10.12)" [ref=e312]
+                - cell "Flowgraphs de recepción en GNU Radio Companion; misma versión para todos" [ref=e313]
+              - row [ref=e314]:
+                - cell [ref=e315]:
+                  - text: Archivos I/Q
+                  - code [ref=e316]: .cu8
+                - cell "Capturas para los laboratorios; no se requiere un dongle propio" [ref=e317]
+              - row [ref=e318]:
+                - cell "USRP B210 y RTL-SDR del profesor" [ref=e319]
+                - cell "Demostraciones Tx–Rx y generación de capturas para el curso" [ref=e320]
+              - row [ref=e321]:
+                - cell "Python (NumPy, SciPy, Matplotlib)" [ref=e322]
+                - cell "Análisis y prototipos en Google Colab" [ref=e323]
+          - separator [ref=e324]
+          - heading "Cómo Usar Este Curso" [level=2] [ref=e325]
+          - generic [ref=e326]:
+            - radio "Sitio web" [checked]
+            - radio "Clonar el repositorio"
+            - radio "GNU Radio"
+            - generic [ref=e327]:
+              - link "Sitio web" [ref=e329] [cursor=pointer]:
+                - /url: "#__tabbed_1_1"
+              - link "Clonar el repositorio" [ref=e331] [cursor=pointer]:
+                - /url: "#__tabbed_1_2"
+              - link "GNU Radio" [ref=e333] [cursor=pointer]:
+                - /url: "#__tabbed_1_3"
+            - paragraph [ref=e336]:
+              - text: El
+              - link "syllabus" [ref=e337] [cursor=pointer]:
+                - /url: syllabus/
+              - text: presenta el programa. Las sesiones disponibles incluyen teoría, ejercicios con soluciones desplegables y enlaces a sus laboratorios. Los snippets de Python pueden ejecutarse en Google Colab; los flowgraphs se utilizan en GNU Radio Companion.
+            - button [aria-hidden] [ref=e338] [cursor=pointer]
+            - button [aria-hidden] [ref=e339] [cursor=pointer]
+          - separator [ref=e340]
+          - heading "Licencia" [level=2] [ref=e341]
+          - paragraph [ref=e342]:
+            - text: Todo el contenido se publica bajo
+            - link "Creative Commons Atribución 4.0 Internacional (CC BY 4.0)" [ref=e343] [cursor=pointer]:
+              - /url: https://creativecommons.org/licenses/by/4.0/
+            - text: . Eres libre de compartir, adaptar y redistribuir este material, incluso con fines comerciales, siempre que se otorgue la atribución correspondiente.
+          - blockquote [ref=e344]:
+            - paragraph [ref=e345]:
+              - emphasis [ref=e346]: Radio Definida por Software
+              - text: por ollerenac-uni —
+              - link "github.com/ollerenac-uni/sdr" [ref=e347] [cursor=pointer]:
+                - /url: https://github.com/ollerenac-uni/sdr
+      - button "Volver al principio"
+    - contentinfo [ref=e348]:
+      - generic [ref=e351]:
+        - text: Made with
+        - link "Material for MkDocs" [ref=e352] [cursor=pointer]:
+          - /url: https://squidfunk.github.io/mkdocs-material/
