@@ -3157,6 +3157,47 @@ Para `Hola`, las tres longitudes tienen funciones diferentes:
 - **Bytes inferiores:** `00 0a 00 0a` cuenta el paquete; `00 04` cuenta el texto. No se intercambian esos valores.
 - **Paquete protegido:** sigue siendo `00 04 48 6f 6c 61 aa 94 8e c9`. Su CRC no se recalcula sobre la envoltura.
 
+#### ¿Por qué se duplica la longitud externa?
+
+La duplicación es una **condición del formato que espera este bloque de GNU Radio**,
+no una obligación general de los enlaces digitales. Después del acceso, el detector
+lee 32 bits: una longitud de 16 bits y otra copia de esos mismos 16 bits.
+Para `Hola`, espera `00 0a 00 0a`: ambas copias indican diez bytes de paquete protegido.
+
+La comparación permite rechazar una cabecera inconsistente antes de decidir cuántos
+bits entregar. Si recibe `00 0a 00 0b`, las copias difieren y vuelve a buscar el acceso.
+No elige una copia como correcta ni corrige la longitud. Si ambas copias sufren el
+mismo cambio y siguen siendo iguales, esta comprobación no detecta el error y el
+detector puede extraer una cantidad incorrecta de bits.
+
+La longitud externa duplicada **no reemplaza al CRC**. El CRC existente protege la
+longitud interna y el texto, no los ocho bytes de acceso ni la cabecera externa.
+Otros protocolos pueden proteger sus cabeceras con un CRC propio o con otros códigos;
+aquí se conserva el formato exigido por `Correlate Access Code - Tag Stream`.
+
+#### ¿Por qué se usan ocho bytes de acceso?
+
+**No tienen que ser ocho bytes en todos los enlaces.** Este laboratorio elige una
+palabra de 64 bits, que es el máximo admitido por esta implementación del bloque.
+Su finalidad es ofrecer un patrón conocido por TX y RX que sea difícil de encontrar
+por casualidad en otros datos. El bloque también puede configurarse con palabras
+más cortas; cambiarla exige que TX y RX utilicen la misma secuencia y longitud.
+
+Como referencia, para bits independientes y equiprobables, una ventana de $L$ bits
+coincide exactamente con una palabra fija con probabilidad $2^{-L}$. Con 64 bits,
+la probabilidad por ventana es $2^{-64}$; con ocho bits sería $2^{-8}=1/256$.
+Estas cifras no garantizan el comportamiento de datos estructurados ni describen
+la probabilidad acumulada de una transmisión completa.
+
+Una palabra más larga añade sobrecarga y, si se exige coincidencia exacta, ofrece
+más posiciones en las que un error puede impedir la detección. Con errores de bit
+independientes de probabilidad $p$, la probabilidad de recibir intactos sus 64 bits
+es $(1-p)^{64}$. La longitud y la tolerancia se eligen juntas; aumentar la tolerancia
+también aumenta las posibles falsas coincidencias. Conviene además evitar patrones
+repetitivos que puedan confundirse con versiones desplazadas de sí mismos.
+Los ocho bytes elegidos aquí son una referencia didáctica, no un tamaño universal
+ni una afirmación de que la secuencia sea óptima para cualquier canal.
+
 ### 16.2. Definir la palabra y el tamaño máximo
 
 El estudiante detiene la ejecución y guarda el montaje. Añade estas cuatro variables.
@@ -3207,6 +3248,84 @@ La variante `Correlate Access Code - Tag` solo marca coincidencias; no interpret
 - Genera `packet_len = 8 × longitud externa`. Para `Hola`, esa etiqueta vale 80.
 - El bloque descarta las etiquetas de entrada. El valor 176 de la trama no se utiliza como longitud del paquete de salida.
 - La cabecera duplicada no reemplaza al CRC. El comprobador existente sigue validando el paquete reconstruido.
+
+#### Cómo busca el acceso: una ventana que avanza bit a bit
+
+La idea de calcular una correlación conforme llegan los bits es correcta, con un
+detalle de implementación: **este bloque compara bits mediante distancia de Hamming**,
+en lugar de multiplicar y sumar muestras I/Q. Recibe las decisiones binarias de
+`Binary Slicer`; la palabra configurada en `Access Code = sync_bits` ya es conocida
+por el receptor.
+
+Durante la búsqueda mantiene un registro con los últimos 64 bits recibidos.
+Cada bit nuevo desplaza el registro una posición y entra por el extremo libre.
+Cuando la ventana está completa, compara su contenido con los 64 bits del acceso:
+
+$$
+d_H=\operatorname{popcount}\bigl(\text{ventana}\ \operatorname{XOR}\ \text{acceso}\bigr).
+$$
+
+XOR produce un uno donde los bits difieren; `popcount` cuenta esos unos.
+Por tanto, $d_H=0$ significa coincidencia exacta. La condición implementada es
+$d_H\leq\texttt{Threshold}$: con `Threshold = 0` no se admite ningún bit distinto.
+El umbral cuenta **errores permitidos**, no una amplitud mínima de correlación.
+
+Para conectar esta comparación con la correlación, se pueden representar los bits
+de la ventana y del acceso con valores $-1$ y $+1$. La suma de sus productos sería:
+
+$$
+C=64-2d_H.
+$$
+
+Cada coincidencia aporta $+1$ y cada diferencia aporta $-1$. Así, una coincidencia
+perfecta produce $C=64$, el máximo positivo. Es una forma equivalente de interpretar
+la decisión binaria; el código del bloque calcula XOR y cuenta diferencias.
+No busca el máximo de una curva completa: decide en cuanto la ventana satisface el
+umbral. Una palabra totalmente invertida tendría $C=-64$ y $d_H=64$, por lo que no
+se aceptaría con umbral cero.
+
+Ejemplo reducido, solo para visualizar el desplazamiento; el laboratorio usa 64 bits:
+
+```text
+Acceso conocido: 1011
+Bits recibidos:  0 0 1 0 1 1 ...
+
+Ventana completa    Diferencias    Decisión con Threshold = 0
+0010                     2        Seguir buscando
+0101                     3        Seguir buscando
+1011                     0        Acceso encontrado
+```
+
+#### Del acceso encontrado al paquete entregado
+
+El detector recorre tres estados:
+
+1. **Buscar acceso:** desplaza y compara bits. Cuando reconoce el patrón completo,
+   acaba de recibir el **final del acceso**; el inicio de la trama está 64 bits antes
+   del siguiente bit. Todavía no está en el primer bit del paquete protegido.
+2. **Leer cabecera:** consume los siguientes 32 bits y compara sus dos longitudes
+   de 16 bits. Si difieren, vuelve a buscar acceso. Para `Hola`, ambas valen diez.
+3. **Entregar paquete:** copia los siguientes $8\times10=80$ bits a su salida y
+   coloca una etiqueta nueva `packet_len = 80` en el primero. Acceso y cabecera
+   externa no salen del bloque. Al terminar, vuelve a buscar otra trama.
+
+La búsqueda por ventanas ocurre durante el primer estado; el bloque no sigue
+buscando accesos dentro del paquete mientras está entregándolo. Después,
+`Repack Bits` reúne ocho bits por byte y el comprobador verifica el paquete original.
+Una etiqueta de detección no demuestra que el CRC sea correcto.
+
+!!! note "Delimitación de trama y sincronización temporal son tareas diferentes"
+
+    Este paso reconoce el acceso en **bits ya decididos**. No estima el instante de
+    símbolo ni recupera fase o frecuencia. La selección temporal anterior todavía
+    usa PDUs con límites, retardo y fase conocidos; reconocer el acceso no elimina
+    por sí mismo esa ayuda previa.
+
+La [interfaz documentada del bloque en GNU Radio 3.10.12.0](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/correlate_access_code_bb_ts.h)
+especifica los bits desempaquetados y la cabecera repetida. Su
+[implementación](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/lib/correlate_access_code_bb_ts_impl.cc)
+permite verificar el registro de búsqueda, XOR, `popcount`, el límite de 64 bits,
+la comparación de longitudes y los tres estados descritos.
 
 El estudiante añade dos visores.
 
