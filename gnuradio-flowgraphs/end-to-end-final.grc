@@ -287,7 +287,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [232, 664.0]
+    coordinate: [224, 712.0]
     rotation: 0
     state: enabled
 - name: blocks_message_debug_0
@@ -302,7 +302,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [5088, 904.0]
+    coordinate: [6184, 640.0]
     rotation: 0
     state: enabled
 - name: cierre_rrc
@@ -323,7 +323,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 800.0]
+    coordinate: [816, 952.0]
     rotation: 0
     state: enabled
 - name: cierre_rx
@@ -344,7 +344,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 1208.0]
+    coordinate: [1616, 936.0]
     rotation: 0
     state: enabled
 - name: constelacion_fase
@@ -436,7 +436,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3584, 952.0]
+    coordinate: [4424, 712.0]
     rotation: 0
     state: enabled
 - name: constelacion_rx
@@ -528,7 +528,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3320, 584.0]
+    coordinate: [4256, 304.0]
     rotation: 0
     state: enabled
 - name: debug_deteccion
@@ -547,7 +547,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4128, 896.0]
+    coordinate: [5352, 600.0]
     rotation: 0
     state: enabled
 - name: debug_invertida
@@ -566,7 +566,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4464, 1576.0]
+    coordinate: [5720, 1320.0]
     rotation: 0
     state: enabled
 - name: debug_muestras
@@ -581,7 +581,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1424, 408.0]
+    coordinate: [1512, 560.0]
     rotation: 0
     state: enabled
 - name: debug_paquete_rx
@@ -596,7 +596,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4872, 568.0]
+    coordinate: [5968, 304.0]
     rotation: 0
     state: enabled
 - name: debug_rrc
@@ -611,7 +611,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2128, 504.0]
+    coordinate: [1880, 544.0]
     rotation: 0
     state: enabled
 - name: debug_rx
@@ -626,7 +626,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3024, 432.0]
+    coordinate: [3960, 152.0]
     rotation: 0
     state: disabled
 - name: debug_simbolos_rx
@@ -641,7 +641,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3336, 416.0]
+    coordinate: [4272, 136.0]
     rotation: 0
     state: disabled
 - name: debug_sin_etiquetas
@@ -660,7 +660,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1584, 1072.0]
+    coordinate: [2080, 792.0]
     rotation: 0
     state: enabled
 - name: debug_trama_tx
@@ -690,7 +690,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3808, 1184.0]
+    coordinate: [4632, 1000.0]
     rotation: 0
     state: enabled
 - name: desajustar_frecuencia
@@ -707,7 +707,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1848, 1256.0]
+    coordinate: [2544, 960.0]
     rotation: 0
     state: enabled
 - name: desajustar_reloj
@@ -725,7 +725,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2104, 1264.0]
+    coordinate: [2792, 952.0]
     rotation: 0
     state: enabled
 - name: descartar_ted
@@ -742,7 +742,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3344, 1408.0]
+    coordinate: [4232, 1224.0]
     rotation: 0
     state: enabled
 - name: detectar_invertida
@@ -761,7 +761,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4136, 1328.0]
+    coordinate: [5392, 1072.0]
     rotation: 0
     state: enabled
 - name: detectar_trama
@@ -780,7 +780,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4000, 1152.0]
+    coordinate: [5104, 880.0]
     rotation: 0
     state: enabled
 - name: empaquetar_bits
@@ -800,7 +800,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4344, 1136.0]
+    coordinate: [5440, 872.0]
     rotation: 0
     state: enabled
 - name: empaquetar_invertida
@@ -820,7 +820,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4416, 1304.0]
+    coordinate: [5672, 1048.0]
     rotation: 0
     state: enabled
 - name: envolver_trama
@@ -839,7 +839,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [88, 480.0]
+    coordinate: [120, 496.0]
     rotation: 0
     state: enabled
 - name: epy_block_0
@@ -869,7 +869,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [56, 328.0]
+    coordinate: [48, 328.0]
     rotation: 0
     state: enabled
 - name: epy_block_1
@@ -899,7 +899,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [5048, 1136.0]
+    coordinate: [6144, 872.0]
     rotation: 0
     state: enabled
 - name: epy_block_2
@@ -940,7 +940,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [80, 408.0]
+    coordinate: [56, 416.0]
     rotation: 0
     state: enabled
 - name: epy_block_3
@@ -980,7 +980,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4824, 1128.0]
+    coordinate: [5920, 864.0]
     rotation: 0
     state: enabled
 - name: epy_block_4
@@ -1046,7 +1046,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [176, 568.0]
+    coordinate: [216, 624.0]
     rotation: 0
     state: enabled
 - name: extraer_i
@@ -1062,7 +1062,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3640, 1184.0]
+    coordinate: [4456, 1000.0]
     rotation: 0
     state: enabled
 - name: filtro_rx
@@ -1085,7 +1085,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2728, 1212.0]
+    coordinate: [3552, 1044.0]
     rotation: 0
     state: enabled
 - name: frecuencia_a_hz
@@ -1103,7 +1103,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3616, 1552.0]
+    coordinate: [4480, 1392.0]
     rotation: 0
     state: enabled
 - name: frecuencia_estimada
@@ -1200,7 +1200,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3824, 1520.0]
+    coordinate: [4440, 1480.0]
     rotation: 0
     state: enabled
 - name: invertir_bits
@@ -1216,7 +1216,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3944, 1344.0]
+    coordinate: [5168, 1088.0]
     rotation: 0
     state: enabled
 - name: longitud_muestras
@@ -1235,7 +1235,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [792, 512.0]
+    coordinate: [880, 664.0]
     rotation: 0
     state: enabled
 - name: longitud_rrc
@@ -1254,7 +1254,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1296, 768.0]
+    coordinate: [1320, 952.0]
     rotation: 0
     state: enabled
 - name: mapeador
@@ -1274,7 +1274,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 840.0]
+    coordinate: [584, 920.0]
     rotation: 0
     state: enabled
 - name: muestras_a_pdu
@@ -1291,7 +1291,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 480.0]
+    coordinate: [1192, 632.0]
     rotation: 0
     state: enabled
 - name: muestrear_rx
@@ -1309,7 +1309,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3008, 752.0]
+    coordinate: [3944, 472.0]
     rotation: 0
     state: disabled
 - name: muestrear_stream
@@ -1328,7 +1328,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3024, 856.0]
+    coordinate: [3960, 576.0]
     rotation: 0
     state: disabled
 - name: paquete_rx_a_pdu
@@ -1345,7 +1345,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4544, 1144.0]
+    coordinate: [5640, 880.0]
     rotation: 0
     state: enabled
 - name: pdu_invertida
@@ -1362,7 +1362,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [4560, 1440.0]
+    coordinate: [5816, 1184.0]
     rotation: 0
     state: enabled
 - name: pdu_tagged_stream_to_pdu_0
@@ -1379,7 +1379,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [792, 648.0]
+    coordinate: [880, 800.0]
     rotation: 0
     state: enabled
 - name: pulso_rect
@@ -1397,7 +1397,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [624, 528.0]
+    coordinate: [664, 664.0]
     rotation: 0
     state: enabled
 - name: pulso_rrc
@@ -1420,7 +1420,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1008, 788.0]
+    coordinate: [1072, 924.0]
     rotation: 0
     state: enabled
 - name: qtgui_const_sink_x_0
@@ -1512,7 +1512,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1120, 632.0]
+    coordinate: [1208, 784.0]
     rotation: 0
     state: enabled
 - name: qtgui_edit_box_msg_0
@@ -1534,7 +1534,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 168.0]
+    coordinate: [40, 168.0]
     rotation: 0
     state: enabled
 - name: recuperar_fase
@@ -1552,7 +1552,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3376, 1192.0]
+    coordinate: [4176, 1008.0]
     rotation: 0
     state: enabled
 - name: reloj_estimado
@@ -1649,7 +1649,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3176, 1488.0]
+    coordinate: [4040, 1304.0]
     rotation: 0
     state: enabled
 - name: resumen_ensayo
@@ -1717,7 +1717,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2160, 1560.0]
+    coordinate: [2656, 1136.0]
     rotation: 0
     state: disabled
 - name: rotar_fase
@@ -1735,7 +1735,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1672, 1232.0]
+    coordinate: [2360, 992.0]
     rotation: 0
     state: enabled
 - name: rrc_a_pdu
@@ -1752,7 +1752,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1824, 712.0]
+    coordinate: [1560, 792.0]
     rotation: 0
     state: enabled
 - name: ruido
@@ -1771,7 +1771,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2128, 1080.0]
+    coordinate: [2840, 1120.0]
     rotation: 0
     state: enabled
 - name: rx_a_pdu
@@ -1788,7 +1788,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2760, 592.0]
+    coordinate: [3696, 312.0]
     rotation: 0
     state: disabled
 - name: rx_a_stream
@@ -1805,7 +1805,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3320, 712.0]
+    coordinate: [4272, 472.0]
     rotation: 0
     state: disabled
 - name: sin_etiquetas
@@ -1824,7 +1824,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1424, 1232.0]
+    coordinate: [1872, 952.0]
     rotation: 0
     state: enabled
 - name: sincronizar_simbolos
@@ -1851,7 +1851,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3024, 1196.0]
+    coordinate: [3824, 1028.0]
     rotation: 0
     state: enabled
 - name: snippet_0
@@ -1916,7 +1916,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2344, 1328.0]
+    coordinate: [3032, 1032.0]
     rotation: 0
     state: enabled
 - name: tiempo_bpsk
@@ -2013,7 +2013,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1352, 280.0]
+    coordinate: [1440, 432.0]
     rotation: 0
     state: enabled
 - name: tiempo_rrc
@@ -2110,7 +2110,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2088, 664.0]
+    coordinate: [1864, 720.0]
     rotation: 0
     state: enabled
 - name: tiempo_rx
@@ -2207,7 +2207,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3024, 608.0]
+    coordinate: [3960, 328.0]
     rotation: 0
     state: enabled
 - name: vistas
