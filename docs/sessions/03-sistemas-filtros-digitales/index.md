@@ -3537,6 +3537,16 @@ El receptor deberá reconstruir los límites del envío desde los datos detectad
 - Se añaden dos bloques estándar de procesamiento: `Tag Gate` y `Keep M in N`.
 - La tasa y la fase de muestreo siguen siendo conocidas. No se añade todavía un estimador de reloj ni de fase.
 
+### Animación: recibir sin etiquetas del transmisor
+
+Pulsa **Reproducir** para ver el concepto y la función de los bloques, o avanza
+con **Anterior** y **Siguiente**. Los movimientos son esquemas didácticos; las
+cifras identificadas como referencias proceden de los ensayos descritos en esta sección.
+
+<iframe class="enlace-animacion" src="animaciones/seccion-17.html" title="Animación de la sección 17: Recibir sin etiquetas del transmisor" width="100%" height="1060" style="border: 0;" loading="lazy"></iframe>
+
+[Abrir la animación en una pestaña independiente](animaciones/seccion-17.html){ target="_blank" rel="noopener" }
+
 ### 17.1. Separar la generación de la ráfaga de la recepción
 
 - **Qué cambia:** RX recibe muestras sin etiquetas. El selector trabaja de forma continua y conserva también el arranque y el cierre.
@@ -3814,6 +3824,16 @@ El texto se recupera después de seleccionar una muestra cada cuatro. ¿Demuestr
 - Introduce AWGN, *additive white Gaussian noise*: ruido aditivo blanco gaussiano, antes del filtro receptor.
 - Conserva trama, filtros, tasas y selección temporal. No introduce errores de frecuencia, fase ni reloj en este paso.
 - Reutiliza los observadores existentes para contar resultados. Un snippet imprime el resumen al cerrar normalmente la ventana de ejecución.
+
+### Animación: ruido: dispersión y pérdidas distintas
+
+Pulsa **Reproducir** para ver el concepto y la función de los bloques, o avanza
+con **Anterior** y **Siguiente**. Los movimientos son esquemas didácticos; las
+cifras identificadas como referencias proceden de los ensayos descritos en esta sección.
+
+<iframe class="enlace-animacion" src="animaciones/seccion-18.html" title="Animación de la sección 18: Ruido: dispersión y pérdidas distintas" width="100%" height="1060" style="border: 0;" loading="lazy"></iframe>
+
+[Abrir la animación en una pestaña independiente](animaciones/seccion-18.html){ target="_blank" rel="noopener" }
 
 ### 18.1. Situar el ruido en el recorrido de muestras
 
@@ -4127,6 +4147,16 @@ Esta comprobación abreviada observa dos formas de fallo. No sustituye la matriz
 
 [Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-recepcion.svg).
 
+### Animación: recuperar fase sin conocer el ángulo
+
+Pulsa **Reproducir** para ver el concepto y la función de los bloques, o avanza
+con **Anterior** y **Siguiente**. Los movimientos son esquemas didácticos; las
+cifras identificadas como referencias proceden de los ensayos descritos en esta sección.
+
+<iframe class="enlace-animacion" src="animaciones/seccion-19.html" title="Animación de la sección 19: Recuperar fase sin conocer el ángulo" width="100%" height="1060" style="border: 0;" loading="lazy"></iframe>
+
+[Abrir la animación en una pestaña independiente](animaciones/seccion-19.html){ target="_blank" rel="noopener" }
+
 ### 19.1. Propósito y condiciones del experimento
 
 El estudiante observa un **phase offset**, desfase constante, y añade `Costas Loop`, un lazo estándar de recuperación de portadora.
@@ -4406,6 +4436,16 @@ Un símbolo BPSK $a_k=+1$ llega con un desfase constante de 120°. ¿Qué signo 
 
 **Ubicación en el sistema:** este paso completa la correspondencia símbolo-bit de `Symbol demod`, resaltado en la Figura 85.
 Las dos hipótesis de polaridad permiten comprobar candidatos con el mismo acceso, longitud y CRC.
+
+### Animación: resolver la ambigüedad de polaridad bpsk
+
+Pulsa **Reproducir** para ver el concepto y la función de los bloques, o avanza
+con **Anterior** y **Siguiente**. Los movimientos son esquemas didácticos; las
+cifras identificadas como referencias proceden de los ensayos descritos en esta sección.
+
+<iframe class="enlace-animacion" src="animaciones/seccion-20.html" title="Animación de la sección 20: Resolver la ambigüedad de polaridad BPSK" width="100%" height="1060" style="border: 0;" loading="lazy"></iframe>
+
+[Abrir la animación en una pestaña independiente](animaciones/seccion-20.html){ target="_blank" rel="noopener" }
 
 ### 20.1. Continuar el ensayo de fase del paso 19
 
@@ -4736,6 +4776,16 @@ Tras añadir la resolución de polaridad, se obtiene `TX=2 DET=2 RX=2 OK=2` y `P
 **Ubicación en el sistema:** continúa la recuperación de portadora de `Symbol demod`, resaltado en la Figura 85.
 `Rotator` introduce el desajuste en el canal simulado. El `Costas Loop` existente sigue la rotación de fase que cambia con el tiempo.
 
+### Animación: recuperar un desajuste de frecuencia
+
+Pulsa **Reproducir** para ver el concepto y la función de los bloques, o avanza
+con **Anterior** y **Siguiente**. Los movimientos son esquemas didácticos; las
+cifras identificadas como referencias proceden de los ensayos descritos en esta sección.
+
+<iframe class="enlace-animacion" src="animaciones/seccion-21.html" title="Animación de la sección 21: Recuperar un desajuste de frecuencia" width="100%" height="1060" style="border: 0;" loading="lazy"></iframe>
+
+[Abrir la animación en una pestaña independiente](animaciones/seccion-21.html){ target="_blank" rel="noopener" }
+
 ### 21.1. Propósito y diferencia respecto de una fase constante
 
 El estudiante simula un **frequency offset**, desajuste de frecuencia constante, y comprueba que Costas sigue la fase que cambia entre muestras.
@@ -4996,6 +5046,16 @@ El canal trabaja a 4000 muestras/s y Costas recibe 1000 valores/s. Su salida `fr
 
 **Ubicación en el sistema:** la selección temporal pertenece al procesamiento de `Symbol demod`, mostrado en la Figura 48.
 El selector fijo todavía usa un instante conocido. `Delay` modifica el retardo del canal simulado sin añadir una etapa A/D.
+
+### Animación: retardo: elegir el instante equivocado
+
+Pulsa **Reproducir** para ver el concepto y la función de los bloques, o avanza
+con **Anterior** y **Siguiente**. Los movimientos son esquemas didácticos; las
+cifras identificadas como referencias proceden de los ensayos descritos en esta sección.
+
+<iframe class="enlace-animacion" src="animaciones/seccion-22.html" title="Animación de la sección 22: Retardo: elegir el instante equivocado" width="100%" height="1060" style="border: 0;" loading="lazy"></iframe>
+
+[Abrir la animación en una pestaña independiente](animaciones/seccion-22.html){ target="_blank" rel="noopener" }
 
 ### 22.1. Propósito y diferencia respecto de una rotación
 
@@ -5307,6 +5367,16 @@ El canal retrasa dos muestras a 4000 muestras/s. El receptor conserva una de cad
 - **Alcance:** el ajuste ocurre sobre muestras digitales recibidas. No configura un convertidor A/D ni cambia el reloj físico de un equipo de radio.
 
 [Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-recepcion.svg).
+
+### Animación: adquirir el instante y seguir el reloj
+
+Pulsa **Reproducir** para ver el concepto y la función de los bloques, o avanza
+con **Anterior** y **Siguiente**. Los movimientos son esquemas didácticos; las
+cifras identificadas como referencias proceden de los ensayos descritos en esta sección.
+
+<iframe class="enlace-animacion" src="animaciones/seccion-23.html" title="Animación de la sección 23: Adquirir el instante y seguir el reloj" width="100%" height="1060" style="border: 0;" loading="lazy"></iframe>
+
+[Abrir la animación en una pestaña independiente](animaciones/seccion-23.html){ target="_blank" rel="noopener" }
 
 ### 23.1. Propósito y dos ensayos del mismo sincronizador
 
@@ -5803,6 +5873,16 @@ El transmisor usa cuatro muestras por símbolo. El reloj RX es 1000 ppm más rá
 - **Contexto del diagrama:** las etapas de compresión, el par corrector de canal y el hardware analógico/RF no se añaden en este cierre.
 
 [Ampliar el diagrama con los resaltados](figures/enlace-referencia-sdr-integrado.svg).
+
+### Animación: integrar el enlace y adquirir antes del acceso
+
+Pulsa **Reproducir** para ver el concepto y la función de los bloques, o avanza
+con **Anterior** y **Siguiente**. Los movimientos son esquemas didácticos; las
+cifras identificadas como referencias proceden de los ensayos descritos en esta sección.
+
+<iframe class="enlace-animacion" src="animaciones/seccion-24.html" title="Animación de la sección 24: Integrar el enlace y adquirir antes del acceso" width="100%" height="1060" style="border: 0;" loading="lazy"></iframe>
+
+[Abrir la animación en una pestaña independiente](animaciones/seccion-24.html){ target="_blank" rel="noopener" }
 
 ### 24.1. Propósito y alcance del cierre
 
