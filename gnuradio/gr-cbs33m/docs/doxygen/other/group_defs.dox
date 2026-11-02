@@ -1,0 +1,6 @@
+/*!
+ * \defgroup block GNU Radio CBS33M C++ Signal Processing Blocks
+ * \brief All C++ blocks that can be used from the CBS33M GNU Radio
+ *        module are listed here or in the subcategories below.
+ *
+ */
