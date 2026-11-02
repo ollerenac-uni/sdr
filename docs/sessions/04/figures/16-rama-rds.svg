@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="824" viewBox="0 0 940 824" role="img" aria-labelledby="title desc">
+  <title id="title">Ramas de audio mono y RDS desde el multiplex FM</title>
+  <desc id="desc">Quadrature Demod entrega un multiplex real a 300 mil muestras por segundo a ambas ramas. La rama de audio selecciona el audio mono y lo reproduce a 48 mil muestras por segundo. La rama RDS se convierte a complejos, se traslada menos 57 kilohertz, se filtra y decima a 12 mil muestras por segundo, recupera fase y reloj, agrupa chips bifase, decide y decodifica bits, valida grupos y presenta el nombre y el radiotexto.</desc>
+  <style>
+    text { font-family: DejaVu Sans, sans-serif; font-size: 19px; fill: #182537; }
+    .title { font-size: 26px; font-weight: bold; }
+    .heading { font-size: 21px; font-weight: bold; }
+    .small { font-size: 17px; }
+    .float { fill: #fff0de; stroke: #ca8c56; stroke-width: 1.6; }
+    .complex { fill: #edf3fb; stroke: #638dcc; stroke-width: 1.6; }
+    .bits { fill: #f1eafb; stroke: #9371b8; stroke-width: 1.6; }
+    .messages { fill: #e1f2e9; stroke: #6d9c81; stroke-width: 1.6; }
+    .arrow { fill: none; stroke: #43566d; stroke-width: 2.2; marker-end: url(#arrowhead); }
+    .branch { fill: none; stroke: #43566d; stroke-width: 2.2; }
+  </style>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10" fill="#43566d"/>
+    </marker>
+  </defs>
+  <rect width="940" height="824" fill="#fff"/>
+  <text x="28" y="37" class="title">Dos ramas desde el multiplex FM</text>
+
+  <rect x="260" y="68" width="420" height="82" rx="10" class="float"/>
+  <text x="470" y="101" text-anchor="middle" class="heading">Quadrature Demod</text>
+  <text x="470" y="130" text-anchor="middle">Float · 300 000 muestras/s</text>
+  <path d="M470 150 V176 H183 V202" class="arrow"/>
+  <path d="M470 176 H651 V202" class="arrow"/>
+  <circle cx="470" cy="176" r="4" fill="#43566d"/>
+
+  <rect x="28" y="202" width="310" height="192" rx="10" class="float"/>
+  <text x="183" y="237" text-anchor="middle" class="heading">Audio mono</text>
+  <text x="183" y="272" text-anchor="middle">FIR de audio /6</text>
+  <text x="183" y="300" text-anchor="middle">Remuestreo 24/25</text>
+  <text x="183" y="328" text-anchor="middle">Deénfasis → volumen</text>
+  <text x="183" y="368" text-anchor="middle" class="heading">Audio Sink · 48 ksps</text>
+
+  <text x="42" y="442" class="heading">Punto de derivación</text>
+  <text x="42" y="474" class="small">Tomar RDS antes del FIR</text>
+  <text x="42" y="499" class="small">de audio: necesitamos conservar</text>
+  <text x="42" y="524" class="small">la banda alrededor de 57 kHz.</text>
+
+  <text x="42" y="597" class="heading">Ritmo del montaje</text>
+  <text x="42" y="629" class="small">Con Audio Sink activo, la tarjeta</text>
+  <text x="42" y="654" class="small">de sonido regula el procesamiento.</text>
+  <text x="42" y="687" class="small">Mantener Throttle retirado</text>
+  <text x="42" y="712" class="small">o en Bypass.</text>
+
+  <rect x="390" y="202" width="522" height="86" rx="10" class="complex"/>
+  <text x="651" y="236" text-anchor="middle" class="heading">Float To Complex → rotador</text>
+  <text x="651" y="266" text-anchor="middle">Mezcla: −57 kHz · entrada a 300 ksps</text>
+  <path d="M651 288 V326" class="arrow"/>
+
+  <rect x="390" y="326" width="522" height="74" rx="10" class="complex"/>
+  <text x="651" y="355" text-anchor="middle" class="heading">FIR de RDS /25</text>
+  <text x="651" y="383" text-anchor="middle">12 000 muestras complejas/s</text>
+  <path d="M651 400 V438" class="arrow"/>
+
+  <rect x="390" y="438" width="522" height="96" rx="10" class="complex"/>
+  <text x="651" y="470" text-anchor="middle" class="heading">Costas → RRC → Symbol Sync</text>
+  <text x="651" y="499" text-anchor="middle">12 000 muestras/s → 2375 chips/s</text>
+  <text x="651" y="522" text-anchor="middle" class="small">Ajuste de amplitud antes del Costas: ×20</text>
+  <path d="M651 534 V572" class="arrow"/>
+
+  <rect x="390" y="572" width="522" height="96" rx="10" class="bits"/>
+  <text x="651" y="602" text-anchor="middle" class="heading">Manchester Sync → decisión binaria</text>
+  <text x="651" y="630" text-anchor="middle">Differential Decoder</text>
+  <text x="651" y="655" text-anchor="middle" class="small">1187.5 bits/s · un bit por elemento Byte</text>
+  <path d="M651 668 V706" class="arrow"/>
+
+  <rect x="390" y="706" width="522" height="78" rx="10" class="messages"/>
+  <text x="651" y="737" text-anchor="middle" class="heading">RDS Decoder → Parser → Panel</text>
+  <text x="651" y="765" text-anchor="middle">Grupos válidos → nombre y radiotexto</text>
+</svg>
