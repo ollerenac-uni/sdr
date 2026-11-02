@@ -55,7 +55,7 @@ def test_contrato_grafo_descargable_sin_hardware():
     guia = (CARPETA / "laboratorio-filtrado.md").read_text(encoding="utf-8")
     assert "[Descargar el flowgraph `filtros_sesion03.grc`](filtros_sesion03.grc)" in guia
     # El nuevo ID no pisa el .py de ningún flowgraph del curso existente.
-    for archivo in (ROOT / "gnuradio-flowgraphs").glob("*.grc"):
+    for archivo in (ROOT / "gnuradio/flowgraphs").glob("*.grc"):
         previo = yaml.safe_load(archivo.read_text(encoding="utf-8"))
         assert previo["options"]["parameters"]["id"] != "filtros_sesion03"
 

@@ -7,7 +7,7 @@ Genera tres PNG a partir de la grabación oficial del curso:
 - `superficie3d.png`: los mismos datos como superficie, para comparar legibilidad.
 
 A diferencia de los demás generadores de la sesión, este necesita la grabación
-`samples/fm_99p1MHz_2p4Msps_g30.cu8`, que no está en el repositorio por su tamaño
+`gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8`, que no está en el repositorio por su tamaño
 y se descarga de Drive. Sin ella el script se detiene con un mensaje claro.
 
 Uso: python gen_espectro_tiempo.py
@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 OUT = Path(__file__).parent
-MUESTRA = OUT.parents[3] / "samples/fm_99p1MHz_2p4Msps_g30.cu8"
+MUESTRA = OUT.parents[3] / "gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8"
 
 FS = 2.4e6  # tasa de muestreo de la grabación, muestras/s
 FC = 99.1e6  # frecuencia central del tuner, Hz

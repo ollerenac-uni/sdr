@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Genera una figura reproducible de decimación para el laboratorio.
 
-Requiere la muestra oficial en ``samples/``, distribuida por Drive y excluida
+Requiere la muestra oficial en ``gnuradio/samples/``, distribuida por Drive y excluida
 del repositorio. Ejecutar desde la raíz: ``python docs/sessions/01-introduccion-sdr/figures/gen_decimacion.py``.
 """
 
@@ -17,7 +17,7 @@ import numpy as np  # noqa: E402
 
 
 OUT = Path(__file__).parent
-MUESTRA = Path(__file__).parents[4] / "samples/fm_99p1MHz_2p4Msps_g30.cu8"
+MUESTRA = Path(__file__).parents[4] / "gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8"
 FS = 2_400_000
 D = 8
 

@@ -16,7 +16,7 @@ import yaml
 np = pytest.importorskip("numpy")
 
 ROOT = Path(__file__).resolve().parents[1]
-GRAFO = ROOT / "gnuradio-flowgraphs/receptor_fm_99p1_2p4Msps.grc"
+GRAFO = ROOT / "gnuradio/flowgraphs/receptor_fm_99p1_2p4Msps.grc"
 GUIA = ROOT / "docs/sessions/02-tiempo-frecuencia-iq/laboratorio-receptor-fm.md"
 GRCC = shutil.which("grcc") or str(Path.home() / "radioconda/bin/grcc")
 PYTHON_GR = Path(GRCC).parent / "python3"
@@ -63,8 +63,10 @@ def variante_headless(archivo, fs=2400000, interpolacion=2, decimacion=25):
     b["blocks_file_source_0"]["parameters"].update(file=str(archivo), repeat="False", length=str(2 * fs))
     # El Copy no altera los bytes, pero evita esperar al reloj durante una prueba.
     b["blocks_throttle2_0"].update(id="blocks_copy", parameters={"type": "byte", "vlen": "1", "enabled": "True"})
-    for nombre in ("qtgui_freq_sink_rf", "qtgui_freq_sink_canal", "qtgui_waterfall_sink_rf"):
-        b[nombre].update(id="blocks_null_sink", parameters={"type": "complex", "vlen": "1", "num_inputs": "1"})
+    for bloque in b.values():
+        if bloque["id"] in {"qtgui_freq_sink_x", "qtgui_waterfall_sink_x"}:
+            tipo = bloque["parameters"]["type"]
+            bloque.update(id="blocks_null_sink", parameters={"type": tipo, "vlen": "1", "num_inputs": "1"})
     b["audio_sink_0"].update(id="blocks_vector_sink_x", parameters={"type": "float", "vlen": "1", "reserve_items": "48000"})
     b["rational_resampler_xxx_0"]["parameters"].update(interp=str(interpolacion), decim=str(decimacion))
     return grafo
@@ -149,7 +151,7 @@ def test_cadena_grc_recupera_tono_fm_conocido(tmp_path, runtime, fs, L, D):
 
 
 def test_captura_del_laboratorio_produce_audio_real_si_esta_disponible(tmp_path, runtime):
-    archivo = ROOT / "samples/fm_99p1MHz_2p4Msps_g30.cu8"
+    archivo = ROOT / "gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8"
     if not archivo.is_file():
         pytest.skip("La captura se distribuye fuera de Git")
     modulo = compilar(variante_headless(archivo), tmp_path / "compilado", runtime)

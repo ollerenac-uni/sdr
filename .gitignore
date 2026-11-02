@@ -31,6 +31,12 @@ exams/**/notas*
 
 # Python generado por GNU Radio Companion a partir de los .grc
 gnuradio-flowgraphs/*.py
+gnuradio/flowgraphs/*.py
+gnuradio/gr-*/build/
+
+# Resultados y archivos temporales de trabajo local
+/output/
+/tmp/
 
 # Referencias locales no distribuidas con el curso
 referencia/

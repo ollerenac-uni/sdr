@@ -12,7 +12,7 @@ ROOT = Path(__file__).parents[1]
 
 
 def cargar(nombre):
-    grafo = yaml.safe_load((ROOT / "gnuradio-flowgraphs" / nombre).read_text(encoding="utf-8"))
+    grafo = yaml.safe_load((ROOT / "gnuradio/flowgraphs" / nombre).read_text(encoding="utf-8"))
     return grafo, {b["name"]: b for b in grafo["blocks"]}, {tuple(c) for c in grafo["connections"]}
 
 

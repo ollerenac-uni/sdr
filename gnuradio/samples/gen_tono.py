@@ -3,9 +3,9 @@
 
 Desde la raíz del repositorio:
 
-    python samples/gen_tono.py
+    python gnuradio/samples/gen_tono.py
 
-Escribe samples/tono_1kHz_32kSps.cu8: 3200 muestras, 6400 bytes, 0.1 s.
+Escribe gnuradio/samples/tono_1kHz_32kSps.cu8: 3200 muestras, 6400 bytes, 0.1 s.
 """
 
 from pathlib import Path

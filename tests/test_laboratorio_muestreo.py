@@ -16,7 +16,7 @@ import numpy as np
 ROOT = Path(__file__).parents[1]
 PAGINA = ROOT / "docs/sessions/01-introduccion-sdr/laboratorio-muestreo.md"
 GITHUB = "https://github.com/ollerenac-uni/sdr/blob/main/"
-MUESTRA = "samples/fm_99p1MHz_2p4Msps_g30.cu8"
+MUESTRA = "gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8"
 
 
 def texto():
@@ -24,8 +24,8 @@ def texto():
 
 
 def tono():
-    """Bytes del tono tal como los escribe samples/gen_tono.py."""
-    spec = importlib.util.spec_from_file_location("gen_tono", ROOT / "samples/gen_tono.py")
+    """Bytes del tono tal como los escribe gnuradio/samples/gen_tono.py."""
+    spec = importlib.util.spec_from_file_location("gen_tono", ROOT / "gnuradio/samples/gen_tono.py")
     gen = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(gen)
     return gen.tono()
@@ -58,7 +58,7 @@ class TestCalentamiento(unittest.TestCase):
         self.assertIn(f"`{citada}`", texto())
 
     def test_la_salida_octal_y_decimal_publicada_es_la_real(self):
-        comando = "od -Ad -to1 -tu1 -w2 -N8 samples/tono_1kHz_32kSps.cu8"
+        comando = "od -Ad -to1 -tu1 -w2 -N8 gnuradio/samples/tono_1kHz_32kSps.cu8"
         salida = od(*comando.split()[1:-1], bytes_=tono())
         bloque = re.search(r"    ```bash\n    " + re.escape(comando) + r"\n    ```\n\n    ```\n(.*?)    ```",
                            texto(), re.S)
@@ -100,12 +100,12 @@ class TestCalentamiento(unittest.TestCase):
 
     def test_enlaza_el_generador_y_el_grafo(self):
         pagina = texto()
-        self.assertIn(GITHUB + "samples/gen_tono.py", pagina)
-        self.assertIn(GITHUB + "gnuradio-flowgraphs/warmup_32k.grc", pagina)
+        self.assertIn(GITHUB + "gnuradio/samples/gen_tono.py", pagina)
+        self.assertIn(GITHUB + "gnuradio/flowgraphs/warmup_32k.grc", pagina)
 
     def test_cita_los_numeros_que_sostienen_el_ejercicio(self):
         pagina = texto()
-        for dato in ("od -Ad -tu1 -w2 -N64 -v samples/tono_1kHz_32kSps.cu8",
+        for dato in ("od -Ad -tu1 -w2 -N64 -v gnuradio/samples/tono_1kHz_32kSps.cu8",
                      "0.788", "31.25 Hz", "32 ms", "0000064"):
             self.assertIn(dato, pagina)
 

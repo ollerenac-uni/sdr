@@ -19,7 +19,7 @@ MUESTRA = "../samples/fm_99p1MHz_2p4Msps_g30.cu8"
 
 
 def cargar(nombre):
-    grafo = yaml.safe_load((ROOT / "gnuradio-flowgraphs" / nombre).read_text(encoding="utf-8"))
+    grafo = yaml.safe_load((ROOT / "gnuradio/flowgraphs" / nombre).read_text(encoding="utf-8"))
     bloques = {b["name"]: b for b in grafo["blocks"]}
     conexiones = {tuple(c) for c in grafo["connections"]}
     return grafo, bloques, conexiones
@@ -116,7 +116,7 @@ class TestContratoComun(unittest.TestCase):
 
     def test_la_ruta_del_archivo_es_relativa(self):
         """Todo File Source usa una ruta relativa: una ruta local no existe en la máquina del alumno."""
-        for ruta_grafo in sorted((ROOT / "gnuradio-flowgraphs").glob("*.grc")):
+        for ruta_grafo in sorted((ROOT / "gnuradio/flowgraphs").glob("*.grc")):
             nombre = ruta_grafo.name
             with self.subTest(grafo=nombre):
                 _, bloques, _ = cargar(nombre)
@@ -133,7 +133,7 @@ class TestContratoComun(unittest.TestCase):
 
     def test_los_identificadores_no_colisionan(self):
         """Con el mismo id, grcc genera el mismo .py y un grafo pisa al otro."""
-        grafos = sorted((ROOT / "gnuradio-flowgraphs").glob("*.grc"))
+        grafos = sorted((ROOT / "gnuradio/flowgraphs").glob("*.grc"))
         ids = [yaml.safe_load(g.read_text(encoding="utf-8"))["options"]["parameters"]["id"] for g in grafos]
         self.assertEqual(len(ids), len(set(ids)), f"ids duplicados: {ids}")
 

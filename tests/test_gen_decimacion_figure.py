@@ -37,7 +37,7 @@ class TestDecimacionDeLaFigura(unittest.TestCase):
 
         self.assertGreater(p_sin[k_sin] - p_con[k_con], 40)
 
-    @unittest.skipUnless((ROOT / "samples/fm_99p1MHz_2p4Msps_g30.cu8").exists(),
+    @unittest.skipUnless((ROOT / "gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8").exists(),
                          "Falta la grabación oficial; se descarga de Drive")
     def test_genera_la_figura_de_decimacion(self):
         g = cargar()

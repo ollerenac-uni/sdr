@@ -17,8 +17,8 @@ def test_gitignore_protege_archivos_locales_sin_ocultar_las_referencias(tmp_path
         "burocracia/notas.md",
         "referencia/libro.pdf",
         "backups/sesion-anterior.md",
-        "samples/grabacion.cu8",
-        "gnuradio-flowgraphs/generado.py",
+        "gnuradio/samples/grabacion.cu8",
+        "gnuradio/flowgraphs/generado.py",
         "AGENTS.md",
         ".planning/HANDOFF.json",
         ".planning/fase-nueva/PLAN.md",
@@ -32,7 +32,7 @@ def test_gitignore_protege_archivos_locales_sin_ocultar_las_referencias(tmp_path
         "sdr-reference-courses/sdr-course/Lesson_1/referencia.pdf",
         "sdr-reference-courses/sdr-course/Lesson_1/ejercicio.grc",
         "sdr-reference-courses/sdr-course/Project/in.txt",
-        "gnuradio-flowgraphs/test2.grc",
+        "gnuradio/flowgraphs/test2.grc",
         "docs/sessions/01-introduccion-sdr/index.md",
     }
     publicables.update(path.relative_to(ROOT).as_posix() for path in (ROOT / "sdr-reference-courses").rglob("*.pdf"))

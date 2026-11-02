@@ -26,7 +26,7 @@ def tablas():
 def test_guia_es_incremental_y_preserva_la_practica_fir():
     texto = GUIA.read_text(encoding="utf-8")
     assert "status: draft" in texto
-    assert "gnuradio-flowgraphs/end-to-end.grc" in texto
+    assert "gnuradio/flowgraphs/end-to-end.grc" in texto
     assert "`ID` | `end_to_end`" in texto
     assert "`ID` | `mensaje_a`" in texto
     assert "Static Mode = True` no impide editar el texto" in texto

@@ -13,11 +13,11 @@ Materiales, en la misma carpeta `sdr/` de la Sesión 01:
 
 | Archivo | Dónde va | Qué es |
 |---|---|---|
-| [`gen_tono.py`](https://github.com/ollerenac-uni/sdr/blob/main/samples/gen_tono.py) | `sdr/samples/` | Genera `tono_1kHz_32kSps.cu8`. Sección 1 |
-| [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/warmup_32k.grc) | `sdr/gnuradio-flowgraphs/`, porque lee `../samples/` | Grafo de la sección 1 |
-| [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc) | `sdr/gnuradio-flowgraphs/`, ya lo tienes de la Sesión 01 | Solución de referencia de la Parte C. Sección 2 |
-| [`decimacion.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/decimacion.grc) | `sdr/gnuradio-flowgraphs/`, porque lee `../samples/` | Comparación de decimación con y sin filtro. Sección 4 |
-| `fm_99p1MHz_2p4Msps_g30.cu8` | `sdr/samples/` | La grabación de la Sesión 01. Secciones 2, 4 y 6 |
+| [`gen_tono.py`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/samples/gen_tono.py) | `sdr/gnuradio/samples/` | Genera `tono_1kHz_32kSps.cu8`. Sección 1 |
+| [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/flowgraphs/warmup_32k.grc) | `sdr/gnuradio/flowgraphs/`, porque lee `../samples/` | Grafo de la sección 1 |
+| [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/flowgraphs/test2.grc) | `sdr/gnuradio/flowgraphs/`, ya lo tienes de la Sesión 01 | Solución de referencia de la Parte C. Sección 2 |
+| [`decimacion.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/flowgraphs/decimacion.grc) | `sdr/gnuradio/flowgraphs/`, porque lee `../samples/` | Comparación de decimación con y sin filtro. Sección 4 |
+| `fm_99p1MHz_2p4Msps_g30.cu8` | `sdr/gnuradio/samples/` | La grabación de la Sesión 01. Secciones 2, 4 y 6 |
 
 ## 1. Warm-up: el milisegundo que se puede contar
 
@@ -47,8 +47,8 @@ $$
 **1.2. Generar y contar.** Con el entorno `(base)` de radioconda activo y desde la carpeta `sdr/`, genera el archivo y pide a `od` sus primeros 64 bytes, dos por línea:
 
 ```bash
-python samples/gen_tono.py
-od -Ad -tu1 -w2 -N64 -v samples/tono_1kHz_32kSps.cu8
+python gnuradio/samples/gen_tono.py
+od -Ad -tu1 -w2 -N64 -v gnuradio/samples/tono_1kHz_32kSps.cu8
 ```
 
 El primer comando responde `tono_1kHz_32kSps.cu8: 6400 bytes`, la cifra que usaste en 1.1. El segundo imprime esto:
@@ -99,7 +99,7 @@ Cómo leerlo:
 Prueba ahora `od -b`, una opción que aparece en muchos tutoriales, sobre los mismos bytes:
 
 ```bash
-od -b -N32 samples/tono_1kHz_32kSps.cu8
+od -b -N32 gnuradio/samples/tono_1kHz_32kSps.cu8
 ```
 
 La primera línea empieza por `0000000 344 200 342 223`. Es el mismo archivo, así que ¿de dónde sale ese 344?
@@ -112,7 +112,7 @@ La primera línea empieza por `0000000 344 200 342 223`. Es el mismo archivo, as
     Para ver las dos bases juntas, pide los dos formatos a la vez:
 
     ```bash
-    od -Ad -to1 -tu1 -w2 -N8 samples/tono_1kHz_32kSps.cu8
+    od -Ad -to1 -tu1 -w2 -N8 gnuradio/samples/tono_1kHz_32kSps.cu8
     ```
 
     ```
@@ -129,7 +129,7 @@ La primera línea empieza por `0000000 344 200 342 223`. Es el mismo archivo, as
 
     Cada muestra ocupa dos líneas: arriba en octal y debajo en decimal.
 
-**1.3. Los mismos bytes en GNU Radio.** Abre [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/warmup_32k.grc). La cadena es la de la Parte C de la Sesión 01, con estos cambios:
+**1.3. Los mismos bytes en GNU Radio.** Abre [`warmup_32k.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/flowgraphs/warmup_32k.grc). La cadena es la de la Parte C de la Sesión 01, con estos cambios:
 
 - `samp_rate` vale `32000` y el `File Source` lee `tono_1kHz_32kSps.cu8`.
 - El `File Source` tiene `Repeat` en `No` y `Length` en 64. `Length` cuenta elementos del tipo de salida, que aquí es `Byte`: son los 64 bytes que pediste a `od` con `-N64`. Forman 32 muestras complejas, cada una un par (I, Q) del mismo instante; no son 64 muestras, ni 32 valores de I seguidos de 32 de Q.
@@ -261,7 +261,7 @@ La grabación de la Sesión 01 obedece a la misma regla que el tono, $N = f_s \c
 **2.1. Predecir con papel.** Desde la carpeta `sdr/`, pide el tamaño de la grabación:
 
 ```bash
-wc -c < samples/fm_99p1MHz_2p4Msps_g30.cu8
+wc -c < gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8
 ```
 
 `wc -c` cuenta bytes. Con `<` es la terminal la que abre el archivo y se lo pasa a `wc` por su entrada; `wc` no llega a conocer el nombre y por eso imprime solo el número. Responde `48000000`. Con eso, y antes de ejecutar nada más:
@@ -277,7 +277,7 @@ wc -c < samples/fm_99p1MHz_2p4Msps_g30.cu8
 **2.2. Contar sin mirar.** Pide a `od` ese milisegundo, 4800 bytes con una muestra por línea, pero en lugar de leer las líneas, cuéntalas con `wc -l`:
 
 ```bash
-od -An -tu1 -w2 -N4800 -v samples/fm_99p1MHz_2p4Msps_g30.cu8 | wc -l
+od -An -tu1 -w2 -N4800 -v gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8 | wc -l
 ```
 
 Responde `2400`: una línea por muestra, el milisegundo entero. El comando cambia una opción respecto a 1.2: `-An` en lugar de `-Ad`. ¿Cuántas líneas contaría `wc -l` con `-Ad`, y por qué?
@@ -287,7 +287,7 @@ Responde `2400`: una línea por muestra, el milisegundo entero. El comando cambi
 
     `-An` es la opción de A4 de la Sesión 01: quita la columna de direcciones y, con ella, esa última línea. Así `wc -l` cuenta solo muestras.
 
-**2.3. Lo que dibuja `test2.grc`.** Abre [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/test2.grc), la solución de referencia de la Parte C de la Sesión 01, y ejecútalo con **F6** sin cambiar nada, tampoco el deslizador `Frequency`. Con una grabación como fuente, ese deslizador solo cambia el centro del Frequency Sink, `freq*M`: reetiqueta el eje, no sintoniza nada. Su Time Sink tiene `Number of Points` en 1024 y su Frequency Sink, `FFT Size` también en 1024. Antes de mirar la pantalla, calcula con las cuentas de 1.6 cuánto tiempo abarca cada imagen y cuánto se separan los bins.
+**2.3. Lo que dibuja `test2.grc`.** Abre [`test2.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/flowgraphs/test2.grc), la solución de referencia de la Parte C de la Sesión 01, y ejecútalo con **F6** sin cambiar nada, tampoco el deslizador `Frequency`. Con una grabación como fuente, ese deslizador solo cambia el centro del Frequency Sink, `freq*M`: reetiqueta el eje, no sintoniza nada. Su Time Sink tiene `Number of Points` en 1024 y su Frequency Sink, `FFT Size` también en 1024. Antes de mirar la pantalla, calcula con las cuentas de 1.6 cuánto tiempo abarca cada imagen y cuánto se separan los bins.
 
 En pantalla comprueba lo que está rotulado: el tiempo en el eje del Time Sink y los 2.4 MHz que abarca el eje del Frequency Sink. La separación entre bins no aparece en ningún eje; sale de dividir ese ancho entre el número de bins.
 
@@ -332,8 +332,8 @@ Cuando estén disponibles, se compararán con la grabación oficial de 2.4 MS/s.
 Con el entorno `(base)` activo y desde la raíz `sdr/`, crea las dos capturas de diez segundos:
 
 ```bash
-rtl_sdr -f 99.1e6 -s 1200000 -g 30 -n 12000000 samples/fm_99p1MHz_1p2Msps_g30.cu8
-rtl_sdr -f 99.1e6 -s 300000 -g 30 -n 3000000 samples/fm_99p1MHz_0p3Msps_g30.cu8
+rtl_sdr -f 99.1e6 -s 1200000 -g 30 -n 12000000 gnuradio/samples/fm_99p1MHz_1p2Msps_g30.cu8
+rtl_sdr -f 99.1e6 -s 300000 -g 30 -n 3000000 gnuradio/samples/fm_99p1MHz_0p3Msps_g30.cu8
 ```
 
 La primera debe ocupar 24 000 000 bytes y la segunda 6 000 000 bytes. Conserva los mismos datos de antena y ubicación que en la captura oficial; después comparte ambas desde la carpeta `samples` del curso, con su SHA-256 y metadatos.
@@ -358,7 +358,7 @@ La comparación sirve para separar dos ideas que suelen confundirse:
 - **Reducir la tasa** significa entregar menos muestras por segundo. Aquí se conservará una de cada ocho.
 - **Reducir el espectro correctamente** exige preparar la señal antes de retirar muestras. El contenido que no cabe en la nueva ventana debe ser atenuado primero.
 
-**4.1. Preparar la comparación.** El estudiante abre [`decimacion.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio-flowgraphs/decimacion.grc) en GNU Radio Companion y lo ejecuta con **F6**. El grafo lee la grabación oficial, centra y escala sus bytes como `test2.grc`, y a partir de esa señal compleja crea tres caminos:
+**4.1. Preparar la comparación.** El estudiante abre [`decimacion.grc`](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/flowgraphs/decimacion.grc) en GNU Radio Companion y lo ejecuta con **F6**. El grafo lee la grabación oficial, centra y escala sus bytes como `test2.grc`, y a partir de esa señal compleja crea tres caminos:
 
 | Camino | Bloque principal | Tasa de salida | Qué hace |
 |---|---|---:|---|

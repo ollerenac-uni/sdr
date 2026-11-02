@@ -15,7 +15,7 @@ TAPS = "firdes.low_pass(1, samp_rate, 0.4*samp_rate/D, 0.1*samp_rate/D)"
 class TestGrafoDecimacion(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        grafo = yaml.safe_load((ROOT / "gnuradio-flowgraphs/decimacion.grc").read_text(encoding="utf-8"))
+        grafo = yaml.safe_load((ROOT / "gnuradio/flowgraphs/decimacion.grc").read_text(encoding="utf-8"))
         cls.opciones = grafo["options"]["parameters"]
         cls.bloques = {b["name"]: b["parameters"] for b in grafo["blocks"]}
         cls.conexiones = {tuple(c) for c in grafo["connections"]}

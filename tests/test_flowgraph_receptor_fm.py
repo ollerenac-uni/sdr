@@ -9,7 +9,7 @@ import yaml
 
 
 ROOT = Path(__file__).parents[1]
-GRAFO = ROOT / "gnuradio-flowgraphs/receptor_fm_99p1_2p4Msps.grc"
+GRAFO = ROOT / "gnuradio/flowgraphs/receptor_fm_99p1_2p4Msps.grc"
 
 
 class TestReceptorFm(unittest.TestCase):

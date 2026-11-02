@@ -17,7 +17,7 @@ CADENA_ARCHIVO = {
 
 
 def cargar(nombre):
-    grafo = yaml.safe_load((ROOT / "gnuradio-flowgraphs" / nombre).read_text(encoding="utf-8"))
+    grafo = yaml.safe_load((ROOT / "gnuradio/flowgraphs" / nombre).read_text(encoding="utf-8"))
     return grafo, {bloque["name"]: bloque for bloque in grafo["blocks"]}
 
 

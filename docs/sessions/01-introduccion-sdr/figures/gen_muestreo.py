@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 OUT = Path(__file__).parent
-GEN_TONO = Path(__file__).parents[4] / "samples/gen_tono.py"
+GEN_TONO = Path(__file__).parents[4] / "gnuradio/samples/gen_tono.py"
 BLUE, RED = "#1e40af", "#dc2626"  # RED como en gen_iq.py y el Time Sink
 plt.rcParams.update({"font.size": 11})
 

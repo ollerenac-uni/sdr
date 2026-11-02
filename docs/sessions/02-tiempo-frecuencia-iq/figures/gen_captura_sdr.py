@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 OUT = Path(__file__).parent
-CAPTURA = OUT.parents[3] / "samples/fm_99p1MHz_2p4Msps_g30.cu8"
+CAPTURA = OUT.parents[3] / "gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8"
 NOMBRES = ["captura-promedio-rf.png", "captura-waterfall.png", "captura-adelanto-seleccion.png"]
 
 

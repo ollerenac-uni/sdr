@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[1]
 SESSION = ROOT / "docs/sessions/02-tiempo-frecuencia-iq"
-CAPTURA = ROOT / "samples/fm_99p1MHz_2p4Msps_g30.cu8"
+CAPTURA = ROOT / "gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8"
 
 
 def cargar(nombre):

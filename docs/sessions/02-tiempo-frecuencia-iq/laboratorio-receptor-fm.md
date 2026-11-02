@@ -24,14 +24,14 @@ El diseño detallado de los filtros queda para S03 y S04. Aquí se utilizan bloq
 
 | Recurso | Ubicación | Uso |
 |---|---|---|
-| Grafo de referencia | `gnuradio-flowgraphs/receptor_fm_99p1_2p4Msps.grc` | Comparar parámetros y conexiones. |
-| Captura oficial | `samples/fm_99p1MHz_2p4Msps_g30.cu8` | I/Q a 2.4 MS/s, con referencia RF de 99.1 MHz. |
+| Grafo de referencia | `gnuradio/flowgraphs/receptor_fm_99p1_2p4Msps.grc` | Comparar parámetros y conexiones. |
+| Captura oficial | `gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8` | I/Q a 2.4 MS/s, con referencia RF de 99.1 MHz. |
 | GNU Radio Companion | Equipo local | Construir y ejecutar el grafo. |
 | Parlantes o audífonos | Equipo local | Escuchar audio mono a 48 kS/s. |
 
 - Las grabaciones se distribuyen por la [carpeta de muestras](https://drive.google.com/drive/folders/1tP8u1tQZDnvi_-ZAxZ3J8tehdKwi92an?usp=drive_link), fuera de Git.
 - La [sesión 1](../01-introduccion-sdr/index.md#descargar-la-grabacion) explica la descarga de la captura oficial.
-- El grafo utiliza `../samples/fm_99p1MHz_2p4Msps_g30.cu8`, porque se ejecuta desde `gnuradio-flowgraphs/`.
+- El grafo utiliza `../samples/fm_99p1MHz_2p4Msps_g30.cu8`, porque se ejecuta desde `gnuradio/flowgraphs/`.
 - La fuente RTL-SDR queda desactivada. Solo se utiliza en la extensión opcional.
 
 ## 1. Seguir las tasas antes de conectar bloques
@@ -80,7 +80,7 @@ $$
 
 ## 2. Reconstruir I/Q desde CU8
 
-1. El estudiante crea un grafo con salida `QT GUI` y lo guarda en `gnuradio-flowgraphs/`.
+1. El estudiante crea un grafo con salida `QT GUI` y lo guarda en `gnuradio/flowgraphs/`.
 2. Asigna un ID propio, como `lab02_fm_estudiante`, distinto del ID de la referencia.
 3. Define `samp_rate = 2400000`, `freq = 99.1e6` y `volume = 0.2`.
 4. Conecta los siete bloques de la ruta CU8 en el orden de la tabla.
@@ -211,7 +211,7 @@ $$z[n]=\frac{u_I[n]-127.5}{127.5}+j\frac{u_Q[n]-127.5}{127.5}.$$
 
 ??? note "Variante anterior: captura a 2.048 MS/s"
 
-    - Se conserva `gnuradio-flowgraphs/receptor_fm_99p1_2p048Msps.grc` con su ID independiente.
+    - Se conserva `gnuradio/flowgraphs/receptor_fm_99p1_2p048Msps.grc` con su ID independiente.
     - Esa referencia utiliza `../samples/fm_99p1MHz_2p048Msps_g30.cu8`, `samp_rate = 2048000` y resampler 3/32.
     - Su Throttle de bytes utiliza $2(2048000)=4096000$ items/s.
     - El resultado sigue siendo $2048000(3/32)=192000$ S/s. Las etapas de audio conservan sus parámetros.

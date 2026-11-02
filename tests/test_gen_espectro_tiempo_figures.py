@@ -73,8 +73,8 @@ class TestContratoDelModulo(unittest.TestCase):
 
 
 @unittest.skipUnless(
-    (ROOT / "samples/fm_99p1MHz_2p4Msps_g30.cu8").exists(),
-    "Falta samples/fm_99p1MHz_2p4Msps_g30.cu8; se descarga de Drive",
+    (ROOT / "gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8").exists(),
+    "Falta gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8; se descarga de Drive",
 )
 class TestConLaGrabacion(unittest.TestCase):
     @classmethod

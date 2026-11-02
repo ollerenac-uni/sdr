@@ -626,6 +626,7 @@ connections:
 - [blocks_uchar_to_float_0, '0', blocks_add_const_vxx_0, '0']
 - [rational_resampler_xxx_0, '0', analog_wfm_rcv_0, '0']
 - [rational_resampler_xxx_0, '0', qtgui_freq_sink_canal, '0']
+- [soapy_rtlsdr_source_0, '0', qtgui_freq_sink_rf, '0']
 - [soapy_rtlsdr_source_0, '0', qtgui_waterfall_sink_rf, '0']
 - [soapy_rtlsdr_source_0, '0', rational_resampler_xxx_0, '0']
 

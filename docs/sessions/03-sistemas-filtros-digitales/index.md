@@ -104,7 +104,7 @@ Los adaptadores de mensajes, los buffers y los visores apoyan la implementación
 ### 1.1. Archivo y opciones
 
 1. El estudiante crea un flowgraph nuevo en GRC o continúa el archivo que ya tiene abierto.
-2. Guarda el archivo como `end-to-end.grc` dentro de `gnuradio-flowgraphs/`.
+2. Guarda el archivo como `end-to-end.grc` dentro de `gnuradio/flowgraphs/`.
 3. Abre el bloque `Options`, que configura el programa generado.
 4. Establece los valores de la tabla y confirma los cambios.
 
@@ -251,7 +251,7 @@ El usuario escribe `Hola`. ¿La salida `msg` entrega muestras I/Q? ¿`Static Mod
 
 ### 3.2. Lista de comprobación
 
-- El archivo está guardado como `gnuradio-flowgraphs/end-to-end.grc`.
+- El archivo está guardado como `gnuradio/flowgraphs/end-to-end.grc`.
 - `Options` contiene `ID = end_to_end` y `Generate Options = QT GUI`.
 - El bloque `mensaje_a` tiene el tipo `String` y los modos indicados.
 - La ventana permite cambiar `Hola` por `SDR`.

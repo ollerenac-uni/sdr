@@ -21,7 +21,7 @@ GRCC = next((str(p) for p in (Path.home() / "radioconda/bin/grcc",) if p.exists(
 @unittest.skipUnless(GRCC and Path(GRCC).exists(), "grcc no disponible: instala radioconda")
 class TestGrafosCompilan(unittest.TestCase):
     def test_cada_grc_compila(self):
-        grafos = list((ROOT / "gnuradio-flowgraphs").glob("*.grc"))
+        grafos = list((ROOT / "gnuradio/flowgraphs").glob("*.grc"))
         grafos.extend((ROOT / "docs/sessions").rglob("*.grc"))
         for grafo in sorted(grafos):
             with self.subTest(grafo=grafo.name), tempfile.TemporaryDirectory() as tmp:

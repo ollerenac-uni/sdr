@@ -10,7 +10,7 @@ import numpy as np
 
 
 ROOT = Path(__file__).parents[1]
-SCRIPT = ROOT / "samples/gen_tono.py"
+SCRIPT = ROOT / "gnuradio/samples/gen_tono.py"
 
 
 def cargar():
