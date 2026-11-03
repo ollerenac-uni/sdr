@@ -49,9 +49,11 @@ El estudiante construye el transmisor y el receptor BPSK por pasos, desde el tex
 El mapa visual relaciona cada paso con los bloques estudiados.
 Los experimentos incorporan filtros, detección de paquetes, ruido y sincronización.
 
-### Sesión 4 — Seleccionar el canal y reducir la tasa
+### Sesión 4 — Recuperar audio FM y datos RDS
 
-Una captura puede contener varios canales. Se aprende a seleccionar el canal deseado y reducir su sampling rate mediante mezcla, filtrado y decimación.
+El estudiante interpreta una captura I/Q y reutiliza dos bloques Python del módulo `gr-cbs33m`.
+La mezcla compleja, el filtrado y la decimación seleccionan una emisora FM.
+Desde el multiplex demodulado, una rama recupera audio mono y otra recupera grupos y campos RDS.
 
 ### Sesiones 5 y 6 — Convertir bits en una señal
 
@@ -114,7 +116,7 @@ equalization adaptativa y OFDM quedan fuera del programa obligatorio.
 | 01 | **Introducción.** Se presenta la Radio Definida por Software, la arquitectura del receptor RTL-SDR y sus parámetros de adquisición. | **Laboratorio #1: muestreo y lectura de I/Q.** Se interpreta un archivo `.cu8` y se observan sus muestras y su espectro. |
 | 02 | **Señales y espectro en SDR.** Se estudian las muestras I/Q, el muestreo, la FFT y la relación entre baseband y RF. | **Laboratorio #2: demodulador FM.** Se construye un receptor FM en GNU Radio para recuperar audio desde una captura `.cu8`. |
 | 03 | **Laboratorio de enlace digital.** Se construye un enlace BPSK por pasos y se relaciona cada experimento con los bloques del transmisor y del receptor. | **Laboratorio #3: enlace digital de mensajes.** Se recupera texto en GNU Radio mediante paquetes, filtros RRC, detección y sincronización, con pruebas de los efectos del canal. |
-| 04 | **Selección de canal y decimación.** Se explica cómo la mezcla compleja y el filtrado permiten seleccionar un canal y reducir su sampling rate. | **Laboratorio #4: selección de un canal.** Se configura un flowgraph preparado para aislar un canal de una captura y observar el efecto de decimar con y sin filtro. |
+| 04 | **Recepción FM y decodificación RDS en GNU Radio.** Se estudian la conversión I/Q, la mezcla, las tasas de procesamiento y la recuperación de audio FM y datos RDS. | **Laboratorio #4: receptor FM y RDS.** Se instalan bloques Python reutilizables y se construyen las ramas de audio mono y decodificación RDS desde una captura `.cu8`. |
 | 05 | **De bits a símbolos: BPSK y QPSK.** Se relacionan bits, símbolos y constelaciones, y se distinguen bit rate, symbol rate y sampling rate. | **Laboratorio #5: bits y constelaciones.** Se utiliza código preparado para representar bits como símbolos BPSK/QPSK y recuperar los bits de símbolos ideales. |
 | 06 | **Pulse shaping y matched filtering.** Se explica cómo los símbolos forman una señal, qué hacen los filtros RRC y cómo se observa la interferencia entre símbolos (ISI). | **Laboratorio #6: pulsos y eye diagram.** Se modifican los parámetros de filtros root-raised cosine en un ejemplo preparado y se observan los pulsos, el espectro y el diagrama de ojo. |
 | 07 | **Enlace digital ideal.** Se reúne lo aprendido para explicar un Tx y un Rx QPSK sin ruido ni offsets, con las referencias de recepción conocidas. | **Laboratorio #7: enlace QPSK guiado.** Se completa un flowgraph con bloques preparados y se comparan los bits transmitidos y recuperados, considerando los retardos de los filtros. |

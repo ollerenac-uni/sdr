@@ -15,6 +15,7 @@ status: draft
 - La clase 3 se desarrolla directamente con este laboratorio. Sus 24 pasos se construyen y comprueban en orden.
 - El diagrama de referencia aparece en los pasos principales para situar los bloques de GRC dentro del sistema completo.
 - La [clase visual del enlace BPSK](clase-enlace-digital.md) complementa el laboratorio con un mapa funcional más detallado de los 24 pasos.
+- La [Tarea del laboratorio 3](tarea-laboratorio-3.md) propone cinco actividades y un reto integrador después de completar el paso 24.
 - Las instrucciones de conexión usan los nombres que aparecen en GRC. La notación `Nombre del bloque.puerto` identifica el bloque y su puerto.
 
 !!! info "Alcance de esta entrega"
@@ -6035,6 +6036,11 @@ Conserva las cuatro pestañas y las ventanas de diagnóstico de 128 puntos.
 
 El cierre BPSK corresponde únicamente a los escenarios comprobados. La transición a QPSK necesita revisar mapeo, tasas y ambigüedad de fase.
 La reorganización de la guía completa se realizará después de esa transición. No se inicia otra sesión formal ni se publica automáticamente el sitio.
+
+!!! tip "Tarea del laboratorio 3"
+
+    Después de completar este paso, el estudiante desarrolla la [Tarea del laboratorio 3](tarea-laboratorio-3.md).
+    Sus cinco actividades y el reto integrador evalúan el recorrido del mensaje, las correcciones, el preámbulo, la entrega útil y la integridad.
 
 ### Ejercicio 24 — Separar adquisición y detección del paquete
 

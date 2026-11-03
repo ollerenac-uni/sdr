@@ -4,6 +4,7 @@ Desde la raíz del repositorio:
     python3 docs/sessions/03-sistemas-filtros-digitales/figures/gen_enlace_mapa_pasos.py
 Requiere Matplotlib. --salida permite verificar la reproducción fuera de docs/.
 Los colores indican el tema de estudio, no el estado activo del flowgraph.
+Las descripciones distinguen la función del paso y las incorporaciones futuras.
 """
 
 import argparse
@@ -74,7 +75,7 @@ PASOS = [
         "numero": 10,
         "titulo": "Separar cada byte en ocho bits",
         "foco": ["t4"],
-        "apoyo": ["t2"],
+        "apoyo": ["t2", "observacion"],
     },
     {
         "numero": 11,
@@ -115,8 +116,8 @@ PASOS = [
     {
         "numero": 17,
         "titulo": "Recibir muestras sin etiquetas del transmisor",
-        "foco": ["r2", "r5"],
-        "apoyo": ["t6", "ensayo"],
+        "foco": ["frontera", "r2", "r5"],
+        "apoyo": ["t6", "observacion"],
     },
     {
         "numero": 18,
@@ -158,7 +159,7 @@ PASOS = [
         "numero": 24,
         "titulo": "Dar tiempo de adquisición e integrar",
         "foco": ["t3"],
-        "apoyo": ["c1", "c2", "c3", "c4", "c5", "r2", "r3", "r4", "r5", "r6", "ensayo"],
+        "apoyo": ["frontera", "c1", "c2", "c3", "c4", "c5", "r2", "r3", "r4", "r5", "r6", "ensayo"],
     },
 ]
 
@@ -186,12 +187,55 @@ BLOQUES = [
     ("ensayo", 12.3, 1.85, 5.1, "X · Ensayar", "Auxiliar y contadores"),
     ("rectangular", 18.05, 1.85, 5.1, "P · Rectangular", "Repeat · comparación"),
 ]
+
+# Primer paso de cada descripción. Las funciones mantienen su posición e ID.
+DESCRIPCIONES = {
+    "t1": [(1, "Entrada de texto\nUTF-8 desde 5"), (5, "UTF-8 → bytes")],
+    "t3": [
+        (1, "Acceso desde 16\nPreámbulo desde 24"),
+        (16, "Acceso y cabecera\nSin preámbulo"),
+        (24, "Preámbulo, acceso\ny cabecera"),
+    ],
+    "r2": [
+        (1, "Selección en 14\nSymbol Sync en 23"),
+        (14, "Selección ideal\nLímites conocidos"),
+        (17, "Keep M in N\nSelección fija"),
+        (23, "Symbol Sync\nControl fijo en B"),
+        (24, "Symbol Sync\nGardner"),
+    ],
+    "r3": [(1, "Costas desde 19"), (19, "Costas Loop\nOrden 2")],
+    "r4": [
+        (1, "Decisión desde 15\nPolaridad desde 20"),
+        (15, "Binary Slicer\nUna polaridad"),
+        (20, "Decisión y dos\npolaridades"),
+    ],
+    "r5": [
+        (1, "Bytes desde 15\nAcceso desde 16"),
+        (15, "Reunir bytes\nLímites conocidos"),
+        (16, "Detectar acceso\ny reunir bytes"),
+    ],
+    "r6": [
+        (1, "UTF-8 desde 6\nCRC desde 8"),
+        (6, "Bytes a texto UTF-8\nSin comprobador"),
+        (8, "CRC → UTF-8"),
+    ],
+    "ensayo": [
+        (1, "Alteración desde 9\nResumen desde 18"),
+        (9, "Alterar segundo paquete\nResumen desde 18"),
+        (18, "Auxiliar y contadores"),
+    ],
+}
 H = 1.3
 ESTILOS = {
     "foco": ("#fff0ca", "#a34f00", "#5b2c00", 2.8),
     "apoyo": ("#e3f0fa", "#25618d", "#164967", 1.65),
     "contexto": ("#f4f5f6", "#b9c2c9", "#50606b", 0.9),
 }
+
+
+def descripcion(clave, numero, predeterminado):
+    etapas = DESCRIPCIONES.get(clave, [(1, predeterminado)])
+    return next(texto for inicio, texto in reversed(etapas) if inicio <= numero)
 
 
 def flecha(ax, puntos):
@@ -267,6 +311,7 @@ def generar(paso, salida):
         panel(ax, 4.5, "RX  →  Muestras · símbolos · bits · bytes · texto")
         panel(ax, 1.5, "ENTORNO, OBSERVADORES Y RAMA DE COMPARACIÓN")
         for clave, x, y, w, titulo, texto in BLOQUES:
+            texto = descripcion(clave, paso["numero"], texto)
             estado = (
                 "foco"
                 if clave in paso["foco"]
@@ -316,6 +361,18 @@ def generar(paso, salida):
                 else:
                     flecha(ax, [(x, y + H / 2), (xb + wb, yb + H / 2)])
         flecha(ax, [(21.675, 10.85), (21.675, 10.15), (21.375, 10.15), (21.375, 9.15)])
+        if paso["numero"] >= 17:
+            estado = (
+                "foco" if "frontera" in paso["foco"]
+                else "apoyo" if "frontera" in paso["apoyo"] else "contexto"
+            )
+            fc, ec, tc, lw = ESTILOS[estado]
+            ax.text(
+                20.85, 10.20, "Tag Gate · sin etiquetas TX", ha="right", va="center",
+                fontsize=10.5, color=tc,
+                bbox={"boxstyle": "round,pad=0.22", "fc": fc, "ec": ec, "lw": lw},
+                zorder=4,
+            )
         flecha(
             ax, [(2.775, 7.85), (2.775, 7.12), (0.10, 7.12), (0.10, 5.5), (0.8, 5.5)]
         )

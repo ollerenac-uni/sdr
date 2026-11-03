@@ -7,4 +7,5 @@
 #
 
 install(FILES
+    cbs33m_cu8_a_c64.block.yml
     cbs33m_rotador_frecuencia.block.yml DESTINATION share/gnuradio/grc/blocks)

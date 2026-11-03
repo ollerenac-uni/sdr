@@ -1,0 +1,24 @@
+id: cbs33m_cu8_a_c64
+label: Conversor de .cu8 a .c64
+category: '[CBS33M]'
+flags: [python]
+
+parameters:
+- id: escala
+  label: Escala
+  dtype: real
+  default: '127.5'
+
+inputs:
+- domain: stream
+  dtype: byte
+
+outputs:
+- domain: stream
+  dtype: complex
+
+templates:
+  imports: from gnuradio import cbs33m
+  make: cbs33m.cu8_a_c64(${escala})
+
+file_format: 1

@@ -7,12 +7,42 @@ status: draft
 
 # Clase 4 — Recepción FM y decodificación RDS en GNU Radio
 
+## Objetivos
+
+Al completar la clase, el estudiante puede:
+
+- Interpretar los bytes intercalados de una captura `.cu8` y convertirlos a `complex64`.
+- Instalar y reutilizar los bloques Python de `gr-cbs33m` desde GRC.
+- Centrar una emisora, filtrar su canal y justificar las tasas después de cada etapa.
+- Recuperar audio FM mono y explicar qué bloque regula su reproducción.
+- Recuperar grupos RDS y distinguir chips, bits, PDUs y campos interpretados.
+
+El montaje completo de referencia está en [fm.grc](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/flowgraphs/fm.grc).
+La sección 20 incluye una comprobación sin GUI para la captura oficial.
+
+## Identificar las instancias
+
+El estudiante conserva estos IDs en su montaje. El nombre visible identifica el tipo de bloque; el ID distingue cada instancia.
+
+| Nombre en GRC | ID | Uso |
+|---|---|---|
+| `File Source` | `fuente_captura` | Leer la captura. |
+| `Conversor de .cu8 a .c64` | `conversor_iq` | Reunir y normalizar I/Q. |
+| `Throttle` | `ritmo_visores` | Regular la observación inicial; queda en Bypass con audio. |
+| `Rotador de frecuencias` | `centrar_emisora`, `centrar_rds` | Centrar la emisora o la subportadora RDS. |
+| `Decimating FIR Filter` | `filtro_canal`, `filtro_audio`, `filtro_rds` | Seleccionar las tres bandas. |
+| `Multiply Const` | `volumen`, `ganancia_rds` | Ajustar audio o amplitud de RDS. |
+| `Message Debug` | `grupos_rds`, `campos_rds` | Observar grupos del Decoder o campos del Parser. |
+
+Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola entrada o salida.
+`Float To Complex` identifica sus entradas como `re` e `im`. Los puertos de mensajes conservan los nombres `in`, `out` y `print`.
+
 ??? note "Propósito y punto de partida"
 
-    - En el laboratorio de mensajes (#3) construimos una señal desde sus bits y recuperamos el texto en el receptor.
-    - Ahora empezamos desde el otro extremo: **una captura de radio que ya contiene muestras I/Q**.
-    - Antes de seleccionar una emisora y demodular FM, necesitamos leer esos datos con el tipo de dato correcto y comprobar qué señal representan.
-    - Antes de programar el conversor, crearemos `gr-cbs33m`, la biblioteca que reunirá nuestros bloques Python reutilizables.
+    - En el laboratorio de mensajes (#3) el estudiante construyó una señal desde sus bits y recuperó el texto en el receptor.
+    - Ahora el estudiante empieza desde el otro extremo: **una captura de radio que ya contiene muestras I/Q**.
+    - Antes de seleccionar una emisora y demodular FM, el estudiante necesita leer esos datos con el tipo de dato correcto y comprobar qué señal representan.
+    - Antes de programar el conversor, el estudiante utiliza `gr-cbs33m`, la biblioteca que reunirá los bloques del curso Python reutilizables.
     - El archivo de trabajo de GRC será `gnuradio/flowgraphs/fm.grc`.
 
 ??? note "1. Intro: capturas FM y formato `.cu8`"
@@ -20,7 +50,9 @@ status: draft
     ### 1.1. Reconocer las capturas y sus tasas
 
     - Las capturas se encuentran en `gnuradio/samples/`, dentro del repositorio.
-    - En la computadora del profesor, la ruta es `/home/user/Teaching/uni/2026/sdr/gnuradio/samples/`; cada estudiante debe seleccionar la ruta correspondiente en su propia computadora.
+    - Las grabaciones están excluidas de Git y se distribuyen por Google Drive, como indica la [preparación del curso](../../setup/index.md). Un `git pull` no las descarga ni mueve las copias anteriores.
+    - Antes de ejecutar, el estudiante coloca la captura en `gnuradio/samples/`. Si conserva una copia en `samples/`, la mueve a la carpeta nueva.
+    - Desde `gnuradio/flowgraphs/fm.grc`, `File Source` utiliza la ruta relativa `../samples/fm_99p1MHz_2p4Msps_g30.cu8`.
 
     | Archivo | Frecuencia central de captura | Tasa de muestras complejas |
     |---|---|---|
@@ -30,7 +62,7 @@ status: draft
 
     - El nombre conserva las condiciones de captura: `99p1MHz` representa 99.1 MHz y `2p4Msps` representa 2.4 millones de muestras complejas por segundo.
     - El sufijo `g30` identifica el ajuste de ganancia utilizado al nombrar estas grabaciones; no determina cómo se interpretan sus bytes.
-    - Usaremos **`fm_99p1MHz_2p4Msps_g30.cu8`**. Una captura centrada en 99.1 MHz puede incluir varias señales dentro de su banda; no debemos suponer que todo el archivo contiene únicamente la emisora situada en el centro.
+    - Se utiliza **`fm_99p1MHz_2p4Msps_g30.cu8`**. Una captura centrada en 99.1 MHz puede incluir varias señales dentro de su banda; el estudiante no debe suponer que todo el archivo contiene únicamente la emisora situada en el centro.
 
     ![Esquema de la banda de 2.4 MHz centrada en 99.1 MHz y su representación relativa entre menos 1.2 y más 1.2 MHz.](figures/01-captura-fm.svg)
     **Figura 1.** Frecuencia central, tasa de muestras y cantidad de bytes describen aspectos diferentes de la captura.
@@ -41,7 +73,7 @@ status: draft
     f_{\mathrm{RF}}=99.1\ \mathrm{MHz}+f_{\mathrm{baseband}}.
     $$
 
-    Los extremos nominales corresponden a 97.9 y 100.3 MHz; la respuesta real del receptor puede atenuar los bordes. El archivo crudo no incluye necesariamente una cabecera que configure estas tasas automáticamente: debemos introducirlas en el flowgraph.
+    Los extremos nominales corresponden a 97.9 y 100.3 MHz; la respuesta real del receptor puede atenuar los bordes. El archivo crudo no incluye necesariamente una cabecera que configure estas tasas automáticamente: el estudiante debe introducirlas en el flowgraph.
 
     ### 1.2. Interpretar los bytes I/Q
 
@@ -57,19 +89,21 @@ status: draft
     ![Bytes de cuatro muestras I/Q intercaladas y diferencia entre uint8 y complex64.](figures/02-formato-cu8.svg)
     **Figura 2.** La conversión debe conservar las parejas y su orden temporal.
 
-    Por tanto, el flujo de lectura tiene el doble de elementos que el flujo de muestras complejas:
+    El flujo de lectura tiene el doble de elementos que el flujo de muestras complejas.
+    El símbolo $R_{\mathrm{Byte}}$ representa la tasa de elementos Byte por segundo:
 
     $$
-    2.4\times10^6\ \frac{\text{complejos}}{\mathrm{s}}
-    \times 2\ \frac{\text{bytes}}{\text{complejo}}
-    =4.8\times10^6\ \frac{\text{bytes}}{\mathrm{s}}.
+    \begin{aligned}
+    R_{\mathrm{Byte}}&=2f_s,\\
+    &=4.8\times10^6\ \text{bytes/s}.
+    \end{aligned}
     $$
 
     Un segundo de captura ocupa 4.8 MB decimales, sin contar un posible contenedor externo. Leer estos bytes directamente como complejos de punto flotante cambiaría su interpretación y agruparía incorrectamente los datos.
 
 ??? note "2. GNU Radio: construir el flowgraph poco a poco"
 
-    - Los estudiantes ya conocen `Options`, variables, conexiones y visores por el laboratorio de mensajes. Aquí nos concentraremos en qué tipo de dato pasa por cada conexión y quién fija su ritmo.
+    - Los estudiantes ya conocen `Options`, variables, conexiones y visores por el laboratorio de mensajes. Aquí el estudiante se concentra en qué tipo de dato pasa por cada conexión y quién fija su ritmo.
 
     ### 2.1. Leer el archivo con `File Source`
 
@@ -82,7 +116,7 @@ status: draft
     |---|---|---|
     | `Output Type` | `Byte` | Un elemento por byte del archivo. |
     | `Vector Length` | `1` | Elementos escalares. |
-    | `File` | Ruta a `fm_99p1MHz_2p4Msps_g30.cu8` | Seleccionar el archivo local. |
+    | `File` | `../samples/fm_99p1MHz_2p4Msps_g30.cu8` | Ruta relativa desde `gnuradio/flowgraphs/`. |
     | `Repeat` | `Yes` | Volver al comienzo al terminar la captura. |
     | `Offset` | `0` | Leer desde el comienzo. |
     | `Length` | `0` | Leer el archivo completo. |
@@ -93,15 +127,15 @@ status: draft
 
     - Un archivo no impone el ritmo de un dispositivo SDR: el programa puede leerlo tan rápido como permitan el procesador y los buffers. `Throttle` limita aproximadamente la cantidad de **elementos de su propio puerto** procesados por segundo.
 
-    - Utilizaremos esta organización cuando el conversor esté listo:
+    - El montaje utiliza esta organización cuando el conversor esté listo:
 
     ```text
-    File Source (Byte) → Conversor I/Q → Throttle (Complex) → Visores
+    File Source → Conversor de .cu8 a .c64 → Throttle → Visores
     ```
 
     - Configurar un solo `Throttle` con `Type = Complex`, `Vector Length = 1` y `Sample Rate = samp_rate`.
 
-    - Este control se utiliza mientras observamos con visores. Al añadir `Audio Sink` en la sección 13, retiraremos o puentearemos `Throttle`: el dispositivo de audio regulará el ritmo.
+    - Este control se utiliza durante la observación con visores. Al añadir `Audio Sink` en la sección 13, el estudiante retira o puentea `Throttle`: el dispositivo de audio regulará el ritmo.
 
     ![Flowgraph con File Source Byte, conversor a complejos, Throttle Complex y tres visores.](figures/03-flowgraph.svg)
     **Figura 3.** Después del conversor, el ritmo de elementos complejos coincide con `samp_rate`.
@@ -116,14 +150,19 @@ status: draft
 
     ### 3.1. Dos piezas para cada bloque propio
 
-    Vamos a desarrollar el conversor y el rotador como bloques de **`gr-cbs33m`**, un módulo OOT (*Out-of-Tree*): un paquete propio que se instala junto a GNU Radio. Sus bloques aparecerán en la categoría **CBS33M** del panel derecho de GRC y podrán reutilizarse en distintos flowgraphs.
+    El estudiante desarrolla el conversor y el rotador como bloques de **`gr-cbs33m`**, un módulo OOT (*Out-of-Tree*): un paquete propio que se instala junto a GNU Radio. Sus bloques aparecerán en la categoría **CBS33M** del panel derecho de GRC y podrán reutilizarse en distintos flowgraphs.
 
     | Archivo | Responsabilidad |
     |---|---|
     | Python, `.py` | Implementar el bloque: inicialización, puertos, relación entre elementos, estado y procesamiento en `work`. |
     | Descripción de GRC, `.block.yml` | Indicar su nombre y categoría, presentar parámetros y puertos y definir cómo crear la instancia Python. |
 
-    El archivo `.grc` guardará las conexiones y los parámetros de las instancias. El procesamiento de nuestros bloques se mantendrá en archivos Python del módulo. Podemos editar esos archivos directamente con nombres permanentes y compartir una misma implementación entre montajes.
+    El archivo `.grc` guardará las conexiones y los parámetros de las instancias. El procesamiento de los bloques del curso se mantendrá en archivos Python del módulo. El estudiante puede editar esos archivos directamente con nombres permanentes y compartir una misma implementación entre montajes.
+
+    El repositorio ya incluye los dos bloques completos. El estudiante recorre su implementación y comprueba los archivos existentes; no necesita generar otra biblioteca.
+    Los comandos de creación permiten reconstruir la plantilla si el módulo todavía no existe.
+    El `CMakeLists.txt` publicado instala únicamente Python y YAML; no necesita compilar una biblioteca C++.
+    Si se crea otra plantilla con `gr_modtool`, se conserva la configuración de instalación del módulo del curso.
 
     Un `Embedded Python Block` sigue otro mecanismo: almacena el código dentro del `.grc` y `Open in Editor` abre una copia temporal. «Guardar como» con otro nombre no vincula ese bloque al archivo nuevo. En este recorrido trabajaremos directamente con los archivos del módulo OOT. La [documentación de GNU Radio](https://wiki.gnuradio.org/index.php/Embedded_Python_Block) explica ambos mecanismos.
 
@@ -155,7 +194,7 @@ status: draft
         └── grc/CMakeLists.txt
     ```
 
-    La plantilla incluye otros directorios auxiliares. Primero añadiremos únicamente el conversor; el rotador se incorporará a este mismo módulo en la sección 7.
+    La plantilla incluye otros directorios auxiliares. Primero se añade únicamente el conversor; el rotador se incorpora a este mismo módulo en la sección 7.
 
     ### 3.3. Generar los archivos del conversor
 
@@ -166,19 +205,19 @@ status: draft
       --argument-list 'escala=127.5' cu8_a_c64
     ```
 
-    `-l python` elige el lenguaje y `-t decimator` expresa la relación entre elementos: consumiremos dos bytes por cada complejo de salida. El valor concreto `decim=2` se escribirá en el inicializador Python.
+    `-l python` elige el lenguaje y `-t decimator` expresa la relación entre elementos: el bloque consume dos bytes por cada complejo de salida. El valor concreto `decim=2` se escribe en el inicializador Python.
 
     `--argument-list` especifica los argumentos del constructor. El asistente puede preguntar el autor en `copyright holder` y si se desean archivos de prueba. El nombre del autor no es un argumento del bloque. Si el archivo ya fue generado, editarlo sin repetir `gr_modtool add`.
 
     Los archivos de trabajo serán:
 
-    | Archivo, relativo a `gnuradio/gr-cbs33m` | Qué escribiremos |
+    | Archivo, relativo a `gnuradio/gr-cbs33m` | Contenido |
     |---|---|
     | `python/cbs33m/cu8_a_c64.py` | Clase `cu8_a_c64` y procesamiento de conversión. |
     | `grc/cbs33m_cu8_a_c64.block.yml` | Interfaz del conversor en GRC. |
     | `python/cbs33m/__init__.py` | Importación que hace accesible la clase desde el paquete. |
 
-    Abrir la carpeta `gr-cbs33m` en el editor y seleccionar esos archivos desde su explorador. Para abrir un archivo individual, usar **Abrir archivo**, normalmente `Ctrl+O`; **Open Folder** selecciona carpetas. En esta etapa no utilizamos `Open in Editor` de un bloque integrado.
+    Abrir la carpeta `gr-cbs33m` en el editor y seleccionar esos archivos desde su explorador. Para abrir un archivo individual, usar **Abrir archivo**, normalmente `Ctrl+O`; **Open Folder** selecciona carpetas. En esta etapa el estudiante no utiliza `Open in Editor` de un bloque integrado.
 
     ### 3.4. Leer la estructura Python del bloque
 
@@ -191,7 +230,7 @@ status: draft
 
     class cu8_a_c64(gr.decim_block):
         def __init__(self, escala=127.5):
-            # Aquí inicializaremos el bloque y guardaremos su configuración.
+            # Aquí se inicializa el bloque y se guarda su configuración.
             pass
     ```
 
@@ -202,6 +241,19 @@ status: draft
     - Un parámetro como `escala` es configuración; las muestras llegan a `work` por los puertos.
 
     El inicializador `gr.decim_block.__init__` definirá una entrada `np.uint8`, una salida `np.complex64` y `decim=2`. `np.complex64` ocupa 64 bits en total: dos componentes flotantes de 32 bits. La relación 2:1 cuenta elementos de puertos con representaciones diferentes; no descarta parejas I/Q de la captura.
+
+    ![Responsabilidades de Python, parámetros de GRC y firma de puertos del bloque conversor.](figures/04-python-parametros-puertos.svg)
+    **Figura 4.** Python define la clase; el YAML presenta los parámetros en GRC.
+
+    - El panel superior separa lenguaje, configuración y puertos.
+    - El panel inferior relaciona la instancia con las llamadas repetidas a `work`.
+
+    <iframe src="../animaciones/python-bloque.html" title="Python, parámetros y puertos de un bloque OOT" width="100%" height="950" style="border: 0;" loading="lazy"></iframe>
+    **Figura 5.** Creación de una instancia y preparación de sus puertos.
+
+    El estudiante avanza hasta `work` y distingue la configuración inicial de los lotes de muestras.
+
+    [Abrir la animación en una ventana propia](animaciones/python-bloque.html).
 
     ### 3.5. Relacionar el constructor con la interfaz de GRC
 
@@ -214,7 +266,8 @@ status: draft
 
     En el YAML, `category: '[CBS33M]'` determina la categoría del panel; `label` establece el nombre visible, `templates.imports` importa el módulo y `templates.make` construye el objeto. Los puertos declarados deben coincidir con Python. La [referencia YAML de GRC](https://wiki.gnuradio.org/index.php?title=YAML_GRC) describe estos campos.
 
-    `gr_modtool` genera una **plantilla**, con marcadores como `<+numpy.float32+>` y procesamiento de ejemplo. Primero completaremos Python y YAML en la sección 4; después instalaremos el módulo y utilizaremos su primer bloque en el flowgraph.
+    `gr_modtool` genera una **plantilla**, con marcadores como `<+numpy.float32+>` y procesamiento de ejemplo.
+    La sección 4 explica el código completo de Python y YAML. Después, el estudiante instala el módulo y utiliza su primer bloque en el flowgraph.
 
 ??? note "4. Implementar e instalar el conversor de `.cu8` a `.c64`"
 
@@ -258,6 +311,32 @@ status: draft
 
     El bloque consume `I₀, Q₀, I₁, Q₁, …`, dos bytes por complejo de salida. Separa I y Q, convierte a flotantes antes de restar y, con **`escala=127.5`**, centra y normaliza cada componente mediante `(valor - 127.5)/127.5`. Finalmente entrega `I + 1j*Q` sin descartar parejas I/Q. Mantener ese valor de `escala` durante la práctica.
 
+    ![Cuatro bytes intercalados forman dos complejos: uno menos j y menos uno más j.](figures/05-dos-a-uno.svg)
+    **Figura 6.** La relación 2:1 cambia la representación sin descartar parejas I/Q.
+
+    - La entrada contiene cuatro elementos de un byte.
+    - La salida contiene dos elementos complejos de ocho bytes cada uno.
+
+    ![Buffers de entrada y salida con tres parejas I/Q y separación de posiciones pares e impares.](figures/06-buffers-work.svg)
+    **Figura 7.** `work` recibe capacidad de salida y procesa el doble de elementos Byte.
+
+    El estudiante sigue cada pareja desde `input_items[0]` hasta una posición de `output_items[0]`.
+    `len(output_items[0])` consulta la capacidad disponible; esa línea no reserva memoria.
+
+    ![Transformación de los valores 0, 127, 128 y 255 a componentes flotantes centradas y normalizadas.](figures/07-normalizacion.svg)
+    **Figura 8.** La conversión a flotante precede a la resta y a la división.
+
+    - La fila superior contiene enteros sin signo.
+    - La fila inferior contiene los valores normalizados.
+    - Los valores 127 y 128 quedan a ambos lados de cero; ningún entero representa exactamente 127.5.
+
+    <iframe src="../animaciones/conversion-cu8.html" title="Conversión de bytes I/Q a complejos normalizados" width="100%" height="950" style="border: 0;" loading="lazy"></iframe>
+    **Figura 9.** Conversión de cuatro bytes a dos muestras complejas.
+
+    El estudiante sigue la separación de I y Q y comprueba los resultados `1-1j` y `-1+1j`.
+
+    [Abrir la animación en una ventana propia](animaciones/conversion-cu8.html).
+
     ### 4.2. Definir el conversor en GRC
 
     Abrir `gnuradio/gr-cbs33m/grc/cbs33m_cu8_a_c64.block.yml` y sustituir su plantilla por:
@@ -299,7 +378,9 @@ status: draft
     from .cu8_a_c64 import cu8_a_c64
     ```
 
-    En esta primera instalación exportamos el conversor. La importación del rotador se añadirá cuando lo implementemos en la sección 7. Comprobar también que `python/cbs33m/CMakeLists.txt` incluya `cu8_a_c64.py` entre los archivos a instalar y que `grc/CMakeLists.txt` incluya `cbs33m_cu8_a_c64.block.yml`. `gr_modtool add` normalmente actualiza esas listas.
+    En esta etapa se estudia la exportación del conversor. El paquete publicado ya exporta también el rotador, cuya implementación se explica en la sección 7.
+    Comprobar que `python/cbs33m/CMakeLists.txt` incluya `cu8_a_c64.py` y que `grc/CMakeLists.txt` incluya `cbs33m_cu8_a_c64.block.yml`.
+    Las listas publicadas ya contienen los dos bloques. No se debe eliminar una importación ni un archivo al seguir la explicación por etapas.
 
     ### 4.4. Instalar el módulo en Radioconda
 
@@ -312,7 +393,7 @@ status: draft
     cmake --version
     ```
 
-    El Python mostrado debe pertenecer a Radioconda. Si falta CMake, instalarlo en ese entorno; para el recorrido con GNU Radio 3.10 utilizaremos CMake 3.x:
+    El Python mostrado debe pertenecer a Radioconda. CMake puede proceder del sistema o del entorno; esta instalación se comprobó con CMake 3.22.1. Si falta, se puede instalar CMake 3.x:
 
     ```bash
     conda install --freeze-installed -c conda-forge 'cmake>=3.16,<4'
@@ -331,13 +412,13 @@ status: draft
     ```bash
     cmake -S . -B build \
       -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
-      -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
-      -DPYTHON_EXECUTABLE="$CONDA_PREFIX/bin/python"
+      -DPython3_EXECUTABLE="$CONDA_PREFIX/bin/python"
     cmake --build build
+    ctest --test-dir build --output-on-failure
     cmake --install build
     ```
 
-    `CONDA_PREFIX` debe corresponder a Radioconda. Aunque nuestros bloques estén escritos en Python, CMake organiza la instalación del paquete; su plantilla puede requerir las herramientas de construcción del sistema. Verificar después la importación:
+    `CONDA_PREFIX` debe corresponder a Radioconda. El CMake publicado comprueba que ese Python importe GNU Radio y obtiene su carpeta `site-packages`. Después instala Python y YAML. No solicita Boost ni compiladores C++ para estos bloques. `ctest` verifica conversión, continuidad de fase, resintonía y parámetros inválidos. Verificar después la importación:
 
     ```bash
     python -c "from gnuradio import cbs33m; print(cbs33m.cu8_a_c64().name())"
@@ -345,9 +426,9 @@ status: draft
 
     ### 4.5. Añadir el conversor desde el panel de bloques
 
-    Recargar la biblioteca de GRC o reiniciar GRC. Buscar **CBS33M → Conversor de .cu8 a .c64**, arrastrarlo al montaje y mantener `Escala = 127.5`.
+    Recargar la biblioteca de GRC o reiniciar GRC. Buscar **CBS33M → Conversor de .cu8 a .c64**, arrastrarlo al montaje y establecer `ID = conversor_iq` y `Escala = 127.5`.
 
-    Conectar **File Source → Conversor → Throttle Complex**. El conversor mantiene la tasa física de 2.4 millones de muestras I/Q por segundo, cambiando la representación de dos bytes a un elemento complejo. En la sección 5 conectaremos los visores.
+    Conectar **File Source (`fuente_captura`) → Conversor de .cu8 a .c64 (`conversor_iq`) → Throttle (`ritmo_visores`)**. El conversor mantiene la tasa física de 2.4 millones de muestras I/Q por segundo, cambiando la representación de dos bytes a un elemento complejo. La sección 5 conecta los visores.
 
     Si Python importa el paquete pero el bloque no aparece en el panel, revisar dónde se instaló el `.block.yml` y las rutas de búsqueda de GRC. Los cambios posteriores se realizan en los archivos del módulo: detener el montaje, reinstalar y volver a ejecutarlo. Al compartir el repositorio, cada computadora debe instalar `gr-cbs33m` en su Radioconda.
 
@@ -366,7 +447,7 @@ status: draft
     Dejar una sola entrada de stream en cada visor. En el visor temporal se pueden usar inicialmente límites de −1 y +1 para cada componente; esos límites son de visualización y no recortan los datos del stream.
 
     ![Esquemas de una representación temporal, un espectro y un waterfall.](figures/08-visores.svg)
-    **Figura 8.** Las figuras son esquemas de lectura, no medidas calculadas desde la captura.
+    **Figura 10.** Las figuras son esquemas de lectura, no medidas calculadas desde la captura.
 
     Con 1024 puntos y $f_s=2.4$ Msps, el registro temporal dura:
 
@@ -378,7 +459,7 @@ status: draft
 
     Si `Center Frequency = 0`, el eje se interpreta como desplazamiento respecto de 99.1 MHz. Un componente observado en −1 MHz corresponde a 98.1 MHz RF. Alternativamente, fijar el centro del visor en `99.1e6` cambia las etiquetas del eje, **no sintoniza ni desplaza la señal**.
 
-    El nivel mostrado es relativo: sin calibración adicional no debe interpretarse como potencia absoluta en dBm. Una línea cerca de cero puede ser continua o un artefacto del receptor; observarla no basta para identificar una emisora. En este punto todavía no esperamos escuchar audio.
+    El nivel mostrado es relativo: sin calibración adicional no debe interpretarse como potencia absoluta en dBm. Una línea cerca de cero puede ser continua o un artefacto del receptor; observarla no basta para identificar una emisora. En este punto todavía el estudiante todavía no escucha audio.
 
     **Comprobación:** ejecutar, revisar actividad en I/Q, verificar que el espectro cubra aproximadamente −1.2 a +1.2 MHz y comparar la distribución espectral con las bandas que persisten en el waterfall.
 
@@ -396,10 +477,10 @@ status: draft
 
     Cada posición $k$ de la transformada evalúa una frecuencia de análisis. Una componente de la señal próxima a esa frecuencia aporta una magnitud elevada. El visor ordena los resultados para presentar las frecuencias negativas a la izquierda y las positivas a la derecha, alrededor de cero.
 
-    No calculamos por separado «el espectro de I» y «el espectro de Q» para luego dibujar dos mitades: **la entrada a la FFT es el arreglo complejo completo**. Esa representación permite distinguir frecuencias positivas y negativas sin imponer la simetría de magnitud propia de una entrada puramente real.
+    El visor no calcula por separado «el espectro de I» y «el espectro de Q» para luego dibujar dos mitades: **la entrada a la FFT es el arreglo complejo completo**. Esa representación permite distinguir frecuencias positivas y negativas sin imponer la simetría de magnitud propia de una entrada puramente real.
 
-    ![Muestras I y Q de una señal sintética, su FFT y los ejes alineados de frecuencia relativa y RF de origen.](figures/10-iq-a-espectro.svg)
-    **Figura 9.** De las muestras temporales a tres componentes en frecuencia: −600 kHz, 0 Hz y +400 kHz respecto de 99.1 MHz.
+    ![Muestras I y Q de una señal sintética, su FFT y los ejes alineados de frecuencia relativa y RF de origen.](figures/10-iq-a-espectro.png)
+    **Figura 11.** De las muestras temporales a tres componentes en frecuencia: −600 kHz, 0 Hz y +400 kHz respecto de 99.1 MHz.
 
     La figura utiliza tres tonos complejos sintéticos para distinguir las posiciones con claridad. La curva temporal muestra la suma de los tres, no una curva separada por emisora. Se muestran solo las primeras muestras del registro; la FFT se calcula sobre $N=2400$ muestras, con $f_s=2.4$ Msps y separación de bins de 1 kHz. Estos son parámetros del ejemplo, no un cambio obligatorio de la FFT de 1024 puntos del montaje.
 
@@ -407,7 +488,7 @@ status: draft
 
     ### 6.2. Interpretar las frecuencias a ambos lados del centro
 
-    La parte inferior de la Figura 9 tiene dos escalas alineadas:
+    La parte inferior de la Figura 11 tiene dos escalas alineadas:
 
     | Frecuencia en banda base | Frecuencia RF de origen | Interpretación |
     |---|---|---|
@@ -421,13 +502,13 @@ status: draft
     f_{\mathrm{entrada}}=f_e-f_c.
     $$
 
-    Una frecuencia negativa en banda base **no es una frecuencia RF negativa**. Indica el lado del centro donde aparece la señal. En una emisión FM real, el contenido ocupa una banda alrededor de su frecuencia central; un único pico no representa toda la emisora. Las frecuencias de los ejemplos no confirman qué emisoras están presentes en nuestros archivos.
+    Una frecuencia negativa en banda base **no es una frecuencia RF negativa**. Indica el lado del centro donde aparece la señal. En una emisión FM real, el contenido ocupa una banda alrededor de su frecuencia central; un único pico no representa toda la emisora. Las frecuencias de los ejemplos no confirman qué emisoras están presentes en estas capturas.
 
-??? note "7. Sintonizar con nuestro propio rotador"
+??? note "7. Sintonizar con el bloque propio rotador"
 
     ### 7.1. Multiplicar en el tiempo desplaza el espectro
 
-    Para llevar una componente a cero, multiplicamos todas las muestras por una exponencial compleja cuyo giro compense su frecuencia relativa:
+    Para llevar una componente a cero, el bloque multiplica todas las muestras por una exponencial compleja cuyo giro compense su frecuencia relativa:
 
     $$
     y[n]=x[n]e^{j2\pi f_{\mathrm{mezcla}}n/f_s}.
@@ -436,16 +517,18 @@ status: draft
     La consecuencia en frecuencia es una traslación:
 
     $$
-    f_{\mathrm{salida}}=f_{\mathrm{entrada}}+f_{\mathrm{mezcla}},
-    \qquad f_{\mathrm{mezcla}}=f_c-f_e.
+    \begin{aligned}
+    f_{\mathrm{salida}}&=f_{\mathrm{entrada}}+f_{\mathrm{mezcla}},\\
+    f_{\mathrm{mezcla}}&=f_c-f_e.
+    \end{aligned}
     $$
 
     En términos de la transformada, $Y(f)=X(f-f_{\mathrm{mezcla}})$, interpretando el espectro discreto como periódico con período $f_s$. Esta expresión **no significa multiplicar los valores de la FFT por una exponencial**: el bloque multiplicará las muestras temporales y observaremos su resultado con otra FFT.
 
-    ![Espectro original y resultados al centrar las señales de 98.5 y 99.5 MHz mediante desplazamientos de signos opuestos.](figures/11-centrar-emisoras.svg)
-    **Figura 10.** Un desplazamiento positivo centra la señal situada debajo de 99.1 MHz; uno negativo centra la situada encima. Todas las señales se trasladan juntas.
+    ![Espectro original y resultados al centrar las señales de 98.5 y 99.5 MHz mediante desplazamientos de signos opuestos.](figures/11-centrar-emisoras.png)
+    **Figura 12.** Un desplazamiento positivo centra la señal situada debajo de 99.1 MHz; uno negativo centra la situada encima. Todas las señales se trasladan juntas.
 
-    La Figura 10 sustituye los tonos por bandas ilustrativas de 120 kHz para mostrar que cada banda conserva su ancho. **No son espectros medidos ni una especificación del ancho necesario para cualquier emisora FM**. Los tres colores identifican los mismos orígenes RF en cada fila.
+    La Figura 12 sustituye los tonos por bandas ilustrativas de 120 kHz para mostrar que cada banda conserva su ancho. **No son espectros medidos ni una especificación del ancho necesario para cualquier emisora FM**. Los tres colores identifican los mismos orígenes RF en cada fila.
 
     - **Caso A:** la señal de 98.5 MHz aparece en −600 kHz y la de 99.5 MHz en +400 kHz.
     - **Caso B:** multiplicar por $e^{+j2\pi600000n/f_s}$ mueve todo +600 kHz; la primera señal queda en cero y las otras en +600 y +1000 kHz.
@@ -474,6 +557,11 @@ status: draft
 
     El oscilador utiliza ese avance para generar $p[n]=e^{j\phi[n]}$ y multiplicar cada entrada: $y[n]=x[n]p[n]$. Su magnitud unitaria conserva la magnitud de la muestra; el giro progresivo produce la traslación de frecuencia. Un incremento negativo cambia el sentido del giro.
 
+    ![Fasores de 0, 90, 180 y 270 grados para una mezcla de más 600 kHz a 2.4 Msps.](figures/12-rotador-oscilador.svg)
+    **Figura 13.** Un avance de 90 grados por muestra genera la secuencia `1, j, -1, -j`.
+
+    El círculo muestra los fasores; la tabla inferior relaciona cada fasor con su índice global.
+
     ### 7.3. Añadir el rotador al módulo del conversor
 
     Desde `gnuradio/gr-cbs33m`, añadir un segundo bloque al módulo ya creado:
@@ -483,9 +571,9 @@ status: draft
       --argument-list 'frecuencia_mezcla=0.0, samp_rate=2.4e6' rotador_frecuencia
     ```
 
-    Si estos archivos ya existen, editarlos sin repetir el comando. Abrir `python/cbs33m/rotador_frecuencia.py` en el editor; implementaremos nuestro propio procesamiento dentro del mismo paquete que el conversor.
+    Si estos archivos ya existen, editarlos sin repetir el comando. Abrir `python/cbs33m/rotador_frecuencia.py` en el editor; el estudiante implementa el procesamiento dentro del mismo paquete que el conversor.
 
-    A diferencia del conversor, usamos **`gr.sync_block`**: por cada complejo que entra, producimos un complejo. No hay relación 2:1 ni cambio de tasa. Sus parámetros serán `frecuencia_mezcla`, en Hz, y `samp_rate`, en muestras complejas/s.
+    A diferencia del conversor, el bloque utiliza **`gr.sync_block`**: por cada complejo que entra, el bloque produce un complejo. No hay relación 2:1 ni cambio de tasa. Sus parámetros serán `frecuencia_mezcla`, en Hz, y `samp_rate`, en muestras complejas/s.
 
     Sustituir el código de ejemplo del archivo por el siguiente código completo:
 
@@ -542,13 +630,19 @@ status: draft
             return n
     ```
 
-    Guardar el archivo Python. Tras recorrer la lógica de `work`, completaremos el YAML y reinstalaremos el módulo en 7.5; después añadiremos el bloque desde el panel de GRC y configuraremos sus parámetros en 7.6.
+    Guardar el archivo Python. Tras recorrer la lógica de `work`, el estudiante completa el YAML y reinstala el módulo en 7.5; después añade el bloque desde el panel de GRC y configuraremos sus parámetros en 7.6.
 
     `self.fase` es **estado interno**, no un parámetro que el estudiante deba configurar. Se inicializa una vez al crear la instancia y se actualiza al procesar cada lote. Al detener y volver a iniciar el programa se crea una instancia nueva y la fase comienza de nuevo en cero.
 
     ### 7.4. Seguir la lógica de `work`
 
-    El planificador entrega porciones de muestras, cuyo tamaño puede cambiar entre llamadas. Llamaremos $N$ al número de complejos de un lote; en el código, esa cantidad se llama `n`. Un lote no es necesariamente un período del oscilador, una trama ni la ventana FFT de un visor.
+    El planificador entrega porciones de muestras, cuyo tamaño puede cambiar entre llamadas. Se denomina $N$ al número de complejos de un lote; en el código, esa cantidad se llama `n`. Un lote no es necesariamente un período del oscilador, una trama ni la ventana FFT de un visor.
+
+    ![Flujo de muestras por el rotador y conservación de la fase entre llamadas a work.](figures/13-rotador-work.svg)
+    **Figura 14.** Las muestras recorren el bloque y la fase queda guardada para la próxima llamada.
+
+    - La fila superior sigue los datos de entrada y salida.
+    - La fila inferior calcula los ángulos y conserva la fase de continuación.
 
     #### 1. Obtener la cantidad de muestras de salida
 
@@ -556,7 +650,7 @@ status: draft
     n = len(output_items[0])
     ```
 
-    El primer `[0]` identifica el puerto. Su buffer tiene espacio para `n` complejos; como el bloque es síncrono, procesaremos `n` entradas. A diferencia del conversor, no multiplicamos esta cantidad por dos.
+    El primer `[0]` identifica el puerto. Su buffer tiene espacio para `n` complejos; como el bloque es síncrono, el bloque procesa `n` entradas. A diferencia del conversor, el bloque no multiplica esta cantidad por dos.
 
     #### 2. Convertir Hz a radianes por muestra
 
@@ -564,7 +658,7 @@ status: draft
     incremento = 2 * np.pi * self.frecuencia_mezcla / self.samp_rate
     ```
 
-    Aquí usamos la tasa de **complejos**, no la tasa de bytes del archivo. Este valor es constante mientras mantengamos la frecuencia de mezcla y la tasa configuradas. Se calcula en `work` para que la relación entre los parámetros y el procesamiento quede explícita.
+    El bloque utiliza la tasa de **complejos**, no la tasa de bytes del archivo. Este valor es constante mientras mantengamos la frecuencia de mezcla y la tasa configuradas. Se calcula en `work` para que la relación entre los parámetros y el procesamiento quede explícita.
 
     #### 3. Numerar el lote y construir sus ángulos
 
@@ -581,7 +675,7 @@ status: draft
     \phi_0,\quad\phi_0+\Delta\phi,\quad\ldots,\quad\phi_0+(N-1)\Delta\phi.
     $$
 
-    Usamos `float64` para el cálculo de ángulos. Eso no cambia la firma de los puertos: las muestras de entrada y salida siguen siendo `complex64`.
+    El bloque utiliza `float64` para el cálculo de ángulos. Eso no cambia la firma de los puertos: las muestras de entrada y salida siguen siendo `complex64`.
 
     #### 4. Generar el oscilador y escribir el resultado
 
@@ -592,7 +686,7 @@ status: draft
 
     `np.exp` se aplica a todos los ángulos del arreglo. El producto también es elemento a elemento: la primera entrada se multiplica por el primer fasor, la segunda por el segundo, y así sucesivamente. La asignación escribe en el buffer de salida preparado por GNU Radio.
 
-    No calculamos una FFT ni multiplicamos todas las muestras por un único complejo fijo. El oscilador toma el valor que corresponde a cada muestra del lote.
+    El rotador no calcula una FFT ni multiplica todas las muestras por un único complejo fijo. El oscilador toma el valor que corresponde a cada muestra del lote.
 
     #### 5. Guardar la continuación y devolver lo producido
 
@@ -601,9 +695,28 @@ status: draft
     return n
     ```
 
-    La última muestra utilizó el índice `n-1`, pero debemos guardar la fase de **la siguiente**, correspondiente al índice `n`. Por eso sumamos `incremento*n`, no `incremento*(n-1)`.
+    La última muestra utilizó el índice `n-1`, pero el bloque debe guardar la fase de **la siguiente**, correspondiente al índice `n`. Por eso el bloque suma `incremento*n`, no `incremento*(n-1)`.
 
-    `return n` informa cuántos complejos producimos. `gr.sync_block` consume esa misma cantidad de entradas. No necesitamos llamar manualmente a una función de consumo.
+    `return n` informa cuántos complejos produce el bloque. `gr.sync_block` consume esa misma cantidad de entradas. El bloque no necesita llamar manualmente a una función de consumo.
+
+    ![Comparación de dos lotes de cuatro muestras con continuidad de fase o reinicio incorrecto.](figures/14-rotador-continuidad.svg)
+    **Figura 15.** Los índices locales se reinician; el oscilador conserva su continuidad.
+
+    La fila superior continúa en 240 grados. La inferior vuelve a cero e introduce una discontinuidad.
+    Este ejemplo usa 60 grados por muestra, distinto del ejemplo anterior de 90 grados.
+
+    ![Equivalencia entre fases de 60 y 420 grados y operación módulo dos pi.](figures/15-rotador-modulo.svg)
+    **Figura 16.** Retirar vueltas completas conserva el fasor.
+
+    El estudiante compara el mismo punto del círculo con dos números de ángulo.
+    El módulo limita el ángulo almacenado; no reinicia la fase.
+
+    <iframe src="../animaciones/rotador-propio.html" title="Continuidad de fase entre lotes del rotador" width="100%" height="950" style="border: 0;" loading="lazy"></iframe>
+    **Figura 17.** El estado de fase conecta llamadas sucesivas a `work`.
+
+    El estudiante compara un lote de ocho muestras con dos lotes de cuatro. La secuencia debe coincidir.
+
+    [Abrir la animación en una ventana propia](animaciones/rotador-propio.html).
 
     ### 7.5. Registrar el rotador y su callback en el módulo
 
@@ -642,7 +755,7 @@ status: draft
     file_format: 1
     ```
 
-    El método `set_frecuencia_mezcla` del código anterior es un **setter**: actualiza el valor que utilizará `work` y conserva `self.fase`. El callback indica a GRC que llame a ese método cuando cambie el parámetro de mezcla, por ejemplo desde el control de sintonía. En esta práctica mantenemos fija `samp_rate` mientras se ejecuta el montaje.
+    El método `set_frecuencia_mezcla` del código anterior es un **setter**: actualiza el valor que utilizará `work` y conserva `self.fase`. El callback indica a GRC que llame a ese método cuando cambie el parámetro de mezcla, por ejemplo desde el control de sintonía. En esta práctica se mantiene fija `samp_rate` mientras se ejecuta el montaje.
 
     Comprobar que `python/cbs33m/__init__.py` exporte ahora ambos bloques:
 
@@ -659,15 +772,15 @@ status: draft
     └── Rotador de frecuencias
     ```
 
-    Podemos comprobar también la importación del bloque nuevo:
+    El estudiante puede comprobar también la importación del bloque nuevo:
 
     ```bash
     python -c "from gnuradio import cbs33m; print(cbs33m.rotador_frecuencia().name())"
     ```
 
-    ### 7.6. Configurar y conectar nuestro rotador en GRC
+    ### 7.6. Configurar y conectar el rotador del curso en GRC
 
-    Detener el flowgraph. Conservar `samp_rate = 2.4e6` y añadir tres bloques `Variable`:
+    Detener el flowgraph. Conservar `samp_rate = 2.4e6` y añadir tres bloques `Variable`. El grafo final usa un `QT GUI Range` para `frecuencia_emisora`, expresada en Hz:
 
     | ID | Value inicial | Unidad y significado |
     |---|---|---|
@@ -683,18 +796,18 @@ status: draft
     | `Frecuencia de mezcla (Hz)` | `frecuencia_mezcla` |
     | `Tasa de muestras (sps)` | `samp_rate` |
 
-    Los nombres visibles vienen del YAML y corresponden a los argumentos `frecuencia_mezcla` y `samp_rate` de `__init__`. **Nuestro bloque no tiene el campo `Phase Increment` del Rotator Core**: recibe Hz y calcula el incremento dentro de `work`. No debemos introducir $\pi/2$ en el parámetro de frecuencia.
+    Los nombres visibles vienen del YAML y corresponden a los argumentos `frecuencia_mezcla` y `samp_rate` de `__init__`. **Nuestro bloque no tiene el campo `Phase Increment` del Rotator Core**: recibe Hz y calcula el incremento dentro de `work`. El estudiante no debe introducir $\pi/2$ en el parámetro de frecuencia.
 
     Tampoco necesita un bloque `Import` con `import math`: importa NumPy en su propio código y utiliza `np.pi` dentro de ese módulo. Cambiar parámetros con el programa detenido y ejecutar de nuevo en cada ensayo.
 
-    En esta etapa aún trabajamos solo con visores. Conservarlos y añadir una rama nueva después de `Throttle`, que ya procesa complejos; este se retirará al conectar la salida de audio de la sección 13:
+    En esta etapa el estudiante trabaja solo con visores. Conservarlos y añadir una rama nueva después de `Throttle`, que ya procesa complejos; este se retirará al conectar la salida de audio de la sección 13:
 
     ```text
-    File Source (Byte) → Conversor .cu8 a .c64 → Throttle (Complex)
+    File Source (Byte) → Conversor de .cu8 a .c64 → Throttle (Complex)
                                                    ├→ Time Sink original
                                                    ├→ Frequency Sink original
                                                    ├→ Waterfall Sink original
-                                                   └→ Rotador propio → Frequency Sink nuevo
+                                                   └→ Rotador de frecuencias [centrar_emisora] → Frequency Sink nuevo
     ```
 
     1. Conectar `Throttle.out` a la entrada compleja del bloque propio `centrar_emisora`.
@@ -747,12 +860,13 @@ status: draft
 
     | Campo | Valor |
     |---|---|
+    | `ID` | `filtro_canal` |
     | `Type` | `Complex → Complex (Real Taps)` |
     | `Decimation` | `decimacion_fir` |
     | `Taps` | `firdes.low_pass(1.0, samp_rate, 120e3, 30e3)` |
     | `Sample Delay` | `0` |
 
-    Conectar **salida del rotador → entrada del FIR de canal**. El bloque importa `firdes` automáticamente; no hace falta añadir un `Import` para esa función.
+    Conectar **Rotador de frecuencias (`centrar_emisora`) → Decimating FIR Filter (`filtro_canal`)**. El bloque importa `firdes` automáticamente; no hace falta añadir un `Import` para esa función.
 
     Los *taps* son los coeficientes del FIR. La expresión los diseña con ganancia uno, tasa de **entrada** de 2.4 Msps, centro de transición en 120 kHz y ancho de transición de diseño de 30 kHz. Conserva aproximadamente la banda de −100 a +100 kHz y atenúa las frecuencias exteriores. El corte de 120 kHz no significa una banda perfectamente plana hasta ese punto.
 
@@ -762,11 +876,11 @@ status: draft
     f_{s,\mathrm{canal}}=\frac{2400000}{8}=300000\ \text{muestras complejas/s}.
     $$
 
-    El intervalo representable pasa a **−150 a +150 kHz**, pero la señal seleccionada no se ensancha a 300 kHz. Los márgenes alrededor de la banda útil permiten la transición de un filtro realizable. Una decimación por doce dejaría ±100 kHz y no daría margen si quisiéramos conservar íntegramente hasta esos bordes.
+    El intervalo representable pasa a **−150 a +150 kHz**, pero la señal seleccionada no se ensancha a 300 kHz. Los márgenes alrededor de la banda útil permiten la transición de un filtro realizable. Una decimación por doce dejaría ±100 kHz y no daría margen si se desea conservar íntegramente hasta esos bordes.
 
     Para comparar la salida, añadir otro `QT GUI Frequency Sink` de tipo **Complex**, con `Bandwidth = tasa_canal`, `Center Frequency = 0` y una entrada. No compartir con la señal de 2.4 Msps un visor cuyas entradas usan un único ancho de banda.
 
-    Como prueba con esta grabación, podemos seleccionar **98.1 MHz**, donde observamos una señal FM: con las variables de 7.6, usar `frecuencia_emisora = 98.1e6`, que produce una mezcla de +1 MHz. Si se utiliza el control `freq_sint` en MHz del montaje de clase, introducir `98.1` en ese control.
+    Como prueba con esta grabación, el estudiante puede seleccionar **98.1 MHz**, donde se identificó una señal FM: con las variables de 7.6, usar `frecuencia_emisora = 98.1e6`, que produce una mezcla de +1 MHz. En el `QT GUI Range` del grafo final, introducir `98100000` Hz.
 
 ??? note "9. Demodular FM y observar el multiplex"
 
@@ -790,7 +904,7 @@ status: draft
     |---|---|
     | `Gain` | `tasa_canal / (2 * math.pi * desviacion_fm)` |
 
-    El bloque incorpora la importación de `math`. Sustituir la expresión genérica que contiene `fsk_deviation_hz`, porque ese nombre no está definido en nuestro montaje.
+    El bloque incorpora la importación de `math`. Sustituir la expresión genérica que contiene `fsk_deviation_hz`, porque ese nombre no está definido en este montaje.
 
     Con estos valores, la ganancia es aproximadamente 0.63662. Una desviación de +75 kHz respecto del centro produce aproximadamente +1 y una de −75 kHz produce −1. Esta desviación de referencia **no es el ancho total del canal ni la frecuencia del audio**.
 
@@ -814,7 +928,7 @@ status: draft
 
 ??? note "10. Extraer el audio mono con un segundo FIR"
 
-    La salida de `Quadrature Demod` todavía contiene el multiplex. Para obtener **audio mono**, conservamos aproximadamente hasta 15 kHz y atenuamos el piloto, la información estéreo y RDS. Este FIR recibe valores reales, a diferencia del filtro complejo de selección de canal.
+    La salida de `Quadrature Demod` todavía contiene el multiplex. Para obtener **audio mono**, el filtro conserva aproximadamente hasta 15 kHz y atenuamos el piloto, la información estéreo y RDS. Este FIR recibe valores reales, a diferencia del filtro complejo de selección de canal.
 
     Añadir las variables:
 
@@ -827,12 +941,13 @@ status: draft
 
     | Campo | Valor |
     |---|---|
+    | `ID` | `filtro_audio` |
     | `Type` | `Float → Float (Real Taps)` |
     | `Decimation` | `decimacion_audio` |
     | `Taps` | `firdes.low_pass(1.0, tasa_canal, 16e3, 2e3)` |
     | `Sample Delay` | `0` |
 
-    Conectar **Quadrature Demod → FIR de audio**. El diseño utiliza la tasa de entrada de 300 ksps, centro de transición en 16 kHz y ancho de transición de diseño de 2 kHz. Conserva aproximadamente hasta 15 kHz y atenúa fuertemente el piloto de 19 kHz.
+    Conectar **Quadrature Demod → Decimating FIR Filter (`filtro_audio`)**. El diseño utiliza la tasa de entrada de 300 ksps, centro de transición en 16 kHz y ancho de transición de diseño de 2 kHz. Conserva aproximadamente hasta 15 kHz y atenúa fuertemente el piloto de 19 kHz.
 
     La tasa de salida es $300000/6=50000$ muestras/s. Un visor conectado aquí debe ser **Float**, con `Bandwidth = tasa_audio_intermedia`; al mostrar solo la mitad positiva, su eje abarca de 0 a 25 kHz. Debe observarse el contenido de audio sin las bandas superiores del multiplex.
 
@@ -855,11 +970,11 @@ status: draft
     f_{s,\mathrm{salida}}=50000\frac{24}{25}=48000\ \text{muestras/s}.
     $$
 
-    Conceptualmente, interpolamos por 24, filtramos y decimamos por 25. La interpolación calcula valores intermedios: no consiste en repetir cada muestra. La implementación polifásica evita construir explícitamente todo el stream intermedio a 1.2 millones de muestras/s.
+    Conceptualmente, el remuestreador interpola por 24, filtra y decima por 25. La interpolación calcula valores intermedios: no consiste en repetir cada muestra. La implementación polifásica evita construir explícitamente todo el stream intermedio a 1.2 millones de muestras/s.
 
     Con `Taps = []`, el bloque diseña automáticamente su filtro de remuestreo. `Fractional BW = 0.4` es un parámetro normalizado de ese diseño, no una frecuencia en Hz.
 
-    Conectar **FIR de audio → Rational Resampler** y añadir la variable `tasa_audio = 48000`. El remuestreo conserva la duración y las frecuencias del contenido; un tono de 1 kHz sigue siendo de 1 kHz. Desde este punto, los bloques trabajan a `tasa_audio`; cualquier visor temporal o espectral debe usar esa tasa.
+    Conectar **Decimating FIR Filter (`filtro_audio`) → Rational Resampler** y añadir la variable `tasa_audio = 48000`. El remuestreo conserva la duración y las frecuencias del contenido; un tono de 1 kHz sigue siendo de 1 kHz. Desde este punto, los bloques trabajan a `tasa_audio`; cualquier visor temporal o espectral debe usar esa tasa.
 
 ??? note "12. Aplicar el deénfasis"
 
@@ -874,7 +989,7 @@ status: draft
 
     En transmisión FM se refuerzan los agudos mediante **preénfasis**. El deénfasis realiza la corrección complementaria: atenúa progresivamente las frecuencias altas para recuperar el balance del audio y reducir parte del ruido añadido durante la recepción. Sin esa corrección, el audio puede sonar demasiado brillante o con más siseo.
 
-    Aquí utilizamos la constante de tiempo de **75 microsegundos**, como en el montaje de clase. Debe corresponder al preénfasis de la transmisión; otros sistemas usan 50 microsegundos. No confundir `75e-6` segundos con `75e3` Hz de desviación FM.
+    El montaje utiliza la constante de tiempo de **75 microsegundos**, como en el montaje de clase. Debe corresponder al preénfasis de la transmisión; otros sistemas usan 50 microsegundos. No confundir `75e-6` segundos con `75e3` Hz de desviación FM.
 
     El deénfasis no sustituye al FIR de audio: el FIR selecciona la banda hasta unos 15 kHz, mientras el deénfasis corrige el balance de frecuencias dentro del audio conservado.
 
@@ -894,7 +1009,7 @@ status: draft
     | `Audio Sink` | `Num Inputs` | `1` |
     | `Audio Sink` | `OK to Block` | `Yes` |
 
-    Conectar **FM Deemphasis → Multiply Const → Audio Sink**. La constante regula el volumen sin cambiar la frecuencia ni la tasa del audio. La salida es mono: todavía no hemos construido un decodificador estéreo.
+    Conectar **FM Deemphasis → Multiply Const → Audio Sink**. La constante regula el volumen sin cambiar la frecuencia ni la tasa del audio. La salida es mono: todavía el montaje no incluye un decodificador estéreo.
 
     ### 13.2. Retirar el Throttle al añadir Audio Sink
 
@@ -906,14 +1021,14 @@ status: draft
 
     1. Detener el flowgraph.
     2. Retirar `Throttle` y reconectar su origen con su destino; no basta con dejar una entrada sin conexión.
-    3. Si estaba antes del conversor, conectar `File Source.out → Conversor.in`.
+    3. Si estaba antes del conversor, conectar `File Source (`fuente_captura`), salida 0 → Conversor de .cu8 a .c64 (`conversor_iq`), entrada 0`.
     4. Si estaba después del conversor, alimentar desde este las ramas de observación y el rotador.
     5. También puede dejarse el bloque en `Bypass` si GRC ofrece esa opción, como se hizo en el montaje de clase.
     6. Mantener `Audio Sink` a 48 kHz con `OK to Block = Yes` y ejecutar de nuevo.
 
     Un caso especialmente problemático era el `Throttle` **Byte** a `samp_rate = 2.4e6`: solo dejaba pasar 1.2 millones de complejos/s y la cadena producía aproximadamente 24 000 valores de audio/s, mientras la tarjeta solicitaba 48 000. Por eso, aunque los parámetros nominales de los filtros fueran correctos, aparecían huecos de audio.
 
-    **No compensamos esos huecos cambiando la tasa del Audio Sink ni los factores del remuestreador:** retiramos el límite incorrecto. Si persisten `aU`, deshabilitar visores innecesarios, aumentar su `Update Period` a `0.25` o `0.5` s y comprobar la carga de procesamiento. El aviso sobre Wayland es independiente de la indicación de falta de muestras de audio.
+    **El estudiante no compensa esos huecos cambiando la tasa del Audio Sink ni los factores del remuestreador:** retira el límite incorrecto. Si persisten `aU`, deshabilitar visores innecesarios, aumentar su `Update Period` a `0.25` o `0.5` s y comprobar la carga de procesamiento. El aviso sobre Wayland es independiente de la indicación de falta de muestras de audio.
 
     Si se deshabilita después `Audio Sink` para volver a observar solamente visores, volver a habilitar un único `Throttle` con la tasa correcta para el tipo de su puerto.
 
@@ -923,11 +1038,11 @@ status: draft
 
     ```text
     File Source (Byte)
-      → Conversor .cu8 a .c64
-      → Rotador propio
-      → FIR de canal /8
+      → Conversor de .cu8 a .c64
+      → Rotador de frecuencias [centrar_emisora]
+      → Decimating FIR Filter [filtro_canal] /8
       → Quadrature Demod
-      → FIR de audio /6
+      → Decimating FIR Filter [filtro_audio] /6
       → Rational Resampler 24/25
       → FM Deemphasis
       → Multiply Const
@@ -950,14 +1065,14 @@ status: draft
 
     ### 14.1. Punto de partida: la emisora de 98.1 MHz
 
-    Trabajaremos con `fm_99p1MHz_2p4Msps_g30.cu8` y la señal situada en **98.1 MHz**. Detener la ejecución, seleccionar `freq_sint = 98.1` si se utiliza el control en MHz del montaje de clase y volver a ejecutar. Con las variables de la sección 7, el ajuste equivalente es `frecuencia_emisora = 98.1e6`.
+    El estudiante trabaja con `fm_99p1MHz_2p4Msps_g30.cu8` y la señal situada en **98.1 MHz**. Detener la ejecución, seleccionar `frecuencia_emisora = 98.1e6` Hz y volver a ejecutar.
 
     El primer rotador debe mezclar por **+1 MHz**, porque la emisora está 1 MHz por debajo del centro de captura de 99.1 MHz. Después del FIR de canal con decimación ocho, `Quadrature Demod` recibe complejos y entrega el **multiplex FM real a `tasa_canal = 300000` valores/s**.
 
     Añadir una rama directamente a esa salida. La rama de audio de las secciones 10 a 13 se conserva en paralelo:
 
     ![Dos ramas desde la salida real del Quadrature Demod: audio mono a 48 ksps y recuperación de RDS mediante centrado, filtrado, sincronización y decodificación.](figures/16-rama-rds.svg)
-    **Recorrido del receptor.** Ambas ramas reciben el multiplex; cada una selecciona y procesa su contenido.
+    **Figura 18.** Ambas ramas reciben el multiplex; cada una selecciona y procesa su contenido.
 
     **La derivación se hace antes del FIR de audio.** Ese filtro elimina las frecuencias superiores a la banda audible, incluida la información RDS alrededor de 57 kHz. Tampoco tomamos la señal después del remuestreador de audio ni del deénfasis.
 
@@ -965,7 +1080,7 @@ status: draft
 
     ### 14.2. Qué transporta RDS
 
-    RDS transmite información digital auxiliar, como el **nombre de servicio de la emisora (PS)** y el **radiotexto (RT)**. En el multiplex, utiliza una subportadora de 57 kHz, suprimida, con bandas laterales que transportan los datos. Por ello no esperamos una gran línea central como la del piloto estéreo de 19 kHz.
+    **RDS, Radio Data System**, transmite información digital auxiliar, como el **nombre de servicio de la emisora (PS)** y el **radiotexto (RT)**. En el multiplex, utiliza una subportadora de 57 kHz, suprimida, con bandas laterales que transportan los datos. Por ello el estudiante no debe esperar una gran línea central como la del piloto estéreo de 19 kHz.
 
     La tasa de datos es **1187.5 bits/s**. Antes de modular, se aplica codificación diferencial y cada bit se representa mediante dos elementos de polaridad opuesta, llamados aquí **chips bifase**:
 
@@ -973,7 +1088,7 @@ status: draft
     R_{\mathrm{chips}}=2R_b=2(1187.5)=2375\ \text{chips/s}.
     $$
 
-    Primero recuperaremos esos chips y su reloj; después los agruparemos de dos en dos para reconstruir los bits. La tasa de 12 ksps que usaremos para procesarlos es una **tasa de muestras**, distinta de ambas tasas de información. Estos parámetros proceden de la [especificación de RDS, ITU-R BS.643](https://www.itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.643-4-202212-I!!PDF-E.pdf).
+    Primero el montaje recupera esos chips y su reloj; después agrupa esos chips de dos en dos para reconstruir los bits. La tasa de 12 ksps que utiliza el montaje para procesarlos es una **tasa de muestras**, distinta de ambas tasas de información. Estos parámetros proceden de la [especificación de RDS, ITU-R BS.643](https://www.itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.643-4-202212-I!!PDF-E.pdf).
 
 ??? note "15. Centrar y aislar RDS a 12 ksps"
 
@@ -985,18 +1100,19 @@ status: draft
     x[n]=m_{\mathrm{MPX}}[n]+j0.
     $$
 
-    El bloque cambia la representación de los valores, pero mantiene **300 000 muestras/s**. Disponer de una salida compleja nos permite utilizar nuestro rotador para trasladar la banda de RDS.
+    El bloque cambia la representación de los valores, pero mantiene **300 000 muestras/s**. Disponer de una salida compleja nos permite utilizar el rotador del curso para trasladar la banda de RDS.
 
-    ### 15.2. Reutilizar nuestro rotador con una instancia nueva
+    ### 15.2. Reutilizar el rotador del curso con una instancia nueva
 
     Arrastrar otra instancia de **CBS33M → Rotador de frecuencias**, implementado en la sección 7. Ambas instancias utilizan la misma clase instalada y cada una conserva su propia fase y sus propios parámetros:
 
     | Campo | Valor |
     |---|---|
+    | `ID` | `centrar_rds` |
     | `frecuencia_mezcla` | `-57000` |
     | `samp_rate` | `tasa_canal` — 300 000 |
 
-    Conectar **Float To Complex → rotador de RDS**. El bloque multiplica por:
+    Conectar **Float To Complex → Rotador de frecuencias (`centrar_rds`)**. El bloque multiplica por:
 
     $$
     e^{-j2\pi(57000)n/300000},\qquad
@@ -1013,12 +1129,13 @@ status: draft
 
     | Campo | Valor |
     |---|---|
+    | `ID` | `filtro_rds` |
     | `Type` | `Complex → Complex (Real Taps)` |
     | `Decimation` | `25` |
     | `Taps` | `firdes.low_pass(1.0, tasa_canal, 3e3, 1e3)` |
     | `Sample Delay` | `0` |
 
-    Conectar **rotador de RDS → FIR de RDS**. Los taps usan la tasa de entrada de 300 ksps, centro de transición en 3 kHz y ancho de transición de diseño de 1 kHz. El filtro conserva la banda útil de RDS, que se extiende aproximadamente hasta ±2.375 kHz, y atenúa el contenido exterior antes de reducir la tasa:
+    Conectar **Rotador de frecuencias (`centrar_rds`) → Decimating FIR Filter (`filtro_rds`)**. Los taps usan la tasa de entrada de 300 ksps, centro de transición en 3 kHz y ancho de transición de diseño de 1 kHz. El filtro conserva la banda útil de RDS, que se extiende aproximadamente hasta ±2.375 kHz, y atenúa el contenido exterior antes de reducir la tasa:
 
     $$
     f_{s,\mathrm{RDS}}=\frac{300000}{25}=12000\ \text{muestras complejas/s}.
@@ -1040,11 +1157,11 @@ status: draft
     | `Constant` | `20` |
     | `Vector Length` | `1` |
 
-    Esta ganancia establece una escala de amplitud adecuada para el ensayo con nuestra captura. **Multiplica tanto la señal como el ruido: no mejora su relación señal/ruido.** El valor 20 es parte de la configuración comprobada para este archivo; no es una constante del estándar RDS.
+    Esta ganancia establece una escala de amplitud adecuada para el ensayo con esta captura. **Multiplica tanto la señal como el ruido: no mejora su relación señal/ruido.** El valor 20 es parte de la configuración comprobada para este archivo; no es una constante del estándar RDS.
 
     ### 16.2. Alinear la señal con Costas Loop
 
-    Conectar **Multiply Const → Costas Loop** y configurar:
+    Conectar **Multiply Const (`ganancia_rds`) → Costas Loop** y configurar:
 
     | Campo | Valor |
     |---|---|
@@ -1056,7 +1173,7 @@ status: draft
 
     `Loop Bandwidth` es un parámetro normalizado del lazo, no un ancho en Hz ni la tasa de muestras. El bloque no tiene un campo `Sample Rate`: recibe y entrega complejos a **12 ksps**. Usar su salida compleja `out`; las salidas opcionales `frequency`, `phase` y `error` pueden quedar sin conectar.
 
-    Conectar un `QT GUI Constellation Sink` a `out`. Esperamos una nube alargada horizontalmente, con menor dispersión en Q. Todavía se dibujan las muestras de las transiciones entre chips. Una nube circular, sin alineación estable, indica que debemos revisar la señal recibida y el seguimiento del lazo antes de decidir los datos.
+    Conectar un `QT GUI Constellation Sink` a `out`. El estudiante observa una nube alargada horizontalmente, con menor dispersión en Q. El visor todavía dibuja las muestras de las transiciones entre chips. Una nube circular, sin alineación estable, indica que el estudiante debe revisar la señal recibida y el seguimiento del lazo antes de tomar decisiones binarias.
 
     ### 16.3. Aplicar el filtro adaptado al conformado de los pulsos
 
@@ -1074,11 +1191,11 @@ status: draft
 
     El bloque genera sus taps internamente; su expresión equivalente es `firdes.root_raised_cosine(1.0, tasa_rds, 2375, 1.0, 101)`.
 
-    El FIR anterior seleccionaba una banda de frecuencias. Este RRC se adapta al **conformado de cada chip** para preparar los pulsos para su lectura y reducir ruido fuera de su forma espectral. La elección de 2375 elementos/s y `Alpha = 1` coincide con los taps RRC del [receptor de referencia gr-rds](https://github.com/bastibl/gr-rds/blob/maint-3.10/examples/rds_rx.grc#L132); aquí utilizamos 101 coeficientes a 12 ksps.
+    El FIR anterior seleccionaba una banda de frecuencias. Este RRC se adapta al **conformado de cada chip** para preparar los pulsos para su lectura y reducir ruido fuera de su forma espectral. La elección de 2375 elementos/s y `Alpha = 1` coincide con los taps RRC del [receptor de referencia gr-rds](https://github.com/bastibl/gr-rds/blob/maint-3.10/examples/rds_rx.grc#L132); este montaje utiliza 101 coeficientes a 12 ksps.
 
     `Symbol Rate = 2375` cuenta los chips, no los bits de información a 1187.5 bits/s. La combinación de los dos chips de cada bit se realizará después con `Manchester Sync`. `Decimation = 1` conserva las **12 ksps** para recuperar el reloj en la siguiente etapa.
 
-    Para comparar, añadir otro `Constellation Sink` después del RRC con los mismos límites de ejes. Puede disminuir tanto la dispersión vertical como la amplitud. Para observar los pulsos en el tiempo, usar `QT GUI Time Sink`, tipo **Complex**, `Sample Rate = tasa_rds`. En esta etapa todavía no esperamos únicamente dos puntos: seguimos mostrando todas las muestras.
+    Para comparar, añadir otro `Constellation Sink` después del RRC con los mismos límites de ejes. Puede disminuir tanto la dispersión vertical como la amplitud. Para observar los pulsos en el tiempo, usar `QT GUI Time Sink`, tipo **Complex**, `Sample Rate = tasa_rds`. En esta etapa el visor todavía no muestra únicamente dos puntos: el visor muestra todas las muestras.
 
 ??? note "17. Recuperar el reloj de los chips con Symbol Sync"
 
@@ -1098,7 +1215,7 @@ status: draft
 
     **Costas recupera la orientación de la señal; Symbol Sync recupera los instantes de lectura.** Gardner utiliza muestras en los centros y puntos medios de los pulsos para estimar si el reloj está adelantado o atrasado. El lazo ajusta esos instantes y el interpolador calcula valores entre las muestras disponibles.
 
-    A la entrada tenemos:
+    La entrada contiene:
 
     $$
     \mathrm{sps}_{\mathrm{chips}}=\frac{12000}{2375}\approx5.05263\ \text{muestras/chip}.
@@ -1106,9 +1223,9 @@ status: draft
 
     Introducir la expresión completa, sin redondear a cinco. Conservar siempre una muestra de cada cinco produciría una lectura que se desplaza progresivamente respecto del reloj de la señal. El sincronizador sigue la separación fraccionaria y sus pequeñas variaciones.
 
-    `Maximum Deviation = 0.1` limita la desviación del período medio estimado respecto del valor nominal, en **muestras de entrada por chip**. `Expected TED Gain = 1.0` es el valor inicial probado con la amplitud de nuestra cadena; la ganancia real del detector depende de la forma del pulso y de su amplitud. Los significados de estos campos están descritos en la [documentación de Symbol Sync](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/symbol_sync_cc.h).
+    `Maximum Deviation = 0.1` limita la desviación del período medio estimado respecto del valor nominal, en **muestras de entrada por chip**. `Expected TED Gain = 1.0` es el valor inicial probado con la amplitud de esta cadena; la ganancia real del detector depende de la forma del pulso y de su amplitud. Los significados de estos campos están descritos en la [documentación de Symbol Sync](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/symbol_sync_cc.h).
 
-    Con `Output Samples/Symbol = 1`, la salida contiene aproximadamente **2375 muestras complejas/s: una por chip**. Conectar esta salida a otro `QT GUI Constellation Sink`. Esperamos dos agrupaciones separadas, una a cada lado del origen, con menos puntos entre ellas que después del RRC. El ruido y los errores residuales de fase no desaparecen.
+    Con `Output Samples/Symbol = 1`, la salida contiene aproximadamente **2375 muestras complejas/s: una por chip**. Conectar esta salida a otro `QT GUI Constellation Sink`. El estudiante observa dos agrupaciones separadas, una a cada lado del origen, con menos puntos entre ellas que después del RRC. El ruido y los errores residuales de fase no desaparecen.
 
     Si se añade un visor temporal aquí, usar `Sample Rate = 2375`. Las salidas opcionales `error`, `T_inst` y `T_avg` de Symbol Sync pueden quedar sin conectar durante esta práctica.
 
@@ -1170,7 +1287,7 @@ status: draft
     | `Coding` | `Differential` |
     | `Modulus` | `2` |
 
-    Para la secuencia binaria recibida $d[k]$, recupera el dato mediante:
+    Para la secuencia binaria recibida $d[k]$, el bloque recupera el dato mediante:
 
     $$
     b[k]=d[k]\oplus d[k-1].
@@ -1199,15 +1316,15 @@ status: draft
 
     ### 19.2. Observar los grupos con Message Debug
 
-    Añadir `Message Debug`, configurar `Print PDU contents = On` y conectar:
+    Añadir `Message Debug`, asignar `ID = grupos_rds` y configurar `Print PDU contents = On` y conectar:
 
     ```text
-    RDS Decoder.out → Message Debug.print
+    RDS Decoder.out → Message Debug [grupos_rds].print
     ```
 
-    Usar el puerto **`print`**, que imprime el contenido en la terminal. `store` guarda los mensajes para consultarlos desde código. Durante la ejecución esperamos mensajes del decoder como `Sync State Detected` y PDU con los grupos recuperados, representados en hexadecimal.
+    Usar el puerto **`print`**, que imprime el contenido en la terminal. `store` guarda los mensajes para consultarlos desde código. Durante la ejecución, el estudiante observa mensajes del decoder como `Sync State Detected` y PDU con los grupos recuperados, representados en hexadecimal.
 
-    Esta salida permite confirmar la recuperación de datos, pero todavía no interpreta el nombre ni el radiotexto. Para leer esos campos añadiremos el Parser en la siguiente sección. La misma salida `out` puede alimentar simultáneamente al Message Debug y al Parser.
+    Esta salida permite comprobar la recuperación de datos, pero todavía no interpreta el nombre ni el radiotexto. Para leer esos campos el estudiante añade el Parser en la siguiente sección. La misma salida `out` puede alimentar simultáneamente al Message Debug y al Parser.
 
 ??? note "20. Interpretar los mensajes y mostrarlos en RDS Panel"
 
@@ -1227,9 +1344,9 @@ status: draft
     - **PS, Program Service:** nombre de servicio de ocho caracteres, transmitido en segmentos de dos caracteres en los grupos 0A/0B.
     - **RT, RadioText:** texto transmitido en segmentos en los grupos 2A/2B; puede tener hasta 64 caracteres en 2A o 32 en 2B.
 
-    El nombre y el radiotexto pueden tardar varios segundos en aparecer porque se necesitan sus segmentos completos. `PTY Locale = Europe` selecciona la tabla RDS de nombres de tipo de programa; no cambia la recuperación de PS ni RT. En esta actividad mantenemos la sintonía en 98.1 MHz; para comparar otra emisora, detener y reiniciar el montaje para comenzar con el estado del Parser vacío.
+    El nombre y el radiotexto pueden tardar varios segundos en aparecer porque se necesitan sus segmentos completos. `PTY Locale = Europe` selecciona la tabla RDS de nombres de tipo de programa; no cambia la recuperación de PS ni RT. En esta actividad se mantiene la sintonía en 98.1 MHz; para comparar otra emisora, detener y reiniciar el montaje para comenzar con el estado del Parser vacío.
 
-    El Parser publica los campos interpretados por su salida `out`. Su [implementación](https://github.com/bastibl/gr-rds/blob/maint-3.10/lib/parser_impl.cc) emite, entre otros, mensajes de tipo `1` para PS y `4` para RadioText. Opcionalmente, conectar **`RDS Parser.out → otro Message Debug.print`** para leer estos mensajes en la terminal y distinguirlos de los grupos crudos del Decoder.
+    El Parser publica los campos interpretados por su salida `out`. Su [implementación](https://github.com/bastibl/gr-rds/blob/maint-3.10/lib/parser_impl.cc) emite, entre otros, mensajes de tipo `1` para PS y `4` para RadioText. Opcionalmente, añadir otro `Message Debug` con `ID = campos_rds` y conectar **`RDS Parser.out → Message Debug (campos_rds).print`** para leer estos mensajes en la terminal y distinguirlos de los grupos crudos del Decoder.
 
     ### 20.2. Configurar el panel de la emisora
 
@@ -1240,7 +1357,7 @@ status: draft
     | `Frequency` | `98.1e6` |
     | `GUI Hint` | Vacío, para colocación automática |
 
-    Conectar **`RDS Parser.out → RDS Panel.in`**. Para esta prueba fija, `Frequency` indica en Hz la frecuencia que se mostrará en el panel; la sintonía RF sigue determinada por el primer rotador. En la ventana aparecerán **Station Name**, **Radiotext**, el identificador PI y otros campos que la transmisión permita recuperar.
+    Conectar **`RDS Parser.out → RDS Panel.in`**. Para esta prueba fija, `Frequency` indica en Hz la frecuencia que se mostrará en el panel; la sintonía RF sigue determinada por el primer rotador. El grafo final deja `campos_rds` deshabilitado para evitar imprimir ambas observaciones a la vez. En la ventana aparecerán **Station Name**, **Radiotext**, el identificador PI y otros campos que la transmisión permita recuperar.
 
     El recorrido de mensajes queda:
 
@@ -1256,8 +1373,8 @@ status: draft
     ```text
     Quadrature Demod (Float, 300 ksps)
       → Float To Complex
-      → Rotador propio: −57 kHz, entrada a 300 ksps
-      → FIR de RDS /25
+      → Rotador de frecuencias [centrar_rds]: −57 kHz, entrada a 300 ksps
+      → Decimating FIR Filter [filtro_rds] /25
       → Multiply Const: 20
       → Costas Loop: orden 2
       → Root Raised Cosine Filter
@@ -1286,8 +1403,123 @@ status: draft
 
     Como comprobación visual, seguir la concentración sobre el eje I después del Costas, la reducción de dispersión después del RRC y las dos agrupaciones separadas después de Symbol Sync. La confirmación de recuperación de datos la proporcionan los grupos validados y los campos interpretados, no solo la forma de la constelación.
 
-    En la misma captura no recuperamos grupos de 99.1 ni 100.1 MHz con esta cadena. Una recepción audible o un piloto de 19 kHz visible no garantizan disponer de RDS decodificable: su componente puede faltar o estar afectada por ruido e interferencias. Al cambiar de emisora, la frecuencia nominal de RDS en el multiplex sigue siendo **57 kHz**.
+    En la misma captura no se recuperaron grupos de 99.1 ni 100.1 MHz con esta cadena. Una recepción audible o un piloto de 19 kHz visible no garantizan disponer de RDS decodificable: su componente puede faltar o estar afectada por ruido e interferencias. Al cambiar de emisora, la frecuencia nominal de RDS en el multiplex sigue siendo **57 kHz**.
+
+    ### 20.4. Repetir la comprobación desde la terminal
+
+    Con `gr-cbs33m` instalado y Radioconda activo, ejecutar desde la raíz del repositorio:
+
+    ```bash
+    python gnuradio/gr-cbs33m/apps/verificar_fm_rds.py gnuradio/samples/fm_99p1MHz_2p4Msps_g30.cu8
+    ```
+
+    El programa procesa el archivo una vez. Usa los bloques OOT instalados y los parámetros del receptor de esta clase.
+    La rama de audio cuenta muestras; no abre `Audio Sink`. La rama RDS registra grupos y campos interpretados.
+    Por eso esta comprobación no utiliza `Throttle` ni mide la capacidad de reproducción en tiempo real.
+
+    Para los 10 segundos de la captura oficial, el resultado comprobado contiene:
+
+    - `grupos_validos`: `111`.
+    - `nombres_ps`: `ONDACERO`.
+    - `radiotextos`: `Omar Courtz - Por si ma?ana no estoy`.
+    - `muestras_audio`: aproximadamente 480 000; esta ejecución produjo 479 967 muestras.
+
+    El recuento finito de audio incluye el efecto del cierre del procesamiento. La tasa configurada de salida continúa siendo 48 000 muestras/s.
+    La prueba de reproducción de la sección 13 comprueba además el dispositivo físico y la continuidad audible.
 
 ??? note "Punto de llegada"
 
-    Hemos creado la biblioteca reutilizable `gr-cbs33m`, con el conversor y el rotador implementados en archivos Python y descritos en YAML para GRC. Con esos bloques hemos construido un receptor FM mono y una rama de recuperación de RDS desde una captura `.cu8`. Después de `Quadrature Demod`, una rama obtiene audio a 48 kHz y la otra centra RDS, filtra sus pulsos, recupera fase y reloj, decodifica la bifase y la codificación diferencial, valida grupos y muestra el nombre y el radiotexto en `RDS Panel`. `Audio Sink` regula el ritmo del montaje conjunto, que no utiliza `Throttle` activo.
+    El estudiante ha creado la biblioteca reutilizable `gr-cbs33m`, con el conversor y el rotador implementados en archivos Python y descritos en YAML para GRC. Con esos bloques ha construido un receptor FM mono y una rama de recuperación de RDS desde una captura `.cu8`. Después de `Quadrature Demod`, una rama obtiene audio a 48 kHz y la otra centra RDS, filtra sus pulsos, recupera fase y reloj, decodifica la bifase y la codificación diferencial, valida grupos y muestra el nombre y el radiotexto en `RDS Panel`. `Audio Sink` regula el ritmo del montaje conjunto, que no utiliza `Throttle` activo.
+
+## Ejercicios de consolidación
+
+### Ejercicio 1 — Contar muestras y duración
+
+Una captura `.cu8` ocupa 48 000 000 bytes y se adquirió a 2.4 millones de muestras complejas/s.
+El estudiante calcula cuántas muestras contiene, cuánto dura y qué tasa debe configurar en un `Throttle` Byte antes del conversor.
+
+??? example "Solución explicada — captura"
+
+    - **Datos:** cada muestra contiene dos bytes, uno de I y otro de Q; $f_s=2.4\times10^6$ muestras/s.
+    - **Fórmulas:** $N=B/2$, $T=N/f_s$ y $R_{\mathrm{Byte}}=2f_s$.
+    - **Sustitución:** $N=48000000/2=24000000$ y $T=24000000/2400000$.
+    - **Resultados:** 24 millones de muestras complejas, 10 s y 4.8 millones de elementos Byte/s.
+    - **Interpretación:** después del conversor, un `Throttle` Complex utiliza 2.4 millones de elementos/s. Ambas configuraciones representan el mismo tiempo físico.
+
+### Ejercicio 2 — Interpretar la salida del conversor
+
+El archivo entrega los bytes `[255, 0, 0, 255]`. El estudiante obtiene los dos complejos con `escala=127.5` y calcula su almacenamiento.
+
+??? example "Solución explicada — conversión"
+
+    - **Datos:** las parejas I/Q son $(255,0)$ y $(0,255)$; cada `complex64` ocupa ocho bytes.
+    - **Fórmula:** $x=\frac{I-127.5}{127.5}+j\frac{Q-127.5}{127.5}$.
+    - **Sustitución:** la primera pareja produce $1+j(-1)$; la segunda produce $-1+j(1)$.
+    - **Resultados:** $x_0=1-j$, $x_1=-1+j$ y $2\times8=16$ bytes de salida.
+    - **Interpretación:** cuatro elementos de entrada se convierten en dos elementos de salida. Aumenta el almacenamiento porque cambia la representación numérica.
+
+### Ejercicio 3 — Sintonizar y seguir otra banda
+
+La captura está centrada en 99.1 MHz. El estudiante calcula la mezcla para centrar 98.1 MHz y sigue una componente situada en 100.1 MHz.
+También determina la mezcla necesaria para centrar 100.1 MHz en otro ensayo.
+
+??? example "Solución explicada — mezcla"
+
+    - **Datos:** $f_c=99.1$ MHz, $f_s=2.4$ MHz y frecuencias RF de 98.1 y 100.1 MHz.
+    - **Fórmulas:** $f_{\mathrm{entrada}}=f_e-f_c$ y $f_{\mathrm{salida}}=f_{\mathrm{entrada}}+f_{\mathrm{mezcla}}$.
+    - **Sustitución:** 98.1 MHz aparece en −1 MHz; una mezcla de +1 MHz la lleva a cero.
+    - **Resultado para la otra componente:** $+1+1=+2$ MHz. Por periodicidad, $2-2.4=-0.4$ MHz dentro del intervalo mostrado.
+    - **Segundo ensayo:** centrar 100.1 MHz requiere una mezcla de −1 MHz.
+    - **Interpretación:** el rotador traslada todas las bandas. El `Decimating FIR Filter` (`filtro_canal`) debe seleccionar la banda deseada antes de decimar.
+
+### Ejercicio 4 — Comprobar las tasas de las dos ramas
+
+El estudiante parte de 2.4 Msps complejas y calcula las tasas después de cada cambio del receptor.
+También explica por qué el reloj de chips no equivale a una selección fija de una muestra de cada cinco.
+
+??? example "Solución explicada — tasas"
+
+    - **Datos:** decimación de canal 8; decimación de audio 6; remuestreo de audio 24/25; decimación RDS 25; 2375 chips/s.
+    - **Fórmulas:** un decimador entrega $f_{\mathrm{salida}}=f_{\mathrm{entrada}}/D$; el remuestreador entrega $f_{\mathrm{entrada}}L/D$.
+    - **Canal:** $2400000/8=300000$ muestras/s.
+    - **Audio:** $300000/6=50000$ muestras/s; después $50000\times24/25=48000$ muestras/s.
+    - **RDS:** $300000/25=12000$ muestras/s y $12000/2375\approx5.05263$ muestras/chip.
+    - **Interpretación:** seleccionar una muestra de cada cinco produciría 2400 lecturas/s, distintas de 2375. `Symbol Sync` ajusta los instantes fraccionarios.
+
+### Ejercicio 5 — Conservar la fase entre lotes
+
+Un rotador mezcla +400 kHz a 2.4 Msps. `work` recibe primero cuatro muestras y después otras cuatro.
+El estudiante obtiene las fases de ambos lotes y la fase que debe guardar después del segundo.
+
+??? example "Solución explicada — continuidad"
+
+    - **Datos:** $f_{\mathrm{mezcla}}=400000$ Hz, $f_s=2400000$ muestras/s y fase inicial cero.
+    - **Fórmula:** $\Delta\phi=2\pi f_{\mathrm{mezcla}}/f_s=\pi/3$ rad/muestra, equivalente a 60 grados/muestra.
+    - **Primer lote:** 0, 60, 120 y 180 grados; la fase de continuación es 240 grados.
+    - **Segundo lote:** 240, 300, 360 y 420 grados; la siguiente fase es 480 grados.
+    - **Resultado almacenado:** $480\bmod360=120$ grados, equivalente a $2\pi/3$ rad.
+    - **Interpretación:** guardar 420 grados repetiría la última fase. Reiniciar en cero rompería la continuidad prevista.
+
+### Ejercicio 6 — Separar bifase, decisión y decodificación diferencial
+
+Con las parejas ya alineadas, `Manchester Sync` recibe los chips `[+1,-1, -1,+1, -1,+1, +1,-1]`.
+El estudiante obtiene las decisiones binarias y los tres últimos bits después de `Differential Decoder`.
+Después repite el cálculo con todos los chips invertidos.
+
+??? example "Solución explicada — bits RDS"
+
+    - **Datos:** hay cuatro parejas de chips; no se conoce el símbolo anterior al primer elemento del ejemplo.
+    - **Fórmulas:** $z[k]=(c_0-c_1)/2$; el slicer decide según el signo; $b[k]=d[k]\oplus d[k-1]$.
+    - **Sustitución:** Manchester entrega `[+1,-1,-1,+1]`; el slicer entrega `[1,0,0,1]`.
+    - **Resultado:** los tres últimos bits diferenciales son `[1,0,1]`. El primer bit requiere conocer el estado anterior.
+    - **Inversión global:** el slicer entrega `[0,1,1,0]`; los tres últimos bits siguen siendo `[1,0,1]`.
+    - **Interpretación:** Manchester resuelve parejas; el slicer decide polaridad; la comparación diferencial elimina una inversión global estable.
+
+## Lecturas
+
+- [GNU Radio: descripción YAML de un bloque](https://wiki.gnuradio.org/index.php?title=YAML_GRC). Parámetros, puertos, constructor y callbacks de la sección 7.
+- [Python: rutas de instalación con sysconfig](https://docs.python.org/3.12/library/sysconfig.html). La ruta utilizada por la instalación del módulo Python.
+- [GNU Radio: Symbol Sync](https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/include/gnuradio/digital/symbol_sync_cc.h). Unidades y condiciones de los parámetros de sincronización.
+- [gr-satellites: Manchester Sync](https://github.com/daniestevez/gr-satellites/blob/v5.7.0/lib/manchester_sync_impl.cc). Selección de alineación y combinación de chips.
+- [gr-rds: receptor de referencia](https://github.com/bastibl/gr-rds/blob/maint-3.10/examples/rds_rx.grc). Conformado RRC y organización de un receptor RDS.
+- [ITU-R BS.643: Radio Data System](https://www.itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.643-4-202212-I!!PDF-E.pdf). Estructura y parámetros del sistema RDS.

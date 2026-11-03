@@ -29,6 +29,8 @@ Al finalizar el recorrido, el estudiante puede:
 
 Cada paso conserva las posiciones de los bloques. El mapa amplía el esquema conceptual del paso 15 de la guía.
 Los bloques agrupan funciones; un recuadro puede corresponder a varios bloques de GNU Radio.
+Las etiquetas «desde…» indican funciones que se incorporarán después.
+Las descripciones de tiempo y polaridad cambian con el paso.
 
 - **Naranja, borde grueso:** función estudiada en ese paso.
 - **Azul:** funciones relacionadas que ayudan a explicar el experimento.
@@ -37,6 +39,9 @@ Los bloques agrupan funciones; un recuadro puede corresponder a varios bloques d
 - **C:** canal simulado. Las flechas continúan de derecha a izquierda.
 - **R:** receptor, RX. La fila se lee de izquierda a derecha.
 - **Fila inferior:** entorno, observadores, auxiliares de prueba y rama rectangular de comparación.
+
+Desde el paso 17, `Tag Gate` identifica la frontera que retira las etiquetas del transmisor antes del canal.
+El paso 23 compara `Symbol Sync` con el selector fijo en su ensayo B. El paso 24 mantiene `Symbol Sync` activo.
 
 RRC significa *Root Raised Cosine*, raíz de coseno alzado. El paso 13 introduce este filtro para dar forma a los pulsos.
 
@@ -51,8 +56,8 @@ Los efectos introducidos en el canal representan perturbaciones controladas del 
 
     Esta clase acompaña los 24 pasos BPSK. No inicia otra sesión formal ni desarrolla todavía QPSK.
     Las capturas manuales del paso 24 quedan pendientes. Sus referencias automáticas tienen el alcance declarado en la guía.
-    El archivo `end-to-end.grc` guardado en el repositorio corresponde al estado restaurado del paso 23.
-    El paso 24 se aplica siguiendo la guía.
+    El nombre del archivo `.grc` no acredita qué paso contiene. El montaje se comprueba contra la guía de construcción.
+    El paso 24 requiere el preámbulo, los cinco efectos del canal, `Symbol Sync`, Costas y ambas rutas de polaridad.
 
 ## Antes de seguir un mensaje: cinco representaciones
 
@@ -103,7 +108,8 @@ La longitud interna de `Hola` siempre indica cuatro bytes de texto.
 Cada copia de la longitud externa indica diez bytes de paquete protegido.
 Los ceros de cierre de los filtros no pertenecen a ninguno de esos campos.
 
-El formato admite hasta 500 palabras y 5000 bytes UTF-8 de texto, sin recortar mensajes que excedan los límites.
+El formato admite hasta 500 palabras y 5000 bytes UTF-8 de texto.
+Los bloques rechazan los textos que exceden cualquiera de los límites; no los recortan.
 
 ## Recorrido de aprendizaje
 
@@ -136,15 +142,15 @@ Options define cómo se genera y ejecuta el programa. La interfaz Qt permite int
 
 [Ampliar el mapa](figures/enlace-mapa-paso-01.png).
 
-**Entrada y salida del ensayo:** Configuración del flowgraph → programa ejecutable con interfaz Qt.
+**Entrada y salida del ensayo:** Configuración de `Options` → archivo `.grc` guardado.
 
 - **Qué cambia:** Se crea y guarda el archivo; se configuran sus opciones.
 - **Qué permanece fijo:** Todavía no existe una cadena de transmisión ni un canal.
-- **Qué se observa:** La aplicación puede abrirse y cerrarse sin errores.
+- **Qué se observa:** `Options` conserva el `ID` y la generación `QT GUI`. La ejecución de la interfaz se comprueba en el paso 3.
 
 **Comprobación e interpretación:** Guardar el archivo no equivale a transmitir. La extensión .grc identifica el diagrama; el ID identifica la clase del programa generado.
 
-**Error que debe evitarse:** Un canvas vacío que ejecuta correctamente solo comprueba el entorno.
+**Error que debe evitarse:** Configurar `QT GUI` no añade todavía un bloque de entrada ni comprueba su publicación de mensajes.
 
 [Montaje y procedimiento del paso 1](index.md#1-preparar-end-to-endgrc).
 
@@ -383,8 +389,8 @@ Bytes a bits entrega un elemento por bit, en orden MSB first: primero el bit má
 
 - **Fila TX:** T4 separa los bytes del paquete en bits. No añade información nueva.
 - **Fila canal:** Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.
-- **Fila RX:** El comprobador y el decodificador R6 reciben una PDU por conexión directa; no atraviesan el canal.
-- **Fila de entorno y observación:** O permite contar y revisar los bits del vector.
+- **Fila RX:** `Comprobar paquete` y `Bytes a texto UTF-8` permanecen deshabilitados. R6 solo muestra contexto.
+- **Fila de entorno y observación:** `Message Debug.print` recibe la PDU de `Bytes a bits.out`. O permite revisar sus 80 elementos.
 
 [Ampliar el mapa](figures/enlace-mapa-paso-10.png).
 
@@ -414,7 +420,7 @@ Después del mapeo, `Tagged Stream to PDU` reúne los 80 símbolos complejos del
 **Figura 11.** El foco del paso 11 corresponde a T5 · BPSK.
 
 - **Fila TX:** T5 transforma bits en símbolos. Todavía no actúa el filtro RRC T6.
-- **Fila canal:** Todavía no existe una señal temporal en este ensayo. La fila C muestra contexto futuro.
+- **Fila canal:** Existe un stream de símbolos complejos; todavía no se añaden pulsos ni perturbaciones de canal.
 - **Fila RX:** Los bloques RX son contexto futuro. Los visores actuales observan el transmisor.
 - **Fila de entorno y observación:** O reúne constelación y consola; los visores no actúan como receptor.
 
@@ -579,13 +585,13 @@ TX añade una palabra de acceso y una cabecera externa duplicada. RX busca el ac
 
 **Pregunta guía:** ¿Qué debe descubrir RX y qué sigue suponiendo conocido?
 
-La frontera elimina las etiquetas de delimitación antes del receptor. Keep M in N conserva una muestra por símbolo con una fase nominal fija.
+`Tag Gate` retira las etiquetas TX sin cambiar las muestras. `Keep M in N` conserva una muestra por símbolo con una fase nominal fija.
 
-![Mapa funcional del enlace BPSK con R2 · Tiempo, R5 · Paquete resaltado para el paso 17.](figures/enlace-mapa-paso-17.png)
-**Figura 17.** El foco del paso 17 corresponde a R2 · Tiempo, R5 · Paquete.
+![Mapa funcional del enlace BPSK con la frontera Tag Gate, R2 · Tiempo y R5 · Paquete resaltados para el paso 17.](figures/enlace-mapa-paso-17.png)
+**Figura 17.** El foco del paso 17 corresponde a la frontera `Tag Gate`, R2 · Tiempo y R5 · Paquete.
 
 - **Fila TX:** T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.
-- **Fila canal:** El recorrido de muestras es ideal. No se introducen las perturbaciones de la fila C.
+- **Fila canal:** La frontera `Tag Gate` retira las etiquetas TX. El recorrido de muestras sigue ideal, sin perturbaciones de la fila C.
 - **Fila RX:** R2 utiliza selección nominal fija. R5 detecta el paquete y R6 lo comprueba. Costas todavía no interviene.
 - **Fila de entorno y observación:** O observa el stream; los auxiliares no entregan el texto directamente a RX.
 
@@ -645,7 +651,7 @@ Una fase constante rota la señal. El Costas Loop, lazo de recuperación de port
 
 - **Fila TX:** T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.
 - **Fila canal:** C1 aplica una fase constante; los demás desajustes permanecen en cero.
-- **Fila RX:** R3 recupera portadora después de la selección fija. La segunda hipótesis de polaridad todavía no interviene.
+- **Fila RX:** R2 mantiene la selección fija. El ensayo compara Costas activo y deshabilitado; todavía se utiliza una sola polaridad.
 - **Fila de entorno y observación:** O compara las constelaciones antes y después de Costas.
 
 [Ampliar el mapa](figures/enlace-mapa-paso-19.png).
@@ -703,7 +709,7 @@ El desajuste se expresa en Hz, hertz o ciclos por segundo.
 
 - **Fila TX:** T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.
 - **Fila canal:** C2 introduce una diferencia de frecuencia. Se estudia su efecto con los demás desajustes en cero.
-- **Fila RX:** R2 sigue fijo. R3 conserva Costas y R4–R5 prueban las dos polaridades.
+- **Fila RX:** R2 sigue fijo. El ensayo compara Costas deshabilitado y activo; conserva ambas rutas de polaridad.
 - **Fila de entorno y observación:** O incluye la estimación de frecuencia expresada en Hz.
 
 [Ampliar el mapa](figures/enlace-mapa-paso-21.png).
@@ -761,8 +767,8 @@ La unidad ppm significa partes por millón. Un error de +1000 ppm corresponde a 
 
 - **Fila TX:** T3 añade acceso y cabecera. La trama de Hola contiene 22 bytes antes del mapeo.
 - **Fila canal:** El ensayo A varía C3. El ensayo B utiliza C4 y restablece el retardo a cero.
-- **Fila RX:** R2 utiliza Symbol Sync; R3 conserva Costas. Las dos polaridades alimentan detección y comprobación del paquete.
-- **Fila de entorno y observación:** O añade el período estimado en muestras/símbolo. X conserva los contadores.
+- **Fila RX:** El ensayo A utiliza `Symbol Sync`. El ensayo B compara `Symbol Sync` con el selector fijo; Costas y ambas polaridades permanecen activos.
+- **Fila de entorno y observación:** O muestra el período solo con `Symbol Sync` activo. X conserva los contadores en ambas rutas.
 
 [Ampliar el mapa](figures/enlace-mapa-paso-23.png).
 
@@ -788,7 +794,7 @@ La combinación de desajustes reveló una pérdida inicial sin preámbulo. TX a�
 **Figura 24.** El foco del paso 24 corresponde a T3 · Trama.
 
 - **Fila TX:** T3 incorpora el preámbulo. La trama de Hola contiene 54 bytes antes del mapeo.
-- **Fila canal:** C1–C4 actúan juntos. La tercera condición añade también ruido en C5.
+- **Fila canal:** La primera condición mantiene el canal en cero. Las otras combinan C1–C4; la tercera añade ruido en C5.
 - **Fila RX:** R2 utiliza Symbol Sync; R3 conserva Costas. Las dos polaridades alimentan detección y comprobación del paquete.
 - **Fila de entorno y observación:** O y X reúnen constelaciones, frecuencia, período y resumen. Sus capturas manuales quedan pendientes.
 

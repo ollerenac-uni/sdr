@@ -15,8 +15,8 @@ from pathlib import Path
 ROOT = Path(__file__).parents[1]
 SESIONES = sorted(ROOT.glob("docs/sessions/*/*.md"))
 
-PIE = re.compile(r"^\*\*Figura (\d+)\.\*\*\s*(.+)$")
-IMAGEN = re.compile(r"^!\[(.*?)\]\((figures/[^)]+)\)")
+PIE = re.compile(r"^\s*\*\*Figura (\d+)\.\*\*\s*(.+)$")
+IMAGEN = re.compile(r"^\s*!\[(.*?)\]\((figures/[^)]+)\)")
 
 
 def lineas(sesion):
@@ -32,6 +32,13 @@ def nombre(sesion):
 
 
 class TestNumeracionDeFiguras(unittest.TestCase):
+    def test_reconoce_figuras_dentro_de_desplegables(self):
+        self.assertEqual(PIE.match("    **Figura 4.** Explicación.").group(1), "4")
+        self.assertEqual(
+            IMAGEN.match("    ![Texto alternativo](figures/ejemplo.svg)").group(2),
+            "figures/ejemplo.svg",
+        )
+
     def test_hay_sesiones_que_revisar(self):
         self.assertTrue(SESIONES, "No se encontró ninguna sesión en docs/sessions/")
 

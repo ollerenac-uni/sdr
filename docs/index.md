@@ -54,7 +54,7 @@ El [pre-lab: instalar el entorno](setup/index.md) es una preparación previa, fu
 | 01 | [Introducción](sessions/01-introduccion-sdr/index.md) | En desarrollo |
 | 02 | [Señales y espectro en SDR](sessions/02-tiempo-frecuencia-iq/index.md) | Disponible |
 | 03 | [Laboratorio de enlace digital](sessions/03-sistemas-filtros-digitales/index.md) | En desarrollo |
-| 04 | Selección de canal y decimación | Próximamente |
+| 04 | [Recepción FM y decodificación RDS en GNU Radio](sessions/04/clase4.md) | En desarrollo |
 | 05 | De bits a símbolos: BPSK y QPSK | Próximamente |
 | 06 | Pulse shaping y matched filtering | Próximamente |
 | 07 | Enlace digital ideal | Próximamente |

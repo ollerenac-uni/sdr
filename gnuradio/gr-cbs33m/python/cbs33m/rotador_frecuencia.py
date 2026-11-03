@@ -1,8 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 import numpy as np
 from gnuradio import gr
 
 
-class blk(gr.sync_block):
+class rotador_frecuencia(gr.sync_block):
     """Traslada el espectro con un oscilador complejo continuo."""
 
     def __init__(self, frecuencia_mezcla=0.0, samp_rate=2.4e6):
@@ -22,6 +24,12 @@ class blk(gr.sync_block):
 
         # Fase del oscilador para la próxima muestra que procesaremos.
         self.fase = 0.0
+
+    def set_frecuencia_mezcla(self, frecuencia_mezcla):
+        valor = float(frecuencia_mezcla)
+        if not np.isfinite(valor):
+            raise ValueError('frecuencia_mezcla debe ser finita')
+        self.frecuencia_mezcla = valor
 
     def work(self, input_items, output_items):
         # 1. Un complejo de salida por cada complejo de entrada.

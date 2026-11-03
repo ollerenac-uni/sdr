@@ -15,13 +15,30 @@ from test_laboratorio_senal_temporal import parametros
 
 
 def configuracion(seccion, apartado, identificador):
-    fragmento = seccion.split(apartado, 1)[1].split("### ", 1)[0]
+    fragmento = re.split(r"(?m)^### ", seccion.split(apartado, 1)[1], maxsplit=1)[0]
     tablas = re.findall(r"^\| Campo \| Valor \|\n\|---\|---\|\n((?:\|.*\n)+)", fragmento, re.M)
     for tabla in tablas:
         valores = dict(re.findall(r"^\| `([^`]+)` \| `([^`]+)` \|", tabla, re.M))
         if valores.get("ID") == identificador:
             return valores
     raise AssertionError(f"No se encuentra la configuración de {identificador}")
+
+
+def test_configuracion_respeta_encabezados_anidados():
+    seccion = """### 1. Apartado
+#### Explicación previa
+| Campo | Valor |
+|---|---|
+| `ID` | `filtro` |
+| `Gain` | `1` |
+### 2. Otro apartado
+| Campo | Valor |
+|---|---|
+| `ID` | `otro` |
+"""
+    assert configuracion(seccion, "### 1.", "filtro")["Gain"] == "1"
+    with pytest.raises(AssertionError, match="otro"):
+        configuracion(seccion, "### 1.", "otro")
 
 
 def grafo_rrc(guia, sps, alpha):
