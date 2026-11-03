@@ -1,0 +1,420 @@
+{
+  "fecha_prueba_utc": "2026-11-03T06:16:52.621162+00:00",
+  "archivo": "gnuradio/samples/lora-915-osu/IQ_1.sigmf-data",
+  "sha256": "3a6ef845f8af169419d71753bdd9936cf3eaf75a0f5b6e098e6a5e11228dbd95",
+  "tamano_bytes": 160000000,
+  "muestras_complejas": 20000000,
+  "duracion_s": 20.0,
+  "formato": "cf32_le",
+  "gnuradio_version": "3.10.12.0",
+  "python_version": "3.12.9",
+  "modulo_receptor": "/home/user/radioconda/lib/python3.12/site-packages/gnuradio/lora_sdr/__init__.py",
+  "parametros": {
+    "frecuencia_central_hz": 915000000,
+    "tasa_muestras_sps": 1000000,
+    "ancho_canal_hz": 125000,
+    "sf": 7,
+    "sync_word": "0x34",
+    "cabecera_explicita": true,
+    "decodificacion_soft": true,
+    "ldro_mode": 2
+  },
+  "bytes_recuperados": 12240,
+  "mensajes_recibidos": 48,
+  "tramas_recuperadas": 48,
+  "paquetes_crc_validos": 48,
+  "tramas_con_crc_invalido": 0,
+  "payloads_validos": [
+    {
+      "repeticiones": 48,
+      "hex": "52462066696e6765727072696e672050726f6a65637420666f72204c6f72612064657669636e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e",
+      "texto_ascii": "RF fingerpring Project for Lora devicnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"
+    }
+  ],
+  "tramas": [
+    {
+      "offset_bytes_salida": 0,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 255,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 510,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 765,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 1020,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 1275,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 1530,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 1785,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 2040,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 2295,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 2550,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 2805,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 3060,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 3315,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 3570,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 3825,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 4080,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 4335,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 4590,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 4845,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 5100,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 5355,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 5610,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 5865,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 6120,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 6375,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 6630,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 6885,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 7140,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 7395,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 7650,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 7905,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 8160,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 8415,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 8670,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 8925,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 9180,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 9435,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 9690,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 9945,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 10200,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 10455,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 10710,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 10965,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 11220,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 11475,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 11730,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 11985,
+      "longitud_bytes": 255,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    }
+  ]
+}

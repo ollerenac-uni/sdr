@@ -1,0 +1,29 @@
+{
+  "fecha_prueba_utc": "2026-11-03T06:16:51.767762+00:00",
+  "archivo": "gnuradio/samples/lora-915-osu/IQ_1.sigmf-data",
+  "sha256": "3a6ef845f8af169419d71753bdd9936cf3eaf75a0f5b6e098e6a5e11228dbd95",
+  "tamano_bytes": 160000000,
+  "muestras_complejas": 20000000,
+  "duracion_s": 20.0,
+  "formato": "cf32_le",
+  "gnuradio_version": "3.10.12.0",
+  "python_version": "3.12.9",
+  "modulo_receptor": "/home/user/radioconda/lib/python3.12/site-packages/gnuradio/lora_sdr/__init__.py",
+  "parametros": {
+    "frecuencia_central_hz": 915000000,
+    "tasa_muestras_sps": 1000000,
+    "ancho_canal_hz": 125000,
+    "sf": 7,
+    "sync_word": "0x12",
+    "cabecera_explicita": true,
+    "decodificacion_soft": true,
+    "ldro_mode": 2
+  },
+  "bytes_recuperados": 0,
+  "mensajes_recibidos": 0,
+  "tramas_recuperadas": 0,
+  "paquetes_crc_validos": 0,
+  "tramas_con_crc_invalido": 0,
+  "payloads_validos": [],
+  "tramas": []
+}
