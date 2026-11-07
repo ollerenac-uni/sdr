@@ -20,6 +20,8 @@ Al completar la clase, el estudiante puede:
 El montaje completo de referencia está en [fm.grc](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/flowgraphs/fm.grc).
 La sección 20 incluye una comprobación sin GUI para la captura oficial.
 
+El estudiante descarga las [muestras de la lección 4 desde Google Drive](https://drive.google.com/drive/folders/1tP8u1tQZDnvi_-ZAxZ3J8tehdKwi92an?usp=sharing) y las guarda en `gnuradio/samples/`.
+
 ## Identificar las instancias
 
 El estudiante conserva estos IDs en su montaje. El nombre visible identifica el tipo de bloque; el ID distingue cada instancia.
