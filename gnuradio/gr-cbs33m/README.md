@@ -18,9 +18,13 @@ python gnuradio/gr-cbs33m/instalar.py --comprobar
 ```
 
 Este instalador no necesita CMake. Obtiene las rutas del Python y GNU Radio
-activos e instala tanto el paquete `gnuradio.cbs33m` como los dos `.block.yml`
-en la biblioteca de GRC. También instala el manifiesto del módulo y comprueba
-que el conversor y el rotador puedan crearse. Repetirlo actualiza los archivos
+activos e instala tanto el paquete `gnuradio.cbs33m` como los `.block.yml`
+de los bloques presentes en la biblioteca de GRC. También instala el manifiesto
+del módulo. Admite instalar primero el conversor y añadir el rotador después,
+como en la clase: cada bloque requiere su Python, su YAML y su exportación en
+`__init__.py`. Antes de copiar, comprueba sintaxis, importaciones, creación de
+instancias y puertos; una plantilla incompleta interrumpe la instalación.
+Repetirlo actualiza los archivos
 que hayan cambiado. `--comprobar` detecta archivos ausentes o desactualizados
 sin modificarlos.
 
@@ -29,8 +33,28 @@ pero no lo instala dentro de Radioconda. Ejecutar de nuevo el instalador despué
 de modificar los bloques o sus YAML. Usar el Python de Radioconda, sin activar
 el `.venv` de MkDocs.
 
-En un GRC ya abierto, pulsar **Reload Blocks** en la barra de herramientas.
-Si sigue mostrando bloques ausentes, cerrar y volver a abrir GRC.
+Después de instalar, guardar el flowgraph y reiniciar GRC desde el mismo
+entorno Radioconda para actualizar la biblioteca.
+
+## Construir los bloques durante la clase
+
+La implementación de esta carpeta sirve de referencia. Para practicar sin
+sobrescribirla, desde la raíz del repositorio:
+
+```bash
+mkdir -p tmp/clase4
+cd tmp/clase4
+gr_modtool newmod --scm-mode no cbs33m
+cp ../../gnuradio/gr-cbs33m/instalar.py gr-cbs33m/
+cd gr-cbs33m
+gr_modtool add --scm-mode no -l python -t decimator --argument-list 'escala=127.5' cu8_a_c64
+```
+
+Responder el autor y `n` a la generación de QA. Completar el Python, el YAML y
+la importación de las secciones 4.1–4.3 de la clase; ejecutar `python instalar.py`
+y `python instalar.py --comprobar`. Todavía no se necesita el rotador.
+En la sección 7, añadirlo al mismo módulo, completar sus archivos y repetir
+ambos comandos. `instalar.py` se copia del curso: no lo genera `gr_modtool`.
 
 ## Si aparecen `Missing Block` en `fm.grc`
 
@@ -48,7 +72,9 @@ instancias del rotador) deben recuperar su nombre y sus puertos en la categoría
 
 También se conserva la instalación habitual del módulo OOT mediante CMake 3.16
 o posterior. Esta configuración no compila código C++ ni busca Boost.
-Elegir uno de los dos procedimientos de instalación.
+Esta alternativa se refiere al módulo completo publicado en esta carpeta.
+La construcción por etapas utiliza `instalar.py`, que también funciona con
+los `CMakeLists.txt` originales generados por `gr_modtool`.
 
 Desde esta carpeta, con Radioconda activo:
 

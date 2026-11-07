@@ -159,10 +159,7 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
 
     El archivo `.grc` guardará las conexiones y los parámetros de las instancias. El procesamiento de los bloques del curso se mantendrá en archivos Python del módulo. El estudiante puede editar esos archivos directamente con nombres permanentes y compartir una misma implementación entre montajes.
 
-    El repositorio ya incluye los dos bloques completos. El estudiante recorre su implementación y comprueba los archivos existentes; no necesita generar otra biblioteca.
-    Los comandos de creación permiten reconstruir la plantilla si el módulo todavía no existe.
-    El `CMakeLists.txt` publicado instala únicamente Python y YAML; no necesita compilar una biblioteca C++.
-    Si se crea otra plantilla con `gr_modtool`, se conserva la configuración de instalación del módulo del curso.
+    El repositorio incluye una implementación completa en `gnuradio/gr-cbs33m`, que sirve como referencia. Para construir los bloques durante la clase, crearemos otro módulo en `tmp/clase4`, sin sustituir esa referencia. Primero instalaremos únicamente el conversor; añadiremos el rotador cuando lleguemos a la sección 7.
 
     Un `Embedded Python Block` sigue otro mecanismo: almacena el código dentro del `.grc` y `Open in Editor` abre una copia temporal. «Guardar como» con otro nombre no vincula ese bloque al archivo nuevo. En este recorrido trabajaremos directamente con los archivos del módulo OOT. La [documentación de GNU Radio](https://wiki.gnuradio.org/index.php/Embedded_Python_Block) explica ambos mecanismos.
 
@@ -170,35 +167,45 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
 
     Usar **el entorno Radioconda**, el mismo que proporciona GRC. El `.venv` de MkDocs sirve para construir esta web. En Linux, si Radioconda no está activo, ejecutar `source ~/radioconda/bin/activate`.
 
-    Desde la raíz del repositorio, crear el módulo dentro de `gnuradio/`:
+    Comprobar primero que las herramientas pertenecen al entorno que ejecuta GNU Radio:
 
     ```bash
-    cd gnuradio
+    python -c "import sys; from gnuradio import gr; print(sys.executable); print(gr.version())"
+    command -v gr_modtool
+    ```
+
+    El Python y `gr_modtool` deben proceder de Radioconda. Desde la raíz del repositorio, crear el módulo de práctica y copiar el instalador que proporciona el curso:
+
+    ```bash
+    mkdir -p tmp/clase4
+    cd tmp/clase4
     gr_modtool newmod --scm-mode no cbs33m
+    cp ../../gnuradio/gr-cbs33m/instalar.py gr-cbs33m/
     cd gr-cbs33m
     ```
 
-    `--scm-mode no` deja el control de versiones en manos del repositorio del curso. **Crear el módulo una sola vez**. Si ya existe `gnuradio/gr-cbs33m`, entrar en él y continuar con los archivos existentes.
+    `--scm-mode no` deja el control de versiones en manos del repositorio del curso. **Crear el módulo una sola vez**. En sesiones posteriores, entrar directamente en `tmp/clase4/gr-cbs33m` desde la raíz del repositorio. `instalar.py` es una herramienta del curso: `gr_modtool` no la genera.
 
     La organización inicial será:
 
     ```text
-    gnuradio/
-    ├── flowgraphs/fm.grc
-    ├── samples/fm_99p1MHz_2p4Msps_g30.cu8
-    └── gr-cbs33m/
-        ├── CMakeLists.txt
-        ├── python/cbs33m/
-        │   ├── CMakeLists.txt
-        │   └── __init__.py
-        └── grc/CMakeLists.txt
+    tmp/clase4/gr-cbs33m/
+    ├── instalar.py
+    ├── MANIFEST.yml
+    ├── CMakeLists.txt
+    ├── python/cbs33m/
+    │   ├── CMakeLists.txt
+    │   └── __init__.py
+    └── grc/CMakeLists.txt
     ```
 
-    La plantilla incluye otros directorios auxiliares. Primero se añade únicamente el conversor; el rotador se incorpora a este mismo módulo en la sección 7.
+    La plantilla incluye otros directorios auxiliares. Primero se añade únicamente el conversor; el rotador se incorpora a este mismo módulo en la sección 7. **En adelante, las rutas de los archivos Python y YAML son relativas a esta carpeta del módulo.**
+
+    Si solo se desea ejecutar el receptor ya terminado, entrar en `gnuradio/gr-cbs33m` y ejecutar los comandos de instalación de 4.4; en ese caso los dos bloques ya están implementados y no se repiten los comandos `newmod` ni `add`.
 
     ### 3.3. Generar los archivos del conversor
 
-    Desde `gnuradio/gr-cbs33m`, ejecutar:
+    Desde la carpeta del módulo de práctica, ejecutar:
 
     ```bash
     gr_modtool add --scm-mode no -l python -t decimator \
@@ -207,11 +214,11 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
 
     `-l python` elige el lenguaje y `-t decimator` expresa la relación entre elementos: el bloque consume dos bytes por cada complejo de salida. El valor concreto `decim=2` se escribe en el inicializador Python.
 
-    `--argument-list` especifica los argumentos del constructor. El asistente puede preguntar el autor en `copyright holder` y si se desean archivos de prueba. El nombre del autor no es un argumento del bloque. Si el archivo ya fue generado, editarlo sin repetir `gr_modtool add`.
+    `--argument-list` especifica los argumentos del constructor. En `copyright holder`, escribir el nombre del autor. En `Add Python QA code? [Y/n]`, responder `n` para este recorrido. El nombre del autor no es un argumento del bloque. Si el archivo ya fue generado, editarlo sin repetir `gr_modtool add`.
 
     Los archivos de trabajo serán:
 
-    | Archivo, relativo a `gnuradio/gr-cbs33m` | Contenido |
+    | Archivo, relativo a la carpeta del módulo | Contenido |
     |---|---|
     | `python/cbs33m/cu8_a_c64.py` | Clase `cu8_a_c64` y procesamiento de conversión. |
     | `grc/cbs33m_cu8_a_c64.block.yml` | Interfaz del conversor en GRC. |
@@ -273,7 +280,7 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
 
     ### 4.1. Escribir el código del conversor
 
-    Abrir `gnuradio/gr-cbs33m/python/cbs33m/cu8_a_c64.py` y sustituir el código de ejemplo por:
+    Abrir `python/cbs33m/cu8_a_c64.py` y sustituir el código de ejemplo por:
 
     ```python
     import numpy as np
@@ -339,7 +346,7 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
 
     ### 4.2. Definir el conversor en GRC
 
-    Abrir `gnuradio/gr-cbs33m/grc/cbs33m_cu8_a_c64.block.yml` y sustituir su plantilla por:
+    Abrir `grc/cbs33m_cu8_a_c64.block.yml` y sustituir su plantilla por:
 
     ```yaml
     id: cbs33m_cu8_a_c64
@@ -378,66 +385,31 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
     from .cu8_a_c64 import cu8_a_c64
     ```
 
-    En esta etapa se estudia la exportación del conversor. El paquete publicado ya exporta también el rotador, cuya implementación se explica en la sección 7.
-    Comprobar que `python/cbs33m/CMakeLists.txt` incluya `cu8_a_c64.py` y que `grc/CMakeLists.txt` incluya `cbs33m_cu8_a_c64.block.yml`.
-    Las listas publicadas ya contienen los dos bloques. No se debe eliminar una importación ni un archivo al seguir la explicación por etapas.
+    En el módulo de práctica todavía no existe el rotador: no añadir su importación ni generar su plantilla en esta etapa. `gr_modtool add` también actualiza los archivos `CMakeLists.txt`, pero el instalador Python que usaremos no requiere configurar CMake.
+
+    Si se trabaja con la implementación completa de referencia, conservar sus dos importaciones y sus dos bloques.
 
     ### 4.4. Instalar el módulo en Radioconda
 
-    La instalación debe resolver dos búsquedas: **Python debe encontrar el código y GRC debe encontrar el YAML**. Los comandos siguientes se ejecutan en una terminal Linux con Radioconda activo, desde `gnuradio/gr-cbs33m`.
-
-    Para los bloques Python distribuidos con esta clase, instalar y comprobar el módulo directamente:
+    La instalación debe resolver dos búsquedas: **Python debe encontrar el código y GRC debe encontrar el YAML**. Desde la carpeta del módulo de práctica, con Radioconda activo, ejecutar:
 
     ```bash
     python instalar.py
     python instalar.py --comprobar
-    ```
-
-    El instalador obtiene las rutas del entorno activo, copia el paquete `gnuradio.cbs33m`, los dos archivos `.block.yml` y el manifiesto, y comprueba que ambos bloques puedan crearse. No requiere CMake. Repetirlo actualiza los archivos que hayan cambiado; `--comprobar` solo revisa la instalación. Usar el Python de Radioconda, sin activar el `.venv` destinado a MkDocs.
-
-    **Cada computadora debe instalar el módulo.** Un `git pull` actualiza las fuentes del repositorio, pero no instala sus bloques en Radioconda. Ejecutar de nuevo el instalador cuando se modifique el código Python o los YAML.
-
-    Como alternativa, se conserva el procedimiento habitual con CMake descrito a continuación. Elegir uno de los dos procedimientos. Para usar CMake, comprobar las herramientas:
-
-    ```bash
-    python -c "import sys; from gnuradio import gr; print(sys.executable); print(gr.version())"
-    cmake --version
-    ```
-
-    El Python mostrado debe pertenecer a Radioconda. CMake puede proceder del sistema o del entorno; esta instalación se comprobó con CMake 3.22.1. Si falta, se puede instalar CMake 3.x:
-
-    ```bash
-    conda install --freeze-installed -c conda-forge 'cmake>=3.16,<4'
-    ```
-
-    Antes de instalar, comprobar la sintaxis y completar cualquier marcador pendiente en los archivos Python incluidos en el módulo:
-
-    ```bash
-    python -m compileall python/cbs33m
-    ```
-
-    Si ya se había generado una plantilla del rotador antes de seguir esta secuencia, completarla con la sección 7 antes de instalar: Python carga también las importaciones declaradas en `__init__.py`.
-
-    Configurar, construir e instalar usando el prefijo del entorno activo:
-
-    ```bash
-    cmake -S . -B build \
-      -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
-      -DPython3_EXECUTABLE="$CONDA_PREFIX/bin/python"
-    cmake --build build
-    ctest --test-dir build --output-on-failure
-    cmake --install build
-    ```
-
-    `CONDA_PREFIX` debe corresponder a Radioconda. El CMake publicado comprueba que ese Python importe GNU Radio y obtiene su carpeta `site-packages`. Después instala Python y YAML. No solicita Boost ni compiladores C++ para estos bloques. `ctest` verifica conversión, continuidad de fase, resintonía y parámetros inválidos. Verificar después la importación:
-
-    ```bash
     python -c "from gnuradio import cbs33m; print(cbs33m.cu8_a_c64().name())"
     ```
 
+    En esta etapa debe aparecer `CBS33M listo: cu8_a_c64`, seguido de la indicación de reiniciar GRC. El instalador admite el conversor solo y, después, el conversor más el rotador. Antes de copiar archivos, comprueba la sintaxis, las importaciones, la creación de los bloques, sus puertos y la relación de procesamiento. Si queda una plantilla incompleta, corregirla antes de continuar.
+
+    El instalador obtiene las rutas del entorno activo y copia el paquete `gnuradio.cbs33m`, el YAML de cada bloque presente y el manifiesto. No requiere CMake, compilador ni `sudo`. Repetirlo actualiza los archivos que hayan cambiado; `--comprobar` solo revisa la instalación. Usar el Python de Radioconda, sin activar el `.venv` destinado a MkDocs.
+
+    **Cada computadora debe instalar el módulo.** Un `git pull` actualiza las fuentes del repositorio, pero no instala sus bloques en Radioconda. Ejecutar de nuevo el instalador cuando se modifique el código Python o los YAML. Al instalar la versión completa de referencia, el mensaje enumerará ambos bloques.
+
+    Para quienes deseen estudiar la instalación con CMake, el [README del módulo](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/gr-cbs33m/README.md) del repositorio conserva ese procedimiento para la implementación completa. La práctica de construcción desde cero utiliza `instalar.py`, también con la plantilla original de `gr_modtool`.
+
     ### 4.5. Añadir el conversor desde el panel de bloques
 
-    Recargar la biblioteca de GRC o reiniciar GRC. Buscar **CBS33M → Conversor de .cu8 a .c64**, arrastrarlo al montaje y establecer `ID = conversor_iq` y `Escala = 127.5`.
+    Guardar el flowgraph, cerrar GRC y abrirlo desde una terminal con el mismo Radioconda activo (`gnuradio-companion`). Buscar **CBS33M → Conversor de .cu8 a .c64**, arrastrarlo al montaje y establecer `ID = conversor_iq` y `Escala = 127.5`.
 
     Conectar **File Source (`fuente_captura`) → Conversor de .cu8 a .c64 (`conversor_iq`) → Throttle (`ritmo_visores`)**. El conversor mantiene la tasa física de 2.4 millones de muestras I/Q por segundo, cambiando la representación de dos bytes a un elemento complejo. La sección 5 conecta los visores.
 
@@ -577,7 +549,7 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
 
     ### 7.3. Añadir el rotador al módulo del conversor
 
-    Desde `gnuradio/gr-cbs33m`, añadir un segundo bloque al módulo ya creado:
+    Desde la misma carpeta `tmp/clase4/gr-cbs33m`, añadir un segundo bloque al módulo ya creado:
 
     ```bash
     gr_modtool add --scm-mode no -l python -t sync \
@@ -733,7 +705,7 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
 
     ### 7.5. Registrar el rotador y su callback en el módulo
 
-    Sustituir `gnuradio/gr-cbs33m/grc/cbs33m_rotador_frecuencia.block.yml` por:
+    Sustituir `grc/cbs33m_rotador_frecuencia.block.yml` por:
 
     ```yaml
     id: cbs33m_rotador_frecuencia
@@ -777,7 +749,14 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
     from .rotador_frecuencia import rotador_frecuencia
     ```
 
-    Verificar que los `CMakeLists.txt` incluyan el nuevo Python y el nuevo YAML. Repetir la comprobación de sintaxis, configuración, construcción e instalación de la sección 4.4; después recargar la biblioteca de GRC o reiniciar GRC. La categoría debe mostrar:
+    Responder `n` a la generación de pruebas QA si el asistente lo pregunta. Con el Python, el YAML y las importaciones completos, reinstalar desde la misma carpeta:
+
+    ```bash
+    python instalar.py
+    python instalar.py --comprobar
+    ```
+
+    Ahora el mensaje debe enumerar `cu8_a_c64, rotador_frecuencia`. Guardar el flowgraph y reiniciar GRC desde el mismo entorno Radioconda. La categoría debe mostrar:
 
     ```text
     CBS33M
