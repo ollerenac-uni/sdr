@@ -386,7 +386,18 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
 
     La instalación debe resolver dos búsquedas: **Python debe encontrar el código y GRC debe encontrar el YAML**. Los comandos siguientes se ejecutan en una terminal Linux con Radioconda activo, desde `gnuradio/gr-cbs33m`.
 
-    Comprobar las herramientas:
+    Para los bloques Python distribuidos con esta clase, instalar y comprobar el módulo directamente:
+
+    ```bash
+    python instalar.py
+    python instalar.py --comprobar
+    ```
+
+    El instalador obtiene las rutas del entorno activo, copia el paquete `gnuradio.cbs33m`, los dos archivos `.block.yml` y el manifiesto, y comprueba que ambos bloques puedan crearse. No requiere CMake. Repetirlo actualiza los archivos que hayan cambiado; `--comprobar` solo revisa la instalación. Usar el Python de Radioconda, sin activar el `.venv` destinado a MkDocs.
+
+    **Cada computadora debe instalar el módulo.** Un `git pull` actualiza las fuentes del repositorio, pero no instala sus bloques en Radioconda. Ejecutar de nuevo el instalador cuando se modifique el código Python o los YAML.
+
+    Como alternativa, se conserva el procedimiento habitual con CMake descrito a continuación. Elegir uno de los dos procedimientos. Para usar CMake, comprobar las herramientas:
 
     ```bash
     python -c "import sys; from gnuradio import gr; print(sys.executable); print(gr.version())"
@@ -431,6 +442,8 @@ Las conexiones de stream utilizan el puerto `0` cuando el bloque tiene una sola 
     Conectar **File Source (`fuente_captura`) → Conversor de .cu8 a .c64 (`conversor_iq`) → Throttle (`ritmo_visores`)**. El conversor mantiene la tasa física de 2.4 millones de muestras I/Q por segundo, cambiando la representación de dos bytes a un elemento complejo. La sección 5 conecta los visores.
 
     Si Python importa el paquete pero el bloque no aparece en el panel, revisar dónde se instaló el `.block.yml` y las rutas de búsqueda de GRC. Los cambios posteriores se realizan en los archivos del módulo: detener el montaje, reinstalar y volver a ejecutarlo. Al compartir el repositorio, cada computadora debe instalar `gr-cbs33m` en su Radioconda.
+
+    Si el montaje muestra **Missing Block**, con clave `cbs33m_cu8_a_c64` o `cbs33m_rotador_frecuencia`, ejecutar `python instalar.py` en la carpeta del módulo con Radioconda activo. Después pulsar **Reload Blocks** en la barra de GRC; si persisten, cerrar y volver a abrir GRC. Un conversor y dos instancias del rotador deben recuperar sus nombres y puertos. El archivo `.grc` conserva sus conexiones, por lo que no hace falta reconstruir el montaje.
 
 ??? note "5. Visualicemos"
 

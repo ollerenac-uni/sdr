@@ -69,3 +69,29 @@ def test_grafo_compila_con_puertos_y_callbacks_del_oot(runtime, tmp_path):
     assert "from gnuradio import cbs33m" in generado
     assert "self.centrar_emisora.set_frecuencia_mezcla(" in generado
     assert "epy_block" not in generado
+
+
+def test_instalacion_visible_sin_rutas_del_repositorio(runtime, tmp_path):
+    """Una compilación con GRC_BLOCKS_PATH podría ocultar una instalación ausente."""
+    env = {
+        k: v for k, v in os.environ.items()
+        if k not in ("GRC_BLOCKS_PATH", "PYTHONPATH")
+    }
+    env["XDG_CACHE_HOME"] = str(tmp_path / "cache")
+    comprobacion = subprocess.run(
+        [runtime[1], str(MODULO / "instalar.py"), "--comprobar"],
+        env=env, capture_output=True, text=True, timeout=30,
+    )
+    assert comprobacion.returncode == 0, (
+        "Instala el módulo con el Python de Radioconda antes de esta prueba:\n"
+        + comprobacion.stdout + comprobacion.stderr
+    )
+    generado = subprocess.run(
+        [runtime[0], "-o", str(tmp_path), str(ROOT / "gnuradio/flowgraphs/fm.grc")],
+        env=env, capture_output=True, text=True, timeout=60,
+    )
+    assert generado.returncode == 0, generado.stdout + generado.stderr
+    codigo = (tmp_path / "fm.py").read_text()
+    assert "from gnuradio import cbs33m" in codigo
+    assert "cbs33m.cu8_a_c64(" in codigo
+    assert codigo.count("cbs33m.rotador_frecuencia(") == 2
