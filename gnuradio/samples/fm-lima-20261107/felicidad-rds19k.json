@@ -1,0 +1,43 @@
+{
+  "archivo": "fm_lima_fc89p4MHz_2p048Msps_g20p7_30s.cu8",
+  "formato": "cu8",
+  "sample_rate_hz": 2048000,
+  "center_freq_hz": 89400000.0,
+  "station_freq_hz": 88900000.0,
+  "inicio_s": 0,
+  "duracion_procesada_s": 30.0,
+  "tasa_canal_hz": 256000.0,
+  "tasa_rds_previa_hz": 16000.0,
+  "remuestreo_rds": [
+    19,
+    16
+  ],
+  "tasa_declarada_rotador_rds_hz": 256000.0,
+  "tasa_rds_hz": 19000.0,
+  "muestras_por_chip": 8.0,
+  "tasa_audio_previa_hz": 64000.0,
+  "remuestreo_audio": [
+    3,
+    4
+  ],
+  "ganancia_rds": 20,
+  "grupos_validos": 267,
+  "pi_por_grupo": {
+    "F030": 267
+  },
+  "tipos_grupo": {
+    "0A": 128,
+    "2A": 139
+  },
+  "nombres_ps": [
+    "DAD     ",
+    "FELICIDA",
+    "ICIDAD  "
+  ],
+  "radiotextos": [
+    "Me siento bien                                                  "
+  ],
+  "muestras_audio": 1439967,
+  "tasa_audio_hz": 48000,
+  "audio_rms": 0.28895142674446106
+}

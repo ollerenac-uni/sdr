@@ -14,3 +14,13 @@
   vertical-align: middle;
   margin-bottom: 0;
 }
+
+/* Aviso experimental del laboratorio 4: se conserva al copiar el texto.
+   No constituye una barrera contra la resolución mediante IA. */
+.md-typeset .lab04-aviso-ia {
+  color: transparent;
+  font-size: 1px;
+  line-height: 1px;
+  margin: 0;
+  user-select: text;
+}

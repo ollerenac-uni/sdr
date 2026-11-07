@@ -1,0 +1,110 @@
+{
+  "fecha_local": "2026-11-07",
+  "ciudad": "Lima, Perú",
+  "dispositivo": {
+    "fabricante_usb": "Realtek",
+    "producto_usb": "RTL2838UHIDIR",
+    "adc": "RTL2832U",
+    "tuner": "R820T"
+  },
+  "gnuradio": "3.10.12.0",
+  "formato": "cu8",
+  "sample_rate_nominal_hz": 2048000,
+  "duracion_nominal_s": 30,
+  "distribucion": "Cuatro grabaciones publicadas en la carpeta Google Drive del laboratorio 4; cargas completadas y verificadas en la interfaz.",
+  "archivos": [
+    {
+      "archivo": "fm_lima_fc89p4MHz_2p048Msps_g20p7_30s.cu8",
+      "center_freq_hz": 89400000,
+      "gain_db": 20.7,
+      "muestras_complejas": 61440000,
+      "bytes": 122880000,
+      "sha256": "403a650d517ea5e920355cc9ac80a448fc415ff82ac4c22609ab53c794eb09ae",
+      "comando": [
+        "rtl_sdr",
+        "-f",
+        "89400000",
+        "-s",
+        "2048000",
+        "-g",
+        "20.7",
+        "-n",
+        "61440000",
+        "gnuradio/samples/fm-lima-20261107/fm_lima_fc89p4MHz_2p048Msps_g20p7_30s.cu8"
+      ],
+      "emisora": "Felicidad",
+      "station_freq_hz": 88900000,
+      "validacion": "felicidad-agc-30s.json"
+    },
+    {
+      "archivo": "fm_lima_fc97p7MHz_2p048Msps_g29p7_30s.cu8",
+      "center_freq_hz": 97700000,
+      "gain_db": 29.7,
+      "muestras_complejas": 61440000,
+      "bytes": 122880000,
+      "sha256": "5721c351e99735917e0fd35d55943614df11b3f189be469865dccd21411af3a2",
+      "comando": [
+        "rtl_sdr",
+        "-f",
+        "97700000",
+        "-s",
+        "2048000",
+        "-g",
+        "29.7",
+        "-n",
+        "61440000",
+        "gnuradio/samples/fm-lima-20261107/fm_lima_fc97p7MHz_2p048Msps_g29p7_30s.cu8"
+      ],
+      "emisora": "Onda Cero",
+      "station_freq_hz": 98100000,
+      "validacion": "ondacero-agc-30s.json"
+    },
+    {
+      "archivo": "fm_lima_fc100p7MHz_2p048Msps_g29p7_30s.cu8",
+      "center_freq_hz": 100700000,
+      "station_freq_hz": 101100000,
+      "emisora": "Panamericana",
+      "gain_db": 29.7,
+      "muestras_complejas": 61440000,
+      "bytes": 122880000,
+      "sha256": "676fc36bd4773c49d37c211a32897d8ae8f63b2d9e0f7584ddd90285fc2246e3",
+      "validacion": "panamericana-30s.json",
+      "comando": [
+        "rtl_sdr",
+        "-f",
+        "100700000",
+        "-s",
+        "2048000",
+        "-g",
+        "29.7",
+        "-n",
+        "61440000",
+        "gnuradio/samples/fm-lima-20261107/fm_lima_fc100p7MHz_2p048Msps_g29p7_30s.cu8"
+      ]
+    },
+    {
+      "archivo": "fm_lima_fc101p7MHz_2p048Msps_g29p7_30s.cu8",
+      "center_freq_hz": 101700000,
+      "station_freq_hz": 102100000,
+      "emisora": "Oxígeno",
+      "gain_db": 29.7,
+      "muestras_complejas": 61440000,
+      "bytes": 122880000,
+      "sha256": "9d40d9078137a7989d6e02988d0f0911511a14fbec0d0868b979c0c752e5367f",
+      "validacion": "oxigeno-30s.json",
+      "comando": [
+        "rtl_sdr",
+        "-f",
+        "101700000",
+        "-s",
+        "2048000",
+        "-g",
+        "29.7",
+        "-n",
+        "61440000",
+        "gnuradio/samples/fm-lima-20261107/fm_lima_fc101p7MHz_2p048Msps_g29p7_30s.cu8"
+      ]
+    }
+  ],
+  "carpeta_muestras_url": "https://drive.google.com/drive/folders/18q_erbax0A_yiAJLknYfB9azaINqcDgJ?usp=sharing"
+}

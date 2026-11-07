@@ -59,7 +59,7 @@
   <rect x="390" y="438" width="522" height="96" rx="10" class="complex"/>
   <text x="651" y="470" text-anchor="middle" class="heading">Costas → RRC → Symbol Sync</text>
   <text x="651" y="499" text-anchor="middle">12 000 muestras/s → 2375 chips/s</text>
-  <text x="651" y="522" text-anchor="middle" class="small">Ajuste de amplitud antes del Costas: ×20</text>
+  <text x="651" y="522" text-anchor="middle" class="small">Antes de Costas: Multiply Const ×20 → AGC</text>
   <path d="M651 534 V572" class="arrow"/>
 
   <rect x="390" y="572" width="522" height="96" rx="10" class="bits"/>

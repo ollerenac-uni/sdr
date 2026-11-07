@@ -13,6 +13,7 @@ import tempfile
 import textwrap
 
 import pytest
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -118,9 +119,22 @@ np.testing.assert_allclose(salida.data(), esperado, atol=1e-7)
     inicio = qa.index("CARPETA = ")
     fin = qa.index("class TestBloquesCBS33M")
     ejecutar([python, "-c", qa[:inicio] + "from gnuradio import cbs33m\n\n" + qa[fin:]])
-    ejecutar([prefijo / "bin/grcc", "-o", tmp_path,
-              ROOT / "gnuradio/flowgraphs/fm.grc"])
-    generado = (tmp_path / "fm.py").read_text()
+    # Compilar el perfil de archivo explicado en clase; el archivo distribuido
+    # abre por defecto el perfil RTL-SDR, donde el conversor está deshabilitado.
+    datos = yaml.safe_load((ROOT / "gnuradio/flowgraphs/fm.grc").read_text())
+    datos["options"]["parameters"]["id"] = "fm_oot_construccion"
+    for bloque in datos["blocks"]:
+        if bloque["name"] in {"fuente_captura", "conversor_iq"}:
+            bloque["states"]["state"] = "enabled"
+        if bloque["name"] == "rtlsdr_source_0":
+            bloque["states"]["state"] = "disabled"
+        if bloque["name"] == "fuente_captura":
+            bloque["parameters"]["file"] = repr(str(tmp_path / "captura.cu8"))
+    (tmp_path / "captura.cu8").write_bytes(bytes([127, 128]) * 1024)
+    copia = tmp_path / "fm_oot_construccion.grc"
+    copia.write_text(yaml.safe_dump(datos, sort_keys=False))
+    ejecutar([prefijo / "bin/grcc", "-o", tmp_path, copia])
+    generado = (tmp_path / "fm_oot_construccion.py").read_text()
     assert "cbs33m.cu8_a_c64(" in generado
     assert generado.count("cbs33m.rotador_frecuencia(") == 2
     assert "self.centrar_emisora.set_frecuencia_mezcla(" in generado

@@ -63,6 +63,7 @@ markdown_extensions:
   - md_in_html
 
 extra_javascript:
+  - javascripts/details-links.js
   - javascripts/sdr-mixer-model.js
   - javascripts/sdr-mixer.js
   - javascripts/mathjax.js
@@ -88,7 +89,9 @@ nav:
           - "Laboratorio #3: enlace digital": sessions/03-sistemas-filtros-digitales/index.md
           - "Tarea del laboratorio 3": sessions/03-sistemas-filtros-digitales/tarea-laboratorio-3.md
           - "Mapa visual de los 24 pasos": sessions/03-sistemas-filtros-digitales/clase-enlace-digital.md
-      - "04 — Recepción FM y RDS": sessions/04/clase4.md
+      - "04 — Recepción FM y RDS":
+          - "Lección 4: recepción FM y RDS": sessions/04/clase4.md
+          - "Laboratorio #4: adaptación y diagnóstico": sessions/04/laboratorio-fm-rds.md
   - Guías:
       - setup/index.md
       - "Instalar GNU Radio": setup/instalacion.md

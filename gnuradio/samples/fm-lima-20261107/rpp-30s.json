@@ -1,0 +1,26 @@
+{
+  "archivo": "fm_lima_fc89p4MHz_2p048Msps_g20p7_30s.cu8",
+  "formato": "cu8",
+  "sample_rate_hz": 2048000,
+  "center_freq_hz": 89400000.0,
+  "station_freq_hz": 89700000.0,
+  "inicio_s": 0,
+  "duracion_procesada_s": 30.0,
+  "tasa_canal_hz": 256000.0,
+  "tasa_rds_hz": 16000.0,
+  "muestras_por_chip": 6.7368421052631575,
+  "tasa_audio_previa_hz": 64000.0,
+  "remuestreo_audio": [
+    3,
+    4
+  ],
+  "ganancia_rds": 20,
+  "grupos_validos": 0,
+  "pi_por_grupo": {},
+  "tipos_grupo": {},
+  "nombres_ps": [],
+  "radiotextos": [],
+  "muestras_audio": 1439967,
+  "tasa_audio_hz": 48000,
+  "audio_rms": 0.21748915314674377
+}

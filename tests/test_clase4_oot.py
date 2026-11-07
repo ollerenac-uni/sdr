@@ -56,6 +56,9 @@ def test_grafo_compila_con_puertos_y_callbacks_del_oot(runtime, tmp_path):
         "centrar_rds": "cbs33m_rotador_frecuencia",
     }
     assert not any(b["id"] == "epy_block" for b in datos["blocks"])
+    assert not any("snippet" in b["id"] for b in datos["blocks"])
+    assert ["ganancia_rds", "0", "normalizar_rds", "0"] in datos["connections"]
+    assert ["normalizar_rds", "0", "fase_rds", "0"] in datos["connections"]
     env = {
         **os.environ,
         "GRC_BLOCKS_PATH": str(MODULO / "grc"),
@@ -86,12 +89,26 @@ def test_instalacion_visible_sin_rutas_del_repositorio(runtime, tmp_path):
         "Instala el módulo con el Python de Radioconda antes de esta prueba:\n"
         + comprobacion.stdout + comprobacion.stderr
     )
+    # El perfil principal puede recibir desde RTL-SDR. Activar también la rama
+    # de archivo en una copia temporal para comprobar el conversor instalado.
+    datos = yaml.safe_load((ROOT / "gnuradio/flowgraphs/fm.grc").read_text())
+    datos["options"]["parameters"]["id"] = "fm_archivo_prueba"
+    for bloque in datos["blocks"]:
+        if bloque["name"] in {"fuente_captura", "conversor_iq", "ritmo_visores"}:
+            bloque["states"]["state"] = "enabled"
+        if bloque["name"] == "rtlsdr_source_0":
+            bloque["states"]["state"] = "disabled"
+        if bloque["name"] == "fuente_captura":
+            bloque["parameters"]["file"] = "captura.cu8"
+    (tmp_path / "captura.cu8").write_bytes(bytes([127, 128]) * 1024)
+    grafo_archivo = tmp_path / "fm_archivo_prueba.grc"
+    grafo_archivo.write_text(yaml.safe_dump(datos, sort_keys=False))
     generado = subprocess.run(
-        [runtime[0], "-o", str(tmp_path), str(ROOT / "gnuradio/flowgraphs/fm.grc")],
+        [runtime[0], "-o", str(tmp_path), str(grafo_archivo)], cwd=tmp_path,
         env=env, capture_output=True, text=True, timeout=60,
     )
     assert generado.returncode == 0, generado.stdout + generado.stderr
-    codigo = (tmp_path / "fm.py").read_text()
+    codigo = (tmp_path / "fm_archivo_prueba.py").read_text()
     assert "from gnuradio import cbs33m" in codigo
     assert "cbs33m.cu8_a_c64(" in codigo
     assert codigo.count("cbs33m.rotador_frecuencia(") == 2

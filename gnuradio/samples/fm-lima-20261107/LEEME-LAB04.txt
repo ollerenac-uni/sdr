@@ -1,0 +1,42 @@
+LABORATORIO 4 — MUESTRAS FM/RDS DE LIMA
+
+Fecha: 7 de noviembre de 2026.
+Formato: .cu8, bytes uint8 intercalados I, Q.
+Tasa nominal: 2 048 000 muestras complejas/s (2.048 Msps).
+Duración nominal: 30 s por archivo.
+Tamaño: 122 880 000 bytes por archivo; 61 440 000 muestras complejas.
+
+Archivo                                           Centro RF  Emisora objetivo
+fm_lima_fc89p4MHz_2p048Msps_g20p7_30s.cu8            89.4 MHz   Felicidad, 88.9 MHz
+fm_lima_fc97p7MHz_2p048Msps_g29p7_30s.cu8            97.7 MHz   Onda Cero, 98.1 MHz
+fm_lima_fc100p7MHz_2p048Msps_g29p7_30s.cu8           100.7 MHz  Panamericana, 101.1 MHz
+fm_lima_fc101p7MHz_2p048Msps_g29p7_30s.cu8           101.7 MHz  Oxígeno, 102.1 MHz
+
+GUARDAR LOS ARCHIVOS
+1. Descargar o actualizar https://github.com/ollerenac-uni/sdr.git.
+2. Colocar las cuatro grabaciones en gnuradio/samples/fm-lima-20261107/,
+   dentro de esa copia del repositorio. Conservar los nombres completos.
+3. Colocar allí también capturas.json y SHA256SUMS.txt.
+4. En Linux, ejecutar sha256sum -c SHA256SUMS.txt desde esa carpeta.
+5. Seguir el enunciado independiente del laboratorio 4:
+   https://ollerenac-uni.github.io/sdr/sessions/04/laboratorio-fm-rds/
+
+GNU Radio Companion debe abrir los .grc desde gnuradio/flowgraphs/.
+Las rutas File Source comienzan con ../samples/fm-lima-20261107/.
+La frecuencia central del archivo es fija. La emisora objetivo es otro dato.
+La grabación A se usa en el montaje obligatorio y en el caso de diagnóstico.
+La segunda comprobación utiliza una de las grabaciones B, C o D.
+
+DATOS VERIFICADOS
+Las cuatro grabaciones produjeron grupos RDS válidos con el receptor de referencia.
+Con AGC se obtuvieron 273, 101, 270 y 44 grupos, respectivamente.
+Esas cuentas describen una comprobación; no son un umbral de calificación.
+Los textos RDS corresponden al instante grabado y pueden ser parciales o cambiar.
+El tamaño exacto no certifica por sí solo que no existan pérdidas no notificadas.
+
+ENTREGA
+Carpeta: https://drive.google.com/drive/folders/13M_IpkfhycFiGWlv6cU2ZkjP-sOHYnkh
+Cada estudiante crea allí una subcarpeta cuyo nombre sea exactamente su código UNI.
+Dentro coloca los dos .grc, el informe PDF de hasta tres páginas y evidencias/.
+No necesita volver a subir estas grabaciones I/Q.
+El enunciado completo fija los nombres de archivos y los criterios de evaluación.

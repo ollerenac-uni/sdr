@@ -27,6 +27,7 @@ def verificar(archivo):
     rotador_rds = cbs33m.rotador_frecuencia(-57000, 300000)
     filtro_rds = filter.fir_filter_ccf(25, firdes.low_pass(1, 300000, 3e3, 1e3))
     ganancia = blocks.multiply_const_cc(20)
+    agc = analog.agc_cc(2e-3, 0.7, 1, 100)
     costas = digital.costas_loop_cc(0.01, 2, False)
     rrc = filter.fir_filter_ccf(1, firdes.root_raised_cosine(1, 12000, 2375, 1, 101))
     reloj = digital.symbol_sync_cc(
@@ -47,7 +48,7 @@ def verificar(archivo):
     volumen = blocks.multiply_const_ff(0.2)
     audio = blocks.vector_sink_f()
     tb.connect(fuente, conversor, sintonizador, canal, demodulador)
-    tb.connect(demodulador, complejo, rotador_rds, filtro_rds, ganancia,
+    tb.connect(demodulador, complejo, rotador_rds, filtro_rds, ganancia, agc,
                costas, rrc, reloj, manchester, real, decision, diferencial, decoder)
     tb.connect(demodulador, audio_fir, remuestreo, deenfasis, volumen, audio)
     tb.msg_connect((decoder, "out"), (grupos, "store"))

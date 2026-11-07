@@ -12,6 +12,8 @@ quedan como temas complementarios.
 El [pre-lab: instalar el entorno](../setup/index.md) es una preparación previa y
 no forma parte de las 16 sesiones.
 
+La sesión 4 incluye el [Laboratorio #4: adaptación y diagnóstico FM/RDS](04/laboratorio-fm-rds.md).
+
 | # | Título | Estado |
 |---|--------|:------:|
 | 01 | [Introducción](01-introduccion-sdr/index.md) | En desarrollo |

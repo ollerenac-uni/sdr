@@ -6,7 +6,7 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: ''
+    description: Variante con AGC y Reset nativo del Parser; sin temporizador ni reinicio coordinado de Costas/Symbol Sync.
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -22,7 +22,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: Clase 4 — Receptor FM mono y RDS
+    title: Clase 4 — FM mono y RDS
     window_size: (1000,1000)
   states:
     bus_sink: false
@@ -34,18 +34,32 @@ options:
     rotation: 0
     state: enabled
 blocks:
-- name: frecuencia_central
+- name: M
   id: variable
   parameters:
     comment: ''
-    value: 99.1e6
+    value: 1e6
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 240
-    - 8
+    - 912
+    - 80.0
+    rotation: 0
+    state: enabled
+- name: decimacion_audio
+  id: variable
+  parameters:
+    comment: ''
+    value: '6'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 632
+    - 8.0
     rotation: 0
     state: enabled
 - name: decimacion_fir
@@ -58,8 +72,22 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate:
-    - 560
-    - 8
+    - 296
+    - 8.0
+    rotation: 0
+    state: enabled
+- name: desplazamiento_sintonia
+  id: variable
+  parameters:
+    comment: Hz. Cero sintoniza directamente; 250e3 permite separar el centro de captura.
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 400
+    - 88
     rotation: 0
     state: enabled
 - name: desviacion_fm
@@ -72,8 +100,22 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate:
-    - 880
-    - 8
+    - 400
+    - 8.0
+    rotation: 0
+    state: enabled
+- name: frecuencia_central
+  id: variable
+  parameters:
+    comment: ''
+    value: frecuencia_emisora_hz - desplazamiento_sintonia
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 168
+    - 8.0
     rotation: 0
     state: enabled
 - name: frecuencia_emisora
@@ -81,22 +123,73 @@ blocks:
   parameters:
     comment: ''
     gui_hint: ''
-    label: Frecuencia de la emisora (Hz)
+    label: Frecuencia de la emisora (MHz)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
-    start: 97.9e6
-    step: 100e3
-    stop: 100.3e6
-    value: 98.1e6
+    start: '87.0'
+    step: '0.1'
+    stop: '108.0'
+    value: '88.9'
     widget: counter_slider
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 1200
-    - 8
+    - 1000
+    - 16.0
+    rotation: 0
+    state: enabled
+- name: frecuencia_emisora_hz
+  id: variable
+  parameters:
+    comment: Frecuencia RF en Hz; el control utiliza MHz.
+    value: frecuencia_emisora * M
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 168
+    - 88
+    rotation: 0
+    state: enabled
+- name: frecuencia_mezcla
+  id: variable
+  parameters:
+    comment: ''
+    value: frecuencia_central - frecuencia_emisora_hz
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 504
+    - 8.0
+    rotation: 0
+    state: enabled
+- name: ganancia_rf
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Ganancia RF (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.1'
+    stop: '49.6'
+    value: '29.7'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 992
+    - 216.0
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -109,8 +202,36 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate:
-    - 1520
-    - 8
+    - 1184
+    - 8.0
+    rotation: 0
+    state: enabled
+- name: tasa_audio
+  id: variable
+  parameters:
+    comment: ''
+    value: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 912
+    - 8.0
+    rotation: 0
+    state: enabled
+- name: tasa_audio_intermedia
+  id: variable
+  parameters:
+    comment: ''
+    value: tasa_canal / decimacion_audio
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 760
+    - 8.0
     rotation: 0
     state: enabled
 - name: tasa_canal
@@ -125,6 +246,213 @@ blocks:
     coordinate:
     - 1840
     - 8
+    rotation: 0
+    state: enabled
+- name: tasa_rds
+  id: variable
+  parameters:
+    comment: ''
+    value: tasa_canal / 25
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 824
+    - 80.0
+    rotation: 0
+    state: enabled
+- name: audio_48k
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '25'
+    fbw: '0.4'
+    interp: '24'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 960
+    - 744.0
+    rotation: 0
+    state: enabled
+- name: audio_mono
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'True'
+    samp_rate: tasa_audio
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1496
+    - 768.0
+    rotation: 0
+    state: enabled
+- name: bifase_rds
+  id: satellites_manchester_sync
+  parameters:
+    affinity: ''
+    alias: ''
+    block_size: '32'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1984
+    - 1008.0
+    rotation: 0
+    state: enabled
+- name: campos_rds
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2816
+    - 832.0
+    rotation: 0
+    state: enabled
+- name: centrar_emisora
+  id: cbs33m_rotador_frecuencia
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    frecuencia_mezcla: frecuencia_mezcla
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+  states:
+    _io_cache: ('Rotador de frecuencia', 'blk', [('frecuencia_mezcla', '0.0'), ('samp_rate', '2400000.0')], [('0', 'complex',
+      1)], [('0', 'complex', 1)], 'Desplaza el espectro mediante una exponencial compleja.', ['frecuencia_mezcla', 'samp_rate'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 64
+    - 656.0
+    rotation: 0
+    state: enabled
+- name: centrar_rds
+  id: cbs33m_rotador_frecuencia
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    frecuencia_mezcla: '-57000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: tasa_canal
+  states:
+    _io_cache: ('Rotador de frecuencia', 'blk', [('frecuencia_mezcla', '0.0'), ('samp_rate', '2400000.0')], [('0', 'complex',
+      1)], [('0', 'complex', 1)], 'Desplaza el espectro mediante una exponencial compleja.', ['frecuencia_mezcla', 'samp_rate'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 480
+    - 880.0
+    rotation: 0
+    state: enabled
+- name: componente_i
+  id: blocks_complex_to_real
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1976
+    - 1088.0
+    rotation: 0
+    state: enabled
+- name: conversor_iq
+  id: cbs33m_cu8_a_c64
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    escala: '127.5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Conversor de .cu8 a .c64', 'blk', [], [('0', 'byte', 1)], [('0', 'complex', 1)], 'Convierte bytes I/Q intercalados
+      a muestras complejas', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 208
+    - 512.0
+    rotation: 0
+    state: disabled
+- name: decision_rds
+  id: digital_binary_slicer_fb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2048
+    - 1160.0
+    rotation: 0
+    state: enabled
+- name: decodificador_rds
+  id: rds_decoder
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    debug: 'False'
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2424
+    - 1144.0
     rotation: 0
     state: enabled
 - name: deenfasis
@@ -164,41 +492,106 @@ blocks:
     - 768.0
     rotation: 0
     state: enabled
-- name: audio_mono
-  id: audio_sink
+- name: diferencial_rds
+  id: digital_diff_decoder_bb
   parameters:
     affinity: ''
     alias: ''
+    coding: digital.DIFF_DIFFERENTIAL
     comment: ''
-    device_name: ''
-    num_inputs: '1'
-    ok_to_block: 'True'
-    samp_rate: tasa_audio
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    modulus: '2'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 1496
-    - 768.0
+    - 2216
+    - 1144.0
     rotation: 0
     state: enabled
-- name: componente_i
-  id: blocks_complex_to_real
+- name: fase_rds
+  id: digital_costas_loop_cc
   parameters:
     affinity: ''
     alias: ''
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    vlen: '1'
+    order: '2'
+    use_snr: 'False'
+    w: '0.01'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 1976
-    - 1088.0
+    - 1152
+    - 992.0
+    rotation: 0
+    state: enabled
+- name: filtro_audio
+  id: fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: decimacion_audio
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_delay: '0'
+    taps: firdes.low_pass(1.0, tasa_canal, 16e3, 2e3)
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 704
+    - 760.0
+    rotation: 0
+    state: enabled
+- name: filtro_canal
+  id: fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: decimacion_fir
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_delay: '0'
+    taps: firdes.low_pass(1.0, samp_rate, 120e3, 30e3)
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 232
+    - 760.0
+    rotation: 0
+    state: enabled
+- name: filtro_rds
+  id: fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '25'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_delay: '0'
+    taps: firdes.low_pass(1.0, tasa_canal, 3e3, 1e3)
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 576
+    - 984.0
     rotation: 0
     state: enabled
 - name: fuente_captura
@@ -224,62 +617,7 @@ blocks:
     - 24
     - 456.0
     rotation: 0
-    state: enabled
-- name: multiplex_complejo
-  id: blocks_float_to_complex
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 392
-    - 952.0
-    rotation: 0
-    state: enabled
-- name: campos_rds
-  id: blocks_message_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    en_uvec: 'True'
-    log_level: info
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2864
-    - 928.0
-    rotation: 0
     state: disabled
-- name: volumen
-  id: blocks_multiply_const_vxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: '0.2'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1320
-    - 768.0
-    rotation: 0
-    state: enabled
 - name: ganancia_rds
   id: blocks_multiply_const_vxx
   parameters:
@@ -296,238 +634,129 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate:
-    - 960
-    - 1016.0
+    - 768
+    - 912.0
     rotation: 0
     state: enabled
-- name: ritmo_visores
-  id: blocks_throttle2
+- name: grupos_rds
+  id: blocks_message_debug
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    ignoretag: 'True'
-    limit: auto
-    maximum: '0.1'
+    en_uvec: 'True'
+    log_level: info
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2544
+    - 840.0
+    rotation: 0
+    state: enabled
+- name: multiplex_complejo
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: samp_rate
-    type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 240
-    - 520.0
+    - 288
+    - 960.0
     rotation: 0
-    state: bypassed
-- name: decision_rds
-  id: digital_binary_slicer_fb
+    state: enabled
+- name: normalizar_rds
+  id: analog_agc_xx
   parameters:
     affinity: ''
     alias: ''
-    comment: ''
+    comment: Normalizar la amplitud antes de Costas.
+    gain: '1.0'
+    max_gain: '100'
     maxoutbuf: '0'
     minoutbuf: '0'
+    rate: 2e-3
+    reference: '0.7'
+    type: complex
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 2048
+    - 928
+    - 1008.0
+    rotation: 0
+    state: enabled
+- name: panel_rds
+  id: rds_panel
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: La biblioteca espera Hz al construir y MHz al actualizar. La etiqueta inicial puede mostrar 0.0; cambiar la sintonía
+      actualiza la etiqueta. No afecta a la recepción RF.
+    freq: frecuencia_emisora
+    gui_hint: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2848
+    - 1152.0
+    rotation: 0
+    state: enabled
+- name: parser_rds
+  id: rds_parser
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    debug: 'False'
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    pty_locale: '0'
+    reset: frecuencia_emisora
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2632
     - 1160.0
     rotation: 0
     state: enabled
-- name: fase_rds
-  id: digital_costas_loop_cc
+- name: pulsos_rds
+  id: root_raised_cosine_filter
   parameters:
     affinity: ''
     alias: ''
+    alpha: '1.0'
     comment: ''
+    decim: '1'
+    gain: '1'
+    interp: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    order: '2'
-    use_snr: 'False'
-    w: '0.01'
+    ntaps: '101'
+    samp_rate: tasa_rds
+    sym_rate: '2375'
+    type: fir_filter_ccf
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 1152
-    - 992.0
-    rotation: 0
-    state: enabled
-- name: diferencial_rds
-  id: digital_diff_decoder_bb
-  parameters:
-    affinity: ''
-    alias: ''
-    coding: digital.DIFF_DIFFERENTIAL
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    modulus: '2'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2216
-    - 1144.0
-    rotation: 0
-    state: enabled
-- name: reloj_rds
-  id: digital_symbol_sync_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    constellation: digital.constellation_bpsk().base()
-    damping: '1.0'
-    loop_bw: '0.01'
-    max_dev: '0.1'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    nfilters: '128'
-    osps: '1'
-    pfb_mf_taps: '[]'
-    resamp_type: digital.IR_MMSE_8TAP
-    sps: tasa_rds/2375
-    ted_gain: '1.0'
-    ted_type: digital.TED_GARDNER
-    type: cc
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1648
-    - 1044.0
-    rotation: 0
-    state: enabled
-- name: conversor_iq
-  id: cbs33m_cu8_a_c64
-  parameters:
-    alias: ''
-    comment: ''
-    affinity: ''
-    minoutbuf: '0'
-    maxoutbuf: '0'
-    escala: '127.5'
-  states:
-    _io_cache: ('Conversor de .cu8 a .c64', 'blk', [], [('0', 'byte', 1)], [('0', 'complex', 1)], 'Convierte bytes I/Q intercalados a muestras complejas', [])
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 48
-    - 624.0
-    rotation: 0
-    state: enabled
-- name: centrar_emisora
-  id: cbs33m_rotador_frecuencia
-  parameters:
-    alias: ''
-    comment: ''
-    affinity: ''
-    minoutbuf: '0'
-    maxoutbuf: '0'
-    frecuencia_mezcla: frecuencia_mezcla
-    samp_rate: samp_rate
-  states:
-    _io_cache: ('Rotador de frecuencia', 'blk', [('frecuencia_mezcla', '0.0'), ('samp_rate', '2400000.0')], [('0', 'complex', 1)], [('0', 'complex', 1)], 'Desplaza el espectro mediante una exponencial compleja.', ['frecuencia_mezcla', 'samp_rate'])
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 32
-    - 728.0
-    rotation: 0
-    state: enabled
-- name: centrar_rds
-  id: cbs33m_rotador_frecuencia
-  parameters:
-    alias: ''
-    comment: ''
-    affinity: ''
-    minoutbuf: '0'
-    maxoutbuf: '0'
-    frecuencia_mezcla: '-57000'
-    samp_rate: tasa_canal
-  states:
-    _io_cache: ('Rotador de frecuencia', 'blk', [('frecuencia_mezcla', '0.0'), ('samp_rate', '2400000.0')], [('0', 'complex', 1)], [('0', 'complex', 1)], 'Desplaza el espectro mediante una exponencial compleja.', ['frecuencia_mezcla', 'samp_rate'])
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 568
-    - 952.0
-    rotation: 0
-    state: enabled
-- name: filtro_canal
-  id: fir_filter_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    decim: decimacion_fir
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_delay: '0'
-    taps: firdes.low_pass(1.0, samp_rate, 120e3, 30e3)
-    type: ccf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 232
-    - 760.0
-    rotation: 0
-    state: enabled
-- name: filtro_audio
-  id: fir_filter_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    decim: decimacion_audio
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_delay: '0'
-    taps: firdes.low_pass(1.0, tasa_canal, 16e3, 2e3)
-    type: fff
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 704
-    - 760.0
-    rotation: 0
-    state: enabled
-- name: filtro_rds
-  id: fir_filter_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    decim: '25'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_delay: '0'
-    taps: firdes.low_pass(1.0, tasa_canal, 3e3, 1e3)
-    type: ccf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 768
-    - 952.0
+    - 1400
+    - 1024.0
     rotation: 0
     state: enabled
 - name: qtgui_const_sink_x_0
@@ -623,7 +852,7 @@ blocks:
     - 1336
     - 904.0
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_const_sink_x_0_0
   id: qtgui_const_sink_x
   parameters:
@@ -717,7 +946,7 @@ blocks:
     - 1648
     - 888.0
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_const_sink_x_0_0_0
   id: qtgui_const_sink_x
   parameters:
@@ -811,7 +1040,7 @@ blocks:
     - 1976
     - 896.0
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_freq_sink_x_0
   id: qtgui_freq_sink_x
   parameters:
@@ -892,9 +1121,9 @@ blocks:
     bus_structure: null
     coordinate:
     - 632
-    - 360.0
+    - 272.0
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_freq_sink_x_0_0
   id: qtgui_freq_sink_x
   parameters:
@@ -977,7 +1206,7 @@ blocks:
     - 376
     - 640.0
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_freq_sink_x_0_0_0
   id: qtgui_freq_sink_x
   parameters:
@@ -1143,7 +1372,7 @@ blocks:
     - 824
     - 640.0
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_freq_sink_x_0_0_0_0_0
   id: qtgui_freq_sink_x
   parameters:
@@ -1226,7 +1455,7 @@ blocks:
     - 992
     - 864.0
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -1389,214 +1618,435 @@ blocks:
     - 536.0
     rotation: 0
     state: disabled
-- name: audio_48k
-  id: rational_resampler_xxx
+- name: reloj_rds
+  id: digital_symbol_sync_xx
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    decim: '25'
-    fbw: '0.4'
-    interp: '24'
+    constellation: digital.constellation_bpsk().base()
+    damping: '1.0'
+    loop_bw: '0.01'
+    max_dev: '0.1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    taps: '[]'
-    type: fff
+    nfilters: '128'
+    osps: '1'
+    pfb_mf_taps: '[]'
+    resamp_type: digital.IR_MMSE_8TAP
+    sps: tasa_rds/2375
+    ted_gain: '1.0'
+    ted_type: digital.TED_GARDNER
+    type: cc
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 960
-    - 744.0
+    - 1648
+    - 1044.0
     rotation: 0
     state: enabled
-- name: decodificador_rds
-  id: rds_decoder
+- name: ritmo_visores
+  id: blocks_throttle2
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    debug: 'False'
-    log: 'True'
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
     maxoutbuf: '0'
     minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2424
-    - 1144.0
-    rotation: 0
-    state: enabled
-- name: panel_rds
-  id: rds_panel
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    freq: 98.1e6
-    gui_hint: ''
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2808
-    - 1152.0
-    rotation: 0
-    state: enabled
-- name: parser_rds
-  id: rds_parser
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    debug: 'False'
-    log: 'True'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    pty_locale: '0'
-    reset: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2608
-    - 1152.0
-    rotation: 0
-    state: enabled
-- name: pulsos_rds
-  id: root_raised_cosine_filter
-  parameters:
-    affinity: ''
-    alias: ''
-    alpha: '1.0'
-    comment: ''
-    decim: '1'
-    gain: '1'
-    interp: '1'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    ntaps: '101'
-    samp_rate: tasa_rds
-    sym_rate: '2375'
-    type: fir_filter_ccf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1400
-    - 1024.0
-    rotation: 0
-    state: enabled
-- name: bifase_rds
-  id: satellites_manchester_sync
-  parameters:
-    affinity: ''
-    alias: ''
-    block_size: '32'
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
+    samples_per_second: samp_rate
     type: complex
+    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 1984
-    - 1008.0
+    - 328
+    - 416.0
     rotation: 0
-    state: enabled
-- name: frecuencia_mezcla
-  id: variable
+    state: disabled
+- name: rtlsdr_source_0
+  id: rtlsdr_source
   parameters:
+    affinity: ''
+    alias: ''
+    ant0: ''
+    ant1: ''
+    ant10: ''
+    ant11: ''
+    ant12: ''
+    ant13: ''
+    ant14: ''
+    ant15: ''
+    ant16: ''
+    ant17: ''
+    ant18: ''
+    ant19: ''
+    ant2: ''
+    ant20: ''
+    ant21: ''
+    ant22: ''
+    ant23: ''
+    ant24: ''
+    ant25: ''
+    ant26: ''
+    ant27: ''
+    ant28: ''
+    ant29: ''
+    ant3: ''
+    ant30: ''
+    ant31: ''
+    ant4: ''
+    ant5: ''
+    ant6: ''
+    ant7: ''
+    ant8: ''
+    ant9: ''
+    args: '""'
+    bb_gain0: '40'
+    bb_gain1: '20'
+    bb_gain10: '20'
+    bb_gain11: '20'
+    bb_gain12: '20'
+    bb_gain13: '20'
+    bb_gain14: '20'
+    bb_gain15: '20'
+    bb_gain16: '20'
+    bb_gain17: '20'
+    bb_gain18: '20'
+    bb_gain19: '20'
+    bb_gain2: '20'
+    bb_gain20: '20'
+    bb_gain21: '20'
+    bb_gain22: '20'
+    bb_gain23: '20'
+    bb_gain24: '20'
+    bb_gain25: '20'
+    bb_gain26: '20'
+    bb_gain27: '20'
+    bb_gain28: '20'
+    bb_gain29: '20'
+    bb_gain3: '20'
+    bb_gain30: '20'
+    bb_gain31: '20'
+    bb_gain4: '20'
+    bb_gain5: '20'
+    bb_gain6: '20'
+    bb_gain7: '20'
+    bb_gain8: '20'
+    bb_gain9: '20'
+    bw0: '0'
+    bw1: '0'
+    bw10: '0'
+    bw11: '0'
+    bw12: '0'
+    bw13: '0'
+    bw14: '0'
+    bw15: '0'
+    bw16: '0'
+    bw17: '0'
+    bw18: '0'
+    bw19: '0'
+    bw2: '0'
+    bw20: '0'
+    bw21: '0'
+    bw22: '0'
+    bw23: '0'
+    bw24: '0'
+    bw25: '0'
+    bw26: '0'
+    bw27: '0'
+    bw28: '0'
+    bw29: '0'
+    bw3: '0'
+    bw30: '0'
+    bw31: '0'
+    bw4: '0'
+    bw5: '0'
+    bw6: '0'
+    bw7: '0'
+    bw8: '0'
+    bw9: '0'
+    clock_source0: ''
+    clock_source1: ''
+    clock_source2: ''
+    clock_source3: ''
+    clock_source4: ''
+    clock_source5: ''
+    clock_source6: ''
+    clock_source7: ''
     comment: ''
-    value: frecuencia_central - frecuencia_emisora
+    corr0: '0'
+    corr1: '0'
+    corr10: '0'
+    corr11: '0'
+    corr12: '0'
+    corr13: '0'
+    corr14: '0'
+    corr15: '0'
+    corr16: '0'
+    corr17: '0'
+    corr18: '0'
+    corr19: '0'
+    corr2: '0'
+    corr20: '0'
+    corr21: '0'
+    corr22: '0'
+    corr23: '0'
+    corr24: '0'
+    corr25: '0'
+    corr26: '0'
+    corr27: '0'
+    corr28: '0'
+    corr29: '0'
+    corr3: '0'
+    corr30: '0'
+    corr31: '0'
+    corr4: '0'
+    corr5: '0'
+    corr6: '0'
+    corr7: '0'
+    corr8: '0'
+    corr9: '0'
+    dc_offset_mode0: '0'
+    dc_offset_mode1: '0'
+    dc_offset_mode10: '0'
+    dc_offset_mode11: '0'
+    dc_offset_mode12: '0'
+    dc_offset_mode13: '0'
+    dc_offset_mode14: '0'
+    dc_offset_mode15: '0'
+    dc_offset_mode16: '0'
+    dc_offset_mode17: '0'
+    dc_offset_mode18: '0'
+    dc_offset_mode19: '0'
+    dc_offset_mode2: '0'
+    dc_offset_mode20: '0'
+    dc_offset_mode21: '0'
+    dc_offset_mode22: '0'
+    dc_offset_mode23: '0'
+    dc_offset_mode24: '0'
+    dc_offset_mode25: '0'
+    dc_offset_mode26: '0'
+    dc_offset_mode27: '0'
+    dc_offset_mode28: '0'
+    dc_offset_mode29: '0'
+    dc_offset_mode3: '0'
+    dc_offset_mode30: '0'
+    dc_offset_mode31: '0'
+    dc_offset_mode4: '0'
+    dc_offset_mode5: '0'
+    dc_offset_mode6: '0'
+    dc_offset_mode7: '0'
+    dc_offset_mode8: '0'
+    dc_offset_mode9: '0'
+    freq0: frecuencia_central
+    freq1: 100e6
+    freq10: 100e6
+    freq11: 100e6
+    freq12: 100e6
+    freq13: 100e6
+    freq14: 100e6
+    freq15: 100e6
+    freq16: 100e6
+    freq17: 100e6
+    freq18: 100e6
+    freq19: 100e6
+    freq2: 100e6
+    freq20: 100e6
+    freq21: 100e6
+    freq22: 100e6
+    freq23: 100e6
+    freq24: 100e6
+    freq25: 100e6
+    freq26: 100e6
+    freq27: 100e6
+    freq28: 100e6
+    freq29: 100e6
+    freq3: 100e6
+    freq30: 100e6
+    freq31: 100e6
+    freq4: 100e6
+    freq5: 100e6
+    freq6: 100e6
+    freq7: 100e6
+    freq8: 100e6
+    freq9: 100e6
+    gain0: ganancia_rf
+    gain1: '10'
+    gain10: '10'
+    gain11: '10'
+    gain12: '10'
+    gain13: '10'
+    gain14: '10'
+    gain15: '10'
+    gain16: '10'
+    gain17: '10'
+    gain18: '10'
+    gain19: '10'
+    gain2: '10'
+    gain20: '10'
+    gain21: '10'
+    gain22: '10'
+    gain23: '10'
+    gain24: '10'
+    gain25: '10'
+    gain26: '10'
+    gain27: '10'
+    gain28: '10'
+    gain29: '10'
+    gain3: '10'
+    gain30: '10'
+    gain31: '10'
+    gain4: '10'
+    gain5: '10'
+    gain6: '10'
+    gain7: '10'
+    gain8: '10'
+    gain9: '10'
+    gain_mode0: 'False'
+    gain_mode1: 'False'
+    gain_mode10: 'False'
+    gain_mode11: 'False'
+    gain_mode12: 'False'
+    gain_mode13: 'False'
+    gain_mode14: 'False'
+    gain_mode15: 'False'
+    gain_mode16: 'False'
+    gain_mode17: 'False'
+    gain_mode18: 'False'
+    gain_mode19: 'False'
+    gain_mode2: 'False'
+    gain_mode20: 'False'
+    gain_mode21: 'False'
+    gain_mode22: 'False'
+    gain_mode23: 'False'
+    gain_mode24: 'False'
+    gain_mode25: 'False'
+    gain_mode26: 'False'
+    gain_mode27: 'False'
+    gain_mode28: 'False'
+    gain_mode29: 'False'
+    gain_mode3: 'False'
+    gain_mode30: 'False'
+    gain_mode31: 'False'
+    gain_mode4: 'False'
+    gain_mode5: 'False'
+    gain_mode6: 'False'
+    gain_mode7: 'False'
+    gain_mode8: 'False'
+    gain_mode9: 'False'
+    if_gain0: '40'
+    if_gain1: '20'
+    if_gain10: '20'
+    if_gain11: '20'
+    if_gain12: '20'
+    if_gain13: '20'
+    if_gain14: '20'
+    if_gain15: '20'
+    if_gain16: '20'
+    if_gain17: '20'
+    if_gain18: '20'
+    if_gain19: '20'
+    if_gain2: '20'
+    if_gain20: '20'
+    if_gain21: '20'
+    if_gain22: '20'
+    if_gain23: '20'
+    if_gain24: '20'
+    if_gain25: '20'
+    if_gain26: '20'
+    if_gain27: '20'
+    if_gain28: '20'
+    if_gain29: '20'
+    if_gain3: '20'
+    if_gain30: '20'
+    if_gain31: '20'
+    if_gain4: '20'
+    if_gain5: '20'
+    if_gain6: '20'
+    if_gain7: '20'
+    if_gain8: '20'
+    if_gain9: '20'
+    iq_balance_mode0: '0'
+    iq_balance_mode1: '0'
+    iq_balance_mode10: '0'
+    iq_balance_mode11: '0'
+    iq_balance_mode12: '0'
+    iq_balance_mode13: '0'
+    iq_balance_mode14: '0'
+    iq_balance_mode15: '0'
+    iq_balance_mode16: '0'
+    iq_balance_mode17: '0'
+    iq_balance_mode18: '0'
+    iq_balance_mode19: '0'
+    iq_balance_mode2: '0'
+    iq_balance_mode20: '0'
+    iq_balance_mode21: '0'
+    iq_balance_mode22: '0'
+    iq_balance_mode23: '0'
+    iq_balance_mode24: '0'
+    iq_balance_mode25: '0'
+    iq_balance_mode26: '0'
+    iq_balance_mode27: '0'
+    iq_balance_mode28: '0'
+    iq_balance_mode29: '0'
+    iq_balance_mode3: '0'
+    iq_balance_mode30: '0'
+    iq_balance_mode31: '0'
+    iq_balance_mode4: '0'
+    iq_balance_mode5: '0'
+    iq_balance_mode6: '0'
+    iq_balance_mode7: '0'
+    iq_balance_mode8: '0'
+    iq_balance_mode9: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '1'
+    num_mboards: '1'
+    sample_rate: samp_rate
+    sync: sync
+    time_source0: ''
+    time_source1: ''
+    time_source2: ''
+    time_source3: ''
+    time_source4: ''
+    time_source5: ''
+    time_source6: ''
+    time_source7: ''
+    type: fc32
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 240
-    - 176
+    - 24
+    - 308.0
     rotation: 0
     state: enabled
-- name: decimacion_audio
-  id: variable
-  parameters:
-    comment: ''
-    value: '6'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 560
-    - 176
-    rotation: 0
-    state: enabled
-- name: tasa_audio_intermedia
-  id: variable
-  parameters:
-    comment: ''
-    value: tasa_canal / decimacion_audio
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 880
-    - 176
-    rotation: 0
-    state: enabled
-- name: tasa_audio
-  id: variable
-  parameters:
-    comment: ''
-    value: '48000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1200
-    - 176
-    rotation: 0
-    state: enabled
-- name: tasa_rds
-  id: variable
-  parameters:
-    comment: ''
-    value: tasa_canal / 25
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1520
-    - 176
-    rotation: 0
-    state: enabled
-- name: grupos_rds
-  id: blocks_message_debug
+- name: volumen
+  id: blocks_multiply_const_vxx
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    en_uvec: 'True'
-    log_level: info
+    const: '0.2'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 2864
-    - 1040
+    - 1320
+    - 768.0
     rotation: 0
     state: enabled
 connections:
@@ -1698,16 +2148,20 @@ connections:
   - '0'
 - - ganancia_rds
   - '0'
-  - fase_rds
+  - normalizar_rds
   - '0'
 - - multiplex_complejo
   - '0'
   - centrar_rds
   - '0'
+- - normalizar_rds
+  - '0'
+  - fase_rds
+  - '0'
 - - parser_rds
   - out
   - campos_rds
-  - print
+  - store
 - - parser_rds
   - out
   - panel_rds
@@ -1743,6 +2197,14 @@ connections:
 - - ritmo_visores
   - '0'
   - qtgui_waterfall_sink_x_0
+  - '0'
+- - rtlsdr_source_0
+  - '0'
+  - centrar_emisora
+  - '0'
+- - rtlsdr_source_0
+  - '0'
+  - qtgui_freq_sink_x_0
   - '0'
 - - volumen
   - '0'

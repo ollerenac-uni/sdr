@@ -1,0 +1,44 @@
+{
+  "archivo": "fm_lima_fc100p7MHz_2p048Msps_g29p7_30s.cu8",
+  "formato": "cu8",
+  "sample_rate_hz": 2048000,
+  "center_freq_hz": 100700000.0,
+  "station_freq_hz": 101100000.0,
+  "inicio_s": 0,
+  "duracion_procesada_s": 30.0,
+  "tasa_canal_hz": 256000.0,
+  "tasa_rds_previa_hz": 16000.0,
+  "remuestreo_rds": [
+    1,
+    1
+  ],
+  "tasa_declarada_rotador_rds_hz": 256000.0,
+  "tasa_rds_hz": 16000.0,
+  "muestras_por_chip": 6.7368421052631575,
+  "tasa_audio_previa_hz": 64000.0,
+  "remuestreo_audio": [
+    3,
+    4
+  ],
+  "ganancia_rds": 20,
+  "agc_rds": true,
+  "grupos_validos": 270,
+  "pi_por_grupo": {
+    "22FF": 270
+  },
+  "tipos_grupo": {
+    "0A": 236,
+    "2A": 34
+  },
+  "nombres_ps": [
+    "....CANA",
+    "PANAMERI"
+  ],
+  "radiotextos": [
+    "Frankie Ruiz - Deseandote",
+    "Nino Segarra - Por que te amo"
+  ],
+  "muestras_audio": 1439967,
+  "tasa_audio_hz": 48000,
+  "audio_rms": 0.38894227147102356
+}
