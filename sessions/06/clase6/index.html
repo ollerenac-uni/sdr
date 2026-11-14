@@ -1,0 +1,3268 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Arquitectura y aplicaciones de LoRaWAN. Análisis de una señal I/Q hasta extraer el mensaje cifrado.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/06/clase6/">
+      
+      
+        <link rel="prev" href="../../04/laboratorio-fm-rds/">
+      
+      
+        <link rel="next" href="../../../setup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Clase 6 — Recepción LoRa y análisis LoRaWAN - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/sdr-mixer.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#clase-6-recepcion-lora-y-analisis-lorawan" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Clase 6 — Recepción LoRa y análisis LoRaWAN
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01-introduccion-sdr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción a SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 — Introducción a SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-introduccion-sdr/laboratorio-muestreo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #1: muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../02-tiempo-frecuencia-iq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03–05 — Señales y espectro en SDR
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03–05 — Señales y espectro en SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/mezcla-interactiva/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demostración: mezcla compleja
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/laboratorio-receptor-fm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #2: demodulador FM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../03-sistemas-filtros-digitales/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 — Laboratorio de enlace digital
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    06 — Laboratorio de enlace digital
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/tarea-laboratorio-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tarea del laboratorio 3
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/clase-enlace-digital/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapa visual de los 24 pasos
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 — Recepción FM y decodificación RDS en GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 — Recepción FM y decodificación RDS en GNU Radio
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04/clase4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lección 4: recepción FM y RDS
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04/laboratorio-fm-rds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #4: adaptación y diagnóstico
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 — Señales LoRa
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 — Señales LoRa
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aplicaciones-de-lorawan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aplicaciones de LoRaWAN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracion-lora-de-la-practica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuración LoRa de la práctica
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-chirps-ancho-de-banda-y-factor-de-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Chirps, ancho de banda y factor de expansión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Chirps, ancho de banda y factor de expansión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancho-de-banda-y-duracion-del-simbolo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ancho de banda y duración del símbolo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#que-cambia-al-subir-o-bajar-el-sf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué cambia al subir o bajar el SF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#que-se-medira-en-inspectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué se medirá en Inspectrum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-anatomia-del-paquete-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Anatomía del paquete LoRa
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Anatomía del paquete LoRa">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#presentacion-de-la-senal-iq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presentación de la señal I/Q
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contar-los-simbolos-en-inspectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contar los símbolos en Inspectrum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-anatomia-de-la-trama-lorawan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Anatomía de la trama LoRaWAN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Anatomía de la trama LoRaWAN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#como-obtener-los-20-bytes-de-la-senal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo obtener los 20 bytes de la señal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-leer-los-campos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo leer los campos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-ubicar-el-mensaje-cifrado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo ubicar el mensaje cifrado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-que-comprueban-el-crc-y-el-mic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Qué comprueban el CRC y el MIC
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Qué comprueban el CRC y el MIC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparacion-de-las-dos-muestras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparación de las dos muestras
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-analisis-en-inspectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Análisis en Inspectrum
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Análisis en Inspectrum">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#localizar-el-preambulo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Localizar el preámbulo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medir-la-duracion-del-simbolo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medir la duración del símbolo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medir-el-ancho-de-banda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medir el ancho de banda
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#obtener-el-sf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obtener el SF
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-recuperacion-de-la-trama-en-gnu-radio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Recuperación de la trama en GNU Radio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Recuperación de la trama en GNU Radio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-crear-el-grafo-y-leer-la-muestra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1. Crear el grafo y leer la muestra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-configurar-el-receptor-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2. Configurar el receptor LoRa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-guardar-los-bytes-y-mostrar-la-etiqueta-de-crc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3. Guardar los bytes y mostrar la etiqueta de CRC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-ejecutar-y-comprobar-el-resultado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4. Ejecutar y comprobar el resultado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-ver-el-espectro-y-el-waterfall-durante-la-reproduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5. Ver el espectro y el waterfall durante la reproducción
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-extraccion-del-mensaje-cifrado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Extracción del mensaje cifrado
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Extracción del mensaje cifrado">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-encontrar-el-inicio-y-el-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1. Encontrar el inicio y el final
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-extraer-los-siete-bytes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2. Extraer los siete bytes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reto-de-ubicacion-del-mensaje-cifrado-con-fopts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reto de ubicación del mensaje cifrado con FOpts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Reto de ubicación del mensaje cifrado con FOpts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#por-que-importa-fopts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por qué importa FOpts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trama-del-reto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trama del reto
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-entrega-del-informe-y-del-reto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Entrega del informe y del reto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Entrega del informe y del reto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-capturas-de-la-practica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1. Capturas de la práctica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-resultados-de-la-practica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2. Resultados de la práctica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-resultado-del-reto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3. Resultado del reto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-pregunta-de-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4. Pregunta de cierre
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/laboratorio-filtrado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Práctica complementaria: filtros FIR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aplicaciones-de-lorawan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aplicaciones de LoRaWAN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracion-lora-de-la-practica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuración LoRa de la práctica
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-chirps-ancho-de-banda-y-factor-de-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Chirps, ancho de banda y factor de expansión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Chirps, ancho de banda y factor de expansión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ancho-de-banda-y-duracion-del-simbolo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ancho de banda y duración del símbolo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#que-cambia-al-subir-o-bajar-el-sf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué cambia al subir o bajar el SF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#que-se-medira-en-inspectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué se medirá en Inspectrum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-anatomia-del-paquete-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Anatomía del paquete LoRa
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Anatomía del paquete LoRa">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#presentacion-de-la-senal-iq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presentación de la señal I/Q
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contar-los-simbolos-en-inspectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contar los símbolos en Inspectrum
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-anatomia-de-la-trama-lorawan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Anatomía de la trama LoRaWAN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Anatomía de la trama LoRaWAN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#como-obtener-los-20-bytes-de-la-senal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo obtener los 20 bytes de la señal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-leer-los-campos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo leer los campos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-ubicar-el-mensaje-cifrado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo ubicar el mensaje cifrado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-que-comprueban-el-crc-y-el-mic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Qué comprueban el CRC y el MIC
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Qué comprueban el CRC y el MIC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparacion-de-las-dos-muestras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparación de las dos muestras
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-analisis-en-inspectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Análisis en Inspectrum
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Análisis en Inspectrum">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#localizar-el-preambulo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Localizar el preámbulo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medir-la-duracion-del-simbolo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medir la duración del símbolo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medir-el-ancho-de-banda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Medir el ancho de banda
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#obtener-el-sf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obtener el SF
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-recuperacion-de-la-trama-en-gnu-radio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Recuperación de la trama en GNU Radio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Recuperación de la trama en GNU Radio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-crear-el-grafo-y-leer-la-muestra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1. Crear el grafo y leer la muestra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-configurar-el-receptor-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2. Configurar el receptor LoRa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-guardar-los-bytes-y-mostrar-la-etiqueta-de-crc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3. Guardar los bytes y mostrar la etiqueta de CRC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-ejecutar-y-comprobar-el-resultado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4. Ejecutar y comprobar el resultado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-ver-el-espectro-y-el-waterfall-durante-la-reproduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5. Ver el espectro y el waterfall durante la reproducción
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-extraccion-del-mensaje-cifrado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Extracción del mensaje cifrado
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Extracción del mensaje cifrado">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-encontrar-el-inicio-y-el-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1. Encontrar el inicio y el final
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-extraer-los-siete-bytes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2. Extraer los siete bytes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reto-de-ubicacion-del-mensaje-cifrado-con-fopts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reto de ubicación del mensaje cifrado con FOpts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Reto de ubicación del mensaje cifrado con FOpts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#por-que-importa-fopts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por qué importa FOpts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trama-del-reto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trama del reto
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-entrega-del-informe-y-del-reto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Entrega del informe y del reto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Entrega del informe y del reto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-capturas-de-la-practica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1. Capturas de la práctica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-resultados-de-la-practica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2. Resultados de la práctica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-resultado-del-reto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3. Resultado del reto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-pregunta-de-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4. Pregunta de cierre
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="clase-6-recepcion-lora-y-analisis-lorawan">Clase 6 — Recepción LoRa y análisis LoRaWAN</h1>
+<h2 id="1-introduccion">1. Introducción</h2>
+<p><strong>LoRa</strong> define cómo se transmite un paquete por radio. <strong>LoRaWAN</strong> define cómo se organiza la trama y cómo se comunica el dispositivo con la red.</p>
+<p><img alt="Cinco componentes de la red LoRaWAN con sus capas y protocolos alineados debajo. Las celdas sombreadas indican qué usa cada componente." src="../figures/01-arquitectura.png" />
+<strong>Figura 1.</strong> Componentes, capas y protocolos de una red LoRaWAN.</p>
+<p><a href="../figures/01-arquitectura.png">Ver figura ampliada</a>.</p>
+<ul>
+<li>El <em>end device</em>, dispositivo final, transmite por radio LoRa.</li>
+<li>El <em>gateway</em>, pasarela, reenvía los paquetes recibidos por radio. También transmite las respuestas de la red.</li>
+<li>El <em>Network Server</em>, servidor de red, gestiona el enlace y reenvía al servidor de aplicación los datos de aplicación cifrados.</li>
+<li>El <em>Join Server</em>, servidor de activación, valida las solicitudes de activación y deriva las claves de sesión.</li>
+<li>El <em>Application Server</em>, servidor de aplicación, recupera los datos para la aplicación.</li>
+</ul>
+<p>La capa física (PHY) LoRa transmite y recibe los símbolos de radio. La capa MAC, <em>Medium Access Control</em>, gestiona el enlace LoRaWAN entre el dispositivo y el servidor de red. La fila OTAA, <em>Over-the-Air Activation</em>, muestra quién participa en la activación por aire. <a href="https://lora-alliance.org/wp-content/uploads/2020/11/TS002-1.1.0_LoRaWAN_Backend_Interfaces.pdf#page=8">Modelo de red de LoRa Alliance</a>.</p>
+<p>El grupo inferior presenta un ejemplo de enlaces por IP, el protocolo de Internet. El gateway usa la interfaz LNS (<em>LoRaWAN Network Server</em>) de Basics Station sobre WebSocket. El Gateway Server recibe las tramas y las entrega al Network Server. En este ejemplo, los servidores se comunican mediante gRPC sobre HTTP/2. TLS protege las conexiones, TCP transporta los datos y Ethernet sirve de enlace local. <a href="https://doc.sm.tc/station/tcproto.html">Basics Station</a> y <a href="https://www.thethingsindustries.com/docs/concepts/networking/">conexiones de The Things Stack</a>.</p>
+<h3 id="aplicaciones-de-lorawan">Aplicaciones de LoRaWAN</h3>
+<ul>
+<li>Medición remota de agua, gas y electricidad</li>
+<li>Agricultura de precisión y gestión del riego</li>
+<li>Seguimiento de activos y flotas</li>
+<li>Monitoreo de la cadena de frío</li>
+<li>Monitoreo ambiental</li>
+<li>Automatización de edificios</li>
+<li>Detección de fugas de agua</li>
+<li>Alumbrado público y gestión de estacionamientos</li>
+</ul>
+<p><a href="https://lora-alliance.org/cities-vertical-market/">Casos de uso de LoRa Alliance</a> y <a href="https://lora-alliance.org/wp-content/uploads/2020/11/wi-fi-and-lorawanr-deployment-synergies.pdf">aplicaciones en edificios</a>.</p>
+<h3 id="configuracion-lora-de-la-practica">Configuración LoRa de la práctica</h3>
+<p>El factor de expansión (SF) y el ancho de banda (BW) definen el barrido en frecuencia de cada símbolo. La señal de la práctica usa <strong>SF7 y 125 kHz</strong>. La tabla reúne los demás parámetros que se usan en el ejemplo.</p>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Qué controla</th>
+<th>En la práctica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frecuencia central</td>
+<td>Dónde sintonizar el canal</td>
+<td>915 MHz como referencia de simulación</td>
+</tr>
+<tr>
+<td>Tasa de codificación (CR)</td>
+<td>Cuánta redundancia se añade al contenido</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>Preámbulo y palabra de sincronización (<em>sync word</em>)</td>
+<td>La secuencia que usa el receptor para detectar y sincronizar el paquete</td>
+<td>8 chirps repetidos y <code>0x34</code></td>
+</tr>
+<tr>
+<td>Modo de cabecera</td>
+<td>Si el paquete informa la longitud del contenido, la CR y la presencia de CRC</td>
+<td>Explícito</td>
+</tr>
+<tr>
+<td>Comprobación de redundancia cíclica (CRC)</td>
+<td>Si se añade una comprobación de errores al contenido</td>
+<td>Activada</td>
+</tr>
+</tbody>
+</table>
+<p>En Inspectrum se medirán el BW y la duración del símbolo para obtener el SF. En GNU Radio se decodificará la cabecera explícita. <a href="https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2">Estructura del paquete LoRa, Tapparel y Burg, §2</a>.</p>
+<h2 id="2-chirps-ancho-de-banda-y-factor-de-expansion">2. Chirps, ancho de banda y factor de expansión</h2>
+<p>Un <em>chirp</em> es una señal cuya frecuencia cambia con el tiempo. En un <em>upchirp</em> la frecuencia sube. En un <em>downchirp</em> baja. LoRa usa CSS (<em>Chirp Spread Spectrum</em>), una modulación de espectro ensanchado mediante chirps.</p>
+<p><img alt="Tres upchirps del preámbulo generado y comparación de chirps SF7 y SF8 con igual ancho de banda." src="../figures/02-chirps.png" />
+<strong>Figura 2.</strong> Chirps del preámbulo generado y comparación de dos duraciones de símbolo a 125 kHz.</p>
+<p><a href="../figures/02-chirps.png">Ver figura ampliada</a>.</p>
+<ul>
+<li><strong>Panel A.</strong> El eje horizontal mide tiempo desde el inicio del preámbulo. El eje vertical muestra la frecuencia instantánea relativa al centro del canal. Cada <em>upchirp</em> sube desde unos −62.5 kHz hasta +62.5 kHz. El siguiente empieza de nuevo por abajo.</li>
+<li><strong>Panel B.</strong> El eje horizontal mide tiempo y el vertical muestra la frecuencia relativa. Las dos curvas recorren los mismos 125 kHz. Con SF8, el barrido tarda el doble que con SF7.</li>
+</ul>
+<h3 id="ancho-de-banda-y-duracion-del-simbolo">Ancho de banda y duración del símbolo</h3>
+<p>El ancho de banda <span class="arithmatex">\(BW\)</span> (<em>bandwidth</em>) es el intervalo de frecuencias que recorre el chirp. En el panel A mide cerca de <span class="arithmatex">\(62.5-(-62.5)=125\)</span> kHz. La duración de un símbolo <span class="arithmatex">\(T_s\)</span> es el tiempo de un barrido completo. En el inicio del preámbulo, se puede medir entre dos reinicios consecutivos.</p>
+<p>El factor de expansión <span class="arithmatex">\(SF\)</span> (<em>spreading factor</em>) determina cuántas posiciones de inicio admite el chirp. Con SF7 hay <span class="arithmatex">\(2^7=128\)</span> posiciones posibles. LoRa representa cada valor de símbolo desplazando circularmente el chirp de referencia. Al llegar al borde superior, el barrido continúa desde el inferior. <a href="https://events.gnuradio.org/event/24/contributions/641/attachments/192/478/paper_tapparel.pdf#page=3">Modulación LoRa, Tapparel y Burg, §2.8</a>.</p>
+<div class="arithmatex">\[
+T_s=\frac{2^{SF}}{BW},\qquad SF=\log_2(BW\,T_s).
+\]</div>
+<p>Con <span class="arithmatex">\(BW\)</span> en hertz y <span class="arithmatex">\(T_s\)</span> en segundos, el producto <span class="arithmatex">\(BW\,T_s\)</span> da <span class="arithmatex">\(2^{SF}\)</span>. Si <span class="arithmatex">\(BW\)</span> se mantiene fijo, subir de SF7 a SF8 duplica ese producto y la duración del símbolo. A 125 kHz, <span class="arithmatex">\(T_s\)</span> pasa de 1.024 ms a 2.048 ms, como en el panel B.</p>
+<h3 id="que-cambia-al-subir-o-bajar-el-sf">Qué cambia al subir o bajar el SF</h3>
+<p><img alt="Dos barridos SF7 y un barrido SF8 en los mismos 2.048 ms. Los dos casos recorren de −62.5 a +62.5 kHz." src="../figures/comparacion-sf.png" />
+<strong>Figura 3.</strong> Barridos ideales de SF7 y SF8 en una misma ventana de tiempo y con igual ancho de banda.</p>
+<ul>
+<li><strong>Arriba, SF7.</strong> Cada diagonal tarda 1.024 ms en recorrer la banda. En 2.048 ms caben dos símbolos.</li>
+<li><strong>Abajo, SF8.</strong> La diagonal sube más despacio y recorre la misma banda en 2.048 ms. En ese tiempo cabe un solo símbolo.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Con un ancho de banda de 125 kHz</th>
+<th style="text-align: right;">SF7</th>
+<th style="text-align: right;">SF8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Duración del símbolo</td>
+<td style="text-align: right;">1.024 ms</td>
+<td style="text-align: right;">2.048 ms</td>
+</tr>
+<tr>
+<td>Símbolos por segundo</td>
+<td style="text-align: right;">≈ 977</td>
+<td style="text-align: right;">≈ 488</td>
+</tr>
+<tr>
+<td>Posiciones de inicio del chirp (<span class="arithmatex">\(2^{SF}\)</span>)</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">256</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Subir de SF7 a SF8.</strong> Se duplica la duración del símbolo y se reduce a la mitad la cantidad de símbolos por segundo. El receptor puede detectar señales más débiles. Un paquete con los mismos datos y la misma codificación ocupa más tiempo en el aire. <a href="https://www.semtech.com/design-support/faq/p0/p0">Sensibilidad y tiempo en el aire, Semtech</a>.</li>
+<li><strong>Bajar de SF8 a SF7.</strong> Los símbolos duran la mitad. Con la misma codificación se pueden transmitir datos más rápido. En las mismas condiciones de ruido, el receptor necesita una señal más fuerte para lograr una tasa de error similar. <a href="https://cdn.sparkfun.com/assets/7/7/3/2/2/SX1276_Datasheet.pdf#page=27">Tasa de símbolos y sensibilidad, Semtech SX1276, §4.1.1</a>.</li>
+<li><strong>Cambiar el ancho de banda con SF fijo.</strong> Con SF7, pasar de 125 a 250 kHz duplica el recorrido en frecuencia y reduce la duración del símbolo de 1.024 a 0.512 ms. <a href="https://cdn.sparkfun.com/assets/7/7/3/2/2/SX1276_Datasheet.pdf#page=28">Relación entre ancho de banda y tasa de símbolos, Semtech SX1276, §4.1.1.5</a>.</li>
+</ul>
+<h3 id="que-se-medira-en-inspectrum">Qué se medirá en Inspectrum</h3>
+<p>La práctica usa la señal generada <code>output/lorawan-iq/correcto.sigmf-data</code>. Su archivo de metadatos indica una tasa de muestreo <span class="arithmatex">\(f_s=1\)</span> millón de muestras complejas por segundo. Inspectrum necesita ese valor para dar escala a los ejes. Cada símbolo SF7 del ejemplo ocupa <span class="arithmatex">\(f_s T_s=1024\)</span> muestras. <a href="https://github.com/miek/inspectrum#features">Formatos y herramientas de Inspectrum</a>.</p>
+<ol>
+<li>Ampliar en el espectrograma los primeros chirps ascendentes repetidos del paquete. El tiempo se lee en horizontal y la frecuencia en vertical.</li>
+<li>Estimar <span class="arithmatex">\(BW\)</span> restando la frecuencia inferior de la superior en el recorrido del chirp. Se esperan aproximadamente 125 kHz.</li>
+<li>Medir con los cursores el tiempo entre el primer y el quinto reinicio. En ese tramo hay cuatro símbolos completos. Dividir el intervalo medido entre cuatro. Con unos 4.096 ms entre cursores, resulta <span class="arithmatex">\(T_s\approx 1.024\)</span> ms.</li>
+<li>Multiplicar los dos valores medidos en hertz y segundos. Con los valores esperados, <span class="arithmatex">\(125\,000\times 0.001024=128=2^7\)</span>. Así se identifica SF7 y se pueden configurar <span class="arithmatex">\(BW\)</span> y <span class="arithmatex">\(SF\)</span> en <code>LoRa Rx</code>.</li>
+</ol>
+<h2 id="3-anatomia-del-paquete-lora">3. Anatomía del paquete LoRa</h2>
+<p>El objetivo es entender cómo se organizan los chirps para que el receptor detecte el paquete, se sincronice y recupere su contenido. La figura se lee de izquierda a derecha. Primero se buscan los chirps conocidos del preámbulo. Luego se ubican los símbolos que llevan la cabecera, el contenido y la comprobación de errores.</p>
+<p><img alt="Espectrograma del paquete de la práctica. Después del preámbulo hay 43 símbolos en total. Las marcas indican 8 de cabecera, 25 de contenido, 5 compartidos y 5 de CRC y relleno." src="../figures/anatomia-paquete-lora.png" />
+<strong>Figura 4.</strong> Anatomía del paquete LoRa anotada sobre el espectrograma de las muestras I/Q de la práctica.</p>
+<p><a href="../figures/anatomia-paquete-lora.png">Ver figura ampliada</a>.</p>
+<p>El eje horizontal muestra el tiempo desde el inicio del archivo, como en Inspectrum. El eje vertical muestra la frecuencia relativa al centro del canal. Las diagonales claras son los barridos. Cada símbolo completo dura <strong>1.024 ms</strong>.</p>
+<ul>
+<li><strong>Preámbulo.</strong> Los ocho primeros chirps ascendentes se repiten. Luego vienen dos chirps con desplazamiento que llevan la palabra de sincronización (<em>sync word</em>) y dos chirps descendentes y un cuarto. El receptor usa esta secuencia para detectar el paquete y alinear la lectura de sus símbolos. <a href="https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=4">Estructura y detección del preámbulo, Tapparel y Burg, §2.9 y §3.2</a>.</li>
+<li><strong>Cabecera física.</strong> En esta señal, los ocho símbolos siguientes llevan la longitud del contenido, la tasa de codificación y un indicador de si hay CRC. La cabecera tiene su propia comprobación. El primer bloque entrelazado puede compartir espacio con el contenido para otros valores de SF. <a href="https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2">Cabecera y primer bloque entrelazado, Tapparel y Burg, §§2.2 y 2.7</a>.</li>
+<li><strong>Contenido y CRC.</strong> Después de la cabecera vienen <strong>35 símbolos</strong>. Los primeros <strong>25</strong> llevan solo bits del contenido (<em>payload</em>). Los siguientes <strong>5</strong> llevan bits del contenido y del CRC. Los últimos <strong>5</strong> llevan bits del CRC y relleno. <a href="https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/add_crc_impl.cc#L110-L125">Generación de CRC</a> y <a href="https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/interleaver_impl.cc#L139-L194">entrelazado</a>.</li>
+</ul>
+<p><strong>Desde el final del preámbulo se cuentan <span class="arithmatex">\(8+25+5+5=43\)</span> símbolos.</strong> Los 30 que llevan contenido permiten recuperar los <strong>20 bytes</strong> de la trama LoRaWAN. Los cinco símbolos compartidos también llevan bits del CRC.</p>
+<p>La fórmula de Semtech calcula <span class="arithmatex">\(N\)</span>, el total de símbolos después del preámbulo. El total incluye la cabecera física cuando está presente. <a href="https://cdn.sparkfun.com/assets/7/7/3/2/2/SX1276_Datasheet.pdf#page=31">Semtech SX1276, §4.1.1.7</a>.</p>
+<div class="arithmatex">\[
+N = 8 + \max\left(0,\left\lceil
+\frac{8PL-4SF+28+16\,CRC-20\,IH}{4(SF-2\,DE)}
+\right\rceil(CR+4)\right).
+\]</div>
+<p>En esta muestra, <span class="arithmatex">\(PL=20\)</span> bytes y <span class="arithmatex">\(SF=7\)</span>. El índice <span class="arithmatex">\(CR=1\)</span> corresponde a la tasa de codificación 4/5. El CRC está activado (<span class="arithmatex">\(CRC=1\)</span>), la cabecera es explícita (<span class="arithmatex">\(IH=0\)</span>) y la optimización de baja tasa está desactivada (<span class="arithmatex">\(DE=0\)</span>). Los signos <span class="arithmatex">\(\lceil\ \rceil\)</span> indican redondeo hacia arriba.</p>
+<div class="arithmatex">\[
+N=8+\left\lceil\frac{176}{28}\right\rceil(4+1)
+=8+7\times5=43\ \text{símbolos}.
+\]</div>
+<p>Cada símbolo dura 1.024 ms. Los cursores en Inspectrum abarcan <span class="arithmatex">\(43\times1.024=44.032\ \mathrm{ms}\)</span> desde el final del preámbulo hasta el final del paquete.</p>
+<h3 id="presentacion-de-la-senal-iq">Presentación de la señal I/Q</h3>
+<p>La práctica parte de <code>correcto.sigmf-data</code>, la señal del espectrograma de la Figura 4. El paquete 258 de <code>03_Brno_join.pcap</code> se recibió en Brno a 867.9 MHz con SF8. El archivo guarda sus bytes ya demodulados. GNU Radio vuelve a modular los 20 bytes con SF7 y genera las muestras I/Q en banda base. Los 915 MHz de los metadatos son la referencia de la simulación. <a href="https://zenodo.org/records/8090619">Conjunto de datos de Povalac y Kral</a>.</p>
+<p>Estas rutas son relativas a la raíz de <code>sdr</code>, la carpeta que contiene <code>mkdocs.yml</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Ruta relativa</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Muestras</td>
+<td><code>output/lorawan-iq/correcto.sigmf-data</code></td>
+<td>Archivo binario con 113 920 muestras complejas.</td>
+</tr>
+<tr>
+<td>Metadatos</td>
+<td><code>output/lorawan-iq/correcto.sigmf-meta</code></td>
+<td>Archivo JSON que indica el formato <code>cf32_le</code>, la tasa de muestreo de 1 000 000 muestras complejas/s y la frecuencia de referencia de 915 MHz.</td>
+</tr>
+</tbody>
+</table>
+<p>En <code>cf32_le</code>, cada muestra guarda primero <strong>I</strong>, la componente en fase, y luego <strong>Q</strong>, la componente en cuadratura. Cada componente ocupa 32 bits en coma flotante. <code>_le</code> indica el orden <em>little endian</em> de los bytes de cada componente. Un par I/Q ocupa <strong>8 bytes</strong> y, a <strong>1 Msps</strong> (un millón de muestras complejas por segundo), los pares están separados por <strong>1 µs</strong>. <a href="https://sigmf.org/#sigmf-dataset-format">Formato de datos SigMF</a>.</p>
+<p><img alt="Magnitud de las muestras I/Q del archivo completo. El paquete se ubica entre 8.192 y 64.768 milisegundos, rodeado de muestras en cero." src="../figures/registro-iq-lora.png" />
+<strong>Figura 5.</strong> Ubicación del paquete LoRa en el archivo I/Q de la práctica.</p>
+<ul>
+<li>El eje horizontal cuenta el tiempo desde el inicio del archivo. El eje vertical muestra la magnitud de cada par I/Q.</li>
+<li>El paquete empieza en <strong>8.192 ms</strong> y termina en <strong>64.768 ms</strong>. El tramo activo dura <strong>56.576 ms</strong>.</li>
+<li>Las zonas sombreadas muestran los ceros de apertura y cierre. Con esos ceros, el archivo completo dura <strong>113.920 ms</strong>.</li>
+</ul>
+<p>Usar una copia actualizada del repositorio <code>sdr</code>. La generación de la muestra y la recepción requieren Radioconda con <code>gr-lora_sdr</code> y <code>cryptography</code>. La instalación del curso para Linux y Windows incluye Inspectrum 0.3.1. <a href="https://github.com/ollerenac-uni/sdr">Repositorio del curso</a> · <a href="../../../setup/instalacion/">Guía de instalación de Radioconda</a>.</p>
+<details class="tip">
+<summary>Abrir la señal de la Figura 4 en Inspectrum</summary>
+<ol>
+<li>Abrir una terminal en la raíz del repositorio <code>sdr</code>, la carpeta que contiene <code>mkdocs.yml</code>. Activar Radioconda. En Windows, abrir <strong>Radioconda Prompt</strong> y cambiar a esa carpeta.</li>
+<li>
+<p>Comprobar que <code>correcto.sigmf-data</code> y <code>correcto.sigmf-meta</code> estén juntos en <code>output/lorawan-iq/</code>. Esta ruta es relativa a la raíz del repositorio. Si faltan los archivos, ejecutar este comando desde la raíz con Radioconda y <code>gr-lora_sdr</code> instalados.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>scripts/verificar_lorawan_iq.py<span class="w"> </span>--salida<span class="w"> </span>output/lorawan-iq
+</code></pre></div>
+</li>
+<li>
+<p>Abrir la señal en Inspectrum.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>inspectrum<span class="w"> </span>output/lorawan-iq/correcto.sigmf-data
+</code></pre></div>
+</li>
+<li>
+<p>Verificar que <strong>Sample rate</strong> muestre <code>1e+06</code> o <code>1000000</code>. Inspectrum carga ese valor del campo <code>core:sample_rate</code> de <code>correcto.sigmf-meta</code>. Si el campo de Inspectrum muestra otro valor, ingresar <code>1000000</code>. La tasa de muestreo es <strong>1 millón de muestras complejas por segundo</strong>. Los <strong>125 kHz</strong> corresponden al ancho de banda del chirp. <a href="https://github.com/miek/inspectrum/blob/v0.3.1/src/inputsource.cpp">Lectura de metadatos SigMF en Inspectrum</a>.</p>
+</li>
+<li>En el espectrograma, ampliar el comienzo de la señal. Buscar los chirps ascendentes repetidos y luego los descendentes que cierran el preámbulo.</li>
+</ol>
+</details>
+<h3 id="contar-los-simbolos-en-inspectrum">Contar los símbolos en Inspectrum</h3>
+<p>Inspectrum muestra el eje horizontal en segundos. Por ejemplo, <code>0.020736</code> en el eje corresponde a 20.736 ms en la tabla. <strong>Period</strong> y <strong>Symbol period</strong> muestran sus unidades junto al valor. <a href="https://github.com/miek/inspectrum/blob/v0.3.1/src/plotview.cpp#L507-L545">Escala de tiempo y controles de Inspectrum</a>.</p>
+<ol>
+<li>Activar <strong>Scales</strong> y <strong>Enable cursors</strong>. Ampliar el preámbulo con <strong>Zoom</strong>. Poner <strong>Symbols</strong> en <code>4</code> y arrastrar los cursores verticales a dos reinicios separados por cuatro barridos, cerca de <strong>9.216</strong> y <strong>13.312 ms</strong>. <strong>Period</strong> debe quedar cerca de <strong>4.096 ms</strong> y <strong>Symbol period</strong> cerca de <strong>1.024 ms</strong>.</li>
+<li>Ubicar el inicio de la cabecera en <strong>20.736 ms</strong>, justo después del cuarto de chirp descendente. Si hace falta, reducir <strong>Zoom</strong> para ver el tramo que se quiere medir.</li>
+<li>Colocar el cursor izquierdo al terminar el último <em>downchirp</em>, cerca de <strong>20.736 ms</strong>, y el derecho donde termina el último chirp, cerca de <strong>64.768 ms</strong>. Leer <strong>Period</strong>. El resultado esperado es <strong>44.032 ms</strong>, que al dividir por <strong>1.024 ms</strong> da <strong>43 símbolos</strong>.</li>
+<li>Poner <strong>Symbols</strong> en <code>43</code> y volver a ajustar los cursores a los mismos extremos. Las líneas punteadas marcan el inicio de cada símbolo dentro de la selección. <strong>Symbol period</strong> debe quedar cerca de <strong>1.024 ms</strong>. Repetir la medición de <strong>Period</strong> para los tramos de la tabla. <a href="https://github.com/miek/inspectrum/blob/v0.3.1/src/spectrogramcontrols.cpp#L195-L205">Controles de tiempo de Inspectrum</a>.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Tramo que se mide</th>
+<th style="text-align: right;">Cursor izquierdo (ms)</th>
+<th style="text-align: right;">Cursor derecho (ms)</th>
+<th style="text-align: right;">Símbolos esperados</th>
+<th style="text-align: right;"><strong>Period</strong> esperado (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chirps ascendentes repetidos</td>
+<td style="text-align: right;">8.192</td>
+<td style="text-align: right;">16.384</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8.192</td>
+</tr>
+<tr>
+<td>Palabra de sincronización</td>
+<td style="text-align: right;">16.384</td>
+<td style="text-align: right;">18.432</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2.048</td>
+</tr>
+<tr>
+<td>Cierre del preámbulo</td>
+<td style="text-align: right;">18.432</td>
+<td style="text-align: right;">20.736</td>
+<td style="text-align: right;">2 completos y ¼</td>
+<td style="text-align: right;">2.304</td>
+</tr>
+<tr>
+<td><strong>Total después del preámbulo</strong></td>
+<td style="text-align: right;"><strong>20.736</strong></td>
+<td style="text-align: right;"><strong>64.768</strong></td>
+<td style="text-align: right;"><strong>43</strong></td>
+<td style="text-align: right;"><strong>44.032</strong></td>
+</tr>
+<tr>
+<td>Cabecera física</td>
+<td style="text-align: right;">20.736</td>
+<td style="text-align: right;">28.928</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8.192</td>
+</tr>
+<tr>
+<td>Solo contenido</td>
+<td style="text-align: right;">28.928</td>
+<td style="text-align: right;">54.528</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">25.600</td>
+</tr>
+<tr>
+<td>Símbolos compartidos por contenido y CRC</td>
+<td style="text-align: right;">54.528</td>
+<td style="text-align: right;">59.648</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5.120</td>
+</tr>
+<tr>
+<td>CRC y relleno</td>
+<td style="text-align: right;">59.648</td>
+<td style="text-align: right;">64.768</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">5.120</td>
+</tr>
+</tbody>
+</table>
+<p>Para medir el cierre del preámbulo, dividir <strong>Period</strong> por 1.024 ms. <strong>Symbols</strong> solo acepta enteros. En la cabecera y los datos, el chirp puede volver al extremo inferior a mitad de símbolo. Contar con la cuadrícula temporal de <strong>1.024 ms</strong>. Los límites del contenido y del CRC se ubican con esa cuadrícula y la estructura conocida de la muestra. <a href="https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=3">Modulación de los símbolos LoRa</a>.</p>
+<h2 id="4-anatomia-de-la-trama-lorawan">4. Anatomía de la trama LoRaWAN</h2>
+<p>El objetivo es ubicar cada campo de la trama y extraer los bytes del mensaje cifrado. Se empieza con los 20 bytes que <code>LoRa Rx</code> recupera de <code>correcto.sigmf-data</code>, la misma señal de la Figura 4. Esos 20 bytes son el contenido del paquete LoRa y forman el <code>PHYPayload</code> de LoRaWAN. <a href="https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=15">Formato de trama de LoRaWAN 1.0.4, §4</a>.</p>
+<p><img alt="Los 20 bytes recuperados, numerados del 1 al 20 y agrupados por campo. El mensaje cifrado aparece en morado entre FPort y MIC." src="../figures/anatomia-trama-lorawan.png" />
+<strong>Figura 6.</strong> Campos de la trama LoRaWAN recuperada de la muestra de la práctica.</p>
+<p><a href="../figures/anatomia-trama-lorawan.png">Ver figura ampliada</a>.</p>
+<ul>
+<li>Los números inferiores indican la posición de cada byte. La cuenta empieza en 1.</li>
+<li>Las marcas superiores muestran qué bytes forman el <code>PHYPayload</code>, el <code>MACPayload</code> y la cabecera de trama <code>FHDR</code>.</li>
+<li>Aquí <code>FOptsLen = 0</code>. La cabecera <code>FHDR</code> termina en <code>FCnt</code> y el byte siguiente es <code>FPort</code>. La <a href="#9-reto-de-ubicacion-del-mensaje-cifrado-con-fopts">sección 9</a> muestra el caso con opciones.</li>
+<li>El tramo morado contiene el mensaje cifrado. El tramo verde contiene el código de integridad.</li>
+</ul>
+<h3 id="como-obtener-los-20-bytes-de-la-senal">Cómo obtener los 20 bytes de la señal</h3>
+<p>En Inspectrum, localizar el preámbulo de la señal que se abrió en la sección 3. Para pasar de los chirps a los bytes, <code>LoRa Rx</code> en GNU Radio sincroniza, demodula y decodifica el paquete. <a href="https://github.com/miek/inspectrum#features">Herramientas de Inspectrum</a> · <a href="https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=4">Cadena receptora LoRa, Tapparel y Burg, §3</a>.</p>
+<p><code>gr-lora_sdr</code> es un módulo de código abierto para GNU Radio desarrollado en la EPFL. Implementa la capa física propietaria LoRa. Sus autores publicaron el diseño del receptor y documentaron pruebas de transmisión y recepción entre equipos SDR y radios comerciales con chips Semtech SX1276 y SX1262. Esas pruebas sustentan la compatibilidad con esos equipos. En la práctica, <code>lora_sdr.lora_sdr_lora_rx(...)</code> crea el bloque jerárquico <code>LoRa Rx</code>. El script lo conecta a <code>File Source</code> y <code>tb.run()</code> procesa las muestras para recuperar los bytes. <a href="https://pubs.gnuradio.org/index.php/grcon/article/view/145">Diseño de la capa física LoRa</a> · <a href="https://github.com/tapparelj/gr-lora_sdr#features">Pruebas de interoperabilidad de <code>gr-lora_sdr</code></a>.</p>
+<p>Desde la raíz de <code>sdr</code>, con Radioconda activo, ejecutar el comando. Así se leen las muestras con el bloque <code>LoRa Rx</code> que configura el script de la práctica.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import sys; from pathlib import Path; sys.path.insert(0, 'scripts'); from verificar_lorawan_iq import recibir; trama, = recibir(Path('output/lorawan-iq/correcto.sigmf-data')); print(bytes.fromhex(trama['payload_hex']).hex(' '))"</span>
+</code></pre></div>
+<p>La terminal muestra esta línea. Cada par hexadecimal representa un byte.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>80 dc 5d e6 01 90 04 00 01 db f5 a4 e3 12 39 d0 53 21 68 7b
+</code></pre></div>
+<h3 id="como-leer-los-campos">Cómo leer los campos</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th style="text-align: right;">Posiciones inclusive</th>
+<th>Bytes en hexadecimal</th>
+<th>Qué indica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MHDR</code></td>
+<td style="text-align: right;">1</td>
+<td><code>80</code></td>
+<td>Cabecera MAC. Los tres bits superiores son <code>100</code>, que identifican una trama ascendente que solicita confirmación.</td>
+</tr>
+<tr>
+<td><code>FHDR → DevAddr</code></td>
+<td style="text-align: right;">2–5</td>
+<td><code>dc 5d e6 01</code></td>
+<td>Dirección corta del dispositivo, <code>0x01e65ddc</code>.</td>
+</tr>
+<tr>
+<td><code>FHDR → FCtrl</code></td>
+<td style="text-align: right;">6</td>
+<td><code>90</code></td>
+<td>Control de trama. Sus cuatro bits inferiores indican <code>FOptsLen = 0</code>.</td>
+</tr>
+<tr>
+<td><code>FHDR → FCnt</code></td>
+<td style="text-align: right;">7–8</td>
+<td><code>04 00</code></td>
+<td>Los 16 bits bajos del contador de trama tienen valor 4.</td>
+</tr>
+<tr>
+<td><code>FHDR → FOpts</code></td>
+<td style="text-align: right;">—</td>
+<td>—</td>
+<td>Campo de opciones ausente porque su longitud es cero.</td>
+</tr>
+<tr>
+<td><code>FPort</code></td>
+<td style="text-align: right;">9</td>
+<td><code>01</code></td>
+<td>Puerto de aplicación 1.</td>
+</tr>
+<tr>
+<td><code>FRMPayload</code></td>
+<td style="text-align: right;"><strong>10–16</strong></td>
+<td><strong><code>db f5 a4 e3 12 39 d0</code></strong></td>
+<td><strong>Siete bytes del mensaje de aplicación cifrado.</strong></td>
+</tr>
+<tr>
+<td><code>MIC</code></td>
+<td style="text-align: right;">17–20</td>
+<td><code>53 21 68 7b</code></td>
+<td><em>Message Integrity Code</em>, código de integridad de la trama LoRaWAN.</td>
+</tr>
+</tbody>
+</table>
+<p><code>DevAddr</code> y <code>FCnt</code> se transmiten en <em>little endian</em>, con el byte menos significativo primero. Por eso <code>04 00</code> representa el valor <code>0x0004</code>. La tabla conserva el orden en que llegan los bytes. <a href="https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=8">Orden de bytes, LoRaWAN 1.0.4, §1.1</a>.</p>
+<h3 id="como-ubicar-el-mensaje-cifrado">Cómo ubicar el mensaje cifrado</h3>
+<ol>
+<li>Leer <code>FCtrl</code>, en la posición 6. El dígito hexadecimal de la derecha en <code>90</code> es <code>0</code>. Ese es el valor de <code>FOptsLen</code>, la cantidad de bytes de opciones que siguen al contador.</li>
+<li>Pasar esos bytes de opciones. Como hay cero, <code>FHDR</code> termina en la posición 8 y <code>FPort</code> ocupa la posición 9. El mensaje cifrado empieza en la posición 10.</li>
+<li>Reservar los últimos cuatro bytes para el <code>MIC</code>. En esta trama de 20 bytes, el <code>MIC</code> empieza en la posición 17. El mensaje cifrado termina en la posición 16.</li>
+</ol>
+<p>Si <code>FOptsLen</code> cambia, también se mueve <code>FPort</code> cuando está presente. La longitud total fija dónde empiezan los cuatro bytes del <code>MIC</code>. <a href="https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=23">Opciones, puerto, cifrado e integridad, LoRaWAN 1.0.4, §4.3.1.6–4.4</a>.</p>
+<h2 id="5-que-comprueban-el-crc-y-el-mic">5. Qué comprueban el CRC y el MIC</h2>
+<p>El objetivo es explicar cómo un paquete LoRa puede pasar el CRC y aun así fallar la comprobación del MIC en LoRaWAN.</p>
+<table>
+<thead>
+<tr>
+<th>Comprobación</th>
+<th>Qué compara el receptor</th>
+<th>Usa clave</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CRC de LoRa</strong></td>
+<td>Calcula el CRC a partir de los 20 bytes recuperados y lo compara con los dos bytes de CRC del paquete. Una diferencia indica un error detectado en la capa física.</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>MIC de LoRaWAN 1.0.4</strong></td>
+<td>Calcula el MIC a partir de los bytes 1–16 y del contexto de la trama. Compara el resultado con los cuatro bytes recibidos en las posiciones 17–20.</td>
+<td>Sí. Usa la clave de sesión de red (<code>NwkSKey</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>El contexto que usa el MIC incluye el sentido de transmisión, la dirección del dispositivo y el contador completo de trama. <a href="https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2">CRC de LoRa, Tapparel y Burg, §2.3</a> · <a href="https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=25">MIC, LoRaWAN 1.0.4, §4.4</a>.</p>
+<h3 id="comparacion-de-las-dos-muestras">Comparación de las dos muestras</h3>
+<p><img alt="Los siete bytes cifrados de las dos tramas. El primer byte cambia de db a da en la posición 10." src="../figures/comparacion-crc-mic.png" />
+<strong>Figura 7.</strong> El byte 10 cambia de <code>db</code> a <code>da</code> en la trama de prueba.</p>
+<ul>
+<li>La fila superior muestra los siete bytes del <code>FRMPayload</code> recuperados de <code>correcto.sigmf-data</code>.</li>
+<li>La fila inferior muestra las mismas posiciones en <code>contenido_alterado.sigmf-data</code>. El cambio de <code>db</code> a <code>da</code> afecta un bit. Ambas tramas conservan el MIC <code>53 21 68 7b</code>.</li>
+</ul>
+<p>La segunda muestra se generó con el byte ya modificado. El transmisor LoRa calculó el CRC para los bytes de cada muestra. En la recepción, <code>LoRa Rx</code> recupera los 20 bytes y obtiene un CRC válido en ambos casos.</p>
+<table>
+<thead>
+<tr>
+<th>Muestra</th>
+<th>CRC en <code>LoRa Rx</code></th>
+<th>MIC recibido</th>
+<th>MIC calculado</th>
+<th>Resultado del MIC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>correcto.sigmf-data</code></td>
+<td>Válido</td>
+<td><code>53 21 68 7b</code></td>
+<td><code>53 21 68 7b</code></td>
+<td>Válido</td>
+</tr>
+<tr>
+<td><code>contenido_alterado.sigmf-data</code></td>
+<td>Válido</td>
+<td><code>53 21 68 7b</code></td>
+<td><code>d2 88 82 14</code></td>
+<td>Inválido</td>
+</tr>
+</tbody>
+</table>
+<p>En la segunda muestra, el CRC coincide con el paquete generado para la prueba. El MIC recibido corresponde a la trama original. Al verificarlo con la clave de sesión y el byte modificado, el resultado cambia.</p>
+<h2 id="6-analisis-en-inspectrum">6. Análisis en Inspectrum</h2>
+<p>El objetivo es estimar dos parámetros de la señal a partir del preámbulo. La distancia vertical que recorre el chirp da el ancho de banda <span class="arithmatex">\(BW\)</span>. La separación horizontal entre dos reinicios consecutivos da la duración de símbolo <span class="arithmatex">\(T_s\)</span>. Con ambas medidas se obtiene el factor de expansión (SF).</p>
+<h3 id="localizar-el-preambulo">Localizar el preámbulo</h3>
+<ol>
+<li>Abrir <code>output/lorawan-iq/correcto.sigmf-data</code> como en la sección 3. En <strong>Controls</strong>, verificar <strong>Sample rate</strong> de <code>1000000</code> muestras/s y activar <strong>Scales</strong> para ver los ejes.</li>
+<li>Aumentar <strong>Zoom</strong> y mover la barra horizontal hasta ver el tramo de <strong>8 a 16 ms</strong> desde el inicio del archivo. Los primeros chirps del paquete son diagonales ascendentes que se repiten.</li>
+<li>Si las diagonales aparecen borrosas, reducir <strong>FFT size</strong>. Para esta muestra sirve una FFT de 128 puntos. En Inspectrum 0.3.1, seleccionar el control <strong>FFT size</strong>, pulsar <strong>Inicio</strong> y luego pulsar <strong>→</strong> tres veces. <a href="https://github.com/miek/inspectrum/blob/v0.3.1/src/spectrogramcontrols.cpp">Controles de Inspectrum 0.3.1</a>.</li>
+</ol>
+<p><img alt="Espectrograma del preámbulo con cursores verticales sobre cuatro períodos y marcas horizontales cerca de menos y más 62.5 kHz." src="../figures/medicion-preambulo-lora.png" />
+<strong>Figura 8.</strong> Referencias de tiempo y frecuencia marcadas sobre el preámbulo de la muestra.</p>
+<ul>
+<li>Las dos líneas verticales continuas encierran cuatro símbolos. Las tres líneas punteadas intermedias coinciden con los reinicios del barrido.</li>
+<li>Las dos líneas horizontales marcan los extremos aproximados del barrido. La figura amplía la zona del chirp para mostrar dónde leer los límites en el espectrograma.</li>
+</ul>
+<h3 id="medir-la-duracion-del-simbolo">Medir la duración del símbolo</h3>
+<ol>
+<li>En <strong>Time selection</strong>, activar <strong>Enable cursors</strong> y colocar <strong>Symbols</strong> en <code>4</code>. Ajustar los dos cursores después de cambiar ese campo.</li>
+<li>Arrastrar el cursor vertical izquierdo a un reinicio del barrido dentro de los chirps repetidos. Un reinicio es el salto desde el final de una diagonal hasta el comienzo de la siguiente. En esta muestra se puede usar el de <strong>9.216 ms</strong>.</li>
+<li>Contar cuatro barridos completos hacia la derecha. Colocar el segundo cursor en el reinicio que cierra el cuarto barrido, cerca de <strong>13.312 ms</strong>. Las tres divisiones intermedias deben coincidir con los reinicios entre los cursores.</li>
+<li>Leer <strong>Period</strong>, el tiempo total entre los cursores, y <strong>Symbol period</strong>, el tiempo por símbolo. Cerca de <strong>4.096 ms</strong> entre cursores da <strong>1.024 ms</strong> por símbolo. <a href="https://github.com/miek/inspectrum/blob/v0.3.1/src/spectrogramcontrols.cpp#L195-L205">Cursores de tiempo y cálculo del período en Inspectrum</a>.</li>
+</ol>
+<h3 id="medir-el-ancho-de-banda">Medir el ancho de banda</h3>
+<ol>
+<li>Hacer clic derecho sobre el espectrograma y elegir <strong>Add derived plot → Add amplitude plot</strong>. Aparecen tres líneas horizontales sobre el espectrograma. La roja marca el centro del sintonizador y las dos blancas indican sus límites. La medición se hace en el espectrograma superior. <a href="https://github.com/miek/inspectrum/blob/v0.3.1/src/plotview.cpp#L121-L135">Menú de gráficos derivados</a> · <a href="https://github.com/miek/inspectrum/blob/v0.3.1/src/tuner.cpp">Líneas del sintonizador</a>.</li>
+<li>Arrastrar la línea roja hasta el centro entre los extremos del chirp. En esta señal, ese punto queda en <strong>0 Hz</strong>, a media altura del espectrograma. Arrastrar una línea blanca hasta el extremo de la diagonal brillante. La otra línea se mueve de forma simétrica. Comprobar el ajuste en varios chirps repetidos.</li>
+<li>Usar las marcas de <strong>Scales</strong> sobre el borde izquierdo para estimar la frecuencia de cada línea blanca. Con una FFT de 128 puntos, las marcas pequeñas están separadas por <strong>100 kHz</strong>. Ambas líneas deberían quedar entre el centro y la primera marca de su lado. Interpolar entre las marcas. Los extremos nominales son <strong>−62.5 kHz</strong> y <strong>+62.5 kHz</strong>. La resolución de la FFT y el difuminado cerca del reinicio limitan la precisión. <a href="https://github.com/miek/inspectrum/blob/v0.3.1/src/spectrogramplot.cpp#L77-L151">Escala de frecuencia de Inspectrum 0.3.1</a>.</li>
+<li>Restar la frecuencia inferior de la superior. Con los extremos de referencia, <span class="arithmatex">\(BW=62.5-(-62.5)=125\ \mathrm{kHz}\)</span>.</li>
+</ol>
+<h3 id="obtener-el-sf">Obtener el SF</h3>
+<ol>
+<li>Convertir <span class="arithmatex">\(BW\)</span> a hertz y <span class="arithmatex">\(T_s\)</span> a segundos. Con los valores de referencia, <span class="arithmatex">\(BW=125\,000\ \mathrm{Hz}\)</span> y <span class="arithmatex">\(T_s=0.001024\ \mathrm{s}\)</span>.</li>
+<li>Multiplicar los valores medidos y calcular el logaritmo en base 2. Si el resultado está cerca de 7, se identifica <strong>SF7</strong>. Si queda casi a mitad de camino entre dos enteros, revisar los límites del barrido y el número de símbolos entre los cursores.</li>
+</ol>
+<div class="arithmatex">\[
+BW\,T_s \approx 125\,000 \times 0.001024 = 128 = 2^7,
+\qquad SF = \log_2(BW\,T_s) \approx 7.
+\]</div>
+<p>Registrar el <strong>BW</strong>, el <strong>Symbol period</strong> y el <strong>SF</strong> obtenido. Para configurar <code>LoRa Rx</code> se usará el ancho de banda nominal de <strong>125 kHz</strong>. <a href="https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=3">Relación entre ancho de banda, duración del símbolo y SF</a>.</p>
+<h2 id="7-recuperacion-de-la-trama-en-gnu-radio">7. Recuperación de la trama en GNU Radio</h2>
+<p>El objetivo es recuperar los <strong>20 bytes</strong> de <code>correcto.sigmf-data</code> y comprobar el <strong>CRC físico de LoRa</strong>. Usar la tasa de muestreo de la sección 3 y los valores de ancho de banda y SF de la sección 6.</p>
+<p>El repositorio incluye el grafo de referencia en <code>gnuradio/flowgraphs/lora_recuperar_trama.grc</code>. Los pasos siguientes permiten armarlo en GRC.</p>
+<h3 id="71-crear-el-grafo-y-leer-la-muestra">7.1. Crear el grafo y leer la muestra</h3>
+<ol>
+<li>Abrir GNU Radio Companion desde el entorno de Radioconda que tiene instalado <code>gr-lora_sdr</code>.</li>
+<li>Crear un grafo nuevo y guardarlo como <code>gnuradio/flowgraphs/lora_recuperar_trama.grc</code>, desde la raíz de <code>sdr</code>.</li>
+<li>
+<p>Abrir el bloque <code>Options</code> y configurarlo con estos valores.</p>
+<table>
+<thead>
+<tr>
+<th>Campo de <code>Options</code></th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ID</code></td>
+<td><code>lora_recuperar_trama</code></td>
+</tr>
+<tr>
+<td><code>Output Language</code></td>
+<td><code>Python</code></td>
+</tr>
+<tr>
+<td><code>Generate Options</code></td>
+<td><code>No GUI</code></td>
+</tr>
+<tr>
+<td><code>Run Options</code></td>
+<td><code>Run to Completion</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Añadir <code>File Source</code>. El archivo de muestras debe estar en <code>output/lorawan-iq/</code>, como se indica en la sección 3.</p>
+<table>
+<thead>
+<tr>
+<th>Campo de <code>File Source</code></th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ID</code></td>
+<td><code>captura_lora</code></td>
+</tr>
+<tr>
+<td><code>File</code></td>
+<td><code>../../output/lorawan-iq/correcto.sigmf-data</code></td>
+</tr>
+<tr>
+<td><code>Output Type</code></td>
+<td><code>Complex</code></td>
+</tr>
+<tr>
+<td><code>Vector Length</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>Repeat</code></td>
+<td><code>No</code></td>
+</tr>
+<tr>
+<td><code>Offset</code></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>Length</code></td>
+<td><code>0</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<p>GNU Radio Companion ejecuta el grafo desde la carpeta del <code>.grc</code>. Los dos <code>..</code> llevan de <code>gnuradio/flowgraphs/</code> a la raíz de <code>sdr</code>. <code>File Source</code> lee las muestras desde el inicio. <code>Length = 0</code> lee hasta el final del archivo. <a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-blocks/lib/file_source_impl.cc">Implementación de <code>File Source</code> en GNU Radio</a>.</p>
+<h3 id="72-configurar-el-receptor-lora">7.2. Configurar el receptor LoRa</h3>
+<p>Añadir <code>LoRa Rx</code> desde la categoría <strong>LoRa_RX</strong>. Este bloque recibe las muestras complejas y entrega los bytes recuperados.</p>
+<table>
+<thead>
+<tr>
+<th>Campo de <code>LoRa Rx</code></th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ID</code></td>
+<td><code>receptor_lora</code></td>
+</tr>
+<tr>
+<td><code>Input sampling rate</code></td>
+<td><code>1000000</code></td>
+</tr>
+<tr>
+<td><code>Bandwidth</code></td>
+<td><code>125000</code></td>
+</tr>
+<tr>
+<td><code>Spreading factor</code></td>
+<td><code>7</code></td>
+</tr>
+<tr>
+<td><code>Implicit header</code></td>
+<td><code>No</code></td>
+</tr>
+<tr>
+<td><code>Use soft-decision decoding</code></td>
+<td><code>Yes</code></td>
+</tr>
+<tr>
+<td><code>LDRO</code></td>
+<td><code>Auto</code></td>
+</tr>
+<tr>
+<td><code>Sync word</code></td>
+<td><code>[0x34]</code></td>
+</tr>
+<tr>
+<td><code>Print info</code></td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<p>Con <code>Implicit header = No</code>, <code>LoRa Rx</code> lee la longitud, la tasa de codificación y la presencia de CRC de la cabecera explícita. Por eso GRC oculta <code>Payload length</code>, <code>Coding rate</code> y <code>CRC presence</code>. Con <code>LDRO = Auto</code> el receptor determina si usa la optimización de baja tasa de datos. <code>Print info = None</code> deja la lectura del CRC a <code>Tag Debug</code>. <a href="https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/grc/lora_sdr_lora_rx.block.yml">Definición de <code>LoRa Rx</code> en GRC</a>.</p>
+<h3 id="73-guardar-los-bytes-y-mostrar-la-etiqueta-de-crc">7.3. Guardar los bytes y mostrar la etiqueta de CRC</h3>
+<ol>
+<li>
+<p>Añadir <code>File Sink</code> y <code>Tag Debug</code> con estos valores.</p>
+<table>
+<thead>
+<tr>
+<th>Bloque</th>
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>File Sink</code></td>
+<td><code>ID</code></td>
+<td><code>guardar_trama</code></td>
+</tr>
+<tr>
+<td><code>File Sink</code></td>
+<td><code>File</code></td>
+<td><code>../../output/lorawan-iq/trama_recibida.bin</code></td>
+</tr>
+<tr>
+<td><code>File Sink</code></td>
+<td><code>Input Type</code></td>
+<td><code>Byte</code></td>
+</tr>
+<tr>
+<td><code>File Sink</code></td>
+<td><code>Vector Length</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>File Sink</code></td>
+<td><code>Unbuffered</code></td>
+<td><code>Off</code></td>
+</tr>
+<tr>
+<td><code>File Sink</code></td>
+<td><code>Append file</code></td>
+<td><code>Overwrite</code></td>
+</tr>
+<tr>
+<td><code>Tag Debug</code></td>
+<td><code>ID</code></td>
+<td><code>etiquetas_lora</code></td>
+</tr>
+<tr>
+<td><code>Tag Debug</code></td>
+<td><code>Input Type</code></td>
+<td><code>Byte</code></td>
+</tr>
+<tr>
+<td><code>Tag Debug</code></td>
+<td><code>Name</code></td>
+<td><code>CRC LoRa</code></td>
+</tr>
+<tr>
+<td><code>Tag Debug</code></td>
+<td><code>Key Filter</code></td>
+<td><code>frame_info</code></td>
+</tr>
+<tr>
+<td><code>Tag Debug</code></td>
+<td><code>Num Inputs</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>Tag Debug</code></td>
+<td><code>Vector Length</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>Tag Debug</code></td>
+<td><code>Display</code></td>
+<td><code>On</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Hacer estas tres conexiones. Las dos últimas salen del mismo puerto de flujo <strong>Byte</strong> de <code>LoRa Rx</code>. Se puede dejar libre el puerto <code>out</code> de mensajes.</p>
+<table>
+<thead>
+<tr>
+<th>Salida</th>
+<th>Entrada</th>
+<th>Qué circula</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>File Source</code>, puerto <code>out</code></td>
+<td><code>LoRa Rx</code>, puerto <code>in</code></td>
+<td>Muestras <code>Complex</code></td>
+</tr>
+<tr>
+<td><code>LoRa Rx</code>, puerto <code>out</code> de flujo <code>Byte</code></td>
+<td><code>File Sink</code>, puerto <code>in</code> (0)</td>
+<td>Bytes recuperados</td>
+</tr>
+<tr>
+<td><code>LoRa Rx</code>, puerto <code>out</code> de flujo <code>Byte</code></td>
+<td><code>Tag Debug</code>, puerto <code>in</code> (0)</td>
+<td>Bytes y etiqueta <code>frame_info</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<h3 id="74-ejecutar-y-comprobar-el-resultado">7.4. Ejecutar y comprobar el resultado</h3>
+<ol>
+<li>Guardar y pulsar <strong>F6</strong> para ejecutar. <code>File Source</code> lee el archivo una vez y el grafo termina.</li>
+<li>
+<p>En la salida de ejecución, buscar la etiqueta <code>frame_info</code> impresa por <code>Tag Debug</code>. Si GRC solo muestra el aviso de GTK <code>Locale not supported</code> o la terminal se cierra enseguida, ejecutar el programa generado desde una terminal con Radioconda activo. Partir de la raíz de <code>sdr</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">cd</span><span class="w"> </span>gnuradio/flowgraphs
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>python<span class="w"> </span>-u<span class="w"> </span>lora_recuperar_trama.py
+</code></pre></div>
+<p>Leer estos tres campos de la etiqueta.</p>
+<table>
+<thead>
+<tr>
+<th>Campo de la etiqueta</th>
+<th>Salida esperada</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pay_len</code></td>
+<td><code>(pay_len . 20)</code></td>
+<td>La cabecera indica 20 bytes de contenido.</td>
+</tr>
+<tr>
+<td><code>crc</code></td>
+<td><code>(crc . 1)</code></td>
+<td>El paquete incluye el CRC físico.</td>
+</tr>
+<tr>
+<td><code>crc_valid</code></td>
+<td><code>(crc_valid . #t)</code></td>
+<td>El CRC calculado coincide con el recibido.</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Abrir una terminal en la raíz de <code>sdr</code> y leer el archivo que guardó <code>File Sink</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"from pathlib import Path; datos = Path('output/lorawan-iq/trama_recibida.bin').read_bytes(); print(len(datos), 'bytes'); print(datos.hex(' '))"</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>20 bytes
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>80 dc 5d e6 01 90 04 00 01 db f5 a4 e3 12 39 d0 53 21 68 7b
+</code></pre></div>
+</li>
+<li>
+<p>Comparar la secuencia con la <strong>Figura 6</strong>. Los cuatro bytes finales del archivo son el MIC de la trama LoRaWAN. La etiqueta <code>frame_info</code> indica si los bytes guardados pasaron la comprobación del CRC físico de LoRa. <a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-blocks/lib/tag_debug_impl.cc">Implementación de <code>Tag Debug</code> en GNU Radio</a> · <a href="https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/crc_verif_impl.cc#L100-L171">Verificación de CRC en <code>gr-lora_sdr</code></a>.</p>
+</li>
+</ol>
+<h3 id="75-ver-el-espectro-y-el-waterfall-durante-la-reproduccion">7.5. Ver el espectro y el waterfall durante la reproducción</h3>
+<ol>
+<li>Abrir <code>gnuradio/flowgraphs/lora_visualizar_iq.grc</code> en GNU Radio Companion y pulsar <strong>F6</strong>. El grafo reproduce <code>correcto.sigmf-data</code> en bucle.</li>
+<li>Elegir <strong>1/20× (lenta)</strong> en <strong>Velocidad de reproducción</strong> para seguir los chirps. Elegir <strong>1× (ritmo original)</strong> para reproducir las muestras a 1 Msps.</li>
+<li>Observar los dos paneles. <code>QT GUI Frequency Sink</code> muestra el espectro de cada bloque de muestras. <code>QT GUI Waterfall Sink</code> coloca los espectros sucesivos en filas para mostrar cómo cambia la frecuencia. Los chirps aparecen cerca del centro y los intervalos de ceros separan los paquetes.</li>
+</ol>
+<p><code>Throttle</code> fija la velocidad de reproducción. Los dos visores conservan el eje de frecuencia de la señal original, centrado en <strong>0 Hz</strong> en banda base. En modo lento, el eje temporal del <em>waterfall</em> corresponde a las actualizaciones de la pantalla. Para medir <span class="arithmatex">\(T_s\)</span> se usa el eje de tiempo del archivo en Inspectrum, como en la sección 6. <a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-qtgui/lib/waterfall_sink_c_impl.cc#L342-L382">GNU Radio, actualización de <code>QT GUI Waterfall Sink</code></a>.</p>
+<h2 id="8-extraccion-del-mensaje-cifrado">8. Extracción del mensaje cifrado</h2>
+<p>El objetivo es ubicar el campo <code>FRMPayload</code> en <code>trama_recibida.bin</code> y guardar sus siete bytes tal como se recibieron. Usar el archivo de 20 bytes que generó <code>File Sink</code> en la sección 7. La Figura 6 permite comprobar las posiciones.</p>
+<h3 id="81-encontrar-el-inicio-y-el-final">8.1. Encontrar el inicio y el final</h3>
+<ol>
+<li><strong>Leer <code>FCtrl</code> en el byte 6.</strong> Su valor es <code>90</code> en hexadecimal. Los cuatro bits inferiores forman <code>FOptsLen</code>. Al aplicar la máscara <code>0x0F</code>, queda <code>0</code>. Por eso la cabecera termina en el byte 8.</li>
+<li><strong>Ubicar <code>FPort</code> en el byte 9.</strong> Se encuentra justo después de la cabecera. Su valor es <code>01</code>, el puerto de aplicación 1. El <code>FRMPayload</code> empieza en el byte <strong>10</strong>.</li>
+<li><strong>Reservar los últimos cuatro bytes para el MIC.</strong> En el archivo de 20 bytes, el MIC empieza en el byte <strong>17</strong>. El último byte del mensaje cifrado es el <strong>16</strong>. <a href="https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=23">Formato de la trama, opciones, puerto y MIC en LoRaWAN 1.0.4</a>.</li>
+</ol>
+<h3 id="82-extraer-los-siete-bytes">8.2. Extraer los siete bytes</h3>
+<p>Guardar el siguiente código como <code>extraer_mensaje.py</code> en la raíz de <code>sdr</code>. Python numera los bytes desde cero. Por eso <code>FCtrl</code> está en el índice <code>5</code>. El corte <code>trama[inicio:fin]</code> incluye el índice inicial y excluye <code>fin</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">carpeta</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"output/lorawan-iq"</span><span class="p">)</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">trama</span> <span class="o">=</span> <span class="p">(</span><span class="n">carpeta</span> <span class="o">/</span> <span class="s2">"trama_recibida.bin"</span><span class="p">)</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trama</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">20</span><span class="p">:</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="s2">"Se esperaban 20 bytes. Revisar la salida de la sección 7."</span><span class="p">)</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">longitud_opciones</span> <span class="o">=</span> <span class="n">trama</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x0F</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">indice_puerto</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">+</span> <span class="n">longitud_opciones</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="n">inicio</span> <span class="o">=</span> <span class="n">indice_puerto</span> <span class="o">+</span> <span class="mi">1</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="n">fin</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">trama</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="k">if</span> <span class="n">inicio</span> <span class="o">&gt;=</span> <span class="n">fin</span><span class="p">:</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="s2">"La trama no contiene un FRMPayload en el intervalo esperado."</span><span class="p">)</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="n">puerto</span> <span class="o">=</span> <span class="n">trama</span><span class="p">[</span><span class="n">indice_puerto</span><span class="p">]</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="n">mensaje_cifrado</span> <span class="o">=</span> <span class="n">trama</span><span class="p">[</span><span class="n">inicio</span><span class="p">:</span><span class="n">fin</span><span class="p">]</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="p">(</span><span class="n">carpeta</span> <span class="o">/</span> <span class="s2">"mensaje_cifrado.bin"</span><span class="p">)</span><span class="o">.</span><span class="n">write_bytes</span><span class="p">(</span><span class="n">mensaje_cifrado</span><span class="p">)</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"FOptsLen = </span><span class="si">{</span><span class="n">longitud_opciones</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"FPort = </span><span class="si">{</span><span class="n">puerto</span><span class="si">}</span><span class="s2"> (byte </span><span class="si">{</span><span class="n">indice_puerto</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"FRMPayload (bytes </span><span class="si">{</span><span class="n">inicio</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="n">fin</span><span class="si">}</span><span class="s2">) = </span><span class="si">{</span><span class="n">mensaje_cifrado</span><span class="o">.</span><span class="n">hex</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Guardados </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mensaje_cifrado</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes en output/lorawan-iq/mensaje_cifrado.bin"</span><span class="p">)</span>
+</code></pre></div>
+<p>Desde esa carpeta, ejecutar el archivo con Radioconda activo.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>python<span class="w"> </span>extraer_mensaje.py
+</code></pre></div>
+<p>La terminal debe mostrar este resultado.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>FOptsLen = 0
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>FPort = 1 (byte 9)
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>FRMPayload (bytes 10 a 16) = db f5 a4 e3 12 39 d0
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>Guardados 7 bytes en output/lorawan-iq/mensaje_cifrado.bin
+</code></pre></div>
+<p>El archivo de salida contiene los siete bytes cifrados en binario. La línea hexadecimal muestra esos mismos bytes para poder compararlos con la Figura 6.</p>
+<h2 id="9-reto-de-ubicacion-del-mensaje-cifrado-con-fopts">9. Reto de ubicación del mensaje cifrado con <code>FOpts</code></h2>
+<h3 id="por-que-importa-fopts">Por qué importa <code>FOpts</code></h3>
+<p><code>FOpts</code> permite intercambiar comandos de control entre el dispositivo y el servidor de red en la misma trama que lleva datos de aplicación. Por ejemplo, un dispositivo puede enviar una medición y reportar su nivel de batería con el comando <code>DevStatusAns</code>. <a href="https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=26">Comandos MAC y estado del dispositivo, LoRaWAN 1.0.4, §§5 y 5.5</a>.</p>
+<p>En <strong>LoRaWAN 1.0.4</strong>, los comandos de <code>FOpts</code> viajan en claro y se pueden leer una vez recuperados los bytes de la trama. El MIC cubre <code>FOpts</code> y permite detectar cambios en esos bytes al verificarlo con la clave de sesión de red (<code>NwkSKey</code>). El contenido de aplicación en <code>FRMPayload</code> viaja cifrado con la clave de sesión de aplicación (<code>AppSKey</code>). El reto muestra cómo separar los comandos visibles de los bytes cifrados de aplicación. <a href="https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=24">Cifrado, MIC y comandos MAC, LoRaWAN 1.0.4, §§4.3.3, 4.4 y 5</a>.</p>
+<h3 id="trama-del-reto">Trama del reto</h3>
+<p>El objetivo es localizar <code>FOpts</code> y calcular dónde empieza el <code>FRMPayload</code>. El reto parte de una trama didáctica LoRaWAN 1.0.4 en hexadecimal. Cada par representa un byte.</p>
+<p>La Figura 6 muestra el caso de referencia, donde <code>FOptsLen = 0</code> y <code>FPort</code> sigue a <code>FCnt</code>. En el reto, leer el dígito hexadecimal de la derecha de <code>FCtrl</code> (byte 6). Ese dígito da la cantidad de bytes de <code>FOpts</code> que se deben contar desde el byte 9, justo después de <code>FCnt</code>. El siguiente byte es <code>FPort</code>. <a href="#como-ubicar-el-mensaje-cifrado">Sección 4, «Cómo ubicar el mensaje cifrado»</a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>40 87 65 43 21 83 35 00 06 a4 03 11 89 c9 17 d5 d1 6f 5d a1 45 ff
+</code></pre></div>
+<ol>
+<li>Numerar los bytes desde 1 y contar la longitud total de la trama.</li>
+<li>Ubicar <code>FCtrl</code>. Mostrar cómo se obtiene <code>FOptsLen</code> a partir de sus cuatro bits inferiores. Marcar los bytes que forman <code>FOpts</code>.</li>
+<li>Localizar <code>FPort</code> justo después de <code>FOpts</code>. Anotar su posición, su valor y la posición del primer byte del <code>FRMPayload</code>.</li>
+<li>Separar los cuatro bytes finales del MIC. Anotar la posición del último byte del <code>FRMPayload</code>, su longitud y sus bytes en hexadecimal. Mantener el mensaje cifrado.</li>
+<li>Comparar la posición inicial del <code>FRMPayload</code> con la de la sección 8. Explicar cuántos bytes se desplaza y qué campo causa el desplazamiento.</li>
+</ol>
+<p>El estándar describe la longitud de <code>FOpts</code> y el orden de los campos que le siguen. <a href="https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=23">LoRaWAN 1.0.4, secciones 4.3.1.6 a 4.4</a>.</p>
+<h2 id="10-entrega-del-informe-y-del-reto">10. Entrega del informe y del reto</h2>
+<p>Entregar <strong>un informe en PDF</strong> con la práctica, el reto y la respuesta de cierre. Adjuntar <code>trama_recibida.bin</code> y <code>mensaje_cifrado.bin</code>, generados con <code>correcto.sigmf-data</code> en las secciones 7 y 8.</p>
+<ul>
+<li><strong>Fecha límite</strong> — domingo 15 de noviembre de 2026 a las <strong>23:59</strong>, hora de Lima.</li>
+<li><strong>Nombre del PDF</strong> — <code>[codigo_uni].pdf</code>.</li>
+<li><strong>Correo de entrega</strong> — <code>ollerenac@uni.edu.pe</code>.</li>
+<li><strong>Asunto del correo</strong> — <code>tarea-lab05-[codigo_uni]</code>.</li>
+</ul>
+<p>Reemplazar <code>[codigo_uni]</code> por el código UNI, sin corchetes. Adjuntar el PDF y los dos archivos binarios al mismo correo.</p>
+<h3 id="101-capturas-de-la-practica">10.1. Capturas de la práctica</h3>
+<ol>
+<li><strong>Paquete completo en Inspectrum.</strong> Marcar el final de los chirps descendentes del preámbulo y el inicio y fin de la cabecera. Marcar también los tramos de contenido, contenido con CRC, y CRC con relleno. Indicar cuántos símbolos se cuentan desde el final del preámbulo hasta el final del paquete.</li>
+<li><strong>Medición del preámbulo en Inspectrum.</strong> Mostrar los cursores sobre cuatro símbolos consecutivos y los dos límites de frecuencia del barrido. Dejar visibles los ejes y la lectura de <strong>Symbol period</strong>. Se pueden usar dos capturas si las lecturas se ven mejor por separado.</li>
+<li><strong>Comprobación del CRC en GNU Radio.</strong> Capturar la salida de <code>Tag Debug</code> con la etiqueta <code>frame_info</code>. Deben verse <code>pay_len</code>, <code>crc</code> y <code>crc_valid</code>.</li>
+</ol>
+<p>La captura del espectro y del <em>waterfall</em> de la sección 7.5 es opcional.</p>
+<h3 id="102-resultados-de-la-practica">10.2. Resultados de la práctica</h3>
+<ol>
+<li>Anotar el período medido de los cuatro símbolos, la duración <span class="arithmatex">\(T_s\)</span> de un símbolo y las frecuencias inferior y superior del barrido. Mostrar cómo esas medidas dan el ancho de banda <span class="arithmatex">\(BW\)</span> y el factor de expansión <span class="arithmatex">\(SF\)</span>.</li>
+<li>Escribir los 20 bytes de <code>trama_recibida.bin</code> en hexadecimal. Presentar una tabla con el nombre, las posiciones y el valor de cada campo de la Figura 6. Numerar los bytes desde 1 e indicar si hay opciones en <code>FOpts</code>.</li>
+<li>Indicar qué comprobación respalda <code>crc_valid</code> y qué queda por verificar con el MIC.</li>
+<li>Mostrar los siete bytes extraídos en hexadecimal e indicar la posición del primer y último byte dentro de la trama. Explicar cómo <code>FOptsLen</code> y la posición del MIC permiten fijar esos límites.</li>
+</ol>
+<h3 id="103-resultado-del-reto">10.3. Resultado del reto</h3>
+<p>Incluir en el mismo PDF el análisis de la segunda trama. Indicar su longitud total y mostrar el cálculo de <code>FOptsLen</code> a partir de <code>FCtrl</code>. Usar una tabla con el campo, las posiciones numeradas desde 1 y los valores en hexadecimal para <code>FCtrl</code>, <code>FOpts</code>, <code>FPort</code>, <code>FRMPayload</code> y <code>MIC</code>.</p>
+<p>Indicar la longitud del <code>FRMPayload</code> y explicar por qué cambió su posición inicial respecto a la práctica. Para el reto basta el desarrollo en el PDF.</p>
+<h3 id="104-pregunta-de-cierre">10.4. Pregunta de cierre</h3>
+<p><strong>Al comparar varias tramas LoRaWAN con el <code>FRMPayload</code> cifrado, ¿qué se puede deducir de los campos visibles y qué queda por conocer del dato de aplicación?</strong> Dar dos ejemplos de observaciones y señalar qué campo o medida respalda cada una. Indicar un dato de aplicación que seguiría sin conocerse.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/details-links.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer-model.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

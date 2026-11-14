@@ -1,0 +1,133 @@
+/* El color identifica magnitudes; no se modifica el estilo del resto del curso. */
+.sdr-mixer {
+  --sdr-i: #1565c0;
+  --sdr-q: #c95608;
+  --sdr-input: #24436c;
+  --sdr-output: #793bac;
+  --sdr-grid: var(--md-default-fg-color--lightest);
+  font-variant-numeric: tabular-nums;
+}
+[data-md-color-scheme="slate"] .sdr-mixer {
+  --sdr-i: #71b8ff;
+  --sdr-q: #ffb26b;
+  --sdr-input: #c1d6f1;
+  --sdr-output: #c29af2;
+}
+.sdr-mixer [hidden] { display: none !important; }
+.sdr-mixer .sdr-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin: .7rem 0;
+}
+.sdr-mixer button {
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: .15rem;
+  padding: .45rem .6rem;
+  font: inherit;
+  font-size: .75rem;
+  line-height: 1.3;
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  cursor: pointer;
+}
+.sdr-mixer button:hover,
+.sdr-mixer button[aria-pressed="true"] {
+  border-color: var(--sdr-output);
+  color: var(--sdr-output);
+  background: var(--md-accent-fg-color--transparent);
+}
+.sdr-mixer :is(button, input, select):focus-visible {
+  outline: 3px solid var(--md-accent-fg-color);
+  outline-offset: 3px;
+}
+.sdr-mixer .sdr-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .7rem 1.3rem;
+  padding: .8rem 0;
+  border-block: 1px solid var(--sdr-grid);
+}
+.sdr-mixer .sdr-control label {
+  display: block;
+  font-size: .78rem;
+  font-weight: 600;
+}
+.sdr-mixer .sdr-control output { float: right; font-weight: 400; }
+.sdr-mixer input[type="range"] {
+  width: 100%;
+  min-height: 1.5rem;
+  accent-color: var(--sdr-output);
+  cursor: pointer;
+}
+.sdr-mixer select {
+  width: 100%;
+  padding: .4rem;
+  font: inherit;
+  font-size: .75rem;
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lighter);
+}
+.sdr-mixer .sdr-check { display: block; font-size: .75rem; margin: .8rem 0; }
+.sdr-mixer .sdr-check input { accent-color: var(--sdr-output); margin-right: .25rem; }
+.sdr-mixer .sdr-player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .45rem;
+  margin: .8rem 0 .3rem;
+}
+.sdr-mixer .sdr-sample { display: block; font-size: .8rem; }
+.sdr-mixer .sdr-slow-note { font-size: .7rem; color: var(--md-default-fg-color--light); }
+.sdr-mixer .sdr-instruction { padding-left: .65rem; border-left: 3px solid var(--sdr-output); }
+.sdr-mixer .sdr-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .4rem 1rem;
+  padding: .7rem 0;
+  border-block: 1px solid var(--sdr-grid);
+  margin: 1rem 0;
+  font-size: .78rem;
+}
+.sdr-mixer .sdr-values p { margin: .15rem 0; }
+.sdr-mixer .sdr-values .sdr-wide { grid-column: 1 / -1; }
+.sdr-mixer .sdr-values output { display: block; margin-top: .15rem; }
+.sdr-mixer .sdr-panels { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .7rem; }
+.sdr-mixer .sdr-panels > p { grid-column: 1 / -1; }
+.sdr-mixer .sdr-chart h4 { font-size: .77rem; font-weight: 600; margin: .3rem 0; text-align: center; }
+.sdr-mixer .sdr-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.sdr-mixer .sdr-label { fill: var(--md-default-fg-color); font-family: inherit; font-size: 14px; }
+.sdr-mixer .sdr-axis-name { font-size: 18px; font-weight: 600; }
+.sdr-mixer .sdr-axis { stroke: var(--md-default-fg-color--light); stroke-width: 1.1; }
+.sdr-mixer .sdr-grid { stroke: var(--sdr-grid); stroke-width: 1; }
+.sdr-mixer .sdr-circle { fill: none; stroke: var(--md-default-fg-color--lighter); stroke-width: 1.3; }
+.sdr-mixer .sdr-guide { stroke: var(--md-default-fg-color--lighter); stroke-dasharray: 4 4; }
+.sdr-mixer .sdr-cursor { stroke: var(--md-default-fg-color--light); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.sdr-mixer .sdr-i { color: var(--sdr-i); fill: var(--sdr-i); stroke: var(--sdr-i); }
+.sdr-mixer .sdr-q { color: var(--sdr-q); fill: var(--sdr-q); stroke: var(--sdr-q); }
+.sdr-mixer text.sdr-i, .sdr-mixer text.sdr-q { stroke: none; }
+.sdr-mixer .sdr-input { stroke: var(--sdr-input); fill: var(--sdr-input); }
+.sdr-mixer .sdr-output { stroke: var(--sdr-output); fill: var(--sdr-output); }
+.sdr-mixer .sdr-neighbor { stroke: var(--md-default-fg-color--light); fill: var(--md-default-fg-color--light); }
+.sdr-mixer .sdr-projection { stroke-width: 5; }
+.sdr-mixer .sdr-vector { stroke-width: 2.5; }
+.sdr-mixer .sdr-arrow { stroke: none; }
+.sdr-mixer .sdr-trace { fill: none; stroke-width: 1.8; }
+.sdr-mixer .sdr-stem { stroke-width: 2; }
+.sdr-mixer .sdr-reading { font-size: .8rem; }
+.sdr-mixer .sdr-reading li { margin-bottom: .55rem; }
+.sdr-mixer .sdr-local-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin: .8rem 0;
+  font-size: .75rem;
+}
+.sdr-mixer .sdr-local-controls label { display: flex; align-items: center; gap: .3rem; }
+.sdr-mixer .sdr-local-controls select { width: auto; max-width: 100%; }
+@media (max-width: 650px) {
+  .sdr-mixer .sdr-controls, .sdr-mixer .sdr-values, .sdr-mixer .sdr-panels { grid-template-columns: minmax(0, 1fr); }
+  .sdr-mixer .sdr-values .sdr-wide { grid-column: 1; }
+}
