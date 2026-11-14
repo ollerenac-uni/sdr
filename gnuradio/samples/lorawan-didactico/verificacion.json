@@ -1,0 +1,125 @@
+{
+  "fecha_utc": "2026-11-03T16:30:31.262026+00:00",
+  "origen_iq": "generado por GNU Radio; sin recepción ni transmisión por aire",
+  "origen_trama": "https://zenodo.org/records/8090619, 03_Brno_join.pcap, paquete 258",
+  "gnuradio_version": "3.10.12.0",
+  "python_version": "3.12.9",
+  "parametros": {
+    "frecuencia_referencia_hz": 915000000,
+    "samp_rate": 1000000,
+    "bw": 125000,
+    "sf": 7,
+    "cr": "4/5",
+    "sync_word": "0x34"
+  },
+  "casos": [
+    {
+      "caso": "correcto",
+      "iq": {
+        "archivo": "correcto.sigmf-data",
+        "muestras_complejas": 113920,
+        "sha256": "7f4f75401eeef3562dac4ee8c6ad989a961313800c747f2db5c3ccc6c3e0206a"
+      },
+      "lora_phy": {
+        "payload_hex": "80dc5de60190040001dbf5a4e31239d05321687b",
+        "longitud_completa": true,
+        "crc_presente": true,
+        "crc_valido": true,
+        "cabecera_sin_error": true
+      },
+      "lorawan": {
+        "version_asumida": "LoRaWAN 1.0.x",
+        "phy_payload_hex": "80dc5de60190040001dbf5a4e31239d05321687b",
+        "mtype": 4,
+        "direccion": "uplink",
+        "dev_addr": "01e65ddc",
+        "fcnt_16": 4,
+        "fcnt_32": 4,
+        "bits_altos_fcnt_asumidos_cero": false,
+        "fopts_hex": "",
+        "fport": 1,
+        "frm_payload_cifrado_hex": "dbf5a4e31239d0",
+        "mic_recibido": "5321687b",
+        "mic_calculado": "5321687b",
+        "mic_valido": true,
+        "payload_descifrado_hex": "74696d656f7574",
+        "payload_descifrado_utf8": "timeout",
+        "tipo_payload": "application"
+      }
+    },
+    {
+      "caso": "contenido_alterado",
+      "iq": {
+        "archivo": "contenido_alterado.sigmf-data",
+        "muestras_complejas": 113920,
+        "sha256": "f394e721b671fac60cbdbb064fc66f96156feca12be36cf97a0174e3749058fd"
+      },
+      "lora_phy": {
+        "payload_hex": "80dc5de60190040001daf5a4e31239d05321687b",
+        "longitud_completa": true,
+        "crc_presente": true,
+        "crc_valido": true,
+        "cabecera_sin_error": true
+      },
+      "lorawan": {
+        "version_asumida": "LoRaWAN 1.0.x",
+        "phy_payload_hex": "80dc5de60190040001daf5a4e31239d05321687b",
+        "mtype": 4,
+        "direccion": "uplink",
+        "dev_addr": "01e65ddc",
+        "fcnt_16": 4,
+        "fcnt_32": 4,
+        "bits_altos_fcnt_asumidos_cero": false,
+        "fopts_hex": "",
+        "fport": 1,
+        "frm_payload_cifrado_hex": "daf5a4e31239d0",
+        "mic_recibido": "5321687b",
+        "mic_calculado": "d2888214",
+        "mic_valido": false,
+        "payload_descifrado_hex": null,
+        "payload_descifrado_utf8": null,
+        "tipo_payload": "application"
+      }
+    }
+  ],
+  "clave_red_incorrecta": {
+    "version_asumida": "LoRaWAN 1.0.x",
+    "phy_payload_hex": "80dc5de60190040001dbf5a4e31239d05321687b",
+    "mtype": 4,
+    "direccion": "uplink",
+    "dev_addr": "01e65ddc",
+    "fcnt_16": 4,
+    "fcnt_32": 4,
+    "bits_altos_fcnt_asumidos_cero": false,
+    "fopts_hex": "",
+    "fport": 1,
+    "frm_payload_cifrado_hex": "dbf5a4e31239d0",
+    "mic_recibido": "5321687b",
+    "mic_calculado": "44c66c8d",
+    "mic_valido": false,
+    "payload_descifrado_hex": null,
+    "payload_descifrado_utf8": null,
+    "tipo_payload": "application"
+  },
+  "clave_aplicacion_incorrecta": {
+    "version_asumida": "LoRaWAN 1.0.x",
+    "phy_payload_hex": "80dc5de60190040001dbf5a4e31239d05321687b",
+    "mtype": 4,
+    "direccion": "uplink",
+    "dev_addr": "01e65ddc",
+    "fcnt_16": 4,
+    "fcnt_32": 4,
+    "bits_altos_fcnt_asumidos_cero": false,
+    "fopts_hex": "",
+    "fport": 1,
+    "frm_payload_cifrado_hex": "dbf5a4e31239d0",
+    "mic_recibido": "5321687b",
+    "mic_calculado": "5321687b",
+    "mic_valido": true,
+    "payload_descifrado_hex": "22592f770eb0c2",
+    "payload_descifrado_utf8": null,
+    "tipo_payload": "application"
+  },
+  "sync_word_0x12_tramas": 0,
+  "controles_aprobados": true
+}

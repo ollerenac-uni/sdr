@@ -1,0 +1,102 @@
+options:
+  parameters:
+    author: ollerenac-uni
+    id: lora_visualizar_iq
+    title: Espectro y waterfall de la señal LoRa
+    output_language: python
+    generate_options: qt_gui
+  states:
+    coordinate: [24, 24]
+    rotation: 0
+    state: enabled
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    value: '1000000'
+  states:
+    coordinate: [232, 24]
+    rotation: 0
+    state: enabled
+- name: factor_reproduccion
+  id: variable_qtgui_chooser
+  parameters:
+    label: Velocidad de reproducción
+    type: int
+    num_opts: '2'
+    value: '20'
+    option0: '1'
+    label0: '1× (ritmo original)'
+    option1: '20'
+    label1: '1/20× (lenta)'
+    gui_hint: '0,0,1,1'
+  states:
+    coordinate: [384, 24]
+    rotation: 0
+    state: enabled
+- name: captura_lora
+  id: blocks_file_source
+  parameters:
+    type: complex
+    file: ../../output/lorawan-iq/correcto.sigmf-data
+    repeat: 'True'
+  states:
+    coordinate: [24, 232]
+    rotation: 0
+    state: enabled
+- name: ritmo
+  id: blocks_throttle2
+  parameters:
+    type: complex
+    samples_per_second: samp_rate/factor_reproduccion
+    limit: items
+    maximum: '128'
+  states:
+    coordinate: [384, 232]
+    rotation: 0
+    state: enabled
+- name: espectro
+  id: qtgui_freq_sink_x
+  parameters:
+    type: complex
+    name: '"Espectro LoRa en banda base"'
+    fftsize: '128'
+    wintype: window.WIN_HANN
+    fc: '0'
+    bw: samp_rate
+    average: '1.0'
+    ymin: '-90'
+    ymax: '0'
+    update_time: '0.02'
+    grid: 'True'
+    legend: 'False'
+    gui_hint: '1,0,1,1'
+  states:
+    coordinate: [640, 160]
+    rotation: 0
+    state: enabled
+- name: waterfall
+  id: qtgui_waterfall_sink_x
+  parameters:
+    type: complex
+    name: '"Waterfall LoRa en banda base"'
+    fftsize: '128'
+    wintype: window.WIN_HANN
+    fc: '0'
+    bw: samp_rate
+    int_min: '-47'
+    int_max: '-6'
+    update_time: '0.003'
+    legend: 'False'
+    gui_hint: '2,0,1,1'
+  states:
+    coordinate: [640, 328]
+    rotation: 0
+    state: enabled
+connections:
+- [captura_lora, '0', ritmo, '0']
+- [ritmo, '0', espectro, '0']
+- [ritmo, '0', waterfall, '0']
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0

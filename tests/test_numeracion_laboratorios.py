@@ -17,11 +17,15 @@ def test_laboratorio_numerado_en_navegacion_y_documentos(numero, carpeta, archiv
     # BaseLoader lee las etiquetas sin ejecutar los tags de las extensiones.
     config = yaml.load((ROOT / "mkdocs.yml").read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
     sesiones = next(entrada["Sesiones"] for entrada in config["nav"] if "Sesiones" in entrada)
-    seccion = next(entrada for entrada in sesiones if isinstance(entrada, dict) and next(iter(entrada)).startswith(f"{numero:02d} —"))
-    paginas = next(iter(seccion.values()))
     ruta = f"sessions/{carpeta}/{archivo}"
-    etiqueta = next(titulo for pagina in paginas if isinstance(pagina, dict) for titulo, destino in pagina.items() if destino == ruta)
-    assert etiqueta.startswith(f"Laboratorio #{numero}:")
+    etiquetas = [
+        titulo
+        for seccion in sesiones if isinstance(seccion, dict)
+        for paginas in seccion.values() if isinstance(paginas, list)
+        for pagina in paginas if isinstance(pagina, dict)
+        for titulo, destino in pagina.items() if destino == ruta
+    ]
+    assert len(etiquetas) == 1 and etiquetas[0].startswith(f"Laboratorio #{numero}:")
     assert (ROOT / "docs" / ruta).is_file()
 
     laboratorio = (ROOT / "docs" / ruta).read_text(encoding="utf-8")

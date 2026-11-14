@@ -2,10 +2,9 @@
 
 ### Curso de Pregrado · Acceso Abierto · CC BY 4.0
 
-Un curso práctico de radio definida por software (SDR): desde las muestras I/Q y el procesamiento digital hasta la construcción guiada de un receptor QPSK sencillo. El curso comprende 16 sesiones, con tiempo de integración y consolidación. No se requiere hardware SDR individual: se utilizan archivos de muestras `.cu8` y señales generadas en Python o GNU Radio.
+Curso práctico de radio definida por software (SDR). Se estudian muestras I/Q, se construye un enlace digital y se analizan señales FM, RDS y LoRa. Las prácticas usan capturas y señales generadas en Python o GNU Radio.
 
-[Ver syllabus](syllabus.md){ .md-button .md-button--primary }
-[Ver sesiones](sessions/index.md){ .md-button }
+[Ver sesiones](sessions/index.md){ .md-button .md-button--primary }
 [Guías de instalación](setup/index.md){ .md-button }
 [Exámenes](exams/index.md){ .md-button }
 [Repositorio GitHub](https://github.com/ollerenac-uni/sdr){ .md-button }
@@ -20,7 +19,7 @@ Un curso práctico de radio definida por software (SDR): desde las muestras I/Q 
 
     ---
 
-    Sesiones 1–4
+    Sesiones 01–05
 
     Arquitectura SDR, muestras I/Q, espectro, sistemas, filtros y cambios de sampling rate.
 
@@ -28,45 +27,19 @@ Un curso práctico de radio definida por software (SDR): desde las muestras I/Q 
 
     ---
 
-    Sesiones 5–11
+    Sesión 06
 
-    BPSK/QPSK, pulse shaping, enlace ideal, ruido y recuperación de frecuencia, fase y timing con bloques preparados.
+    Enlace BPSK, conformación de pulsos, recuperación de frecuencia, fase y temporización.
 
--   :material-access-point-network:{ .lg .middle } **Mensaje, integración y práctica**
+-   :material-access-point-network:{ .lg .middle } **Recepción FM, RDS y LoRa**
 
     ---
 
-    Sesiones 12–16
+    Sesiones 07–08
 
-    Recuperación de tramas, integración del receptor QPSK, capturas reales, diagnóstico y consolidación. Multipath, equalization adaptativa y OFDM quedan como temas complementarios.
+    Recuperación de audio FM y datos RDS. Medición de chirps LoRa y análisis de una trama LoRaWAN.
 
 </div>
-
----
-
-## Sesiones del Curso
-
-El [syllabus](syllabus.md) describe el tema principal y el laboratorio de cada sesión.
-El [pre-lab: instalar el entorno](setup/index.md) es una preparación previa, fuera de las 16 sesiones.
-
-| # | Título | Estado |
-|---|--------|:------:|
-| 01 | [Introducción](sessions/01-introduccion-sdr/index.md) | En desarrollo |
-| 02 | [Señales y espectro en SDR](sessions/02-tiempo-frecuencia-iq/index.md) | Disponible |
-| 03 | [Laboratorio de enlace digital](sessions/03-sistemas-filtros-digitales/index.md) | En desarrollo |
-| 04 | [Recepción FM y decodificación RDS en GNU Radio](sessions/04/clase4.md) | En desarrollo |
-| 05 | De bits a símbolos: BPSK y QPSK | Próximamente |
-| 06 | Pulse shaping y matched filtering | Próximamente |
-| 07 | Enlace digital ideal | Próximamente |
-| 08 | Ruido y medición de errores | Próximamente |
-| 09 | Offset de frecuencia y fase | Próximamente |
-| 10 | Corrección de frecuencia y fase | Próximamente |
-| 11 | Symbol timing recovery | Próximamente |
-| 12 | Tramas y recuperación del mensaje | Próximamente |
-| 13 | Integración del receptor QPSK | Próximamente |
-| 14 | Recepción desde una captura I/Q | Próximamente |
-| 15 | Evaluación y diagnóstico del receptor | Próximamente |
-| 16 | Síntesis y demostración del enlace | Próximamente |
 
 ---
 
@@ -95,7 +68,7 @@ El [pre-lab: instalar el entorno](setup/index.md) es una preparación previa, fu
 
 === "Sitio web"
 
-    El [syllabus](syllabus.md) presenta el programa. Las sesiones disponibles incluyen teoría, ejercicios con soluciones desplegables y enlaces a sus laboratorios. Los snippets de Python pueden ejecutarse en Google Colab; los flowgraphs se utilizan en GNU Radio Companion.
+    El [índice de sesiones](sessions/index.md) reúne las clases y los laboratorios. Los ejemplos de Python pueden ejecutarse en Google Colab. Los *flowgraphs* se usan en GNU Radio Companion.
 
 === "Clonar el repositorio"
 

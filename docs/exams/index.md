@@ -1,7 +1,6 @@
 # Exámenes
 
-Las fechas, los contenidos y el formato de las evaluaciones se definirán por
-separado del [syllabus](../syllabus.md).
+Aquí se publicarán las fechas, los contenidos y el formato de las evaluaciones.
 
 ## Examen Parcial
 

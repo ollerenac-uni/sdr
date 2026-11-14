@@ -132,10 +132,9 @@ real a 915 MHz. El payload recuperado es un texto de prueba de fingerprinting;
 no se ha validado como una trama LoRaWAN. Usar `0x34` tampoco demuestra por sí
 solo que el protocolo transportado sea LoRaWAN.
 
-Para enseñar el análisis de cabeceras LoRaWAN, su MIC y el descifrado de datos
-de aplicación hará falta una captura LoRaWAN adecuada, con claves conocidas
-cuando corresponda, o generar tramas didácticas completas. La clase 6 todavía
-no se ha creado ni se ha modificado el syllabus con esta comprobación.
+La [lección de LoRa](../../../docs/sessions/06/clase6.md) usa una señal I/Q
+generada a partir de una trama de Brno para estudiar la estructura LoRaWAN.
+El programa que genera esa señal está en `scripts/verificar_lorawan_iq.py`.
 
 La grabación binaria permanece local y está excluida de Git por la regla
 `*.sigmf-data`. El programa, los metadatos, los informes y este documento sí

@@ -1,0 +1,78 @@
+options:
+  parameters:
+    author: ollerenac-uni
+    id: lora_recuperar_trama
+    title: Recuperación de la trama LoRa
+    description: Guarda la trama LoRaWAN en binario y muestra el resultado del CRC físico.
+    output_language: python
+    generate_options: no_gui
+    run_options: run
+  states:
+    coordinate: [16, 16]
+    rotation: 0
+    state: enabled
+blocks:
+- name: captura_lora
+  id: blocks_file_source
+  parameters:
+    type: complex
+    vlen: '1'
+    file: ../../output/lorawan-iq/correcto.sigmf-data
+    repeat: 'False'
+    offset: '0'
+    length: '0'
+    begin_tag: pmt.PMT_NIL
+  states:
+    coordinate: [32, 184]
+    rotation: 0
+    state: enabled
+- name: receptor_lora
+  id: lora_rx
+  parameters:
+    samp_rate: '1000000'
+    bw: '125000'
+    sf: '7'
+    impl_head: 'False'
+    cr: '1'
+    has_crc: 'True'
+    pay_len: '255'
+    soft_decoding: 'True'
+    ldro: '2'
+    sync_word: '[0x34]'
+    print_rx: '[False,False]'
+  states:
+    coordinate: [368, 144]
+    rotation: 0
+    state: enabled
+- name: guardar_trama
+  id: blocks_file_sink
+  parameters:
+    type: byte
+    vlen: '1'
+    file: ../../output/lorawan-iq/trama_recibida.bin
+    unbuffered: 'False'
+    append: 'False'
+  states:
+    coordinate: [656, 120]
+    rotation: 0
+    state: enabled
+- name: etiquetas_lora
+  id: blocks_tag_debug
+  parameters:
+    type: byte
+    vlen: '1'
+    num_inputs: '1'
+    name: CRC LoRa
+    filter: frame_info
+    display: 'True'
+  states:
+    coordinate: [656, 288]
+    rotation: 0
+    state: enabled
+connections:
+- [captura_lora, '0', receptor_lora, '0']
+- [receptor_lora, '0', guardar_trama, '0']
+- [receptor_lora, '0', etiquetas_lora, '0']
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0

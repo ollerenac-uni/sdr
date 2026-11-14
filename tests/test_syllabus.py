@@ -1,4 +1,4 @@
-"""El programa mantiene 16 sesiones de alcance acotado y los índices coinciden."""
+"""El syllabus se conserva y el sitio muestra su propio índice de sesiones."""
 
 from pathlib import Path
 import re
@@ -34,17 +34,23 @@ def test_syllabus_contiene_16_sesiones_y_laboratorios_numerados():
         assert re.match(rf"\*\*Laboratorio #{numero}: .+\.\*\* Se .+\.$", fila[2])
 
 
-def test_indices_mantienen_los_titulos_del_syllabus():
-    filas = filas_sesiones((ROOT / "docs/syllabus.md").read_text(encoding="utf-8"))
-    titulos = {fila[0]: re.search(r"\*\*(.+?)\.\*\*", fila[1]).group(1) for fila in filas}
-    for ruta in ("docs/index.md", "docs/sessions/index.md"):
-        texto = (ROOT / ruta).read_text(encoding="utf-8")
-        filas_indice = filas_sesiones(texto)
-        assert [int(fila[0]) for fila in filas_indice] == list(range(1, 17))
-        titulos_indice = {fila[0]: re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", fila[1]) for fila in filas_indice}
-        assert titulos_indice == titulos
-        assert "syllabus.md" in texto
-        assert "pre-lab" in texto
+def test_indice_publico_enumera_las_ocho_sesiones():
+    portada = (ROOT / "docs/index.md").read_text(encoding="utf-8")
+    indice = (ROOT / "docs/sessions/index.md").read_text(encoding="utf-8")
+    filas = filas_sesiones(indice)
+    assert [int(fila[0]) for fila in filas] == list(range(1, 9))
+    assert [re.fullmatch(r"\[([^\]]+)\]\([^)]+\)", fila[1]).group(1) for fila in filas] == [
+        "Introducción a SDR",
+        "Introducción a GNU Radio",
+        "Señales y espectro en SDR — Parte 1",
+        "Señales y espectro en SDR — Parte 2",
+        "Señales y espectro en SDR — Parte 3",
+        "Laboratorio de enlace digital",
+        "Recepción FM y decodificación RDS en GNU Radio",
+        "Señales LoRa",
+    ]
+    assert "(sessions/index.md)" in portada
+    assert "pre-lab" in indice
 
 
 def test_alcance_prioriza_practica_guiada_y_consolidacion():
@@ -60,9 +66,12 @@ def test_alcance_prioriza_practica_guiada_y_consolidacion():
     assert not any(re.search(r"multipath|equalization|OFDM", titulo, re.IGNORECASE) for titulo in titulos)
 
 
-def test_syllabus_esta_en_la_navegacion():
+def test_syllabus_se_excluye_del_sitio():
     config = yaml.load((ROOT / "mkdocs.yml").read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
-    assert {"Syllabus": "syllabus.md"} in config["nav"]
+    assert "syllabus.md" not in yaml.safe_dump(config["nav"])
+    assert "/syllabus.md" in config["exclude_docs"].splitlines()
+    for ruta in ("docs/index.md", "docs/sessions/index.md", "docs/exams/index.md"):
+        assert "syllabus.md" not in (ROOT / ruta).read_text(encoding="utf-8")
 
 
 def test_explicacion_precede_la_tabla_y_cubre_todas_las_sesiones():
