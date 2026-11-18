@@ -5,10 +5,12 @@ su MIC (*Message Integrity Code*, código de integridad) y su dato de aplicació
 **La señal I/Q se genera con GNU Radio. No procede de una recepción por aire.**
 La referencia de frecuencia de 915 MHz no acredita una prueba de RF ni una red US915.
 
-El profesor eligió este ejemplo para la preparación de la clase 6, junto con
+El profesor eligió este ejemplo para la sesión 8 (Laboratorio #5), junto con
 la [captura real de LoRa de OSU](../lora-915-osu/README.md).
 La captura real permite estudiar LoRa PHY. El ejemplo generado añade la
 verificación del MIC y el descifrado de LoRaWAN.
+La preparación del material comprueba la cadena completa; la entrega obligatoria
+se limita a medir chirps, recuperar la trama y extraer los bytes cifrados.
 
 ## Procedencia de la trama
 
@@ -51,6 +53,9 @@ El programa usa bloques existentes de GNU Radio y
 - Recepción del archivo finito: `File Source`, `LoRa Rx` y `Vector Sink`.
 - Verificación posterior: `scripts/verificar_lorawan.py`, con AES y CMAC de
   la biblioteca `cryptography`.
+
+El mismo verificador de tramas de datos se usa para el PCAP real de Brno;
+no hay una segunda implementación del MIC ni del descifrado FRMPayload.
 
 El programa termina con código 0 si todos los controles pasan.
 Guarda `verificacion.json`, dos archivos `.sigmf-data` y sus metadatos.

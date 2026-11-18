@@ -4,10 +4,12 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 
 import pytest
+import yaml
 
 
 spec = importlib.util.spec_from_file_location(
@@ -97,19 +99,21 @@ def test_downlink_real_sin_frm_payload():
     assert r["payload_descifrado_hex"] is None
 
 
-def test_cadena_iq_real_de_gnuradio_y_controles(tmp_path):
+def test_cadena_iq_generado_y_entrega_del_laboratorio(tmp_path):
     grcc = shutil.which("grcc") or str(Path.home() / "radioconda/bin/grcc")
     python_gr = Path(grcc).parent / "python3"
     if not python_gr.is_file():
         pytest.skip("GNU Radio no está disponible")
-    programa = Path(__file__).resolve().parents[1] / "scripts/verificar_lorawan_iq.py"
+    root = Path(__file__).resolve().parents[1]
+    programa = root / "scripts/verificar_lorawan_iq.py"
+    muestras = tmp_path / "output/lorawan-iq"
     r = subprocess.run(
-        [str(python_gr), "-B", str(programa), "--salida", str(tmp_path)],
+        [str(python_gr), "-B", str(programa), "--salida", str(muestras)],
         env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
         capture_output=True, text=True, timeout=30,
     )
     assert r.returncode == 0, r.stdout + r.stderr
-    informe = json.loads((tmp_path / "verificacion.json").read_text())
+    informe = json.loads((muestras / "verificacion.json").read_text())
     assert informe["controles_aprobados"] is True
     bueno, alterado = informe["casos"]
     assert bueno["lora_phy"]["crc_valido"] is True
@@ -117,3 +121,56 @@ def test_cadena_iq_real_de_gnuradio_y_controles(tmp_path):
     assert alterado["lora_phy"]["crc_valido"] is True
     assert alterado["lorawan"]["mic_valido"] is False
     assert informe["sync_word_0x12_tramas"] == 0
+
+    # Ejecutar el grafo que se entrega a los alumnos, con sus rutas relativas.
+    carpeta_grafos = tmp_path / "gnuradio/flowgraphs"
+    carpeta_grafos.mkdir(parents=True)
+    grafo = carpeta_grafos / "lora_recuperar_trama.grc"
+    shutil.copyfile(root / "gnuradio/flowgraphs/lora_recuperar_trama.grc", grafo)
+    compilacion = subprocess.run([grcc, "-o", str(carpeta_grafos), str(grafo)],
+                                capture_output=True, text=True, timeout=30)
+    assert compilacion.returncode == 0, compilacion.stdout + compilacion.stderr
+    recepcion = subprocess.run([str(python_gr), str(grafo.with_suffix(".py"))],
+                              cwd=carpeta_grafos, capture_output=True, text=True, timeout=30)
+    assert recepcion.returncode == 0, recepcion.stdout + recepcion.stderr
+    assert "(crc_valid . #t)" in recepcion.stdout
+    assert (muestras / "trama_recibida.bin").read_bytes().hex() == bueno["lora_phy"]["payload_hex"]
+
+    # Ejecutar literalmente el código de extracción de la sección 8 de la guía.
+    guia = (root / "docs/sessions/06/clase6.md").read_text()
+    fragmento = next(c for c in re.findall(r"^```python\n(.*?)^```", guia, re.M | re.S)
+                     if "mensaje_cifrado.bin" in c)
+    extraccion = subprocess.run([str(python_gr), "-c", fragmento], cwd=tmp_path,
+                               capture_output=True, text=True, timeout=10)
+    assert extraccion.returncode == 0, extraccion.stdout + extraccion.stderr
+    assert (muestras / "mensaje_cifrado.bin").read_bytes() == bytes.fromhex("dbf5a4e31239d0")
+    assert "FRMPayload (bytes 10 a 16)" in extraccion.stdout
+
+
+def test_reto_fopts_de_la_guia_tiene_los_campos_y_limites_esperados():
+    guia = (Path(__file__).resolve().parents[1] / "docs/sessions/06/clase6.md").read_text()
+    reto = guia.split("## 9. Reto", 1)[1].split("## 10.", 1)[0]
+    trama = bytes.fromhex(re.search(r"```text\n(.*?)```", reto, re.S).group(1))
+    r = analizar_trama(trama, bytes(16), bytes(16))
+    assert len(trama) == 22
+    assert trama[5] & 0x0F == 3
+    assert r["fopts_hex"] == "06a403"
+    assert r["fport"] == 0x11
+    assert r["frm_payload_cifrado_hex"] == "89c917d5d16f"
+    assert r["mic_recibido"] == "5da145ff"
+
+
+def test_sesion_y_alcance_de_entrega_coinciden_con_la_navegacion():
+    root = Path(__file__).resolve().parents[1]
+    guia = (root / "docs/sessions/06/clase6.md").read_text()
+    metadatos = yaml.safe_load(guia.split("---", 2)[1])
+    assert metadatos["session"] == 8
+    assert metadatos["title"].startswith("Sesión 8")
+    config = yaml.load((root / "mkdocs.yml").read_text(), Loader=yaml.BaseLoader)
+    sesiones = next(e["Sesiones"] for e in config["nav"] if "Sesiones" in e)
+    assert any(e.get("08 — Señales LoRa") == "sessions/06/clase6.md"
+               for e in sesiones if isinstance(e, dict))
+    entrega = guia.split("## 10. Entrega", 1)[1].split("## 11.", 1)[0]
+    assert "Laboratorio #5" in entrega and "tarea-lab05-[codigo_uni]" in entrega
+    assert "trama_recibida.bin" in entrega and "20 bytes" in entrega
+    assert "mensaje_cifrado.bin" in entrega and "7 bytes cifrados" in entrega

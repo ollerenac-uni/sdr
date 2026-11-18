@@ -18,6 +18,22 @@ from cryptography.hazmat.primitives.cmac import CMAC
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 
+def aes128(clave, datos):
+    """Cifrado de bloques AES-128, compartido por FRMPayload y OTAA de Brno."""
+    if len(clave) != 16 or len(datos) % 16:
+        raise ValueError("AES-128 requiere una clave de 16 bytes y bloques completos")
+    cifrador = Cipher(algorithms.AES(clave), modes.ECB()).encryptor()
+    return cifrador.update(datos) + cifrador.finalize()
+
+
+def cmac128(clave, datos):
+    if len(clave) != 16:
+        raise ValueError("La clave debe contener 16 bytes")
+    calculo = CMAC(algorithms.AES(clave))
+    calculo.update(datos)
+    return calculo.finalize()
+
+
 def analizar_trama(trama, nwk_s_key, app_s_key, fcnt=None):
     """Devuelve campos y MIC; solo descifra cuando el MIC es correcto."""
     if len(nwk_s_key) != 16 or len(app_s_key) != 16:
@@ -46,9 +62,7 @@ def analizar_trama(trama, nwk_s_key, app_s_key, fcnt=None):
     # Los bloques B0 y Ai usan DevAddr y FCnt en little endian.
     contexto = bytes([direccion]) + trama[1:5] + contador.to_bytes(4, "little")
     b0 = b"\x49" + bytes(4) + contexto + b"\x00" + bytes([len(mensaje)])
-    cmac = CMAC(algorithms.AES(nwk_s_key))
-    cmac.update(b0 + mensaje)
-    mic_calculado = cmac.finalize()[:4]
+    mic_calculado = cmac128(nwk_s_key, b0 + mensaje)[:4]
     mic_valido = hmac.compare_digest(mic_recibido, mic_calculado)
     resultado = {
         "version_asumida": "LoRaWAN 1.0.x",
@@ -71,11 +85,11 @@ def analizar_trama(trama, nwk_s_key, app_s_key, fcnt=None):
     }
     if mic_valido and fport is not None:
         clave = nwk_s_key if fport == 0 else app_s_key
-        aes = Cipher(algorithms.AES(clave), modes.ECB()).encryptor()
-        flujo = b"".join(
-            aes.update(b"\x01" + bytes(4) + contexto + b"\x00" + bytes([i]))
+        bloques = b"".join(
+            b"\x01" + bytes(4) + contexto + b"\x00" + bytes([i])
             for i in range(1, (len(cifrado) + 15) // 16 + 1)
-        ) + aes.finalize()
+        )
+        flujo = aes128(clave, bloques)
         texto = bytes(a ^ b for a, b in zip(cifrado, flujo))
         resultado["payload_descifrado_hex"] = texto.hex()
         try:

@@ -20,7 +20,10 @@ import numpy as np
 from gnuradio import blocks, gr, lora_sdr
 import pmt
 
-from verificar_lorawan import analizar_trama
+if __package__:
+    from .verificar_lorawan import analizar_trama
+else:
+    from verificar_lorawan import analizar_trama
 
 
 TRAMA = bytes.fromhex("80dc5de60190040001dbf5a4e31239d05321687b")

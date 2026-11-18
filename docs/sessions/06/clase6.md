@@ -1,12 +1,18 @@
 ---
-title: "Clase 6 — Recepción LoRa y análisis LoRaWAN"
-session: 6
+title: "Sesión 8 — Recepción LoRa y análisis LoRaWAN"
+session: 8
 description: "Arquitectura y aplicaciones de LoRaWAN. Análisis de una señal I/Q hasta extraer el mensaje cifrado."
 hide:
   - toc
 ---
 
-# Clase 6 — Recepción LoRa y análisis LoRaWAN
+# Sesión 8 — Recepción LoRa y análisis LoRaWAN
+
+Esta sesión contiene el **Laboratorio #5**. El archivo conserva el nombre histórico `clase6.md`; en el [índice del curso](../index.md) corresponde a la sesión 08.
+
+!!! note "Señal y alcance de la entrega"
+
+    La práctica obligatoria usa **I/Q generado con GNU Radio a partir de una trama real de Brno**. Los 915 MHz son una referencia de simulación. La entrega consiste en medir los chirps, recuperar los 20 bytes y extraer los siete bytes **cifrados** del `FRMPayload`, además del reto de `FOpts`. No se pide descifrar, implementar OTAA ni descargar las capturas reales de Brno o STU. Las comprobaciones con claves públicas y esas capturas se conservan como [material complementario](#11-material-complementario-capturas-reales-y-descifrado).
 
 ## 1. Introducción
 
@@ -284,6 +290,8 @@ La segunda muestra se generó con el byte ya modificado. El transmisor LoRa calc
 
 En la segunda muestra, el CRC coincide con el paquete generado para la prueba. El MIC recibido corresponde a la trama original. Al verificarlo con la clave de sesión y el byte modificado, el resultado cambia.
 
+Los valores del MIC de esta tabla son resultados de referencia de `python scripts/verificar_lorawan_iq.py --salida output/lorawan-iq`, guardados en `verificacion.json`. Ese programa verifica el MIC con las claves públicas de la sesión original. **`LoRa Rx` y `Tag Debug` solo comprueban y muestran el CRC físico**; su etiqueta `crc_valid` no acredita un MIC válido. Para la entrega basta distinguir esas dos comprobaciones, sin implementar la verificación criptográfica.
+
 ## 6. Análisis en Inspectrum
 
 El objetivo es estimar dos parámetros de la señal a partir del preámbulo. La distancia vertical que recorre el chirp da el ancho de banda $BW$. La separación horizontal entre dos reinicios consecutivos da la duración de símbolo $T_s$. Con ambas medidas se obtiene el factor de expansión (SF).
@@ -510,7 +518,7 @@ En **LoRaWAN 1.0.4**, los comandos de `FOpts` viajan en claro y se pueden leer u
 
 ### Trama del reto
 
-El objetivo es localizar `FOpts` y calcular dónde empieza el `FRMPayload`. El reto parte de una trama didáctica LoRaWAN 1.0.4 en hexadecimal. Cada par representa un byte.
+El objetivo es localizar `FOpts` y calcular dónde empieza el `FRMPayload`. El reto parte de una trama didáctica LoRaWAN 1.0.4 en hexadecimal. Cada par representa un byte. Es un ejercicio de estructura: no se proporciona I/Q de esta segunda trama ni se pide validar su MIC o descifrarla.
 
 La Figura 6 muestra el caso de referencia, donde `FOptsLen = 0` y `FPort` sigue a `FCnt`. En el reto, leer el dígito hexadecimal de la derecha de `FCtrl` (byte 6). Ese dígito da la cantidad de bytes de `FOpts` que se deben contar desde el byte 9, justo después de `FCnt`. El siguiente byte es `FPort`. [Sección 4, «Cómo ubicar el mensaje cifrado»](#como-ubicar-el-mensaje-cifrado).
 
@@ -528,7 +536,7 @@ El estándar describe la longitud de `FOpts` y el orden de los campos que le sig
 
 ## 10. Entrega del informe y del reto
 
-Entregar **un informe en PDF** con la práctica, el reto y la respuesta de cierre. Adjuntar `trama_recibida.bin` y `mensaje_cifrado.bin`, generados con `correcto.sigmf-data` en las secciones 7 y 8.
+Entregar **un informe en PDF del Laboratorio #5** con la práctica, el reto y la respuesta de cierre. Adjuntar `trama_recibida.bin` (**20 bytes**) y `mensaje_cifrado.bin` (**7 bytes cifrados**), generados con `correcto.sigmf-data` en las secciones 7 y 8. El reto de la sección 9 se resuelve únicamente en el PDF. Las pruebas complementarias de la sección 11 no forman parte de la entrega.
 
 - **Fecha límite** — domingo 15 de noviembre de 2026 a las **23:59**, hora de Lima.
 - **Nombre del PDF** — `[codigo_uni].pdf`.
@@ -560,4 +568,30 @@ Indicar la longitud del `FRMPayload` y explicar por qué cambió su posición in
 
 ### 10.4. Pregunta de cierre
 
-**Al comparar varias tramas LoRaWAN con el `FRMPayload` cifrado, ¿qué se puede deducir de los campos visibles y qué queda por conocer del dato de aplicación?** Dar dos ejemplos de observaciones y señalar qué campo o medida respalda cada una. Indicar un dato de aplicación que seguiría sin conocerse.
+**Al comparar varias tramas LoRaWAN sin usar las claves ni descifrar el `FRMPayload`, ¿qué se puede deducir de los campos visibles y qué no se puede deducir del dato de aplicación?** Dar dos ejemplos de observaciones y señalar qué campo o medida respalda cada una. Indicar un dato de aplicación que no se deduce de esos campos. Aunque las claves del ejemplo de Brno están publicadas, esta pregunta se refiere al análisis de los campos visibles.
+
+Distinguir entre leer un campo y verificarlo: sin comprobar el MIC, su valor visible no acredita la integridad ni la autenticidad de la trama.
+
+## 11. Material complementario: capturas reales y descifrado
+
+Este material conserva las verificaciones adicionales del curso. No añade requisitos al informe del Laboratorio #5. Las fuentes tienen entradas y alcances diferentes:
+
+| Fuente | Entrada y frecuencia | Comprobación disponible |
+|---|---|---|
+| OSU | Captura I/Q recibida por aire a 915 MHz | Recuperación de 48 paquetes LoRa con CRC válido. Sus cargas de fingerprinting no se han validado como LoRaWAN. |
+| STU | Captura I/Q recibida por aire a 868.1 MHz | Recuperación de dos tramas LoRaWAN con CRC válido. No se dispone de las claves de esa sesión para verificar su MIC ni descifrarlas localmente. |
+| Brno | PCAP de tráfico real en EU868, ya demodulado por el sniffer | Verificación del MIC, derivación de claves OTAA y descifrado con las claves públicas del nodo experimental. El PCAP no contiene I/Q. |
+| Ejemplo obligatorio | I/Q generado a partir de la trama de Brno, con 915 MHz como referencia | Medición de chirps, recuperación de bytes y extracción del mensaje cifrado. El verificador de preparación también comprueba MIC y descifrado. |
+
+La muestra generada no acredita una recepción por aire a 915 MHz. Tampoco se pueden aplicar las claves de Brno a la sesión de STU. Sigue pendiente conseguir una **captura I/Q real con las claves de su propia sesión** para comprobar todo el recorrido sobre una misma grabación recibida.
+
+Los procedimientos de descarga, procedencia y resultados están en los README del repositorio: [OSU](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/samples/lora-915-osu/README.md), [STU](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/samples/lorawan-stu/README.md), [Brno](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/samples/lorawan-brno/README.md) y [ejemplo generado](https://github.com/ollerenac-uni/sdr/blob/main/gnuradio/samples/lorawan-didactico/README.md). Los archivos I/Q y el PCAP se descargan por separado y quedan fuera de Git.
+
+Después de descargar los datos indicados en cada README, desde la raíz del curso y con Radioconda activo:
+
+```bash
+python scripts/verificar_lorawan_brno.py --salida output/verificacion-lorawan/brno.json
+python scripts/verificar_lora_915.py gnuradio/samples/lorawan-stu/lorawan_samples.sigmf-data --frecuencia-central-hz 868100000 --salida output/verificacion-lorawan/stu.json
+```
+
+El primer programa conserva la lectura del PCAP y la validación de OTAA. Para el MIC de datos y el descifrado utiliza el mismo verificador `scripts/verificar_lorawan.py` que el ejemplo generado. Así ambas comprobaciones comparten las reglas de interpretación de las tramas de datos LoRaWAN 1.0.x.

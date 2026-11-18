@@ -28,6 +28,7 @@ exams/**/notas*
 *.cu8
 *.cfile
 *.sigmf-data
+/gnuradio/samples/lorawan-brno/*.pcap
 
 # Python generado por GNU Radio Companion a partir de los .grc
 gnuradio-flowgraphs/*.py

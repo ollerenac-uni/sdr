@@ -1,0 +1,57 @@
+{
+  "fecha_prueba_utc": "2026-11-07T05:03:47.556629+00:00",
+  "archivo": "gnuradio/samples/lorawan-stu/lorawan_samples.sigmf-data",
+  "sha256": "f2b714f36c28481c3b0304aef5860b4836f8a984b54f650e9ba7e1c249009496",
+  "tamano_bytes": 648036352,
+  "muestras_complejas": 81004544,
+  "duracion_s": 81.004544,
+  "formato": "cf32_le",
+  "gnuradio_version": "3.10.12.0",
+  "python_version": "3.12.9",
+  "modulo_receptor": "/home/user/radioconda/lib/python3.12/site-packages/gnuradio/lora_sdr/__init__.py",
+  "parametros": {
+    "frecuencia_central_hz": 868100000,
+    "tasa_muestras_sps": 1000000,
+    "ancho_canal_hz": 125000,
+    "sf": 7,
+    "sync_word": "0x34",
+    "cabecera_explicita": true,
+    "decodificacion_soft": true,
+    "ldro_mode": 2
+  },
+  "bytes_recuperados": 52,
+  "mensajes_recibidos": 2,
+  "tramas_recuperadas": 2,
+  "paquetes_crc_validos": 2,
+  "tramas_con_crc_invalido": 0,
+  "payloads_validos": [
+    {
+      "repeticiones": 1,
+      "hex": "4048780b2680020001c4e5094f5aec992259a6e6be173690cc51",
+      "texto_ascii": "@Hx\u000b&�\u0002\u0000\u0001��\tOZ��\"Y���\u00176��Q"
+    },
+    {
+      "repeticiones": 1,
+      "hex": "4048780b2680030001f66577536aafb75415047a865054fe7466",
+      "texto_ascii": "@Hx\u000b&�\u0003\u0000\u0001�ewSj��T\u0015\u0004z�PT�tf"
+    }
+  ],
+  "tramas": [
+    {
+      "offset_bytes_salida": 0,
+      "longitud_bytes": 26,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    },
+    {
+      "offset_bytes_salida": 26,
+      "longitud_bytes": 26,
+      "coding_rate": "4/5",
+      "crc_presente": true,
+      "crc_valido": true,
+      "cabecera_error": 0
+    }
+  ]
+}

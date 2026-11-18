@@ -29,13 +29,13 @@ def sha256_archivo(archivo):
     return resumen.hexdigest()
 
 
-def verificar(archivo, sync_word=0x34):
+def verificar(archivo, sync_word=0x34, frecuencia_central_hz=915000000):
     archivo = archivo.resolve()
     tamano = archivo.stat().st_size
     if not tamano or tamano % 8:
         raise ValueError("La captura debe contener muestras completas I/Q float32 (8 bytes)")
     parametros = {
-        "frecuencia_central_hz": 915000000,
+        "frecuencia_central_hz": frecuencia_central_hz,
         "tasa_muestras_sps": 1000000,
         "ancho_canal_hz": 125000,
         "sf": 7,
@@ -45,7 +45,7 @@ def verificar(archivo, sync_word=0x34):
         "ldro_mode": 2,
     }
     resumen = sha256_archivo(archivo)
-    tb = gr.top_block("Verificación LoRa real a 915 MHz")
+    tb = gr.top_block("Verificación de captura LoRa real")
     fuente = blocks.file_source(gr.sizeof_gr_complex, str(archivo), False)
     receptor = lora_sdr.lora_sdr_lora_rx(
         center_freq=parametros["frecuencia_central_hz"],
@@ -118,11 +118,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("archivo", type=Path, nargs="?", default=CAPTURA)
     parser.add_argument("--sync-word", type=lambda valor: int(valor, 0), default=0x34)
+    parser.add_argument("--frecuencia-central-hz", type=int, default=915000000)
     parser.add_argument("--salida", type=Path, help="Guardar también el informe JSON")
     args = parser.parse_args()
     if not 0 <= args.sync_word <= 255:
         parser.error("sync-word debe ser un byte, por ejemplo 0x34")
-    resultado = verificar(args.archivo, args.sync_word)
+    if args.frecuencia_central_hz <= 0:
+        parser.error("frecuencia-central-hz debe ser positiva")
+    resultado = verificar(args.archivo, args.sync_word, args.frecuencia_central_hz)
     texto = json.dumps(resultado, ensure_ascii=False, indent=2)
     if args.salida:
         args.salida.parent.mkdir(parents=True, exist_ok=True)

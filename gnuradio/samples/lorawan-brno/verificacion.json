@@ -1,0 +1,74 @@
+{
+  "fecha_prueba_utc": "2026-11-07T05:03:44.189149+00:00",
+  "archivo": "gnuradio/samples/lorawan-brno/03_Brno_join.pcap",
+  "sha256": "185953b181a4e63bfbba2eec6b84f093de6cbe82c23062a33ca0dc0a30297a1e",
+  "tamano_bytes": 3128888,
+  "entrada": "PCAP clásico, LoRaTap v1; paquetes recibidos por sniffer, sin muestras I/Q",
+  "dev_eui": "70b3d5cee0000042",
+  "dev_addr": "01e65ddc",
+  "fcnt32_bits_altos": 0,
+  "claves_fuente": "https://zenodo.org/records/8090619",
+  "conteos": {
+    "paquetes_pcap": 31605,
+    "recepciones_del_devaddr": 857,
+    "mic_valido": 809,
+    "estructura_no_admitida": 15,
+    "recepciones_aplicacion_descifradas": 386,
+    "mic_invalido": 33
+  },
+  "tramas_mic_valido_unicas": 471,
+  "tramas_aplicacion_unicas": 246,
+  "incorporaciones_otaa_verificadas": [
+    {
+      "join_request_hex": "000000000000000000420000e0ced5b3707042eb21abc8",
+      "join_accept_hex": "20eb3f177794a1e9982152926b7fcadf6091c42e14835cba8b10fa02736418ee00",
+      "join_accept_claro_hex": "5f0100000000dc5de6010001184f84e85684b85e84886684586e84005bf715ba",
+      "mic_request_valido": true,
+      "mic_accept_valido": true,
+      "nwkskey_derivada": "e2898779a03de59e2317b149abf00238",
+      "appskey_derivada": "59ca1ac91922887093bc7b236bd1b07f",
+      "coinciden_con_claves_publicadas": true
+    }
+  ],
+  "payloads_aplicacion": [
+    {
+      "devaddr": "01e65ddc",
+      "direccion": "uplink",
+      "fcnt32": 4,
+      "fport": 1,
+      "mic_recibido": "5321687b",
+      "mic_calculado": "5321687b",
+      "mic_valido": true,
+      "phypayload_hex": "80dc5de60190040001dbf5a4e31239d05321687b",
+      "frmpayload_claro_hex": "74696d656f7574",
+      "frmpayload_claro_ascii": "timeout",
+      "numero_pcap": 258,
+      "frecuencia_hz": 867900000,
+      "sf": 8,
+      "recepciones": 288
+    },
+    {
+      "devaddr": "01e65ddc",
+      "direccion": "uplink",
+      "fcnt32": 6,
+      "fport": 88,
+      "mic_recibido": "8f741830",
+      "mic_calculado": "8f741830",
+      "mic_valido": true,
+      "phypayload_hex": "80dc5de60190060058a49a3565ea058c27a1785a0c8f741830",
+      "frmpayload_claro_hex": "74657374206d657373616765",
+      "frmpayload_claro_ascii": "test message",
+      "numero_pcap": 506,
+      "frecuencia_hz": 867700000,
+      "sf": 8,
+      "recepciones": 98
+    }
+  ],
+  "controles": {
+    "nwkskey_incorrecta_rechazada": true,
+    "sin_texto_claro_si_mic_invalido": true,
+    "byte_alterado_rechazado": true,
+    "appskey_incorrecta_cambia_texto": true,
+    "mic_no_autentica_appskey": true
+  }
+}

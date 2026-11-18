@@ -1,4 +1,4 @@
-# Captura real de LoRa a 915 MHz: verificación previa a la clase 6
+# Captura real de LoRa a 915 MHz: material complementario de la sesión 8
 
 La captura se descargó del conjunto de Oregon State University **LoRa Device
 Fingerprinting in the Wild**, escenario indoor, día 1, dispositivo 1,

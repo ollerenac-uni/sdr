@@ -1,4 +1,4 @@
-# Continuación del curso SDR: preparación de la clase 6 sobre LoRaWAN
+# Continuación del curso SDR: sesión 8, Laboratorio #5 y verificaciones LoRaWAN
 
 Trabaja en el repositorio `/home/user/Teaching/uni/2026/sdr`, rama `main`.
 Comunícate con el usuario en español. Antes de modificar archivos, revisa
@@ -7,20 +7,71 @@ Conserva los cambios del usuario y consulta las instrucciones locales aplicables
 
 ## Objetivo del usuario y alcance alcanzado
 
-El usuario quiere dedicar la clase 6 a la decodificación de LoRaWAN. No tenía
+El usuario pidió inicialmente dedicar la «clase 6» a LoRaWAN; hoy figura como
+sesión 8 y Laboratorio #5. No tenía
 capturas a 915 MHz, por lo que pidió primero descargar una captura real y
 comprobar su decodificación con GNU Radio antes de preparar la clase.
 
-**Esa comprobación ya se completó para LoRa PHY:** se descargó una recepción
+**La primera comprobación se completó para LoRa PHY:** se descargó una recepción
 real a 915 MHz y se recuperaron 48 paquetes con CRC válido. La carga es texto de
 prueba de fingerprinting; no se ha validado como LoRaWAN. No presentes este
 resultado como recuperación del MIC, descifrado o funcionamiento de una red
-LoRaWAN. La clase 6 todavía no se ha creado ni se ha modificado el syllabus
-para incorporarla.
+LoRaWAN. Esta comprobación fue anterior a la creación de la lección actual.
 
-El usuario pidió guardar estos avances con commit y push, y añadir este archivo
-para que otro agente pueda retomar el trabajo. Consulta Git para identificar el
-commit que contiene estos archivos y confirmar su sincronización con el remoto.
+**Actualización del 7 de noviembre de 2026:** el usuario pidió buscar una captura
+real de LoRaWAN con claves conocidas y comprobar su decodificación y descifrado.
+Se verificó LoRaWAN con claves publicadas en un PCAP real de Brno: MIC, OTAA,
+derivación de claves y descifrado de `test message` y `timeout`. También se
+descargó y decodificó con GNU Radio una captura I/Q real de LoRaWAN de STU,
+pero las claves de esa otra sesión no se encontraron en sus materiales.
+**Aún no hay una única captura I/Q real recibida por aire, con las claves de
+su propia sesión, que permita verificar todo el recorrido hasta el texto claro.**
+Sí existe ya un ejemplo I/Q generado con claves públicas y cadena completa.
+
+## Estado integrado al 18 de noviembre de 2026
+
+Se incorporó desde GitHub el commit `ae1d0e2`, que publicó la lección de LoRa
+y la entrega. El archivo `docs/sessions/06/clase6.md` conserva el nombre
+histórico, pero corresponde a la **sesión 08 y al Laboratorio #5** del índice.
+La lección ya existe. El syllabus anterior está conservado como referencia
+fuera del sitio publicado; la navegación vigente es `docs/sessions/index.md`.
+
+La práctica obligatoria usa `output/lorawan-iq/correcto.sigmf-data`, generado
+por GNU Radio desde el paquete 258 del PCAP de Brno. Sus bytes son reales,
+pero esas muestras I/Q no proceden de una recepción por aire. Los 915 MHz son
+una referencia de simulación; el paquete original fue recibido a 867.9 MHz,
+con SF8, y el ejemplo se genera con SF7 y BW de 125 kHz.
+
+La entrega exige un PDF, `trama_recibida.bin` de 20 bytes y
+`mensaje_cifrado.bin` de 7 bytes, más el reto de FOpts resuelto en el PDF.
+No exige descifrado, OTAA, claves de STU ni las descargas complementarias.
+Conservar el plazo, el correo y el asunto de la convocatoria publicada.
+`LoRa Rx` y `Tag Debug` verifican el CRC físico, no el MIC. La comparación de
+MIC de la lección procede del verificador con claves públicas. La pregunta
+de cierre se refiere al análisis de campos visibles sin utilizar esas claves.
+
+El código común para MIC y descifrado de tramas de datos está en
+`scripts/verificar_lorawan.py`. Tanto `verificar_lorawan_iq.py` como
+`verificar_lorawan_brno.py` lo utilizan. El segundo conserva el lector de
+PCAP/LoRaTap, OTAA y el formato original de su informe mediante un adaptador.
+No volver a duplicar el cálculo del MIC ni el descifrado FRMPayload.
+
+Las verificaciones reales de OSU, STU y Brno se conservan como material
+complementario, con las diferencias de entrada y alcance documentadas en
+la sección 11 de la lección y en los README de cada muestra.
+
+El pedido actual es integrar y comprobar estos cambios y presentar un resumen
+**antes de hacer commit**. Los avances de Brno/STU y esta integración están
+pendientes de confirmación; no afirmar que están publicados sin consultar Git.
+
+Comprobaciones de esta integración: 28 pruebas aprobadas de LoRaWAN, entrega,
+numeración e índice; construcción estricta de MkDocs aprobada. El flowgraph
+del alumno y el código literal de extracción producen los binarios de 20 y
+7 bytes. El informe de Brno coincide con el anterior salvo la fecha: 809 MIC
+válidos, 386 recepciones de aplicación descifradas y claves OTAA coincidentes.
+Se repitieron además OSU (48 paquetes con CRC válido) y STU (2, con los mismos
+PHYPayload del informe original). Los resultados de ejecución quedan en
+`output/integracion-lorawan/`, fuera de Git.
 
 ## Captura descargada y procedencia
 
@@ -151,17 +202,109 @@ exploratorios adicionales permanecen en `output/verificacion-lora-915/`, carpeta
 ignorada por Git. Las pruebas completas, el control negativo, la compilación
 de sintaxis del programa y la consistencia de los informes ya se verificaron.
 
+## Actualización: LoRaWAN verificado en PCAP y en otra captura I/Q
+
+### Brno: claves públicas, MIC, incorporación y texto claro
+
+Carpeta: `/home/user/Teaching/uni/2026/sdr/gnuradio/samples/lorawan-brno/`.
+Fuente: https://zenodo.org/records/8090619, LoRaWAN Traffic Analysis Dataset v2,
+Ales Povalac y Jan Kral, Brno University of Technology.
+
+Se descargó `pcap.zip` y se verificó su MD5 publicado:
+`ad02cad7f3c697b56e30f3bd2090710e`. El ZIP queda en la carpeta ignorada
+`output/verificacion-lorawan/`. Se extrajeron el PCAP `03_Brno_join.pcap` y los
+archivos públicos `root_keys_lorawan` y `session_keys_lorawan`.
+El PCAP tiene 3 128 888 bytes y SHA-256:
+`185953b181a4e63bfbba2eec6b84f093de6cbe82c23062a33ca0dc0a30297a1e`.
+
+Solo se analiza el nodo experimental de los autores, DevEUI
+`70b3d5cee0000042`, DevAddr `01e65ddc`. Las claves están publicadas en Zenodo y
+en los archivos del ZIP. No se realizó búsqueda de claves de otros nodos.
+
+Programa: `/home/user/Teaching/uni/2026/sdr/scripts/verificar_lorawan_brno.py`.
+Desde la raíz, con Radioconda activo:
+
+```bash
+python scripts/verificar_lorawan_brno.py \
+  --salida output/verificacion-lorawan/brno-repeticion.json
+```
+
+Resultado guardado en `gnuradio/samples/lorawan-brno/verificacion.json`:
+
+- 31 605 paquetes totales del PCAP; 857 recepciones con el DevAddr seleccionado.
+- 809 recepciones con MIC válido, equivalentes a 471 PHYPayload distintos.
+- 386 recepciones con payload de aplicación descifrado: 288 `timeout` y
+  98 `test message`; equivalen a 246 PHYPayload de aplicación distintos.
+- 15 tramas con estructura no admitida y 33 con MIC incorrecto, rechazadas.
+- Se validaron los MIC de Join Request y Join Accept. Las dos claves derivadas
+  del OTAA autenticado coinciden con las publicadas para esta sesión.
+
+El script implementa LoRaWAN 1.0.x con FCnt32 alto cero para esta sesión,
+observada desde su incorporación (contadores válidos 0 a 249). Usa
+`cryptography`, ya disponible en Radioconda. No es un parser genérico de
+LoRaWAN 1.1. Rechaza MIC incorrectos antes de entregar texto claro.
+El informe incluye controles con NwkSKey incorrecta, ciphertext alterado y
+AppSKey incorrecta. Esta última cambia el texto sin invalidar el MIC de datos;
+la AppSKey correcta se comprueba además mediante la derivación OTAA.
+
+Pruebas independientes guardadas en `tests/test_lorawan_crypto.py`:
+
+```bash
+python -m unittest discover -s tests -p test_lorawan_crypto.py -v
+```
+
+Cubren vectores AES-CMAC de RFC 4493, una trama pública de referencia, clave
+incorrecta, alteración y tramas truncadas. El README de Brno explica la
+descarga, los resultados y los límites. **Es PCAP con LoRaTap, no I/Q**: la
+demodulación la hizo el sniffer de los autores.
+
+### STU: LoRaWAN desde I/Q, claves de esa sesión pendientes
+
+Carpeta: `/home/user/Teaching/uni/2026/sdr/gnuradio/samples/lorawan-stu/`.
+Fuente: https://sites.google.com/view/benderisthegreatest/ddc-en/sdrlab-en.
+
+Se descargó `lorawan_samples.dat`, una recepción real con USRP B210 entre un
+nodo Arduino y un gateway Dragino. Localmente conserva los mismos bytes como
+`lorawan_samples.sigmf-data`: 648 036 352 bytes, 81.004544 s a 1 Msps.
+SHA-256: `f2b714f36c28481c3b0304aef5860b4836f8a984b54f650e9ba7e1c249009496`.
+La frecuencia real es 868.1 MHz; no es una captura de 915 MHz.
+
+Se amplió `scripts/verificar_lora_915.py` con `--frecuencia-central-hz`,
+manteniendo los parámetros predeterminados de la comprobación original.
+Para repetir el caso STU:
+
+```bash
+python scripts/verificar_lora_915.py \
+  gnuradio/samples/lorawan-stu/lorawan_samples.sigmf-data \
+  --frecuencia-central-hz 868100000 \
+  --salida output/verificacion-lorawan/stu-repeticion.json
+```
+
+GNU Radio recuperó dos paquetes de 26 bytes con CRC válido, idénticos a los
+publicados por el laboratorio: DevAddr `260b7848`, FPort 1, FCnt 2 y 3.
+La fuente publica lecturas ya descifradas, pero no se encontraron las claves
+de esa sesión en su página, flowgraph ni archivo de interpretación. **No se
+descifró localmente STU ni se verificó su MIC**. Las claves de Brno pertenecen
+a otra sesión. No uses los textos de referencia como prueba de descifrado local.
+
+Los binarios I/Q y el PCAP permanecen locales e ignorados por Git. Los READMEs
+permiten descargarlos en otra máquina. Estos avances se prepararon antes de
+la lección que llegó con `ae1d0e2`; ahora se conservan como complemento de la
+sesión 8. Consultar `git status` para distinguir archivos publicados y pendientes.
+
 ## Continuación posible
 
-Cuando el usuario pida continuar, resolver primero el alcance de LoRaWAN:
-conseguir una captura de tramas LoRaWAN adecuada y claves conocidas cuando se
-necesite descifrar, o construir tramas didácticas LoRaWAN completas. La captura
-actual sirve para explicar chirps y recuperar paquetes LoRa, pero usar `0x34`
-no demuestra por sí solo que la carga transportada sea LoRaWAN.
+La cadena I/Q generado → LoRaWAN → MIC → texto claro ya está comprobada con
+`scripts/verificar_lorawan_iq.py`, incluyendo los controles negativos. Para
+probar esa misma cadena sobre una grabación recibida por aire, hace falta
+obtener I/Q real con sus claves publicadas o conseguir del laboratorio STU
+las claves de su sesión `260b7848`. No presentar las comprobaciones de STU
+y Brno como si fueran una misma grabación ni describir el I/Q generado como
+muestras reales recibidas.
 
 La clase 4 de referencia está en
 `/home/user/Teaching/uni/2026/sdr/docs/sessions/04/clase4.md`: recepción FM y RDS,
 bloques propios OOT, figuras y secciones desplegables. Revisa esa organización
-antes de proponer el formato de una nueva clase. No crees ni publiques la clase
-6 como si ya estuviera resuelta la parte LoRaWAN; conserva explícitamente la
-distinción entre la validación física alcanzada y el trabajo que falta.
+antes de proponer cambios de formato. La lección de LoRa ya existe: conservar
+su práctica y su entrega, y distinguir el material obligatorio de las
+verificaciones complementarias y de la captura real con claves aún pendiente.
