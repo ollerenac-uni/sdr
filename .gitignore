@@ -49,6 +49,7 @@ referencia/
 
 # Documentos personales de contratación: nunca al repositorio público
 /burocracia/
+/burocracia_gitgnore_then_change_folder_name/
 
 # Backups locales
 /backups/
