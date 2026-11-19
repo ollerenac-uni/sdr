@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cu8",
+    "core:sample_rate": 250000,
+    "core:version": "1.0.0",
+    "core:description": "LaCrosse TX35DTH-IT: temperatura y humedad, 2-FSK. Contiene también una transmisión TX29. Se verifica el TX35: id26, 24.1C, 34%. El README histórico dice OOK; el decodificador vigente y el discriminador confirman FSK.",
+    "core:dataset": "lacrosse-tx35.cu8",
+    "core:recorder": "Captura externa: https://github.com/merbanan/rtl_433_tests/tree/1bd5af52f389f0150bda566437e7d5e17e11fc7f/tests/lacrosse/tx29-it_tx35dth-it"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 868200000
+    }
+  ],
+  "annotations": []
+}

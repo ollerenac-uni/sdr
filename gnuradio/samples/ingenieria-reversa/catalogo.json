@@ -1,0 +1,130 @@
+{
+  "descripcion": "Capturas externas recibidas por radio para verificar viabilidad antes de redactar las clases. OOK no se aborda todavía.",
+  "gr_adsb": {
+    "repositorio": "https://github.com/mhostetter/gr-adsb",
+    "commit": "b1b5b139c8849d0090319ba12140bdc88fce236f",
+    "licencia": "GPL-3.0-or-later (cabeceras originales conservadas)",
+    "archivos": [
+      {
+        "archivo": "framer.py",
+        "url": "https://raw.githubusercontent.com/mhostetter/gr-adsb/b1b5b139c8849d0090319ba12140bdc88fce236f/python/adsb/framer.py",
+        "sha256": "25bf5682af3d909ace3f1d790befb87ccf0f68cfc41e1f8ef4b995283e6b9b59"
+      },
+      {
+        "archivo": "demod.py",
+        "url": "https://raw.githubusercontent.com/mhostetter/gr-adsb/b1b5b139c8849d0090319ba12140bdc88fce236f/python/adsb/demod.py",
+        "sha256": "2812478de60ab775f619987601588aaa485ec6ec5de1d521fdae840d598342db"
+      },
+      {
+        "archivo": "decoder.py",
+        "url": "https://raw.githubusercontent.com/mhostetter/gr-adsb/b1b5b139c8849d0090319ba12140bdc88fce236f/python/adsb/decoder.py",
+        "sha256": "b4bcbc744d71f2242b4400e423790036a6790ba79d9396846bed5123677df99a"
+      }
+    ]
+  },
+  "capturas": [
+    {
+      "id": "lacrosse",
+      "archivo": "lacrosse-tx35.cu8",
+      "formato": "cu8",
+      "fs": 250000,
+      "fc": 868200000,
+      "titulo": "LaCrosse TX35DTH-IT: temperatura y humedad, 2-FSK",
+      "fuente": "https://github.com/merbanan/rtl_433_tests/tree/1bd5af52f389f0150bda566437e7d5e17e11fc7f/tests/lacrosse/tx29-it_tx35dth-it",
+      "descarga": {
+        "url": "https://raw.githubusercontent.com/merbanan/rtl_433_tests/1bd5af52f389f0150bda566437e7d5e17e11fc7f/tests/lacrosse/tx29-it_tx35dth-it/tx35dth-it_868.2M_250k.cu8",
+        "tipo": "directa"
+      },
+      "referencia_json": "https://raw.githubusercontent.com/merbanan/rtl_433_tests/1bd5af52f389f0150bda566437e7d5e17e11fc7f/tests/lacrosse/tx29-it_tx35dth-it/tx35dth-it_868.2M_250k.json",
+      "nota": "Contiene también una transmisión TX29. Se verifica el TX35: id26, 24.1C, 34%. El README histórico dice OOK; el decodificador vigente y el discriminador confirman FSK.",
+      "bytes": 131072,
+      "sha256": "60c146c333a50a8cb62f0cdf8438881dc44b0abf418209ecaaa90dd60d2ccd37",
+      "muestras": 65536,
+      "duracion_s": 0.262144
+    },
+    {
+      "id": "aprs",
+      "archivo": "aprs-no84.sigmf-data",
+      "formato": "cf32_le",
+      "fs": 24000,
+      "fc": 145825000,
+      "titulo": "AX.25/APRS de NO-84 (PSAT), I/Q estéreo",
+      "fuente": "https://www.sdrangel.org/iq-files/",
+      "descarga": {
+        "url": "https://www.sdrangel.org/iq/no84.zip",
+        "tipo": "zip_prefijo",
+        "prefijo_bytes": 4895352,
+        "sha256_prefijo": "05b042c4a365f45a883e56a4410122ed099e1cea99a6ba900a0dc74578486c21",
+        "miembro": "no84.2021-12-15T22_38_34_739.wav",
+        "conversion": "wav_iq_16"
+      },
+      "nota": "WAV de dos canales I/Q, no audio ya demodulado. Se conserva el miembro completo; se convierte PCM16 a complex64 sin cambiar la tasa.",
+      "bytes": 9790272,
+      "sha256": "128fe3a457caa415a30335d68495f8dc2a4328017ea492eda95a9554719ebc85",
+      "muestras": 1223784,
+      "duracion_s": 50.991
+    },
+    {
+      "id": "ais",
+      "archivo": "ais-sdrangel.sigmf-data",
+      "formato": "cf32_le",
+      "fs": 250000,
+      "fc": 162000000,
+      "titulo": "AIS de barcos, canales A y B",
+      "fuente": "https://www.sdrangel.org/iq-files/",
+      "descarga": {
+        "url": "https://www.sdrangel.org/iq/ais.zip",
+        "tipo": "zip_prefijo",
+        "prefijo_bytes": 67108864,
+        "sha256_prefijo": "9d9bbaec380101481929aabfe03855171c56e338ab99ce5c20bae9c2053f1101",
+        "miembro": "ais.2021-05-04T11_30_31_640.sdriq",
+        "conversion": "sdriq_24"
+      },
+      "nota": "Primeros 33.554416 segundos, extraídos del miembro del ZIP. Cabecera32 y muestras int32 de24 bits convertidas a complex64. No se afirma haber descargado ni verificado todo el ZIP.",
+      "bytes": 67108832,
+      "sha256": "358f96bcea0e2ab4ff7fec05f65e07ae12a9272c05bdbf49232c433f213d50fd",
+      "muestras": 8388604,
+      "duracion_s": 33.554416
+    },
+    {
+      "id": "ble",
+      "archivo": "ble-fcsc2020.sigmf-data",
+      "formato": "cf32_le",
+      "fs": 20000000,
+      "fc": 2461000000,
+      "titulo": "BLE: anuncios de FCSC2020 con aliasing intencional",
+      "fuente": "https://hackropole.fr/en/challenges/hardware/fcsc2020-hardware-bluetooth-low-energy/",
+      "descarga": {
+        "url": "https://hackropole.fr/challenges/fcsc2020-hardware-bluetooth-low-energy/public/ble.sig",
+        "tipo": "directa"
+      },
+      "nota": "Archivo publicado completo, SHA256 coincide con el del organizador. El autor desactiva el filtro antialias: canales37/38/39 aparecen a +1/+5/-1MHz. No es una configuración genérica de captura BLE.",
+      "bytes": 9504000,
+      "sha256": "ae427526808cf425a2f2ac818d0612d88cbaa3e5ae12c27ac58cb3dde65b3993",
+      "muestras": 1188000,
+      "duracion_s": 0.0594
+    },
+    {
+      "id": "adsb",
+      "archivo": "adsb-sdrangel.sigmf-data",
+      "formato": "cf32_le",
+      "fs": 2400000,
+      "fc": 1090000000,
+      "titulo": "ADS-B de aeronaves a1090MHz",
+      "fuente": "https://www.sdrangel.org/iq-files/",
+      "descarga": {
+        "url": "https://www.sdrangel.org/iq/adsb.zip",
+        "tipo": "zip_prefijo",
+        "prefijo_bytes": 33554432,
+        "sha256_prefijo": "1917786780797759d4569724e2936d6bd97e5ca60cec60f160bc6abb4d38bb43",
+        "miembro": "adsb.2021-11-26T15_03_30_573.wav",
+        "conversion": "wav_iq_16"
+      },
+      "nota": "Primeros 3.495230833 segundos de la grabación, convertidos PCM16 I/Q a complex64. Se prueba gr-adsb3.10 con remuestreo a8Msps y sin corrección de errores. ADS-B usa PPM; la práctica OOK de sensores sigue reservada para el final.",
+      "bytes": 67108432,
+      "sha256": "19e873002ee89019f4cfa9c6eab9e7c0ff3998706855758f9eb82f686d1dcb1f",
+      "muestras": 8388554,
+      "duracion_s": 3.4952308333333333
+    }
+  ]
+}

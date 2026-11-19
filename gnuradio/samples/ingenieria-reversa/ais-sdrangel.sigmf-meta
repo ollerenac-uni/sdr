@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cf32_le",
+    "core:sample_rate": 250000,
+    "core:version": "1.0.0",
+    "core:description": "AIS de barcos, canales A y B. Primeros 33.554416 segundos, extraídos del miembro del ZIP. Cabecera32 y muestras int32 de24 bits convertidas a complex64. No se afirma haber descargado ni verificado todo el ZIP.",
+    "core:dataset": "ais-sdrangel.sigmf-data",
+    "core:recorder": "Captura externa: https://www.sdrangel.org/iq-files/"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 162000000
+    }
+  ],
+  "annotations": []
+}

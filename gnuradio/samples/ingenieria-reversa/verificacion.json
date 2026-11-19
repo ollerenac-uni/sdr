@@ -1,0 +1,3253 @@
+{
+  "fecha_utc": "2026-11-19T10:03:36.032988+00:00",
+  "python": "3.12.9",
+  "gnuradio": "3.10.12.0",
+  "entradas": [
+    {
+      "id": "lacrosse",
+      "archivo": "lacrosse-tx35.cu8",
+      "sha256": "60c146c333a50a8cb62f0cdf8438881dc44b0abf418209ecaaa90dd60d2ccd37"
+    },
+    {
+      "id": "aprs",
+      "archivo": "aprs-no84.sigmf-data",
+      "sha256": "128fe3a457caa415a30335d68495f8dc2a4328017ea492eda95a9554719ebc85"
+    },
+    {
+      "id": "ais",
+      "archivo": "ais-sdrangel.sigmf-data",
+      "sha256": "358f96bcea0e2ab4ff7fec05f65e07ae12a9272c05bdbf49232c433f213d50fd"
+    },
+    {
+      "id": "ble",
+      "archivo": "ble-fcsc2020.sigmf-data",
+      "sha256": "ae427526808cf425a2f2ac818d0612d88cbaa3e5ae12c27ac58cb3dde65b3993"
+    },
+    {
+      "id": "adsb",
+      "archivo": "adsb-sdrangel.sigmf-data",
+      "sha256": "19e873002ee89019f4cfa9c6eab9e7c0ff3998706855758f9eb82f686d1dcb1f"
+    }
+  ],
+  "resultados": {
+    "lacrosse": {
+      "aprobado": true,
+      "paquetes_crc_validos_unicos": 1,
+      "referencia": "rtl_433_tests: id=26, temperatura=24.1 C, humedad=34%",
+      "parametros": {
+        "fs": 250000,
+        "offset_hz": 25500,
+        "cutoff_hz": 45000,
+        "symbol_duration_us": 105
+      },
+      "paquetes": [
+        {
+          "hex": "96a6412250",
+          "id": 26,
+          "temperature_C": 24.1,
+          "humidity": 34,
+          "crc8": "50",
+          "crc_valido": true
+        }
+      ]
+    },
+    "aprs": {
+      "aprobado": true,
+      "paquetes_crc_validos": 4,
+      "paquetes": [
+        {
+          "hex": "86a240404040e092aa669a8ab260a0a682a84040e082a492a6a640e0ae6682889e40629694688aa4947f03f03d343530382e33364e2f30313130332e37324560",
+          "direcciones": [
+            "CQ",
+            "IU3MEY",
+            "PSAT",
+            "ARISS",
+            "W3ADO-1",
+            "KJ4ERJ-15"
+          ],
+          "control": 3,
+          "pid": 240,
+          "informacion": "=4508.36N/01103.72E`",
+          "crc_hdlc_valido": true
+        },
+        {
+          "hex": "86a240404040e0a08a629ca89c60a0a682a84040e082a492a6a640e103f03d353232392e39384e2f30303434392e3433452d4a4f32326a6c202d20576f726d6572202d207065316e746e40616d7361742e6f7267",
+          "direcciones": [
+            "CQ",
+            "PE1NTN",
+            "PSAT",
+            "ARISS"
+          ],
+          "control": 3,
+          "pid": 240,
+          "informacion": "=5229.98N/00449.43E-JO22jl - Wormer - pe1ntn@amsat.org",
+          "crc_hdlc_valido": true
+        },
+        {
+          "hex": "82a0a4a69e9c60a0a682a840406082a492a6a6406103f054233032332c3831302c3334312c3636372c3731302c3338352c3030303131303030",
+          "direcciones": [
+            "APRSON",
+            "PSAT",
+            "ARISS"
+          ],
+          "control": 3,
+          "pid": 240,
+          "informacion": "T#023,810,341,667,710,385,00011000",
+          "crc_hdlc_valido": true
+        },
+        {
+          "hex": "82a0b0646268e0648a60a6aa88e0a0a682a84040e082a492a6a640e0ae92888a64406303f03a4953532d31302020203a435120444520324530535544204c6f6320494f383351507b30427d",
+          "direcciones": [
+            "APX214",
+            "2E0SUD",
+            "PSAT",
+            "ARISS",
+            "WIDE2-1"
+          ],
+          "control": 3,
+          "pid": 240,
+          "informacion": ":ISS-10   :CQ DE 2E0SUD Loc IO83QP{0B}",
+          "crc_hdlc_valido": true
+        }
+      ],
+      "parametros": {
+        "fs": 24000,
+        "fc": 145825000,
+        "offset_hz": 1000,
+        "bitrate": 1200,
+        "tonos_hz": [
+          1200,
+          2200
+        ]
+      },
+      "limite": "Captura satelital con Doppler; esta cadena no garantiza recuperar todas sus ráfagas."
+    },
+    "ais": {
+      "aprobado": true,
+      "paquetes_crc_validos": 271,
+      "por_canal": {
+        "A": 131,
+        "B": 140
+      },
+      "tipos": {
+        "2": 208,
+        "3": 36,
+        "8": 9,
+        "5": 1,
+        "1": 5,
+        "6": 8,
+        "4": 3,
+        "21": 1
+      },
+      "reportes_posicion": 249,
+      "paquetes": [
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380cfded6003b801463f1d71e93accffb4085678",
+          "tipo": 2,
+          "mmsi": 235093883,
+          "velocidad_kn": 5.9,
+          "longitud": 0.2783966666666667,
+          "latitud": 51.458805,
+          "rumbo_deg": 276.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375058bc0000100190c11d7149b24c8cb6005678",
+          "tipo": 2,
+          "mmsi": 232003119,
+          "velocidad_kn": 0.1,
+          "longitud": 0.34197666666666665,
+          "latitud": 51.45455166666667,
+          "rumbo_deg": 58.8
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a1400000018e539d724bdc934f3800c097",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.339905,
+          "latitud": 51.461435,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f459d704e28738e36088411",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3407116666666667,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380e52202007b00104381d7560e50cffb800c05f",
+          "tipo": 2,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22205333333333332,
+          "latitud": 51.48247666666666,
+          "rumbo_deg": 129.2
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c2ee1400008019bb89d7199cbf4a6b8034044",
+          "tipo": 2,
+          "mmsi": 235080632,
+          "velocidad_kn": 0.0,
+          "longitud": 0.351335,
+          "latitud": 51.45668666666667,
+          "rumbo_deg": 306.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185fc9d71d109b698b60009e0",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33278833333333335,
+          "latitud": 51.45816,
+          "rumbo_deg": 248.6
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192289d714e2000ffb800c043",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.343175,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d567024fb8010440",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 179.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083750a6e000067801bc101d709d9ac2883a008441",
+          "tipo": 2,
+          "mmsi": 232008120,
+          "velocidad_kn": 10.3,
+          "longitud": 0.37893333333333334,
+          "latitud": 51.44996166666667,
+          "rumbo_deg": 275.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140001801962c1d7103002e1fb6205678",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.3466,
+          "latitud": 51.452666666666666,
+          "rumbo_deg": 4.6
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc1fc58001458d9d72123ade8bb8008447",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 8.8,
+          "longitud": 0.277805,
+          "latitud": 51.459898333333335,
+          "rumbo_deg": 278.2
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "23008d9af4005f002478178ef908b6cc237f5a037b706185bffd0fff68ffb47ffed1ffffed1fffda35f5ffec00",
+          "tipo": 8,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127bb1d73795abd3d3c008454",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.2523566666666667,
+          "latitud": 51.469475,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831e0fb6005c0f80195061d7160455a613a00c068",
+          "tipo": 2,
+          "mmsi": 209207000,
+          "velocidad_kn": 1.5,
+          "longitud": 0.34562,
+          "latitud": 51.455153333333335,
+          "rumbo_deg": 137.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73ab9bd697b601c02e",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470815,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375232b82040600186c31d718a20ca093c014070",
+          "tipo": 2,
+          "mmsi": 232033454,
+          "velocidad_kn": 0.6,
+          "longitud": 0.33345,
+          "latitud": 51.45627,
+          "rumbo_deg": 20.2
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000000012b061d7351ab9b97bc010480",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25516666666666665,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0838081a596040380185fb9d71d0f8fb98ba018482",
+          "tipo": 2,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.332785,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 229.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083751c6dd40000801a19c9d71e1a6c2a4bc00849a",
+          "tipo": 2,
+          "mmsi": 232026551,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3563616666666667,
+          "latitud": 51.458603333333336,
+          "rumbo_deg": 173.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162a59d73be02e17fc001049b",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3026316666666667,
+          "latitud": 51.47130666666666,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c14000080136f51d71fee81c9b3a21849e",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 207.6
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "084a7c6ba14000080199b29d71e56dd8a6ba0084d6",
+          "tipo": 2,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34960833333333335,
+          "latitud": 51.45870333333333,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040480185fa1d71d0d8f698be000550",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.4,
+          "longitud": 0.33278,
+          "latitud": 51.458155,
+          "rumbo_deg": 229.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a1408000018e471d724a8c934f4400c097",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33986333333333335,
+          "latitud": 51.4614,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380cfded6003a80145e51d71eacae6ffc20808b7",
+          "tipo": 2,
+          "mmsi": 235093883,
+          "velocidad_kn": 5.8,
+          "longitud": 0.27809666666666666,
+          "latitud": 51.458846666666666,
+          "rumbo_deg": 279.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375058bc0000100190bd9d7149f24c8dc40104f8",
+          "tipo": 2,
+          "mmsi": 232003119,
+          "velocidad_kn": 0.1,
+          "longitud": 0.341965,
+          "latitud": 51.45455833333333,
+          "rumbo_deg": 58.8
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f461d704e28738e44080005",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3407133333333333,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78ea214000080165671d73c5ed3e2a40008514",
+          "tipo": 2,
+          "mmsi": 249445000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.30498333333333333,
+          "latitud": 51.471516666666666,
+          "rumbo_deg": 339.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380e52202007b00104b51d7558e509ffc600851b",
+          "tipo": 2,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22247,
+          "latitud": 51.482263333333336,
+          "rumbo_deg": 128.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "14375232b90255e370d2524f78204d62546854a050804d153820820820340605051c4f4b00dc74815854c538482082082082082080",
+          "tipo": 5,
+          "mmsi": 232033454
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a594000280185f91d71d0d9e298c4000ab0",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.2,
+          "longitud": 0.33277666666666667,
+          "latitud": 51.458155,
+          "rumbo_deg": 253.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c2ee1400008019bb81d71990730a6c402c044",
+          "tipo": 2,
+          "mmsi": 235080632,
+          "velocidad_kn": 0.0,
+          "longitud": 0.35133333333333333,
+          "latitud": 51.45666666666666,
+          "rumbo_deg": 184.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192281d714e2000ffc400c043",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34317333333333333,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d5672a4fc600853e",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 183.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140001801962c1d71030dc41fc4214082",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.3466,
+          "latitud": 51.452666666666666,
+          "rumbo_deg": 352.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc1fc5900145079d72143afd8d46008545",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 8.9,
+          "longitud": 0.2773583333333333,
+          "latitud": 51.45995166666667,
+          "rumbo_deg": 281.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127bb9d73796abd3d48005678",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25235833333333335,
+          "latitud": 51.469476666666665,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73abbbd697c40008e0",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470818333333334,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831e0fb600580e80195159d715eb56a62460008d5",
+          "tipo": 2,
+          "mmsi": 209207000,
+          "velocidad_kn": 1.4,
+          "longitud": 0.34567166666666665,
+          "latitud": 51.45511166666667,
+          "rumbo_deg": 138.6
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375232b80000600186c71d718ac11c0b4a01c070",
+          "tipo": 2,
+          "mmsi": 232033454,
+          "velocidad_kn": 0.6,
+          "longitud": 0.33346333333333333,
+          "latitud": 51.456286666666664,
+          "rumbo_deg": 28.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0838081a594000280185f81d71d0cb2398c8005678",
+          "tipo": 2,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.2,
+          "longitud": 0.3327733333333333,
+          "latitud": 51.458153333333335,
+          "rumbo_deg": 285.1
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162a69d73be12e17fcc0008d4",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.302635,
+          "latitud": 51.47130833333333,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083751c6dd40000801a19c9d71e1a6eca4c801c03a",
+          "tipo": 2,
+          "mmsi": 232026551,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3563616666666667,
+          "latitud": 51.458603333333336,
+          "rumbo_deg": 177.2
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000000012b061d7351ab9b97ca005678",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25516666666666665,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c14140180136f51d71feeda59b482105a3",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 349.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "04380a9ed02000080138dc1d71cfde10ffcc09402a",
+          "tipo": 1,
+          "mmsi": 235055028,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26697333333333334,
+          "latitud": 51.458128333333335,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083a34352160000801932b9d716ade10ffcc085678",
+          "tipo": 2,
+          "mmsi": 244125000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34403833333333333,
+          "latitud": 51.455435,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "18380c4ecc0000000000680008",
+          "tipo": 6,
+          "mmsi": 235082675
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "084a7c6ba14000080199b31d71e56dd8a6c80085c7",
+          "tipo": 2,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34961,
+          "latitud": 51.45870333333333,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a594000380185f79d71d0b9b9984c0004a0",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.3327716666666667,
+          "latitud": 51.458151666666666,
+          "rumbo_deg": 248.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a17ec000018e481d724b7c934f5000c097",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33986666666666665,
+          "latitud": 51.461425,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "10008d9af47e5522dea0006da9e75bf65bc008c073",
+          "tipo": 4,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375058bc0000100190bc9d714a024c8cd200c047",
+          "tipo": 2,
+          "mmsi": 232003119,
+          "velocidad_kn": 0.1,
+          "longitud": 0.34196166666666666,
+          "latitud": 51.45456,
+          "rumbo_deg": 58.8
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f451d704e28738e500885ff",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34071,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78ea214000080165671d73c5ed3e2a50005678",
+          "tipo": 2,
+          "mmsi": 249445000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.30498333333333333,
+          "latitud": 51.471516666666666,
+          "rumbo_deg": 339.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380e52202007b00105481d754f550effd400860a",
+          "tipo": 2,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22296,
+          "latitud": 51.48200833333333,
+          "rumbo_deg": 129.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "23008d9af4005fffdad1178ebc88b73fffb45a200657d7ffbfa3c7ff68ffb47ffed1ffffed1fffda35f5ffec00",
+          "tipo": 8,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c3cfd2d1d4000000198e19d71e036224ece000ef1",
+          "tipo": 3,
+          "mmsi": 255806279,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3489116666666667,
+          "latitud": 51.458565,
+          "rumbo_deg": 157.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a594000380185f69d71d0badd98500009d0",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33276833333333333,
+          "latitud": 51.458151666666666,
+          "rumbo_deg": 278.1
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d567194fd2008629",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 181.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c2ee1400018019bb89d7199b88ea6d2025678",
+          "tipo": 2,
+          "mmsi": 235080632,
+          "velocidad_kn": 0.1,
+          "longitud": 0.351335,
+          "latitud": 51.456685,
+          "rumbo_deg": 219.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192281d714e2000ffd200c043",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34317333333333333,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc1fc5700144969d7216fb2c8f52008637",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 8.7,
+          "longitud": 0.2769816666666667,
+          "latitud": 51.460025,
+          "rumbo_deg": 286.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140000801962c1d710269911fd220c082",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3466,
+          "latitud": 51.45265,
+          "rumbo_deg": 244.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127ba1d73795abd3d56010645",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.2523533333333333,
+          "latitud": 51.469475,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b31d71e56dd8a6ce000ef1",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34961,
+          "latitud": 51.45870333333333,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73abbbd697d2010658",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470818333333334,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831e0fb6005c0e801951f9d715d95c163d400865c",
+          "tipo": 2,
+          "mmsi": 209207000,
+          "velocidad_kn": 1.4,
+          "longitud": 0.345705,
+          "latitud": 51.455081666666665,
+          "rumbo_deg": 147.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000000012b061d7351ab9b97d8005678",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25516666666666665,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "18380c4ecc0000000200680008",
+          "tipo": 6,
+          "mmsi": 235082675
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0838081a596040380185f39d71d0eb9397d600c068",
+          "tipo": 2,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.3327583333333333,
+          "latitud": 51.45815666666667,
+          "rumbo_deg": 296.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162a81d73be12e17fda0008d9",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.30264,
+          "latitud": 51.47130833333333,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c14000080136f51d71feead09b5421868b",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 276.8
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083751c6dd40000801a19c9d71e1a63fa4d601403a",
+          "tipo": 2,
+          "mmsi": 232026551,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3563616666666667,
+          "latitud": 51.458603333333336,
+          "rumbo_deg": 159.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083204b0000000680187219d719de0ccafda005678",
+          "tipo": 2,
+          "mmsi": 209792000,
+          "velocidad_kn": 0.6,
+          "longitud": 0.333765,
+          "latitud": 51.45679666666667,
+          "rumbo_deg": 20.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185f29d71d0fa399758000570",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.332755,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 261.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a17e8010018e4a9d724ddc934f5e014097",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.339875,
+          "latitud": 51.461488333333335,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380cfded6003980145439d71ee2b11ffdc0808c0",
+          "tipo": 2,
+          "mmsi": 235093883,
+          "velocidad_kn": 5.7,
+          "longitud": 0.27755833333333335,
+          "latitud": 51.458936666666666,
+          "rumbo_deg": 283.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c375058bc0000100190ba1d7149624c8cde006ba3",
+          "tipo": 3,
+          "mmsi": 232003119,
+          "velocidad_kn": 0.1,
+          "longitud": 0.34195333333333333,
+          "latitud": 51.45454333333333,
+          "rumbo_deg": 58.8
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b39d71e56dd8a6d8000fc1",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34961166666666665,
+          "latitud": 51.45870333333333,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f431d704e28738e5e094053",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34070333333333336,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78ea2140000801656c1d73c5ed3e2a5c005678",
+          "tipo": 2,
+          "mmsi": 249445000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.305,
+          "latitud": 51.471516666666666,
+          "rumbo_deg": 339.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380e52202007b00105dc1d7545b513ffe20008b8",
+          "tipo": 2,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22345333333333334,
+          "latitud": 51.48175166666667,
+          "rumbo_deg": 129.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185f01d71d0fb2296de000a70",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.3327466666666667,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 285.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192279d714e2000ffde008724",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34317166666666665,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140000801962c1d71026bfb1fde210726",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3466,
+          "latitud": 51.45265,
+          "rumbo_deg": 306.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127b71d73790abd3d6201072d",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.2523433333333333,
+          "latitud": 51.46946666666667,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc1fc5900144101d7219cb368fe001403c",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 8.9,
+          "longitud": 0.27653333333333335,
+          "latitud": 51.4601,
+          "rumbo_deg": 287.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c2ee1400018019bb81d719908fca6e0038731",
+          "tipo": 2,
+          "mmsi": 235080632,
+          "velocidad_kn": 0.1,
+          "longitud": 0.35133333333333333,
+          "latitud": 51.45666666666666,
+          "rumbo_deg": 230.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d567204fe001c04e",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 182.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b49d71e55dd8a6dc000ff1",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.349615,
+          "latitud": 51.45870166666667,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831e0fb600540d801952d9d715c356a64e2010755",
+          "tipo": 2,
+          "mmsi": 209207000,
+          "velocidad_kn": 1.3,
+          "longitud": 0.3457516666666667,
+          "latitud": 51.455045,
+          "rumbo_deg": 138.6
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375232b80000600186d21d718c11360ce4010757",
+          "tipo": 2,
+          "mmsi": 232033454,
+          "velocidad_kn": 0.6,
+          "longitud": 0.3335,
+          "latitud": 51.45632166666667,
+          "rumbo_deg": 31.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73ababd697e0005678",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470816666666664,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0838081a596040380185ee1d71d0fb82966201c069",
+          "tipo": 2,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33274,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 294.6
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083751c6dd40000801a19c9d71e1a649a4e400c03a",
+          "tipo": 2,
+          "mmsi": 232026551,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3563616666666667,
+          "latitud": 51.458603333333336,
+          "rumbo_deg": 160.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000010012b061d7351ab9b97e601077f",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.25516666666666665,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162ab1d73be12e17fe8010785",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.30265,
+          "latitud": 51.47130833333333,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c17ec0080136f51d71fee23d9b62205678",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 57.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083a34352160001801932b9d716ade10ffe6085678",
+          "tipo": 2,
+          "mmsi": 244125000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.34403833333333333,
+          "latitud": 51.455435,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185ec1d71d0fa5295e60004f0",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.3327333333333333,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 264.2
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380cfded6003a80144f91d71efeb20ffea0808db",
+          "tipo": 2,
+          "mmsi": 235093883,
+          "velocidad_kn": 5.8,
+          "longitud": 0.27731,
+          "latitud": 51.458983333333336,
+          "rumbo_deg": 284.8
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a1400000018e519d724cfc934f6c0087d2",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33989833333333336,
+          "latitud": 51.461465,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375058bc0000100190bb9d7149224c8dec0087e5",
+          "tipo": 2,
+          "mmsi": 232003119,
+          "velocidad_kn": 0.1,
+          "longitud": 0.3419583333333333,
+          "latitud": 51.45453666666667,
+          "rumbo_deg": 58.8
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b61d71e53dd8a6e6001051",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34962,
+          "latitud": 51.45869833333333,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f441d704e28738e6c085678",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34070666666666666,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380e52202007b001065d1d753d750dffee000000",
+          "tipo": 2,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22388333333333332,
+          "latitud": 51.48153166666667,
+          "rumbo_deg": 129.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185ea9d71d0fb2f95ea000a90",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33272833333333335,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 286.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192279d714e2000ffec008811",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34317166666666665,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c2ee1400008019bb81d71990d7aa6ec025678",
+          "tipo": 2,
+          "mmsi": 235080632,
+          "velocidad_kn": 0.0,
+          "longitud": 0.35133333333333333,
+          "latitud": 51.45666666666666,
+          "rumbo_deg": 345.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140000801962c1d710267fc1fec21081c",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3466,
+          "latitud": 51.45265,
+          "rumbo_deg": 204.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d566f14fec01404e",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 177.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc0005900143a09d721c9b3f8f6c01403d",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 8.9,
+          "longitud": 0.2761616666666667,
+          "latitud": 51.460175,
+          "rumbo_deg": 287.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127b79d7378eabd3d70010828",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.252345,
+          "latitud": 51.46946333333333,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "18380c4ecc0000000200680008",
+          "tipo": 6,
+          "mmsi": 235082675
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b69d71e52dd8a6ea000ff1",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34962166666666666,
+          "latitud": 51.45869666666667,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "18380cfdee008da8123a0171ca30b3ff4c7c88",
+          "tipo": 6,
+          "mmsi": 235093883
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73abbbd697ec005678",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470818333333334,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831e0fb600580d80195409d715b24f066700008c3",
+          "tipo": 2,
+          "mmsi": 209207000,
+          "velocidad_kn": 1.3,
+          "longitud": 0.345815,
+          "latitud": 51.455016666666666,
+          "rumbo_deg": 126.4
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375232b80000600186d69d718ca12f0bf2014070",
+          "tipo": 2,
+          "mmsi": 232033454,
+          "velocidad_kn": 0.6,
+          "longitud": 0.333515,
+          "latitud": 51.456336666666665,
+          "rumbo_deg": 30.3
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000010012b011d7351ab9b97f20008c6",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.25515,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083751c6dd40000801a19c9d71e1a71ba4f001886f",
+          "tipo": 2,
+          "mmsi": 232026551,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3563616666666667,
+          "latitud": 51.458603333333336,
+          "rumbo_deg": 181.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0838081a596040380185e99d71d0fa959570005678",
+          "tipo": 2,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.332725,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 270.9
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162ab9d73be02e17ff4005678",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.30265166666666665,
+          "latitud": 51.47130666666666,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c14000080136f51d71fee95d9b702008d7",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 239.7
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "04380a9ed02000080138dd9d71cfce10fff4085678",
+          "tipo": 1,
+          "mmsi": 235055028,
+          "velocidad_kn": 0.0,
+          "longitud": 0.2669783333333333,
+          "latitud": 51.458126666666665,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083a34352160000801932c1d716ade10fff4085678",
+          "tipo": 2,
+          "mmsi": 244125000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34404,
+          "latitud": 51.455435,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083204b0000000680187279d719f10d3aef40088a5",
+          "tipo": 2,
+          "mmsi": 209792000,
+          "velocidad_kn": 0.6,
+          "longitud": 0.333785,
+          "latitud": 51.456828333333334,
+          "rumbo_deg": 21.1
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040480185e91d71d0f9bc95f4000520",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.4,
+          "longitud": 0.3327233333333333,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 249.2
+        },
+        {
+          "canal": "A",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380cfded6003b80144a29d71f25b2efff60808d1",
+          "tipo": 2,
+          "mmsi": 235093883,
+          "velocidad_kn": 5.9,
+          "longitud": 0.27702166666666667,
+          "latitud": 51.459048333333335,
+          "rumbo_deg": 286.2
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375232b82040600186c19d7189b0ad0936014070",
+          "tipo": 2,
+          "mmsi": 232033454,
+          "velocidad_kn": 0.6,
+          "longitud": 0.333445,
+          "latitud": 51.45625833333333,
+          "rumbo_deg": 17.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0838081a596040380185fd1d71d119c79934014067",
+          "tipo": 2,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33279,
+          "latitud": 51.45816166666667,
+          "rumbo_deg": 250.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "04380a9ed02000080138dc9d71cfce10ffb6088401",
+          "tipo": 1,
+          "mmsi": 235055028,
+          "velocidad_kn": 0.0,
+          "longitud": 0.266975,
+          "latitud": 51.458126666666665,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000000012b061d7351ab9b97b6008410",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25516666666666665,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083d42cce140000801ab529d70b3c85c2c4e010416",
+          "tipo": 2,
+          "mmsi": 256947000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.36464833333333335,
+          "latitud": 51.45055333333333,
+          "rumbo_deg": 214.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162a61d73be02e17fba00c063",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3026333333333333,
+          "latitud": 51.47130666666666,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c14000080136f51d71fee5569b34214038",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 136.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185fb9d71d1092098b8000490",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.332785,
+          "latitud": 51.45816,
+          "rumbo_deg": 233.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380cfded6003a80146191d71e9ead6ffbc0808c6",
+          "tipo": 2,
+          "mmsi": 235093883,
+          "velocidad_kn": 5.8,
+          "longitud": 0.27827,
+          "latitud": 51.458823333333335,
+          "rumbo_deg": 277.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "10008d9af47e5522de74006da9c75bf65fc008c073",
+          "tipo": 4,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a1400000018e4b9d724b5c934f3e00847c",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33987833333333334,
+          "latitud": 51.461421666666666,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375058bc0000100190bc9d714a124c8d3e018480",
+          "tipo": 2,
+          "mmsi": 232003119,
+          "velocidad_kn": 0.1,
+          "longitud": 0.34196166666666666,
+          "latitud": 51.45456166666666,
+          "rumbo_deg": 58.8
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f461d704e28738e3c090486",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3407133333333333,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78ea214000080165671d73c5ed3e2a38008496",
+          "tipo": 2,
+          "mmsi": 249445000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.30498333333333333,
+          "latitud": 51.471516666666666,
+          "rumbo_deg": 339.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0848e938e1400000017f0f9d71311484a43c0b84a1",
+          "tipo": 2,
+          "mmsi": 305811000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3268783333333333,
+          "latitud": 51.453895,
+          "rumbo_deg": 115.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380e52202007b00104771d755cf507ffc0005678",
+          "tipo": 2,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22226333333333334,
+          "latitud": 51.482371666666666,
+          "rumbo_deg": 128.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040480185fb1d71d0e8f198bc000a30",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.4,
+          "longitud": 0.3327833333333333,
+          "latitud": 51.45815666666667,
+          "rumbo_deg": 228.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc1fc5800145539d7212dae58cbe0084b2",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 8.8,
+          "longitud": 0.27761166666666665,
+          "latitud": 51.459915,
+          "rumbo_deg": 278.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192281d714e2000ffbe00c043",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34317333333333333,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140000801962c1d710265d61fbe20c082",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3466,
+          "latitud": 51.45265,
+          "rumbo_deg": 149.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d567044fc00084c8",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 179.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127ba9d73795abd3d420008c2",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.252355,
+          "latitud": 51.469475,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73ababd697be0104d8",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470816666666664,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831e0fb6005c0f801950c9d715f85a861c00084e0",
+          "tipo": 2,
+          "mmsi": 209207000,
+          "velocidad_kn": 1.5,
+          "longitud": 0.3456416666666667,
+          "latitud": 51.455133333333336,
+          "rumbo_deg": 144.8
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0838081a594000380185f99d71d0d9e298c00184f7",
+          "tipo": 2,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33277833333333334,
+          "latitud": 51.458155,
+          "rumbo_deg": 253.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c3d42cce140000801ab531d70b3c82a2c5c000f71",
+          "tipo": 3,
+          "mmsi": 256947000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.36465,
+          "latitud": 51.45055333333333,
+          "rumbo_deg": 209.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000000012b061d7351ab9b97c4014048",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25516666666666665,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c14000080136f51d71fee9d99b40218511",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 252.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162a61d73be12e17fc600c063",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3026333333333333,
+          "latitud": 51.47130833333333,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083a34352160001801932b9d716ade10ffc6085678",
+          "tipo": 2,
+          "mmsi": 244125000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.34403833333333333,
+          "latitud": 51.455435,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "23008d9af4005f0015de17910308b6ffffb45a200657d7ffbffd0fff68ffb47ffed1ffffed1fffda35f5ffec00",
+          "tipo": 8,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083204b00000006801871c9d719cd0e3afc601853a",
+          "tipo": 2,
+          "mmsi": 209792000,
+          "velocidad_kn": 0.6,
+          "longitud": 0.3337483333333333,
+          "latitud": 51.456768333333336,
+          "rumbo_deg": 22.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "084a7c6ba14000080199b31d71e56dd8a6c0008548",
+          "tipo": 2,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34961,
+          "latitud": 51.45870333333333,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a594000280185f91d71d0d9e298c40005f0",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.2,
+          "longitud": 0.33277666666666667,
+          "latitud": 51.458155,
+          "rumbo_deg": 253.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380cfded6003b80145bf9d71eb1af4ffc80808bb",
+          "tipo": 2,
+          "mmsi": 235093883,
+          "velocidad_kn": 5.9,
+          "longitud": 0.2779716666666667,
+          "latitud": 51.458855,
+          "rumbo_deg": 280.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c37582005c801a0309d703fb3cbffc80808c2",
+          "tipo": 2,
+          "mmsi": 235081174,
+          "velocidad_kn": 9.2,
+          "longitud": 0.35514833333333334,
+          "latitud": 51.44745833333333,
+          "rumbo_deg": 97.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375058bc0000100190bd9d7149f24c8d4c005678",
+          "tipo": 2,
+          "mmsi": 232003119,
+          "velocidad_kn": 0.1,
+          "longitud": 0.341965,
+          "latitud": 51.45455833333333,
+          "rumbo_deg": 58.8
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a1400000018e439d7249cc934f4c008576",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33985166666666666,
+          "latitud": 51.46138,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f451d704e28738e4a088577",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34071,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78ea214000080165671d73c5ed3e2a4400857f",
+          "tipo": 2,
+          "mmsi": 249445000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.30498333333333333,
+          "latitud": 51.471516666666666,
+          "rumbo_deg": 339.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380e52202007b00105091d75537507ffcc005678",
+          "tipo": 2,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22275,
+          "latitud": 51.48211833333333,
+          "rumbo_deg": 128.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0848e938e1400000017f0f9d7131189ea4480b8597",
+          "tipo": 2,
+          "mmsi": 305811000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3268783333333333,
+          "latitud": 51.453895,
+          "rumbo_deg": 220.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192281d714e2000ffca00c043",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34317333333333333,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a594000380185f79d71d0b9ec98ca0005d0",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.3327716666666667,
+          "latitud": 51.458151666666666,
+          "rumbo_deg": 254.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc1fc5900144cf1d72159b188ecc0085b5",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 8.9,
+          "longitud": 0.27717,
+          "latitud": 51.459988333333335,
+          "rumbo_deg": 284.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d567214fcc0085b6",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 182.5
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "18380c4ecc0000000000680008",
+          "tipo": 6,
+          "mmsi": 235082675
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140000801962c1d710262501fca214082",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3466,
+          "latitud": 51.45265,
+          "rumbo_deg": 59.2
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127bb9d73795abd3d500008cc",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25235833333333335,
+          "latitud": 51.469475,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73abbbd697ca0085cb",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470818333333334,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375232b81fc0600186ca1d718b11320c520085e5",
+          "tipo": 2,
+          "mmsi": 232033454,
+          "velocidad_kn": 0.6,
+          "longitud": 0.33347333333333334,
+          "latitud": 51.456295,
+          "rumbo_deg": 30.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c3d42cce140000801ab531d70b3d7622c68000001",
+          "tipo": 3,
+          "mmsi": 256947000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.36465,
+          "latitud": 51.450555,
+          "rumbo_deg": 189.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000000012b061d7351ab9b97d2010601",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25516666666666665,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162a71d73be12e17fd20008cc",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.30263666666666666,
+          "latitud": 51.47130833333333,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a594000280185f79d71d0aa5f984e000511",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.2,
+          "longitud": 0.3327716666666667,
+          "latitud": 51.45815,
+          "rumbo_deg": 265.5
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "23008d9af4005f00034497927108b73fffb45a200657d7ffbfa4a7ff68ffb47ffed1ffffed1fffda35f5ffec00",
+          "tipo": 8,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c14140180136f51d71fee7fc9b4e218621",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 204.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083a34352160001801932b9d716ade10ffd4085678",
+          "tipo": 2,
+          "mmsi": 244125000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.34403833333333333,
+          "latitud": 51.455435,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083204b00000006801871f9d719d70d1afd2005678",
+          "tipo": 2,
+          "mmsi": 209792000,
+          "velocidad_kn": 0.6,
+          "longitud": 0.3337583333333333,
+          "latitud": 51.456785,
+          "rumbo_deg": 20.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "084a7c6ba14000080199b31d71e56dd8a6ce008647",
+          "tipo": 2,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34961,
+          "latitud": 51.45870333333333,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040280185f49d71d0db6597d4000430",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.2,
+          "longitud": 0.3327616666666667,
+          "latitud": 51.458155,
+          "rumbo_deg": 291.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380cfded6003a80145689d71ed5b07ffd60808c1",
+          "tipo": 2,
+          "mmsi": 235093883,
+          "velocidad_kn": 5.8,
+          "longitud": 0.27768166666666666,
+          "latitud": 51.458915,
+          "rumbo_deg": 282.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375058bc0000100190bb1d7149b24c8cd80008ce",
+          "tipo": 2,
+          "mmsi": 232003119,
+          "velocidad_kn": 0.1,
+          "longitud": 0.3419566666666667,
+          "latitud": 51.45455166666667,
+          "rumbo_deg": 58.8
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a17f4000018e4a9d724d5c934f5800866e",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.339875,
+          "latitud": 51.461475,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f439d704e28738e58090677",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.340705,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380e52202007b00105871d754b4513ffda0008ce",
+          "tipo": 2,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22317,
+          "latitud": 51.4819,
+          "rumbo_deg": 129.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78ea2140000801656c1d73c5ed3e2a54005678",
+          "tipo": 2,
+          "mmsi": 249445000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.305,
+          "latitud": 51.471516666666666,
+          "rumbo_deg": 339.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "18380c4ecc0000000200680008",
+          "tipo": 6,
+          "mmsi": 235082675
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185f39d71d0eae89756000a90",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.3327583333333333,
+          "latitud": 51.45815666666667,
+          "rumbo_deg": 279.2
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0848e938e1400000017f0f9d7131135ca4580b86a1",
+          "tipo": 2,
+          "mmsi": 305811000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3268783333333333,
+          "latitud": 51.453895,
+          "rumbo_deg": 86.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc1fc58001445b9d72181b318f5801403c",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 8.8,
+          "longitud": 0.276785,
+          "latitud": 51.460055,
+          "rumbo_deg": 286.5
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192281d714e2000ffd800c043",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34317333333333333,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c2ee1400018019bb89d7199b8d4a6da0306b6",
+          "tipo": 2,
+          "mmsi": 235080632,
+          "velocidad_kn": 0.1,
+          "longitud": 0.351335,
+          "latitud": 51.456685,
+          "rumbo_deg": 226.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127b89d73793abd3d5c0086b7",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25234833333333334,
+          "latitud": 51.469471666666664,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140001801962c1d710261e41fd821c082",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.3466,
+          "latitud": 51.45265,
+          "rumbo_deg": 48.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d566f34fda01404d",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 177.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831e0fb600580d80195259d715ce5ad645a0008d3",
+          "tipo": 2,
+          "mmsi": 209207000,
+          "velocidad_kn": 1.3,
+          "longitud": 0.345725,
+          "latitud": 51.455063333333335,
+          "rumbo_deg": 145.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b39d71e56dd8a6d8000f81",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34961166666666665,
+          "latitud": 51.45870333333333,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375232b81fc0600186cf1d718ba15b0d5e0008c8",
+          "tipo": 2,
+          "mmsi": 232033454,
+          "velocidad_kn": 0.6,
+          "longitud": 0.33349,
+          "latitud": 51.45631,
+          "rumbo_deg": 34.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73ababd697d8005678",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470816666666664,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083d42cce140000801ab531d70b3e76c2c7601c050",
+          "tipo": 2,
+          "mmsi": 256947000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.36465,
+          "latitud": 51.450556666666664,
+          "rumbo_deg": 190.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000010012b061d7351ab9b97de008701",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.25516666666666665,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0838081a596040380185f11d71d0fb2296dc008702",
+          "tipo": 2,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33275,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 285.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162a99d73be12e17fe000c063",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.302645,
+          "latitud": 51.47130833333333,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "04380a9ed02000080138dd1d71cfce10ffde085678",
+          "tipo": 1,
+          "mmsi": 235055028,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26697666666666664,
+          "latitud": 51.458126666666665,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c17ec0080136f51d71feee059b5c208717",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 358.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083a34352160001801932b9d716ade10ffe0085678",
+          "tipo": 2,
+          "mmsi": 244125000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.34403833333333333,
+          "latitud": 51.455435,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083204b0000000680187231d719e30cdaf600008b9",
+          "tipo": 2,
+          "mmsi": 209792000,
+          "velocidad_kn": 0.6,
+          "longitud": 0.33377,
+          "latitud": 51.456805,
+          "rumbo_deg": 20.5
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185ef1d71d0fb5596e0000630",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33274333333333334,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 290.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "10008d9af47e5522dec4006da9e75bf65bc008c073",
+          "tipo": 4,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a17e8000018e4c9d724dac934f66005678",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3398816666666667,
+          "latitud": 51.461483333333334,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b59d71e54dd8a6e0000fd1",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3496183333333333,
+          "latitud": 51.4587,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "18380c4ecc0000000200680008",
+          "tipo": 6,
+          "mmsi": 235082675
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f431d704e28738e640808bf",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34070333333333336,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380e52202007b001061c1d75419511ffe8000000",
+          "tipo": 2,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22366666666666668,
+          "latitud": 51.48164166666667,
+          "rumbo_deg": 129.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "55008d9af40b12928a826400a879d02891209900e0039dce3adfa780000000016e0414",
+          "tipo": 21,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "23008d9af4005f0095fd17bb6008b73fffb45a200657d7ffbfa3dfff68ffb47ffed1ffffed1fffda35f5ffec00",
+          "tipo": 8,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185ec1d71d0fa4195e6000a10",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.3327333333333333,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 262.5
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192279d714e2000ffe60087a7",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34317166666666665,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc1fc5a00143d91d721b3b358fe601403d",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 9.0,
+          "longitud": 0.27635,
+          "latitud": 51.46013833333333,
+          "rumbo_deg": 286.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d567184fe800c04e",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 181.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127b61d7378eabd3d6a005678",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.25234,
+          "latitud": 51.46946333333333,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140001801962c1d710260151fe6205678",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.3466,
+          "latitud": 51.45265,
+          "rumbo_deg": 2.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "23008d9af4005ffff6bb17940608b73fffb45a200657d7ffbfa5b7ff68ffb47ffed1ffffed1fffda35f5ffec00",
+          "tipo": 8,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083750a6e000067801b9ec1d70a0baac886a005678",
+          "tipo": 2,
+          "mmsi": 232008120,
+          "velocidad_kn": 10.3,
+          "longitud": 0.37710666666666665,
+          "latitud": 51.450045,
+          "rumbo_deg": 273.2
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b61d71e53dd8a6e4001071",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34962,
+          "latitud": 51.45869833333333,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831e0fb600580c80195369d715bc4e565e8014066",
+          "tipo": 2,
+          "mmsi": 209207000,
+          "velocidad_kn": 1.2,
+          "longitud": 0.34578166666666665,
+          "latitud": 51.45503333333333,
+          "rumbo_deg": 125.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73abbbd697e60187d6",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470818333333334,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "23008d9af4005f00a1a01786da08b73fffb45a200657d7ffbfa48fff68ffb47ffed1ffffed1fffda35f5ffec00",
+          "tipo": 8,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375232b80000600186d41d718c51370bec0107de",
+          "tipo": 2,
+          "mmsi": 232033454,
+          "velocidad_kn": 0.6,
+          "longitud": 0.3335066666666667,
+          "latitud": 51.45632833333333,
+          "rumbo_deg": 31.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0838081a596040380185eb9d71d0faa095e80107e8",
+          "tipo": 2,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33273166666666665,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 272.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083abc8f60000010012b011d7351ab9b97ec0187eb",
+          "tipo": 2,
+          "mmsi": 246359000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.25515,
+          "latitud": 51.46841666666667,
+          "rumbo_deg": 297.1
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c3d42cce140001801ab529d70b2480c2c0c000450",
+          "tipo": 3,
+          "mmsi": 256947000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.36464833333333335,
+          "latitud": 51.45051333333333,
+          "rumbo_deg": 206.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08422dc5c14000080136f51d71feea569b682008c8",
+          "tipo": 2,
+          "mmsi": 277574000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.26535,
+          "latitud": 51.459383333333335,
+          "rumbo_deg": 264.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08386495a14000080162ab9d73be02e17fee00c063",
+          "tipo": 2,
+          "mmsi": 236529000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.30265166666666665,
+          "latitud": 51.47130666666666,
+          "rumbo_deg": 73.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083a34352160000801932c1d716ade10ffee085678",
+          "tipo": 2,
+          "mmsi": 244125000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34404,
+          "latitud": 51.455435,
+          "rumbo_deg": 360.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083204b0000000680187261d719ed0d8af6e008829",
+          "tipo": 2,
+          "mmsi": 209792000,
+          "velocidad_kn": 0.6,
+          "longitud": 0.33378,
+          "latitud": 51.45682166666667,
+          "rumbo_deg": 21.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "18380c4ecc0000000200680008",
+          "tipo": 6,
+          "mmsi": 235082675
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040380185ea1d71d0fb51956e000580",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.3,
+          "longitud": 0.33272666666666667,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 289.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380cfded6003a80144c79d71f16b25fff00808c6",
+          "tipo": 2,
+          "mmsi": 235093883,
+          "velocidad_kn": 5.8,
+          "longitud": 0.277145,
+          "latitud": 51.459023333333334,
+          "rumbo_deg": 285.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "23008d9af4005f0054b71794ce88b73fffb45a200657d7ffbfa40fff68ffb47ffed1ffffed1fffda35f5ffec00",
+          "tipo": 8,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831ea61a1400000018e549d724c5c934f720008c4",
+          "tipo": 2,
+          "mmsi": 209361000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3399083333333333,
+          "latitud": 51.46144833333334,
+          "rumbo_deg": 321.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375058bc1fc0100190bc9d7149424c8e74010863",
+          "tipo": 2,
+          "mmsi": 232003119,
+          "velocidad_kn": 0.1,
+          "longitud": 0.34196166666666666,
+          "latitud": 51.45454,
+          "rumbo_deg": 58.8
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b71d71e52dd8a6ec000fe1",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34962333333333334,
+          "latitud": 51.45869666666667,
+          "rumbo_deg": 354.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0837505ff1400008018f439d704e28738e720808c7",
+          "tipo": 2,
+          "mmsi": 232003580,
+          "velocidad_kn": 0.0,
+          "longitud": 0.340705,
+          "latitud": 51.44784333333333,
+          "rumbo_deg": 216.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "23008d9af4005f002e06978c2a08b73fffb45a200657d7ffbfa407ff68ffb47ffed1ffffed1fffda35f5ffec00",
+          "tipo": 8,
+          "mmsi": 2320061
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78ea2140000801656c1d73c5ed3e2a6e005678",
+          "tipo": 2,
+          "mmsi": 249445000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.305,
+          "latitud": 51.471516666666666,
+          "rumbo_deg": 339.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "04380e52202007b00106b41d75380507fff6008888",
+          "tipo": 1,
+          "mmsi": 235115656,
+          "velocidad_kn": 12.3,
+          "longitud": 0.22417333333333334,
+          "latitud": 51.481386666666666,
+          "rumbo_deg": 128.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0848e938e1400010017f0f9d71311d9ba4740b4041",
+          "tipo": 2,
+          "mmsi": 305811000,
+          "velocidad_kn": 0.1,
+          "longitud": 0.3268783333333333,
+          "latitud": 51.453895,
+          "rumbo_deg": 348.3
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c2ee1400018019bb91d7199b028a6f4028895",
+          "tipo": 2,
+          "mmsi": 235080632,
+          "velocidad_kn": 0.1,
+          "longitud": 0.3513366666666667,
+          "latitud": 51.456685,
+          "rumbo_deg": 4.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c38081a596040480185e99d71d0f9bc95f2000a30",
+          "tipo": 3,
+          "mmsi": 235013782,
+          "velocidad_kn": 0.4,
+          "longitud": 0.332725,
+          "latitud": 51.45815833333333,
+          "rumbo_deg": 249.2
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c0fc42000000192279d714e2000fff400889f",
+          "tipo": 2,
+          "mmsi": 235078641,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34317166666666665,
+          "latitud": 51.45467,
+          "rumbo_deg": 0.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0832c1494140000801962c1d710269d01ff220c082",
+          "tipo": 2,
+          "mmsi": 212882000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.3466,
+          "latitud": 51.45265,
+          "rumbo_deg": 251.2
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08380c4ecc0005900143521d721e6b308ff401403d",
+          "tipo": 2,
+          "mmsi": 235082675,
+          "velocidad_kn": 8.9,
+          "longitud": 0.2759,
+          "latitud": 51.46022333333333,
+          "rumbo_deg": 286.4
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083750a6e000068801b9629d70a16aaf87f60008c3",
+          "tipo": 2,
+          "mmsi": 232008120,
+          "velocidad_kn": 10.4,
+          "longitud": 0.3766483333333333,
+          "latitud": 51.45006333333333,
+          "rumbo_deg": 273.5
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "08375172cd400008018e279d72d566fb4ff40088ad",
+          "tipo": 2,
+          "mmsi": 232021171,
+          "velocidad_kn": 0.0,
+          "longitud": 0.33975833333333333,
+          "latitud": 51.46510333333333,
+          "rumbo_deg": 178.7
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b78da814000000127b79d7378cabd3d0000c079",
+          "tipo": 2,
+          "mmsi": 249444000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.252345,
+          "latitud": 51.46946,
+          "rumbo_deg": 274.9
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "083b86d4a140000001244d9d73abbbd697f201c02c",
+          "tipo": 2,
+          "mmsi": 249673000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.24943166666666666,
+          "latitud": 51.470818333333334,
+          "rumbo_deg": 303.0
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0831e0fb600500c80195481d715ab4e866f60008d0",
+          "tipo": 2,
+          "mmsi": 209207000,
+          "velocidad_kn": 1.2,
+          "longitud": 0.34584,
+          "latitud": 51.455005,
+          "rumbo_deg": 125.6
+        },
+        {
+          "canal": "B",
+          "crc_hdlc_valido": true,
+          "hex_hdlc": "0c4a7c6ba14000080199b71d71e51dd8a6f2000e21",
+          "tipo": 3,
+          "mmsi": 312417000,
+          "velocidad_kn": 0.0,
+          "longitud": 0.34962333333333334,
+          "latitud": 51.458695,
+          "rumbo_deg": 354.4
+        }
+      ],
+      "parametros": {
+        "fs": 250000,
+        "fc": 162000000,
+        "decimacion": 5,
+        "bitrate": 9600
+      },
+      "limite": "Verificado con demodulación diferencial; no mide la tasa total de pérdidas."
+    },
+    "ble": {
+      "aprobado": true,
+      "paquetes_crc_validos": 6,
+      "paquetes": [
+        {
+          "canal": 37,
+          "hex": "201c96d53face2181408436f6e74696e756520c3a0206368657263686572",
+          "crc24": "9aa0c5",
+          "crc_valido": true,
+          "direccion": "18:e2:ac:3f:d5:96",
+          "campos": [
+            {
+              "type": 8,
+              "hex": "436f6e74696e756520c3a02063686572636865",
+              "nombre": "Continue à cherche"
+            },
+            {
+              "estructura_incompleta": true,
+              "offset": 21,
+              "hex_restante": "72"
+            }
+          ],
+          "control_bit_alterado_rechazado": true,
+          "control_whitening_incorrecto_rechazado": true
+        },
+        {
+          "canal": 37,
+          "hex": "201f96d53face2181808464353437b653166623635343062313233663364656233",
+          "crc24": "416736",
+          "crc_valido": true,
+          "direccion": "18:e2:ac:3f:d5:96",
+          "campos": [
+            {
+              "type": 8,
+              "hex": "464353437b653166623635343062313233663364656233",
+              "nombre": "FCSC{e1fb6540b123f3deb3"
+            }
+          ],
+          "control_bit_alterado_rechazado": true,
+          "control_whitening_incorrecto_rechazado": true
+        },
+        {
+          "canal": 38,
+          "hex": "201596d53face2180e0845737361796520656e636f7265",
+          "crc24": "d5d238",
+          "crc_valido": true,
+          "direccion": "18:e2:ac:3f:d5:96",
+          "campos": [
+            {
+              "type": 8,
+              "hex": "45737361796520656e636f7265",
+              "nombre": "Essaye encore"
+            }
+          ],
+          "control_bit_alterado_rechazado": true,
+          "control_whitening_incorrecto_rechazado": true
+        },
+        {
+          "canal": 38,
+          "hex": "201f96d53face21818083638343833346538333139663635323835653163363065",
+          "crc24": "7f0fbb",
+          "crc_valido": true,
+          "direccion": "18:e2:ac:3f:d5:96",
+          "campos": [
+            {
+              "type": 8,
+              "hex": "3638343833346538333139663635323835653163363065",
+              "nombre": "684834e8319f65285e1c60e"
+            }
+          ],
+          "control_bit_alterado_rechazado": true,
+          "control_whitening_incorrecto_rechazado": true
+        },
+        {
+          "canal": 39,
+          "hex": "201096d53face21809085072657371756521",
+          "crc24": "98c4e4",
+          "crc_valido": true,
+          "direccion": "18:e2:ac:3f:d5:96",
+          "campos": [
+            {
+              "type": 8,
+              "hex": "5072657371756521",
+              "nombre": "Presque!"
+            }
+          ],
+          "control_bit_alterado_rechazado": true,
+          "control_whitening_incorrecto_rechazado": true
+        },
+        {
+          "canal": 39,
+          "hex": "202096d53face218190838383133643530316663333165613934343765643431347d",
+          "crc24": "555430",
+          "crc_valido": true,
+          "direccion": "18:e2:ac:3f:d5:96",
+          "campos": [
+            {
+              "type": 8,
+              "hex": "38383133643530316663333165613934343765643431347d",
+              "nombre": "8813d501fc31ea9447ed414}"
+            }
+          ],
+          "control_bit_alterado_rechazado": true,
+          "control_whitening_incorrecto_rechazado": true
+        }
+      ],
+      "parametros": {
+        "fs": 20000000,
+        "decimacion": 5,
+        "bitrate": 1000000,
+        "crc_init": "555555"
+      },
+      "limite": "Captura especial con aliasing intencional; no contiene conexiones BLE."
+    },
+    "adsb": {
+      "aprobado": true,
+      "rafagas_demoduladas": 218,
+      "paquetes_crc_validos": 5,
+      "icao_distintos": [
+        "3465d8",
+        "4402f2",
+        "490d0b",
+        "4ca809",
+        "4ca92b"
+      ],
+      "paquetes": [
+        {
+          "icao": "4402f2",
+          "df": 17,
+          "callsign": null,
+          "altitude": null,
+          "speed": 509.82447960057783,
+          "heading": -55.46832486508657,
+          "latitude": null,
+          "longitude": null,
+          "hex": "8d4402f2990922b4b050b7b179a0",
+          "crc24_valido": true,
+          "control_bit_alterado_rechazado": true
+        },
+        {
+          "icao": "490d0b",
+          "df": 17,
+          "callsign": null,
+          "altitude": null,
+          "speed": 200.0024999843752,
+          "heading": -179.71352348972295,
+          "latitude": null,
+          "longitude": null,
+          "hex": "8d490d0b990cc98048509ae8c4d0",
+          "crc24_valido": true,
+          "control_bit_alterado_rechazado": true
+        },
+        {
+          "icao": "3465d8",
+          "df": 17,
+          "callsign": null,
+          "altitude": 30000,
+          "speed": 394.31205916126885,
+          "heading": 82.5685920288275,
+          "latitude": null,
+          "longitude": null,
+          "hex": "8d3465d8992034311004afee898a",
+          "crc24_valido": true,
+          "control_bit_alterado_rechazado": true
+        },
+        {
+          "icao": "4ca92b",
+          "df": 17,
+          "callsign": null,
+          "altitude": null,
+          "speed": 350.6479716182599,
+          "heading": 60.43752417653194,
+          "latitude": null,
+          "longitude": null,
+          "hex": "8d4ca92b9990ae26587c9e8a441a",
+          "crc24_valido": true,
+          "control_bit_alterado_rechazado": true
+        },
+        {
+          "icao": "4ca809",
+          "df": 17,
+          "callsign": null,
+          "altitude": null,
+          "speed": 415.76555893916947,
+          "heading": -76.93307921607159,
+          "latitude": null,
+          "longitude": null,
+          "hex": "8d4ca80999085fb2d074b4ef27b9",
+          "crc24_valido": true,
+          "control_bit_alterado_rechazado": true
+        }
+      ],
+      "parametros": {
+        "fs_entrada": 2400000,
+        "fc": 1090000000,
+        "interpolacion": 10,
+        "decimacion": 3,
+        "fs_receptor": 8000000,
+        "umbral_potencia": 0.3,
+        "promedio_potencia_muestras": 4,
+        "correccion_errores": "None"
+      },
+      "limite": "Sólo se cuentan DF17/18 con CRC sin corrección; no se exige obtener una posición CPR completa.",
+      "gr_adsb_commit": "b1b5b139c8849d0090319ba12140bdc88fce236f"
+    }
+  },
+  "numpy": "2.2.3"
+}

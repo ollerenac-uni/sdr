@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cf32_le",
+    "core:sample_rate": 20000000,
+    "core:version": "1.0.0",
+    "core:description": "BLE: anuncios de FCSC2020 con aliasing intencional. Archivo publicado completo, SHA256 coincide con el del organizador. El autor desactiva el filtro antialias: canales37/38/39 aparecen a +1/+5/-1MHz. No es una configuración genérica de captura BLE.",
+    "core:dataset": "ble-fcsc2020.sigmf-data",
+    "core:recorder": "Captura externa: https://hackropole.fr/en/challenges/hardware/fcsc2020-hardware-bluetooth-low-energy/"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 2461000000
+    }
+  ],
+  "annotations": []
+}

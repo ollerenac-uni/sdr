@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cf32_le",
+    "core:sample_rate": 24000,
+    "core:version": "1.0.0",
+    "core:description": "AX.25/APRS de NO-84 (PSAT), I/Q estéreo. WAV de dos canales I/Q, no audio ya demodulado. Se conserva el miembro completo; se convierte PCM16 a complex64 sin cambiar la tasa.",
+    "core:dataset": "aprs-no84.sigmf-data",
+    "core:recorder": "Captura externa: https://www.sdrangel.org/iq-files/"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 145825000
+    }
+  ],
+  "annotations": []
+}

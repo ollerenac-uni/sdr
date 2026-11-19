@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cf32_le",
+    "core:sample_rate": 2400000,
+    "core:version": "1.0.0",
+    "core:description": "ADS-B de aeronaves a1090MHz. Primeros 3.495230833 segundos de la grabación, convertidos PCM16 I/Q a complex64. Se prueba gr-adsb3.10 con remuestreo a8Msps y sin corrección de errores. ADS-B usa PPM; la práctica OOK de sensores sigue reservada para el final.",
+    "core:dataset": "adsb-sdrangel.sigmf-data",
+    "core:recorder": "Captura externa: https://www.sdrangel.org/iq-files/"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 1090000000
+    }
+  ],
+  "annotations": []
+}
