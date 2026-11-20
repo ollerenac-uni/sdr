@@ -20,6 +20,7 @@ venv/
 .claude/
 
 # Entregas de alumnos, soluciones y notas — PII, nunca al repo
+/pcs/
 exams/**/entregas/
 exams/**/soluciones/
 exams/**/notas*
