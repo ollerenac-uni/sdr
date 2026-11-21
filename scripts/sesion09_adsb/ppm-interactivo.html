@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Explorar las decisiones PPM de una trama ADS-B real</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:18px;font:16px/1.5 system-ui,sans-serif;color:#17314a;background:white}h1{font-size:22px;margin:0 0 8px}.muted{font-size:14px;color:#51687e}button{padding:8px 13px;font:inherit;border:1px solid #9eb4c8;border-radius:6px;color:inherit;background:#edf3fa;cursor:pointer}input{width:100%}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.card{padding:14px;border:1px solid #b8cbd9;border-radius:8px;margin:12px 0;background:#f6f9fc}svg{width:100%;height:auto;display:block}.bits{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:4px}.bit{padding:5px 0;font:16px ui-monospace,monospace;text-align:center;background:#edf3fa;border:1px solid #b8cbd9;border-radius:4px}.bit.active{outline:3px solid #c26319;font-weight:700}.values{font:16px/1.8 ui-monospace,monospace;overflow-wrap:anywhere}#hex{overflow-wrap:anywhere;font-family:ui-monospace,monospace}label{font-weight:650}#live{min-height:52px}footer{font-size:13px;color:#51687e}
+</style></head><body>
+<h1>De dos mitades de símbolo a un bit ADS-B</h1>
+<p class="muted">Datos medidos sobre I/Q real. Las barras representan las medias de potencia de cada mitad; no reconstruyen la forma del pulso transmitido.</p>
+<div class="controls"><button id="prev">← Anterior</button><button id="play">Reproducir</button><button id="next">Siguiente →</button><button id="reset">Volver a S001</button></div>
+<label for="symbol">Símbolo PPM</label><input type="range" id="symbol" min="1" max="112" step="1" value="1">
+<div id="live" aria-live="polite"></div>
+<svg viewBox="0 0 900 230" role="img" aria-label="Comparación de potencia media entre la primera y segunda mitad del símbolo">
+<rect x="90" y="20" width="355" height="150" fill="#e7f2ed"/><rect x="445" y="20" width="355" height="150" fill="#e7eef7"/>
+<line x1="90" y1="170" x2="800" y2="170" stroke="#54708a"/><rect id="h1" x="125" y="30" width="285" height="140" fill="#318462"/><rect id="h2" x="480" y="30" width="285" height="140" fill="#387da5"/>
+<g font-family="system-ui" font-size="20" fill="#17314a"><text x="267" y="202" text-anchor="middle">H1: 0–0.5 µs · 4 muestras</text><text x="622" y="202" text-anchor="middle">H2: 0.5–1 µs · 4 muestras</text></g>
+</svg>
+<div class="card values" id="decision"></div>
+<div class="card"><b>Bloque recibido: 112 bits</b><p class="muted">Siete filas de 16 para leerlos; cada símbolo aporta un bit, sin Gray ni desentrelazado. Pulsar cualquier bit para consultar su decisión.</p><div class="bits" id="bits"></div></div>
+<div class="card"><b>Los mismos bits como 14 bytes</b><p id="hex"></p></div>
+<footer>El preámbulo ocupa 8 µs antes de S001. El tiempo de S001 empieza 8 µs después del primer pulso. Las escalas de barras cambian por símbolo para comparar las dos medias. No se han corregido bits.</footer>
+<script type="application/json" id="data">__TRAZA__</script>
+<script>
+const data=JSON.parse(document.getElementById('data').textContent),slider=document.getElementById('symbol'),play=document.getElementById('play');let timer=null;
+const colors=['#dceafa','#eadff9','#d9f1e7','#fff0d4','#f9dfe5'];
+const buttons=data.decisiones.map(d=>{const b=document.createElement('button');b.className='bit';b.textContent=d.bit;b.setAttribute('aria-label',`Símbolo ${d.simbolo}, bit ${d.bit}`);b.title=`S${String(d.simbolo).padStart(3,'0')}`;b.style.background=colors[data.campos.findIndex(c=>c.inicio<=d.simbolo&&d.simbolo<=c.fin)];b.onclick=()=>{slider.value=d.simbolo;render()};document.getElementById('bits').appendChild(b);return b});
+function render(){const i=Number(slider.value)-1,d=data.decisiones[i],c=data.campos.find(c=>c.inicio<=i+1&&i+1<=c.fin),max=Math.max(d.primera,d.segunda);for(const [id,p] of [['h1',d.primera],['h2',d.segunda]]){const h=p/max*140,r=document.getElementById(id);r.setAttribute('height',h);r.setAttribute('y',170-h)}document.getElementById('live').textContent=`S${String(i+1).padStart(3,'0')} · bit ${i+1} de 112 · campo ${c.nombre} · tiempo ${d.inicio_us}–${d.inicio_us+1} µs desde el preámbulo`;document.getElementById('decision').textContent=`P1=${d.primera.toFixed(8)} | P2=${d.segunda.toFixed(8)} | P1−P2=${(d.primera-d.segunda).toFixed(8)} → bit ${d.bit}`;buttons.forEach((b,j)=>b.classList.toggle('active',i===j));const bytes=data.trama.hex.match(/../g);document.getElementById('hex').replaceChildren(...bytes.map((h,j)=>{const s=document.createElement('span');s.textContent=h.toUpperCase()+' ';if(j===Math.floor(i/8)){s.style.background='#ffe2bc';s.style.fontWeight='bold'}return s}))}
+function stop(){clearInterval(timer);timer=null;play.textContent='Reproducir'}
+slider.oninput=render;document.getElementById('prev').onclick=()=>{slider.value=Math.max(1,Number(slider.value)-1);render()};document.getElementById('next').onclick=()=>{slider.value=Math.min(112,Number(slider.value)+1);render()};document.getElementById('reset').onclick=()=>{stop();slider.value=1;render()};play.onclick=()=>{if(timer){stop();return}if(Number(slider.value)===112)slider.value=1;play.textContent='Pausar';render();timer=setInterval(()=>{slider.value=Math.min(112,Number(slider.value)+1);render();if(Number(slider.value)===112)stop()},600)};render();
+</script></body></html>

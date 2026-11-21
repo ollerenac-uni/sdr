@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADS-B — Posiciones recuperadas de I/Q</title>
+<style>__LEAFLET_CSS__</style>
+<script type="text/plain" id="leaflet-license">__LEAFLET_LICENSE__</script>
+<script>__LEAFLET_JS__</script>
+<style>
+:root{color-scheme:light;font:15px/1.5 system-ui,sans-serif;color:#17314a;background:#edf2f6}
+*{box-sizing:border-box}body{margin:0}header{padding:20px 26px;background:#122e48;color:white}
+h1{margin:0;font-size:24px;letter-spacing:-.4px}header p{margin:5px 0 0;color:#d0deea;font-size:14px}
+main{display:grid;grid-template-columns:325px minmax(0,1fr);height:calc(100vh - 102px);min-height:600px}
+aside{padding:20px;overflow:auto;background:#fff}#map{height:100%;min-height:600px;background:#dde7ef}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 20px}.stat{padding:12px;background:#edf4f8;border-radius:8px}
+.stat strong{display:block;font-size:28px;line-height:1.2}.stat span{font-size:12px;color:#466178}
+label{display:block;font-weight:650;margin:18px 0 6px}select,input[type=range]{width:100%}
+select,button{font:inherit;padding:9px 11px;border:1px solid #bccbd7;border-radius:6px;background:#fff;color:inherit}
+button{cursor:pointer}button:hover{background:#e9f2f8}.actions{display:flex;gap:8px;margin:12px 0}
+#clock{font-variant-numeric:tabular-nums}small,.muted{color:#526a7f;font-size:12px}#aircraft-list{margin-top:18px}
+.aircraft{display:block;width:100%;text-align:left;margin:8px 0;padding:10px;border-left:4px solid var(--color)}
+.aircraft strong{font-size:14px}.aircraft small{display:block}.badge{display:inline-block;background:#e3f5e9;color:#16653b;padding:3px 7px;border-radius:4px;font-size:12px}
+.source{margin-top:20px;font-size:12px}.source a{color:#196194}#status{margin:14px 0;font-size:13px}
+.leaflet-popup-content{font:13px/1.5 system-ui;min-width:240px}.leaflet-popup-content h2{font-size:16px;margin:0 0 5px}
+.leaflet-popup-content code{display:block;font-size:11px;overflow-wrap:anywhere}.leaflet-popup-content details{margin-top:10px}
+.leaflet-tooltip{font:12px system-ui}.mono{font-family:ui-monospace,monospace}
+@media(max-width:750px){main{display:flex;flex-direction:column;height:auto}aside{order:2}#map{height:60vh;min-height:400px}header{padding:15px}h1{font-size:20px}}
+</style>
+</head>
+<body>
+<header><h1>ADS-B · Posiciones recuperadas de muestras I/Q</h1><p>Captura histórica de SDRangel · 1090 MHz · CPR global con CRC válido · Sin posiciones inventadas</p></header>
+<main>
+<aside>
+<div class="stats"><div class="stat"><strong id="planes-total"></strong><span>aeronaves con posición</span></div><div class="stat"><strong id="fix-total"></strong><span>posiciones CPR recuperadas</span></div></div>
+<span class="badge">Verificación sobre captura real</span>
+<label for="aircraft-select">Aeronave · dirección ICAO</label><select id="aircraft-select"><option value="">Todas las aeronaves</option></select>
+<label for="time-range">Tiempo relativo en el archivo</label><input id="time-range" type="range" min="0" step="0.01"><output id="clock"></output>
+<div class="actions"><button id="play" type="button">Recorrer archivo</button><button id="fit" type="button">Encuadrar</button></div>
+<div id="status" aria-live="polite"></div>
+<small>El deslizador muestra mensajes observados; no interpola posiciones. La velocidad indicada procede del campo TC19, no de medir distancias en el mapa.</small>
+<div id="aircraft-list"></div>
+<div class="source"><b>Evidencia</b><br><span id="frame-total"></span> tramas DF17 con CRC válido, sin corregir bits. Cada punto permite consultar sus mensajes par/impar.<br><a href="posiciones.csv" download>Descargar coordenadas CSV</a> · <a href="verificacion.json" download>Informe JSON</a><br><a href="https://www.sdrangel.org/iq-files/" target="_blank" rel="noopener">Fuente de las muestras</a><br><span id="recording-info"></span></div>
+</aside>
+<div id="map" role="region" aria-label="Mapa interactivo de posiciones ADS-B"></div>
+</main>
+<script id="adsb-data" type="application/json">__DATA__</script>
+<script>
+const report=JSON.parse(document.getElementById('adsb-data').textContent);
+const positions=report.posiciones;
+const ids=[...new Set(positions.map(p=>p.icao))].sort();
+const palette=['#136c9a','#c85721','#218247','#8447a0','#b52f59','#8c6a12','#306b87','#52752d','#85523f'];
+const color=id=>palette[ids.indexOf(id)%palette.length];
+const esc=s=>String(s??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+document.getElementById('planes-total').textContent=ids.length;
+document.getElementById('fix-total').textContent=positions.length;
+document.getElementById('frame-total').textContent=report.resumen.tramas_df17_crc_valido;
+document.getElementById('recording-info').textContent=`Archivo fuente: ${report.origen.descarga.miembro} · ${report.origen.duracion_archivo_s.toFixed(3)} s de muestras. Zona horaria original no indicada.`;
+const selector=document.getElementById('aircraft-select');
+for(const id of ids){const o=document.createElement('option');o.value=id;o.textContent=id.toUpperCase();selector.appendChild(o)}
+const slider=document.getElementById('time-range');slider.max=report.origen.duracion_archivo_s;slider.value=slider.max;
+if(!window.L){document.getElementById('map').textContent='No se pudo cargar Leaflet. Volver a generar el mapa con verificar_posiciones.py.';throw new Error('Leaflet no disponible')}
+const map=L.map('map').setView([51.2,-.5],8);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+const layer=L.layerGroup().addTo(map);
+function visible(){return positions.filter(p=>(!selector.value||p.icao===selector.value)&&p.tiempo_s<=Number(slider.value))}
+function popup(p){return `<h2>${esc(p.icao.toUpperCase())}${p.callsign?' · '+esc(p.callsign):''}</h2><b>Latitud:</b> ${p.latitud.toFixed(6)}°<br><b>Longitud:</b> ${p.longitud.toFixed(6)}°<br><b>Altitud barométrica:</b> ${p.altitud_ft??'—'} ft<br><b>Velocidad TC19:</b> ${p.velocidad_kt==null?'—':p.velocidad_kt.toFixed(1)+' kt'}<br><b>Tiempo de archivo:</b> ${p.tiempo_s.toFixed(6)} s<br><b>Método:</b> CPR global · dos CRC válidos<details><summary>Ver los mensajes de origen</summary>Par, t=${p.tiempo_par_s.toFixed(6)} s<code>${esc(p.hex_par)}</code>Impar, t=${p.tiempo_impar_s.toFixed(6)} s<code>${esc(p.hex_impar)}</code>Separación en archivo: ${p.separacion_s.toFixed(6)} s</details>`}
+function render(){
+ layer.clearLayers();const rows=visible();const shown=new Set(rows.map(p=>p.icao));
+ document.getElementById('clock').textContent=`${Number(slider.value).toFixed(2)} / ${Number(slider.max).toFixed(2)} s`;
+ document.getElementById('status').textContent=`${shown.size} ${shown.size===1?'aeronave':'aeronaves'} · ${rows.length} ${rows.length===1?'posición visible':'posiciones visibles'}`;
+ for(const id of shown){
+  const track=rows.filter(p=>p.icao===id);const c=color(id);
+  if(track.length>1)L.polyline(track.map(p=>[p.latitud,p.longitud]),{color:c,weight:2,opacity:.6}).addTo(layer);
+  for(const p of track)L.circleMarker([p.latitud,p.longitud],{radius:4,color:c,fillColor:c,fillOpacity:.65,weight:1}).bindPopup(popup(p)).addTo(layer);
+  const p=track[track.length-1];L.circleMarker([p.latitud,p.longitud],{radius:8,color:c,fillColor:c,fillOpacity:1,weight:2}).bindTooltip(`${id.toUpperCase()}${p.callsign?' · '+p.callsign:''}`,{direction:'top'}).bindPopup(popup(p)).addTo(layer);
+ }
+ const list=document.getElementById('aircraft-list');list.replaceChildren();
+ for(const id of shown){const track=rows.filter(p=>p.icao===id);const p=track[track.length-1];const b=document.createElement('button');b.className='aircraft';b.style.setProperty('--color',color(id));b.innerHTML=`<strong>${esc(id.toUpperCase())}${p.callsign?' · '+esc(p.callsign):''}</strong><small>${p.latitud.toFixed(5)}, ${p.longitud.toFixed(5)} · ${track.length} ${track.length===1?'posición':'posiciones'}</small>`;b.onclick=()=>{selector.value=id;render();fit()};list.appendChild(b)}
+}
+function fit(){const rows=visible();if(rows.length)map.fitBounds(L.latLngBounds(rows.map(p=>[p.latitud,p.longitud])).pad(.2),{maxZoom:12})}
+selector.onchange=()=>{render();fit()};slider.oninput=render;document.getElementById('fit').onclick=fit;
+let timer=null;const play=document.getElementById('play');
+play.onclick=()=>{if(timer){clearInterval(timer);timer=null;play.textContent='Recorrer archivo';return}if(Number(slider.value)>=Number(slider.max))slider.value=0;play.textContent='Pausar';render();timer=setInterval(()=>{slider.value=Math.min(Number(slider.max),Number(slider.value)+.2);render();if(Number(slider.value)>=Number(slider.max)){clearInterval(timer);timer=null;play.textContent='Recorrer archivo'}},200)};
+render();fit();
+</script>
+</body>
+</html>

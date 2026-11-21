@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cf32_le",
+    "core:sample_rate": 2400000,
+    "core:version": "1.0.0",
+    "core:dataset": "adsb-sdrangel-posiciones.sigmf-data",
+    "core:description": "Prefijo de muestras publicadas por SDRangel: no se sintetizan ni remodulan tramas. La fecha procede del nombre del WAV; no se conoce su zona horaria. Los tiempos de mensajes se expresan respecto al archivo, no como UTC original.",
+    "core:recorder": "https://www.sdrangel.org/iq-files/"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 1090000000
+    }
+  ],
+  "annotations": []
+}

@@ -12,3 +12,4 @@ Completa el [pre-lab de instalación](../setup/index.md) antes de la primera ses
 | 06 | [Laboratorio de enlace digital](03-sistemas-filtros-digitales/index.md) |
 | 07 | [Recepción FM y decodificación RDS en GNU Radio](04/clase4.md) |
 | 08 | [Señales LoRa](06/clase6.md) |
+| 09 | [Reverse Engineering a ADS-B](09/clase9.md) |

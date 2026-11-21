@@ -2,8 +2,9 @@
 
 Se descargaron capturas I/Q externas de cinco tecnologías y se comprobaron con
 GNU Radio 3.10.12.0 y Python 3.12.9 de Radioconda. No se generaron señales
-sintéticas ni se sustituyó la entrada por paquetes ya demodulados. Las clases
-todavía no se han redactado. La práctica de sensores OOK queda para el final.
+sintéticas ni se sustituyó la entrada por paquetes ya demodulados. Esta carpeta
+conserva la verificación previa; ADS-B se desarrolla después en la
+[sesión 9](../../../docs/sessions/09/clase9.md). La práctica de sensores OOK queda para el final.
 
 El [catálogo](catalogo.json) fija las fuentes, formatos, tasas, frecuencias,
 duraciones y SHA-256. El [informe](verificacion.json) conserva las tramas
@@ -153,6 +154,16 @@ El informe contiene los campos disponibles por mensaje. No se exige una pareja
 CPR para producir coordenadas completas. Los tiempos del bloque upstream
 corresponden a la reproducción, por lo que no se presentan como tiempos de
 recepción de 2021.
+
+**Ampliación para recuperar coordenadas:** se verificó después un prefijo más
+largo de la misma grabación con una cadena que conserva las tramas en los
+límites de bloque y calcula tiempos por índice de muestra. Produce **134 DF17
+con CRC válido y 26 posiciones de nueve aeronaves**, contrastadas con pyModeS;
+incluye un mapa interactivo. Véase [ADS-B: posiciones](../adsb-posiciones/README.md).
+El conteo de mensajes publicados por el decodificador upstream anterior no
+equivale al total de mensajes válidos presentes en las muestras: ese bloque
+filtra resultados, incluidas primeras posiciones. La muestra corta también
+contiene mensajes de posición; la ampliación proporciona más parejas CPR.
 
 ## Conversión, redistribución y límites
 

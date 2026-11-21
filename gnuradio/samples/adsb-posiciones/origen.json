@@ -1,0 +1,22 @@
+{
+  "archivo": "adsb-sdrangel-posiciones.sigmf-data",
+  "formato": "cf32_le",
+  "fs": 2400000,
+  "fc": 1090000000,
+  "fuente": "https://www.sdrangel.org/iq-files/",
+  "descarga": {
+    "url": "https://www.sdrangel.org/iq/adsb.zip",
+    "tipo": "zip_prefijo",
+    "miembro": "adsb.2021-11-26T15_03_30_573.wav",
+    "prefijo_bytes": 134217728,
+    "sha256_prefijo": "c5da497d18303a5c19cc73cb690b8e5fc07cc21226bcaa592d8875e31be9e9d8",
+    "bytes_miembro_completo": 980041944,
+    "miembro_completo": false,
+    "conversion": "wav_iq_16"
+  },
+  "bytes": 268435024,
+  "muestras": 33554378,
+  "duracion_archivo_s": 13.980990833333333,
+  "sha256": "618f47716ba995438a9d997bb9aeb2053ad21c74014f4194dda982799ab21ff6",
+  "nota": "Prefijo de muestras publicadas por SDRangel: no se sintetizan ni remodulan tramas. La fecha procede del nombre del WAV; no se conoce su zona horaria. Los tiempos de mensajes se expresan respecto al archivo, no como UTC original."
+}

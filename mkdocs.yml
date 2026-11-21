@@ -93,6 +93,7 @@ nav:
           - "Lección 4: recepción FM y RDS": sessions/04/clase4.md
           - "Laboratorio #4: adaptación y diagnóstico": sessions/04/laboratorio-fm-rds.md
       - "08 — Señales LoRa": sessions/06/clase6.md
+      - "09 — Reverse Engineering a ADS-B": sessions/09/clase9.md
   - Guías:
       - setup/index.md
       - "Instalar GNU Radio": setup/instalacion.md
