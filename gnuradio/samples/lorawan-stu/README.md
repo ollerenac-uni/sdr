@@ -39,7 +39,7 @@ de GNU Radio 3.7.
 Con Radioconda activo:
 
 ```bash
-python scripts/verificar_lora_915.py \
+python scripts/sesion08_lora/verificar_lora_915.py \
   gnuradio/samples/lorawan-stu/lorawan_samples.sigmf-data \
   --frecuencia-central-hz 868100000 \
   --salida output/verificacion-lorawan/stu-repeticion.json

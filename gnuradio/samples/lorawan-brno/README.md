@@ -73,7 +73,7 @@ Zenodo y a los archivos de claves incluidos en el ZIP.
 Con el Python de Radioconda, que ya contiene `cryptography` en la máquina usada:
 
 ```bash
-python scripts/verificar_lorawan_brno.py \
+python scripts/sesion08_lora/verificar_lorawan_brno.py \
   --salida output/verificacion-lorawan/brno-repeticion.json
 ```
 
@@ -88,7 +88,7 @@ El programa procesa el PCAP original sin modificarlo:
    distinto de cero o con NwkSKey para FPort cero.
 
 El análisis de tramas de datos, MIC y descifrado se comparte con
-`scripts/verificar_lorawan.py`, también utilizado por el ejemplo I/Q generado.
+`scripts/sesion08_lora/verificar_lorawan.py`, también utilizado por el ejemplo I/Q generado.
 `verificar_lorawan_brno.py` conserva la lectura LoRaTap y la verificación OTAA.
 Su adaptador `descifrar_datos` mantiene los nombres de campos del informe
 original para conservar los resultados y las herramientas que los consultan.

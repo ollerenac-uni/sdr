@@ -7,7 +7,7 @@ try:
 except ImportError:
     raise unittest.SkipTest("La verificación criptográfica requiere cryptography")
 
-from scripts import verificar_lorawan_brno as modulo
+from scripts.sesion08_lora import verificar_lorawan_brno as modulo
 
 
 class TestLoRaWANCrypto(unittest.TestCase):

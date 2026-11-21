@@ -41,7 +41,7 @@ la recepción original de Brno: el paquete 258 se recibió a 867,9 MHz con SF8.
 Desde la raíz del repositorio, con Radioconda activo:
 
 ```bash
-python scripts/verificar_lorawan_iq.py --salida output/lorawan-iq
+python scripts/sesion08_lora/verificar_lorawan_iq.py --salida output/lorawan-iq
 ```
 
 El programa usa bloques existentes de GNU Radio y
@@ -51,7 +51,7 @@ El programa usa bloques existentes de GNU Radio y
   `Add header`, `Add crc`, `Hamming enc`, `Interleaver`, `Gray demapping`,
   `Modulate` y `Vector Sink`.
 - Recepción del archivo finito: `File Source`, `LoRa Rx` y `Vector Sink`.
-- Verificación posterior: `scripts/verificar_lorawan.py`, con AES y CMAC de
+- Verificación posterior: `scripts/sesion08_lora/verificar_lorawan.py`, con AES y CMAC de
   la biblioteca `cryptography`.
 
 El mismo verificador de tramas de datos se usa para el PCAP real de Brno;

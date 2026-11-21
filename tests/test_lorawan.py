@@ -13,7 +13,7 @@ import yaml
 
 
 spec = importlib.util.spec_from_file_location(
-    "verificar_lorawan", Path(__file__).resolve().parents[1] / "scripts/verificar_lorawan.py"
+    "verificar_lorawan", Path(__file__).resolve().parents[1] / "scripts/sesion08_lora/verificar_lorawan.py"
 )
 modulo = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(modulo)
@@ -105,7 +105,7 @@ def test_cadena_iq_generado_y_entrega_del_laboratorio(tmp_path):
     if not python_gr.is_file():
         pytest.skip("GNU Radio no está disponible")
     root = Path(__file__).resolve().parents[1]
-    programa = root / "scripts/verificar_lorawan_iq.py"
+    programa = root / "scripts/sesion08_lora/verificar_lorawan_iq.py"
     muestras = tmp_path / "output/lorawan-iq"
     r = subprocess.run(
         [str(python_gr), "-B", str(programa), "--salida", str(muestras)],
@@ -122,7 +122,7 @@ def test_cadena_iq_generado_y_entrega_del_laboratorio(tmp_path):
     assert alterado["lorawan"]["mic_valido"] is False
     assert informe["sync_word_0x12_tramas"] == 0
 
-    # Ejecutar el grafo que se entrega a los alumnos, con sus rutas relativas.
+    # La alternativa opcional de GRC debe conservar el mismo resultado.
     carpeta_grafos = tmp_path / "gnuradio/flowgraphs"
     carpeta_grafos.mkdir(parents=True)
     grafo = carpeta_grafos / "lora_recuperar_trama.grc"
@@ -136,15 +136,39 @@ def test_cadena_iq_generado_y_entrega_del_laboratorio(tmp_path):
     assert "(crc_valid . #t)" in recepcion.stdout
     assert (muestras / "trama_recibida.bin").read_bytes().hex() == bueno["lora_phy"]["payload_hex"]
 
-    # Ejecutar literalmente el código de extracción de la sección 8 de la guía.
-    guia = (root / "docs/sessions/06/clase6.md").read_text()
-    fragmento = next(c for c in re.findall(r"^```python\n(.*?)^```", guia, re.M | re.S)
-                     if "mensaje_cifrado.bin" in c)
-    extraccion = subprocess.run([str(python_gr), "-c", fragmento], cwd=tmp_path,
+    # El recorrido principal no depende del archivo producido por File Sink.
+    (muestras / "trama_recibida.bin").unlink()
+    inspector = root / "scripts/sesion08_lora/inspeccionar_lora.py"
+    inspeccion = subprocess.run(
+        [str(python_gr), str(inspector), "--archivo", str(muestras / "correcto.sigmf-data"),
+         "--salida", str(muestras / "traza"), "--etapa", "phypayload"],
+        cwd=tmp_path, capture_output=True, text=True, timeout=30,
+    )
+    assert inspeccion.returncode == 0, inspeccion.stdout + inspeccion.stderr
+    assert (muestras / "traza/03_phypayload.bin").read_bytes().hex() == bueno["lora_phy"]["payload_hex"]
+    extractor = root / "scripts/sesion08_lora/extraer_mensaje.py"
+    extraccion = subprocess.run([str(python_gr), str(extractor)], cwd=tmp_path,
                                capture_output=True, text=True, timeout=10)
     assert extraccion.returncode == 0, extraccion.stdout + extraccion.stderr
+    assert (muestras / "trama_recibida.bin").read_bytes().hex() == bueno["lora_phy"]["payload_hex"]
     assert (muestras / "mensaje_cifrado.bin").read_bytes() == bytes.fromhex("dbf5a4e31239d0")
     assert "FRMPayload (bytes 10 a 16)" in extraccion.stdout
+
+
+@pytest.mark.parametrize("entrada", [bytes(19), bytes(20), bytes.fromhex("80" + "00"*4 + "0f" + "00"*14)])
+def test_extractor_no_crea_entregas_si_la_entrada_es_incompatible(tmp_path, entrada):
+    import sys
+    root = Path(__file__).resolve().parents[1]
+    archivo = tmp_path / "entrada.bin"
+    archivo.write_bytes(entrada)
+    salida = tmp_path / "entrega"
+    r = subprocess.run(
+        [sys.executable, str(root / "scripts/sesion08_lora/extraer_mensaje.py"),
+         "--entrada", str(archivo), "--salida", str(salida)],
+        capture_output=True, text=True, timeout=10,
+    )
+    assert r.returncode != 0
+    assert not salida.exists()
 
 
 def test_reto_fopts_de_la_guia_tiene_los_campos_y_limites_esperados():

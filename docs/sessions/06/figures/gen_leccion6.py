@@ -179,7 +179,7 @@ def figura_arquitectura_otaa():
 
 def main():
     if not REAL.is_file() or not IQ.is_file():
-        raise SystemExit('Faltan I/Q: descargar OSU y ejecutar scripts/verificar_lorawan_iq.py primero.')
+        raise SystemExit('Faltan I/Q: descargar OSU y ejecutar scripts/sesion08_lora/verificar_lorawan_iq.py primero.')
     digest = hashlib.sha256(REAL.read_bytes()).hexdigest()
     if digest != '3a6ef845f8af169419d71753bdd9936cf3eaf75a0f5b6e098e6a5e11228dbd95':
         raise SystemExit('La captura OSU no coincide con la fuente verificada.')

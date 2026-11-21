@@ -116,6 +116,26 @@ gnuradio-companion
 
 En Windows también puedes usar el acceso del menú Inicio.
 
+## Inspectrum en Linux
+
+Para analizar las muestras del curso en Linux, usar Inspectrum del gestor de paquetes del sistema. En Ubuntu/Debian se instala con:
+
+```bash
+sudo apt update
+sudo apt install inspectrum
+```
+
+Para abrirlo desde una terminal que tiene `(base)` activo:
+
+```bash
+conda deactivate
+/usr/bin/inspectrum
+```
+
+La compilación de Inspectrum incluida en Radioconda para Linux puede fallar con `Instrucción ilegal (core generado)` por instrucciones de CPU incompatibles en su biblioteca `libliquid`. La versión del sistema usa sus propias bibliotecas. [Fallo documentado en Radioconda](https://github.com/radioconda/radioconda-installer/issues/134) · [Instalación recomendada por Inspectrum para Linux](https://github.com/miek/inspectrum#install).
+
+El paquete de Ubuntu puede ser Inspectrum 0.2.3 y no leer los metadatos SigMF. La clase LoRaWAN indica el formato y la tasa explícitamente al abrir la muestra. Para volver a GNU Radio, activar de nuevo Radioconda con `conda activate base`.
+
 ## Primer flowgraph (sin hardware)
 
 Un *flowgraph* (grafo de flujo) es un programa de GNU Radio dibujado como bloques conectados. Vamos a generar una señal y mirar su espectro.

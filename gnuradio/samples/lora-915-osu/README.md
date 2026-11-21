@@ -71,7 +71,7 @@ Con Radioconda activo, comprobar que el módulo se importa desde `gnuradio`:
 
 ```bash
 python -c "from gnuradio import lora_sdr; print(lora_sdr.__file__)"
-python scripts/verificar_lora_915.py \
+python scripts/sesion08_lora/verificar_lora_915.py \
   --salida output/verificacion-lora-915/repeticion.json
 ```
 
@@ -118,7 +118,7 @@ activa esa comprobación.
 Se ejecutó además un control con el archivo completo y sync word `0x12`:
 
 ```bash
-python scripts/verificar_lora_915.py --sync-word 0x12 \
+python scripts/sesion08_lora/verificar_lora_915.py --sync-word 0x12 \
   --salida output/verificacion-lora-915/control-sync-incorrecto.json
 ```
 
@@ -134,7 +134,7 @@ solo que el protocolo transportado sea LoRaWAN.
 
 La [lección de LoRa](../../../docs/sessions/06/clase6.md) usa una señal I/Q
 generada a partir de una trama de Brno para estudiar la estructura LoRaWAN.
-El programa que genera esa señal está en `scripts/verificar_lorawan_iq.py`.
+El programa que genera esa señal está en `scripts/sesion08_lora/verificar_lorawan_iq.py`.
 
 La grabación binaria permanece local y está excluida de Git por la regla
 `*.sigmf-data`. El programa, los metadatos, los informes y este documento sí

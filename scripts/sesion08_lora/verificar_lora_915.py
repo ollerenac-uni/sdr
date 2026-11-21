@@ -17,7 +17,7 @@ from gnuradio import blocks, gr, lora_sdr
 import pmt
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 CAPTURA = ROOT / "gnuradio/samples/lora-915-osu/IQ_1.sigmf-data"
 
 

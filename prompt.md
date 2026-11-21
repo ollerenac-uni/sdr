@@ -28,7 +28,42 @@ pero las claves de esa otra sesión no se encontraron en sus materiales.
 su propia sesión, que permita verificar todo el recorrido hasta el texto claro.**
 Sí existe ya un ejemplo I/Q generado con claves públicas y cadena completa.
 
-## Estado integrado al 18 de noviembre de 2026
+## Actualización al 21 de noviembre de 2026
+
+La revisión de `docs/sessions/06/clase6.md` sigue la señal desde los chirps
+hasta los índices, Gray, desentrelazado, FEC, nibbles, desblanqueo y CRC. Los
+diagramas muestran los valores observados en la muestra, incluidos los siete
+bloques B1–B7. Los scripts están agrupados en `scripts/sesion08_lora/`.
+
+La sección 5 estudia replay con `simular_replay.py`: lecturas didácticas
+`temp=25` (FCnt=4), `temp=80` (FCnt=5) y copia íntegra de la primera. Compara
+dos políticas de Network Server. El gateway representa la comprobación del
+CRC; el Network Server verifica MIC y controla FCnt; el Application Server
+descifra y actualiza la lectura. La clase `Receptor` agrupa estas funciones
+en una simulación local, sin RF ni conexión a una red. No presentar esta
+demostración como un ataque comprobado contra la captura real de Brno.
+
+El recorrido principal de la práctica usa Inspectrum y el inspector de la
+sección 3. Construir el flujograma GRC de la sección 7 es ahora opcional.
+GNU Radio y `gr-lora_sdr` siguen siendo dependencias internas de los scripts.
+La sección 8 ejecuta `extraer_mensaje.py` sobre
+`output/lorawan-iq/traza/03_phypayload.bin` y guarda los mismos archivos de
+entrega: `trama_recibida.bin` (20 bytes) y `mensaje_cifrado.bin` (7 bytes
+cifrados). La sección 10 admite la evidencia del CRC en terminal, conservando
+la alternativa de Tag Debug. Se mantienen el reto de FOpts y el material
+complementario de las secciones 9 y 11, así como plazo y datos de entrega.
+
+En Linux se documentó usar `/usr/bin/inspectrum` fuera de Radioconda para
+evitar el fallo de instrucción ilegal de algunas compilaciones de libliquid.
+Los comandos especifican formato cf32 y tasa de 1 Msps para admitir versiones
+de Inspectrum que no interpretan SigMF.
+
+Última verificación local: 49 pruebas y 5 subtests aprobados; MkDocs construye
+el sitio. Se comprobó la recuperación y extracción sin depender de GRC y se
+mantiene comprobado el flujograma opcional. Consultar Git para determinar qué
+commit contiene estos avances y si está sincronizado con GitHub.
+
+## Estado integrado al 18 de noviembre de 2026 (antecedente)
 
 Se incorporó desde GitHub el commit `ae1d0e2`, que publicó la lección de LoRa
 y la entrega. El archivo `docs/sessions/06/clase6.md` conserva el nombre
@@ -51,7 +86,7 @@ MIC de la lección procede del verificador con claves públicas. La pregunta
 de cierre se refiere al análisis de campos visibles sin utilizar esas claves.
 
 El código común para MIC y descifrado de tramas de datos está en
-`scripts/verificar_lorawan.py`. Tanto `verificar_lorawan_iq.py` como
+`scripts/sesion08_lora/verificar_lorawan.py`. Tanto `verificar_lorawan_iq.py` como
 `verificar_lorawan_brno.py` lo utilizan. El segundo conserva el lector de
 PCAP/LoRaTap, OTAA y el formato original de su informe mediante un adaptador.
 No volver a duplicar el cálculo del MIC ni el descifrado FRMPayload.
@@ -60,9 +95,9 @@ Las verificaciones reales de OSU, STU y Brno se conservan como material
 complementario, con las diferencias de entrada y alcance documentadas en
 la sección 11 de la lección y en los README de cada muestra.
 
-El pedido actual es integrar y comprobar estos cambios y presentar un resumen
-**antes de hacer commit**. Los avances de Brno/STU y esta integración están
-pendientes de confirmación; no afirmar que están publicados sin consultar Git.
+La integración de Brno/STU y la unificación anterior se publicaron mediante
+el commit `ef4864c`. La actualización posterior se describe arriba; comprobar
+siempre el historial y la sincronización antes de afirmar que está publicada.
 
 Comprobaciones de esta integración: 28 pruebas aprobadas de LoRaWAN, entrega,
 numeración e índice; construcción estricta de MkDocs aprobada. El flowgraph
@@ -144,12 +179,12 @@ Parámetros:
 
 Programa reproducible:
 
-`/home/user/Teaching/uni/2026/sdr/scripts/verificar_lora_915.py`
+`/home/user/Teaching/uni/2026/sdr/scripts/sesion08_lora/verificar_lora_915.py`
 
 Desde la raíz del repositorio:
 
 ```bash
-/home/user/radioconda/bin/python scripts/verificar_lora_915.py \
+/home/user/radioconda/bin/python scripts/sesion08_lora/verificar_lora_915.py \
   --salida output/verificacion-lora-915/repeticion.json
 ```
 
@@ -192,7 +227,7 @@ El caso correcto termina con código 0.
 Comando del control, cuyo resultado esperado es código 1:
 
 ```bash
-/home/user/radioconda/bin/python scripts/verificar_lora_915.py \
+/home/user/radioconda/bin/python scripts/sesion08_lora/verificar_lora_915.py \
   --sync-word 0x12 \
   --salida output/verificacion-lora-915/control-sync-incorrecto.json
 ```
@@ -221,11 +256,11 @@ Solo se analiza el nodo experimental de los autores, DevEUI
 `70b3d5cee0000042`, DevAddr `01e65ddc`. Las claves están publicadas en Zenodo y
 en los archivos del ZIP. No se realizó búsqueda de claves de otros nodos.
 
-Programa: `/home/user/Teaching/uni/2026/sdr/scripts/verificar_lorawan_brno.py`.
+Programa: `/home/user/Teaching/uni/2026/sdr/scripts/sesion08_lora/verificar_lorawan_brno.py`.
 Desde la raíz, con Radioconda activo:
 
 ```bash
-python scripts/verificar_lorawan_brno.py \
+python scripts/sesion08_lora/verificar_lorawan_brno.py \
   --salida output/verificacion-lorawan/brno-repeticion.json
 ```
 
@@ -269,12 +304,12 @@ nodo Arduino y un gateway Dragino. Localmente conserva los mismos bytes como
 SHA-256: `f2b714f36c28481c3b0304aef5860b4836f8a984b54f650e9ba7e1c249009496`.
 La frecuencia real es 868.1 MHz; no es una captura de 915 MHz.
 
-Se amplió `scripts/verificar_lora_915.py` con `--frecuencia-central-hz`,
+Se amplió `scripts/sesion08_lora/verificar_lora_915.py` con `--frecuencia-central-hz`,
 manteniendo los parámetros predeterminados de la comprobación original.
 Para repetir el caso STU:
 
 ```bash
-python scripts/verificar_lora_915.py \
+python scripts/sesion08_lora/verificar_lora_915.py \
   gnuradio/samples/lorawan-stu/lorawan_samples.sigmf-data \
   --frecuencia-central-hz 868100000 \
   --salida output/verificacion-lorawan/stu-repeticion.json
@@ -295,7 +330,7 @@ sesión 8. Consultar `git status` para distinguir archivos publicados y pendient
 ## Continuación posible
 
 La cadena I/Q generado → LoRaWAN → MIC → texto claro ya está comprobada con
-`scripts/verificar_lorawan_iq.py`, incluyendo los controles negativos. Para
+`scripts/sesion08_lora/verificar_lorawan_iq.py`, incluyendo los controles negativos. Para
 probar esa misma cadena sobre una grabación recibida por aire, hace falta
 obtener I/Q real con sus claves publicadas o conseguir del laboratorio STU
 las claves de su sesión `260b7848`. No presentar las comprobaciones de STU

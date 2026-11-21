@@ -12,7 +12,7 @@ Esta sesión contiene el **Laboratorio #5**. El archivo conserva el nombre hist�
 
 !!! note "Señal y alcance de la entrega"
 
-    La práctica obligatoria usa **I/Q generado con GNU Radio a partir de una trama real de Brno**. Los 915 MHz son una referencia de simulación. La entrega consiste en medir los chirps, recuperar los 20 bytes y extraer los siete bytes **cifrados** del `FRMPayload`, además del reto de `FOpts`. No se pide descifrar, implementar OTAA ni descargar las capturas reales de Brno o STU. Las comprobaciones con claves públicas y esas capturas se conservan como [material complementario](#11-material-complementario-capturas-reales-y-descifrado).
+    La práctica obligatoria usa **I/Q generado con GNU Radio a partir de una trama real de Brno**. Los 915 MHz son una referencia de simulación. La entrega consiste en medir los chirps, recuperar los 20 bytes y extraer los siete bytes **cifrados** del `FRMPayload`, además del reto de `FOpts`. El recorrido principal usa **Inspectrum y los scripts de la sección 3**, seguidos de la extracción de la sección 8; **construir un flujograma en GNU Radio Companion es opcional**. Radioconda y `gr-lora_sdr` siguen siendo necesarios porque los scripts utilizan GNU Radio internamente. No se pide descifrar el mensaje en la entrega, implementar OTAA ni descargar las capturas reales de Brno o STU. Las verificaciones adicionales de esas capturas se conservan como [material complementario](#11-material-complementario-capturas-reales-y-descifrado).
 
 ## 1. Introducción
 
@@ -25,9 +25,9 @@ Esta sesión contiene el **Laboratorio #5**. El archivo conserva el nombre hist�
 
 - El *end device*, dispositivo final, transmite por radio LoRa.
 - El *gateway*, pasarela, reenvía los paquetes recibidos por radio. También transmite las respuestas de la red.
-- El *Network Server*, servidor de red, gestiona el enlace y reenvía al servidor de aplicación los datos de aplicación cifrados.
+- El *Network Server*, servidor de red, verifica el MIC, controla los contadores y reenvía al servidor de aplicación los datos de aplicación cifrados.
 - El *Join Server*, servidor de activación, valida las solicitudes de activación y deriva las claves de sesión.
-- El *Application Server*, servidor de aplicación, recupera los datos para la aplicación.
+- El *Application Server*, servidor de aplicación, descifra el contenido con `AppSKey` y recupera los datos para la aplicación.
 
 La capa física (PHY) LoRa transmite y recibe los símbolos de radio. La capa MAC, *Medium Access Control*, gestiona el enlace LoRaWAN entre el dispositivo y el servidor de red. La fila OTAA, *Over-the-Air Activation*, muestra quién participa en la activación por aire. [Modelo de red de LoRa Alliance](https://lora-alliance.org/wp-content/uploads/2020/11/TS002-1.1.0_LoRaWAN_Backend_Interfaces.pdf#page=8).
 
@@ -58,7 +58,7 @@ El factor de expansión (SF) y el ancho de banda (BW) definen el barrido en frec
 | Modo de cabecera | Si el paquete informa la longitud del contenido, la CR y la presencia de CRC | Explícito |
 | Comprobación de redundancia cíclica (CRC) | Si se añade una comprobación de errores al contenido | Activada |
 
-En Inspectrum se medirán el BW y la duración del símbolo para obtener el SF. En GNU Radio se decodificará la cabecera explícita. [Estructura del paquete LoRa, Tapparel y Burg, §2](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2).
+En Inspectrum se medirán el BW y la duración del símbolo para obtener el SF. El script `inspeccionar_lora.py`, que utiliza bloques de GNU Radio, decodificará la cabecera explícita y mostrará sus transformaciones en la terminal. [Estructura del paquete LoRa, Tapparel y Burg, §2](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2).
 
 ## 2. Chirps, ancho de banda y factor de expansión
 
@@ -109,135 +109,714 @@ La práctica usa la señal generada `output/lorawan-iq/correcto.sigmf-data`. Su 
 1. Ampliar en el espectrograma los primeros chirps ascendentes repetidos del paquete. El tiempo se lee en horizontal y la frecuencia en vertical.
 2. Estimar $BW$ restando la frecuencia inferior de la superior en el recorrido del chirp. Se esperan aproximadamente 125 kHz.
 3. Medir con los cursores el tiempo entre el primer y el quinto reinicio. En ese tramo hay cuatro símbolos completos. Dividir el intervalo medido entre cuatro. Con unos 4.096 ms entre cursores, resulta $T_s\approx 1.024$ ms.
-4. Multiplicar los dos valores medidos en hertz y segundos. Con los valores esperados, $125\,000\times 0.001024=128=2^7$. Así se identifica SF7 y se pueden configurar $BW$ y $SF$ en `LoRa Rx`.
+4. Multiplicar los dos valores medidos en hertz y segundos. Con los valores esperados, $125\,000\times 0.001024=128=2^7$. Así se identifica SF7 y se comprueban los valores de $BW$ y $SF$ usados por el receptor del script.
 
-## 3. Anatomía del paquete LoRa
+La sección 6 conserva las instrucciones detalladas de los controles de Inspectrum como guía de consulta para realizar estas medidas.
 
-El objetivo es entender cómo se organizan los chirps para que el receptor detecte el paquete, se sincronice y recupere su contenido. La figura se lee de izquierda a derecha. Primero se buscan los chirps conocidos del preámbulo. Luego se ubican los símbolos que llevan la cabecera, el contenido y la comprobación de errores.
+## 3. De los chirps a la cabecera y los bytes del paquete LoRa
 
-![Espectrograma del paquete de la práctica. Después del preámbulo hay 43 símbolos en total. Las marcas indican 8 de cabecera, 25 de contenido, 5 compartidos y 5 de CRC y relleno.](figures/anatomia-paquete-lora.png)
-**Figura 4.** Anatomía del paquete LoRa anotada sobre el espectrograma de las muestras I/Q de la práctica.
+Seguiremos el recorrido de un receptor: **medir la señal, obtener los símbolos, leer la cabecera física y recuperar el contenido**. La Figura 4 muestra el resultado de ese análisis sobre la señal de la práctica. Las marcas de contenido y CRC se justifican al completar la decodificación.
+
+![Espectrograma de la muestra: después del preámbulo se cuentan 43 símbolos, ocho de cabecera y 35 de cuerpo. La división del cuerpo en 25, cinco y cinco se explica al final del análisis.](figures/anatomia-paquete-lora.png)
+**Figura 4.** Paquete LoRa anotado sobre el espectrograma de las muestras I/Q.
 
 [Ver figura ampliada](figures/anatomia-paquete-lora.png).
 
-El eje horizontal muestra el tiempo desde el inicio del archivo, como en Inspectrum. El eje vertical muestra la frecuencia relativa al centro del canal. Las diagonales claras son los barridos. Cada símbolo completo dura **1.024 ms**.
+El eje horizontal mide el tiempo desde el inicio del archivo; el vertical, la frecuencia relativa al centro del canal. Las diagonales claras son los chirps. Cada símbolo dura **1.024 ms**, según la medición de la sección 2.
 
-- **Preámbulo.** Los ocho primeros chirps ascendentes se repiten. Luego vienen dos chirps con desplazamiento que llevan la palabra de sincronización (*sync word*) y dos chirps descendentes y un cuarto. El receptor usa esta secuencia para detectar el paquete y alinear la lectura de sus símbolos. [Estructura y detección del preámbulo, Tapparel y Burg, §2.9 y §3.2](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=4).
-- **Cabecera física.** En esta señal, los ocho símbolos siguientes llevan la longitud del contenido, la tasa de codificación y un indicador de si hay CRC. La cabecera tiene su propia comprobación. El primer bloque entrelazado puede compartir espacio con el contenido para otros valores de SF. [Cabecera y primer bloque entrelazado, Tapparel y Burg, §§2.2 y 2.7](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2).
-- **Contenido y CRC.** Después de la cabecera vienen **35 símbolos**. Los primeros **25** llevan solo bits del contenido (*payload*). Los siguientes **5** llevan bits del contenido y del CRC. Los últimos **5** llevan bits del CRC y relleno. [Generación de CRC](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/add_crc_impl.cc#L110-L125) y [entrelazado](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/interleaver_impl.cc#L139-L194).
+### 3.1. Abrir la señal I/Q de la Figura 4
 
-**Desde el final del preámbulo se cuentan $8+25+5+5=43$ símbolos.** Los 30 que llevan contenido permiten recuperar los **20 bytes** de la trama LoRaWAN. Los cinco símbolos compartidos también llevan bits del CRC.
+La muestra `correcto.sigmf-data` fue generada con GNU Radio a partir de los bytes del paquete 258 de `03_Brno_join.pcap`, recibido en Brno a 867.9 MHz con SF8. Aquí se volvió a modular con SF7. Los **915 MHz son la referencia de la simulación**, sin transmisión por aire. [Origen de la trama](https://zenodo.org/records/8090619).
 
-La fórmula de Semtech calcula $N$, el total de símbolos después del preámbulo. El total incluye la cabecera física cuando está presente. [Semtech SX1276, §4.1.1.7](https://cdn.sparkfun.com/assets/7/7/3/2/2/SX1276_Datasheet.pdf#page=31).
-
-$$
-N = 8 + \max\left(0,\left\lceil
-\frac{8PL-4SF+28+16\,CRC-20\,IH}{4(SF-2\,DE)}
-\right\rceil(CR+4)\right).
-$$
-
-En esta muestra, $PL=20$ bytes y $SF=7$. El índice $CR=1$ corresponde a la tasa de codificación 4/5. El CRC está activado ($CRC=1$), la cabecera es explícita ($IH=0$) y la optimización de baja tasa está desactivada ($DE=0$). Los signos $\lceil\ \rceil$ indican redondeo hacia arriba.
-
-$$
-N=8+\left\lceil\frac{176}{28}\right\rceil(4+1)
-=8+7\times5=43\ \text{símbolos}.
-$$
-
-Cada símbolo dura 1.024 ms. Los cursores en Inspectrum abarcan $43\times1.024=44.032\ \mathrm{ms}$ desde el final del preámbulo hasta el final del paquete.
-
-### Presentación de la señal I/Q
-
-La práctica parte de `correcto.sigmf-data`, la señal del espectrograma de la Figura 4. El paquete 258 de `03_Brno_join.pcap` se recibió en Brno a 867.9 MHz con SF8. El archivo guarda sus bytes ya demodulados. GNU Radio vuelve a modular los 20 bytes con SF7 y genera las muestras I/Q en banda base. Los 915 MHz de los metadatos son la referencia de la simulación. [Conjunto de datos de Povalac y Kral](https://zenodo.org/records/8090619).
-
-Estas rutas son relativas a la raíz de `sdr`, la carpeta que contiene `mkdocs.yml`.
+Las rutas siguientes parten de la raíz de `sdr`, donde está `mkdocs.yml`.
 
 | Archivo | Ruta relativa | Contenido |
 |---|---|---|
-| Muestras | `output/lorawan-iq/correcto.sigmf-data` | Archivo binario con 113 920 muestras complejas. |
-| Metadatos | `output/lorawan-iq/correcto.sigmf-meta` | Archivo JSON que indica el formato `cf32_le`, la tasa de muestreo de 1 000 000 muestras complejas/s y la frecuencia de referencia de 915 MHz. |
+| Muestras | `output/lorawan-iq/correcto.sigmf-data` | 113 920 muestras complejas. |
+| Metadatos | `output/lorawan-iq/correcto.sigmf-meta` | Formato `cf32_le`, tasa de 1 Msps y frecuencia de referencia. |
 
-En `cf32_le`, cada muestra guarda primero **I**, la componente en fase, y luego **Q**, la componente en cuadratura. Cada componente ocupa 32 bits en coma flotante. `_le` indica el orden *little endian* de los bytes de cada componente. Un par I/Q ocupa **8 bytes** y, a **1 Msps** (un millón de muestras complejas por segundo), los pares están separados por **1 µs**. [Formato de datos SigMF](https://sigmf.org/#sigmf-dataset-format).
+En `cf32_le`, cada muestra guarda **I y luego Q**, cada componente como un número de 32 bits en coma flotante y orden *little endian*. Un par I/Q ocupa ocho bytes. A 1 Msps, las muestras están separadas por 1 µs. [Formato SigMF](https://sigmf.org/#sigmf-dataset-format).
 
-![Magnitud de las muestras I/Q del archivo completo. El paquete se ubica entre 8.192 y 64.768 milisegundos, rodeado de muestras en cero.](figures/registro-iq-lora.png)
-**Figura 5.** Ubicación del paquete LoRa en el archivo I/Q de la práctica.
-
-- El eje horizontal cuenta el tiempo desde el inicio del archivo. El eje vertical muestra la magnitud de cada par I/Q.
-- El paquete empieza en **8.192 ms** y termina en **64.768 ms**. El tramo activo dura **56.576 ms**.
-- Las zonas sombreadas muestran los ceros de apertura y cierre. Con esos ceros, el archivo completo dura **113.920 ms**.
-
-Usar una copia actualizada del repositorio `sdr`. La generación de la muestra y la recepción requieren Radioconda con `gr-lora_sdr` y `cryptography`. La instalación del curso para Linux y Windows incluye Inspectrum 0.3.1. [Repositorio del curso](https://github.com/ollerenac-uni/sdr) · [Guía de instalación de Radioconda](../../setup/instalacion.md).
+![Magnitud de las muestras I/Q: el paquete está entre 8.192 y 64.768 ms, con ceros antes y después.](figures/registro-iq-lora.png)
+**Figura 5.** Ubicación del paquete dentro del archivo I/Q.
 
 ??? tip "Abrir la señal de la Figura 4 en Inspectrum"
 
-    1. Abrir una terminal en la raíz del repositorio `sdr`, la carpeta que contiene `mkdocs.yml`. Activar Radioconda. En Windows, abrir **Radioconda Prompt** y cambiar a esa carpeta.
-    2. Comprobar que `correcto.sigmf-data` y `correcto.sigmf-meta` estén juntos en `output/lorawan-iq/`. Esta ruta es relativa a la raíz del repositorio. Si faltan los archivos, ejecutar este comando desde la raíz con Radioconda y `gr-lora_sdr` instalados.
+    1. Abrir una terminal en la raíz de `sdr`, con **Radioconda activo**. En Windows, usar **Radioconda Prompt**. Generar la muestra si aún no existe:
 
         ```bash
-        python scripts/verificar_lorawan_iq.py --salida output/lorawan-iq
+        python scripts/sesion08_lora/verificar_lorawan_iq.py --salida output/lorawan-iq
         ```
 
-    3. Abrir la señal en Inspectrum.
+        El programa crea la carpeta y guarda juntos los archivos `.sigmf-data` y `.sigmf-meta`. Requiere `gr-lora_sdr` y `cryptography`. Debe terminar con `Controles aprobados. Informe: output/lorawan-iq/verificacion.json`.
+
+    2. En **Linux (Ubuntu/Debian)**, salir de Radioconda y usar Inspectrum del sistema:
 
         ```bash
-        inspectrum output/lorawan-iq/correcto.sigmf-data
+        conda deactivate
+        /usr/bin/inspectrum --rate 1000000 --format cf32 output/lorawan-iq/correcto.sigmf-data
         ```
 
-    4. Verificar que **Sample rate** muestre `1e+06` o `1000000`. Inspectrum carga ese valor del campo `core:sample_rate` de `correcto.sigmf-meta`. Si el campo de Inspectrum muestra otro valor, ingresar `1000000`. La tasa de muestreo es **1 millón de muestras complejas por segundo**. Los **125 kHz** corresponden al ancho de banda del chirp. [Lectura de metadatos SigMF en Inspectrum](https://github.com/miek/inspectrum/blob/v0.3.1/src/inputsource.cpp).
-    5. En el espectrograma, ampliar el comienzo de la señal. Buscar los chirps ascendentes repetidos y luego los descendentes que cierran el preámbulo.
+        Algunas compilaciones de `libliquid` incluidas en Radioconda pueden cerrarse con `Instrucción ilegal` por incompatibilidad con la CPU. Usar `/usr/bin/inspectrum` evita esa compilación. [Instalación en Linux](../../setup/instalacion.md#inspectrum-en-linux) · [Fallo documentado](https://github.com/radioconda/radioconda-installer/issues/134).
 
-### Contar los símbolos en Inspectrum
+        En **Windows**, mantener Radioconda activo:
 
-Inspectrum muestra el eje horizontal en segundos. Por ejemplo, `0.020736` en el eje corresponde a 20.736 ms en la tabla. **Period** y **Symbol period** muestran sus unidades junto al valor. [Escala de tiempo y controles de Inspectrum](https://github.com/miek/inspectrum/blob/v0.3.1/src/plotview.cpp#L507-L545).
+        ```bat
+        inspectrum --rate 1000000 --format cf32 output/lorawan-iq/correcto.sigmf-data
+        ```
 
-1. Activar **Scales** y **Enable cursors**. Ampliar el preámbulo con **Zoom**. Poner **Symbols** en `4` y arrastrar los cursores verticales a dos reinicios separados por cuatro barridos, cerca de **9.216** y **13.312 ms**. **Period** debe quedar cerca de **4.096 ms** y **Symbol period** cerca de **1.024 ms**.
-2. Ubicar el inicio de la cabecera en **20.736 ms**, justo después del cuarto de chirp descendente. Si hace falta, reducir **Zoom** para ver el tramo que se quiere medir.
-3. Colocar el cursor izquierdo al terminar el último *downchirp*, cerca de **20.736 ms**, y el derecho donde termina el último chirp, cerca de **64.768 ms**. Leer **Period**. El resultado esperado es **44.032 ms**, que al dividir por **1.024 ms** da **43 símbolos**.
-4. Poner **Symbols** en `43` y volver a ajustar los cursores a los mismos extremos. Las líneas punteadas marcan el inicio de cada símbolo dentro de la selección. **Symbol period** debe quedar cerca de **1.024 ms**. Repetir la medición de **Period** para los tramos de la tabla. [Controles de tiempo de Inspectrum](https://github.com/miek/inspectrum/blob/v0.3.1/src/spectrogramcontrols.cpp#L195-L205).
+    3. Verificar **Sample rate = 1000000**. El comando indica explícitamente formato y tasa; también funciona con Inspectrum 0.2.3, que no lee los metadatos SigMF. **1 Msps** es la tasa de muestras; **125 kHz**, el ancho de banda del chirp. [Formatos de Inspectrum 0.2.3](https://github.com/miek/inspectrum/blob/v0.2.3/README.md#input).
 
-| Tramo que se mide | Cursor izquierdo (ms) | Cursor derecho (ms) | Símbolos esperados | **Period** esperado (ms) |
-|---|---:|---:|---:|---:|
-| Chirps ascendentes repetidos | 8.192 | 16.384 | 8 | 8.192 |
-| Palabra de sincronización | 16.384 | 18.432 | 2 | 2.048 |
-| Cierre del preámbulo | 18.432 | 20.736 | 2 completos y ¼ | 2.304 |
-| **Total después del preámbulo** | **20.736** | **64.768** | **43** | **44.032** |
-| Cabecera física | 20.736 | 28.928 | 8 | 8.192 |
-| Solo contenido | 28.928 | 54.528 | 25 | 25.600 |
-| Símbolos compartidos por contenido y CRC | 54.528 | 59.648 | 5 | 5.120 |
-| CRC y relleno | 59.648 | 64.768 | 5 | 5.120 |
+### 3.2. Medir y contar 43 símbolos
 
-Para medir el cierre del preámbulo, dividir **Period** por 1.024 ms. **Symbols** solo acepta enteros. En la cabecera y los datos, el chirp puede volver al extremo inferior a mitad de símbolo. Contar con la cuadrícula temporal de **1.024 ms**. Los límites del contenido y del CRC se ubican con esa cuadrícula y la estructura conocida de la muestra. [Modulación de los símbolos LoRa](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=3).
+El preámbulo contiene ocho chirps ascendentes repetidos, dos de sincronización y dos descendentes y un cuarto. Su estructura permite detectar el paquete y alinear los símbolos. En **SF7 con cabecera explícita**, los ocho símbolos siguientes forman el bloque de cabecera. Esta estructura pertenece a la **capa física LoRa**; la especificación LoRaWAN se usará en la sección 4 para interpretar el contenido recuperado. [Preámbulo y cabecera, Tapparel y Burg, §§2.2, 2.7 y 2.9](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2).
 
-## 4. Anatomía de la trama LoRaWAN
+1. Activar **Scales** y **Enable cursors**. Medir cuatro chirps repetidos, entre 9.216 y 13.312 ms: **Period ≈ 4.096 ms** y **Symbol period ≈ 1.024 ms**.
+2. Poner el cursor izquierdo al terminar el cierre del preámbulo, en **20.736 ms**, y el derecho al final del paquete, en **64.768 ms**.
+3. Dividir **Period = 44.032 ms** entre **1.024 ms**: se cuentan **43 símbolos**. Poner **Symbols = 43** para comprobar la cuadrícula.
 
-El objetivo es ubicar cada campo de la trama y extraer los bytes del mensaje cifrado. Se empieza con los 20 bytes que `LoRa Rx` recupera de `correcto.sigmf-data`, la misma señal de la Figura 4. Esos 20 bytes son el contenido del paquete LoRa y forman el `PHYPayload` de LoRaWAN. [Formato de trama de LoRaWAN 1.0.4, §4](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=15).
+| Tramo | Inicio (ms) | Fin (ms) | Períodos de símbolo |
+|---|---:|---:|---:|
+| Chirps ascendentes repetidos | 8.192 | 16.384 | 8 |
+| Sincronización | 16.384 | 18.432 | 2 |
+| Cierre del preámbulo | 18.432 | 20.736 | 2¼ |
+| **Después del preámbulo** | **20.736** | **64.768** | **43** |
+| Cabecera física, primer bloque SF7 | 20.736 | 28.928 | 8 |
+| Cuerpo por decodificar | 28.928 | 64.768 | 35 |
+
+Inspectrum usa segundos en el eje temporal: `0.020736` equivale a 20.736 ms. Para medir el cierre, dividir **Period** entre 1.024 ms; **Symbols** solo acepta enteros. Los reinicios de frecuencia pueden ocurrir dentro de un símbolo: contar con la cuadrícula temporal. [Cursores de Inspectrum](https://github.com/miek/inspectrum/blob/v0.3.1/src/spectrogramcontrols.cpp#L195-L205).
+
+### 3.3. Pasar de los chirps al bloque de 301 bits
+
+El receptor sincroniza la señal y multiplica cada chirp por un chirp de referencia conjugado: el **dechirp**. Una FFT identifica el índice entre 0 y 127. Lo representamos con siete bits, por lo que los 43 índices ocupan **$43\times7=301$ posiciones binarias**. Son índices de símbolos que aún requieren decodificación. [Demodulación en `gr-lora_sdr`](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/fft_demod_impl.cc#L74-L117).
+
+```mermaid
+flowchart LR
+    A["Muestras I/Q"] --> B["Sincronizar<br/>y hacer dechirp"]
+    B --> C["FFT: un índice<br/>de 0 a 127 por chirp"]
+    C --> D["43 índices de 7 bits<br/>301 posiciones binarias"]
+```
+
+En **Linux, volver a activar Radioconda** para ejecutar GNU Radio. Abrir otra terminal si se desea mantener Inspectrum abierto:
+
+```bash
+conda activate base
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa simbolos
+```
+
+El script lee el archivo I/Q y observa las etapas del receptor. No utiliza la secuencia conocida del transmisor. Imprime los **301 bits completos**, agrupados por índice, con el bit de mayor peso a la izquierda:
+
+```text
+01-08 (cabecera): 1011001 0110001 1100001 0000001 1101001 0010001 1100001 1001001
+09-15 (cuerpo):   0011110 1011011 1100000 0011000 1011010 0010110 0010100
+16-22 (cuerpo):   0010111 1110001 1101111 0000010 0111101 0111000 1001100
+23-29 (cuerpo):   0100000 0010111 0100110 0100110 1011010 0010000 0101001
+30-36 (cuerpo):   0000101 1101000 0101001 0010000 1111000 1111011 0011011
+37-43 (cuerpo):   0011111 0100010 0000001 1111111 0000001 1000000 0010000
+```
+
+Las etiquetas 01–43 numeran los símbolos desde el final del preámbulo. El archivo **`output/lorawan-iq/traza/01_simbolos_bits.txt`** guarda los 301 bits en una sola línea sin espacios; sus primeros 56 corresponden a los ocho índices de cabecera.
+
+### 3.4. Seleccionar y decodificar los 56 bits de cabecera
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa cabecera
+```
+
+La cabecera seleccionada es:
+
+```text
+1011001 0110001 1100001 0000001 1101001 0010001 1100001 1001001
+```
+
+Los campos Longitud, CR y Presencia de CRC se leerán **después de estas transformaciones**:
+
+1. **Ajustar los índices y aplicar Gray.** En el primer bloque, el receptor calcula `u = ((indice - 1) % 128) // 4` y `g = u ^ (u >> 1)`. Cada índice de siete bits proporciona una fila de cinco bits: **ocho filas, 40 bits**. La reducción corresponde al tratamiento especial de la cabecera. [Ajuste del primer bloque](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/fft_demod_impl.cc#L284-L290) · [Mapeo Gray](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/gray_mapping_impl.cc#L56-L62).
+2. **Desentrelazar.** Reorganizar esas ocho filas de cinco bits en **cinco palabras de ocho bits**. Se conservan los 40 bits; cambia su posición. [Permutación inversa](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/deinterleaver_impl.cc#L89-L118).
+3. **Decodificar la protección FEC 4/8 de la cabecera.** Cada palabra de ocho bits entrega cuatro bits, recuperando también su orden. Resultan **20 bits decodificados**. La cabecera tiene esta protección fija para poder leer el CR que se usará en el cuerpo. [Decodificación FEC](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/hamming_dec_impl.cc#L119-L166).
+
+![Valores reales de los ocho índices de cabecera, las filas tras Gray, las palabras desentrelazadas y los campos de los veinte bits decodificados.](figures/cabecera-bits-lora.svg)
+**De la cabecera recibida a sus campos.** Todos los valores proceden de la ejecución del script sobre la muestra.
+
+!!! note "Seguir cada etapa con su entrada y su salida"
+
+    Para S1, la recepción sigue **`1011001` → `1011000` → `10110` → `11101`**. Se resta uno, se divide entre cuatro y se aplica Gray. La operación es **`10110 XOR 01011 = 11101`**.
+
+    `11101` es una **fila entrelazada de cinco bits**. Sus bits se reparten entre cinco palabras FEC: **no se convierte por sí sola en `10001011`**. Esa primera palabra se construye con un bit de cada una de las ocho filas. Tampoco se divide `1110100` entre cuatro: ese valor aparece al explicar el transmisor, antes de la conversión inversa de Gray.
+
+??? example "A. Transmisor: por qué existen la resta de uno y las dos posiciones adicionales"
+
+    Para entender lo que deshace el receptor, reconstruimos primero el **mapeo de una fila en el transmisor**, después del entrelazado. La fila S1 es `11101`. En el primer bloque SF7, el transmisor añade un bit de paridad y un cero fijo:
+
+    ```text
+    Fila entrelazada     Paridad XOR     Cero fijo
+         11101                0              0
+    Fila ampliada:             11101 | 0 | 0 = 1110100
+    ```
+
+    La paridad vale cero porque `1 XOR 1 XOR 1 XOR 0 XOR 1 = 0`. El primer bloque utiliza este tratamiento para proteger la lectura de la cabecera. Las dos posiciones adicionales están determinadas por la fila: **no contienen dos bits nuevos de Longitud, CR o CRC**. En ocho símbolos son **ocho paridades y ocho ceros**, 16 posiciones adicionales respecto a los 40 bits del entrelazador. Se describen así **antes del mapeo**, pues después sus posiciones binarias cambian. [Construcción de paridad y cero](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/interleaver_impl.cc#L184-L194).
+
+    El transmisor interpreta `1110100` como una etiqueta Gray y obtiene su valor binario mediante la **conversión inversa de Gray**. Se copia el primer bit; cada siguiente bit de salida es el XOR entre **el bit binario ya obtenido a su izquierda** y **el bit Gray actual**:
+
+    | Posición, de izquierda a derecha | Bit Gray | Operación | Bit binario obtenido |
+    |---|---:|---|---:|
+    | 1 | 1 | Copiar el primer bit | 1 |
+    | 2 | 1 | `1 XOR 1` | 0 |
+    | 3 | 1 | `0 XOR 1` | 1 |
+    | 4 | 0 | `1 XOR 0` | 1 |
+    | 5 | 1 | `1 XOR 1` | 0 |
+    | 6 | 0 | `0 XOR 0` | 0 |
+    | 7 | 0 | `0 XOR 0` | 0 |
+
+    Leyendo la última columna se obtiene `1011000`, cuyo valor es $64+16+8=88$. El transmisor añade un **desplazamiento convencional de +1** al índice, con módulo 128. Por eso el chirp emitido tiene índice 89:
+
+    ```text
+    Fila ampliada     Inversa Gray      Sumar 1, módulo 128
+       1110100     →     1011000      →       1011001
+                           88                    89
+    ```
+
+    La resta de uno en recepción **deshace ese +1**; no corrige un error de medición. [Mapeo del transmisor](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/gray_demap_impl.cc#L57-L66).
+
+    ![Transmisión de la fila 11101, adición de paridad y cero, inversa Gray acumulada y desplazamiento; debajo, recepción del índice 89, resta de uno, división entre cuatro y Gray.](figures/cabecera-primer-indice.svg)
+
+??? example "B. Receptor: dividir entre cuatro, escribir cinco bits y aplicar Gray"
+
+    El primer índice recibido es `1011001`, es decir, 89. Se elimina el desplazamiento del transmisor:
+
+    ```text
+    (89 − 1) mod 128 = 88 = 1011000
+    ```
+
+    Con la construcción de paridad y cero seguida del mapeo, los 32 índices ideales del primer bloque son `1, 5, 9, …, 125`. Tras restar uno quedan `0, 4, 8, …, 124`. **Dividir entre cuatro identifica cuál de las 32 posibilidades se recibió**, con un resultado entre 0 y 31: se necesitan cinco bits, $SF-2=5$.
+
+    ```text
+    Índice ajustado:        10110|00 = 88
+    Desplazar 2 a derecha:  00|10110 = 22
+    Escribir con 5 bits:       10110 = 22
+    ```
+
+    La división entera entre cuatro equivale a desplazar dos posiciones a la derecha. En este ejemplo, salen **los dos ceros de la derecha de `1011000`**. Los dos ceros a la izquierda de `0010110` solo aparecen si mantenemos una presentación de siete posiciones: **`0010110` y `10110` son el mismo número, 22**. Quitar ceros iniciales de presentación no elimina información. [Resta modular y reducción del receptor](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/fft_demod_impl.cc#L284-L290).
+
+    A continuación se aplica Gray al valor reducido `u = 10110`:
+
+    ```text
+    u:                     10110
+    u >> 1:                01011
+                           -----
+    u XOR (u >> 1):        11101
+    ```
+
+    **`01011` es el valor desplazado, no el resultado del XOR.** Gray conserva los cinco bits y recupera la fila que necesita el desentrelazador. La asignación Gray hace que índices reducidos vecinos tengan etiquetas que difieren en un solo bit: limita los errores binarios cuando se confunden símbolos vecinos. En el transmisor se usó la conversión inversa; en el receptor se aplica `u XOR (u >> 1)`. [Gray en el receptor](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/gray_mapping_impl.cc#L56-L62).
+
+    El balance de esta etapa es **ocho índices de siete posiciones → ocho filas de cinco bits: 56 → 40**. Estos 40 bits todavía contienen la protección FEC de la cabecera.
+
+??? example "C. Desentrelazado: cómo las ocho filas forman 10001011"
+
+    Después de Gray se tienen **las ocho filas**, no solo S1:
+
+    ```text
+         Bit: 12345
+    S1        11101
+    S2        01010
+    S3        10100
+    S4        00000
+    S5        10111
+    S6        00110
+    S7        10100
+    S8        11011
+    ```
+
+    El desentrelazador invierte una permutación diagonal conocida por el transmisor y el receptor. **La posición se calcula primero; después se lee si en ella hay un cero o un uno.** Para construir **la primera palabra**, numerando filas y bits desde uno, se usa:
+
+    $$
+    \boxed{c(r)=\big((r-2)\bmod5\big)+1}.
+    $$
+
+    Aquí, $r$ es el número de fila, de 1 a 8, y $c(r)$ es la columna o bit seleccionado, de 1 a 5. El **5** es la cantidad de bits de cada fila. El módulo devuelve un valor entre 0 y 4, y el **+1** lo convierte en una columna numerada desde uno. Permite avanzar circularmente: después de la columna 5 vuelve la 1.
+
+    **¿Por qué aparece $r-2$ y se empieza en la columna 5?** El código numera desde cero y asigna cada bit a la palabra `k = (i-j-1) % 5`, donde `i` es la fila y `j` la columna. Para la primera palabra, `k = 0`, por lo que `j = (i-1) % 5`. Al cambiar a la numeración de la tabla, `r = i+1` y `c = j+1`, resulta la fórmula anterior. El desplazamiento inicial es parte de la permutación; no depende del valor de los bits.
+
+    Aplicamos la fórmula a **cada fila**:
+
+    | Fila $r$ | Cálculo de $c(r)$ | Bit seleccionado |
+    |---|---|---:|
+    | S1, $r=1$ | $(-1\bmod5)+1=4+1$ | **5** |
+    | S2, $r=2$ | $(0\bmod5)+1=0+1$ | **1** |
+    | S3, $r=3$ | $(1\bmod5)+1=1+1$ | **2** |
+    | S4, $r=4$ | $(2\bmod5)+1=2+1$ | **3** |
+    | S5, $r=5$ | $(3\bmod5)+1=3+1$ | **4** |
+    | S6, $r=6$ | $(4\bmod5)+1=4+1$ | **5** |
+    | S7, $r=7$ | $(5\bmod5)+1=0+1$ | **1** |
+    | S8, $r=8$ | $(6\bmod5)+1=1+1$ | **2** |
+
+    En S1, $-1\bmod5=4$ porque $-1=(-1)\times5+4$. Así queda justificado el recorrido **5, 1, 2, 3, 4, 5, 1, 2**. Aunque cambien los valores de la señal, estas posiciones se mantienen para esta configuración. Ahora se leen los bits de esas posiciones:
+
+    | Fila | Bit seleccionado | Valor | Posición en la primera palabra |
+    |---|---:|---:|---:|
+    | S1 | 5 | 1 | 1 |
+    | S2 | 1 | 0 | 2 |
+    | S3 | 2 | 0 | 3 |
+    | S4 | 3 | 0 | 4 |
+    | S5 | 4 | 1 | 5 |
+    | S6 | 5 | 0 | 6 |
+    | S7 | 1 | 1 | 7 |
+    | S8 | 2 | 1 | 8 |
+
+    Leer la columna Valor de arriba abajo produce **`10001011`**. El último bit de S1 pasa a ser el primero de esta palabra; los otros cuatro bits de S1 van a las otras cuatro palabras. **No se añaden bits a `11101` ni a `01011` para formar la palabra.** Se redistribuyen los 40 bits existentes: $8\times5=5\times8$.
+
+    ![Una casilla resaltada por fila muestra los ocho bits que forman 10001011; debajo se separan datos y paridad y se recupera el grupo 0001.](figures/cabecera-desentrelazado-fec.svg)
+
+    En el código, con índices desde cero, la asignación es `palabras[(i-j-1) % 5][i] = filas[i][j]`. Así se obtiene también cada una de las otras cuatro palabras. [Permutación del desentrelazador](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/deinterleaver_impl.cc#L89-L118).
+
+??? example "D. FEC 4/8: por qué 10001011 entrega 0001"
+
+    La cabecera usa un código Hamming extendido **4/8**: cada grupo original de cuatro bits se representa mediante una palabra de ocho. En el orden que usa esta implementación:
+
+    ```text
+    Palabra recibida:      1000 | 1011
+                          datos  paridad
+    ```
+
+    Para comprobar esta palabra de la muestra, nombramos los cuatro bits de la izquierda `d0 d1 d2 d3 = 1 0 0 0`. Sus cuatro paridades son:
+
+    ```text
+    p0 = d0 XOR d1 XOR d2 = 1 XOR 0 XOR 0 = 1
+    p1 = d1 XOR d2 XOR d3 = 0 XOR 0 XOR 0 = 0
+    p2 = d0 XOR d1 XOR d3 = 1 XOR 0 XOR 0 = 1
+    p3 = d0 XOR d2 XOR d3 = 1 XOR 0 XOR 0 = 1
+    ```
+
+    La paridad calculada, **`1011`**, coincide con la recibida. En esta muestra la palabra es válida y no requiere corrección. El decodificador usa la redundancia para comprobar la palabra y corregir un error de un bit cuando corresponde; no consiste en dividir el número entre dos. [Construcción de las palabras FEC](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/hamming_enc_impl.cc#L96-L106).
+
+    Falta recuperar **el orden original de los cuatro bits**. El codificador los colocó con el bit menos significativo primero. Por ello, el decodificador invierte los cuatro bits de datos:
+
+    ```text
+    10001011 → comprobar paridad → 1000 → invertir orden → 0001
+    ```
+
+    Ese es el motivo de la transición **`10001011 → 0001`**. La inversión pertenece a la convención de orden de esta implementación, no es la definición de la tasa 4/8. [Recuperación del orden y corrección en el decodificador](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/hamming_dec_impl.cc#L119-L166).
+
+La terminal muestra las cinco palabras y sus grupos decodificados:
+
+```text
+10001011 -> 0001
+00101101 -> 0100
+11000101 -> 0011
+10001011 -> 0001
+11101000 -> 0111
+```
+
+Al concatenar los cinco grupos y aplicar el formato de cabecera se obtiene:
+
+```text
+Longitud | CR  | CRC | Fijos | Comprobación
+00010100 | 001 | 1   | 000   | 10111
+ 8 bits    3     1     3        5       = 20 bits
+```
+
+| Campo | Valor recuperado | Interpretación |
+|---|---|---|
+| Longitud | `00010100` = `0x14` = **20** | El contenido tiene 20 bytes, sin contar el CRC físico. |
+| CR | `001` = **1** | El índice 1 indica tasa **$4/(4+1)=4/5$** para el cuerpo. |
+| Presencia de CRC | **1** | El contenido lleva un CRC físico adicional de dos bytes. |
+| Fijos | `000` | Posiciones fijas del formato de cabecera. |
+| Comprobación de cabecera | `10111` | El receptor comprueba este valor y obtiene **cabecera válida**. |
+
+**La longitud de 20 bytes se ha obtenido de la cabecera recibida.** El script inicia el receptor con longitud 255, CR 4 y CRC desactivado; en modo explícito, los valores recibidos reemplazan esos valores iniciales. [Lectura y comprobación de la cabecera](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/header_decoder_impl.cc#L121-L160).
+
+??? info "Referencias para los alumnos: capa física LoRa y formato LoRaWAN"
+
+    Las operaciones de esta sección pertenecen a la **capa física LoRa**. La especificación **LoRaWAN L2 1.0.4 no detalla la conversión Gray, el ajuste del índice ni la permutación de los bits**. Para estudiarlas se usa el artículo *Design and Implementation of LoRa Physical Layer in GNU Radio*, de Tapparel y Burg, que describe la implementación compatible con radios comerciales a partir de ingeniería inversa. Se distingue esta fuente técnica de la especificación normativa LoRaWAN.
+
+    | Lectura | Ubicación exacta |
+    |---|---|
+    | Campos de la cabecera física | [§2.2 y Figura 3, página 2 del artículo](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2) |
+    | Codificación FEC | [§2.4, página 2 del artículo](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2) |
+    | Entrelazado, paridad y cero adicional | [§2.5, página 3 del artículo](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=3) |
+    | Gray y desplazamiento +1 | [§2.6, página 3 del artículo](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=3) |
+    | Parámetros fijos de protección del primer bloque | [§2.7, página 3 del artículo](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=3) |
+    | Estructura de los 20 bytes de la Figura 6 | [LoRaWAN L2 1.0.4, §4, páginas 15–25](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=15) |
+
+### 3.5. Decodificar los 245 bits restantes hasta obtener 20 bytes
+
+Seguiremos **las 35 filas completas** y sus siete bloques, con el mismo tipo de matrices que usamos para la cabecera. La cabecera informó **20 bytes de PHYPayload**, tasa **4/5** y **CRC físico presente**. Aquí «contenido» significa los 20 bytes completos de LoRaWAN, incluido su MIC, no solo el mensaje de aplicación. Un **nibble** es un grupo de **cuatro bits**, equivalente a un dígito hexadecimal; dos nibbles forman un byte.
+
+Los scripts de esta sesión están agrupados en **`scripts/sesion08_lora/`**. Con Radioconda activo, ejecutar los comandos desde la raíz de `sdr`:
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa contenido
+```
+
+Ese comando muestra el recorrido completo del cuerpo. Para acompañar la lectura **una transición a la vez**, usar los comandos siguientes; también aparecen en la subsección que corresponde:
+
+| Sección | Comando desde la raíz de `sdr` | Qué muestra en columnas |
+|---|---|---|
+| 3.5.1 | `python scripts/sesion08_lora/inspeccionar_lora.py --etapa gray` | Índice, resta de uno, desplazamiento y Gray, en B1–B7. |
+| 3.5.2 | `python scripts/sesion08_lora/inspeccionar_lora.py --etapa desentrelazado` | Matriz de entrada, columnas seleccionadas y palabras FEC, por bloque. |
+| 3.5.2 | `python scripts/sesion08_lora/inspeccionar_lora.py --etapa fec` | Datos, paridad recibida, paridad calculada y nibble recuperado. |
+| 3.5.3 | `python scripts/sesion08_lora/inspeccionar_lora.py --etapa relleno` | Palabras conservadas y excluidas por su posición. |
+| 3.5.4 | `python scripts/sesion08_lora/inspeccionar_lora.py --etapa bytes` | Nibbles bajo y alto, bloque de origen y byte reagrupado. |
+| 3.5.5 | `python scripts/sesion08_lora/inspeccionar_lora.py --etapa blanqueo` | Byte de entrada, máscara y byte recuperado. |
+| 3.5.6 | `python scripts/sesion08_lora/inspeccionar_lora.py --etapa crc` | Las cuatro palabras del CRC, sus dos bytes y el recálculo paso a paso. |
+| 3.5.7 | `python scripts/sesion08_lora/inspeccionar_lora.py --etapa phypayload` | Los 20 bytes finales en binario y hexadecimal, agrupados por origen. |
+
+Cada comando vuelve a recibir **la misma muestra I/Q** y comprueba las transiciones frente a las etapas reales de GNU Radio. Se puede ejecutar independientemente, sin copiar bits entre programas. `--etapa` selecciona la transición mostrada. Las figuras y las tablas de terminal usan los mismos datos recibidos.
+
+Con `gray`, `desentrelazado`, `fec` y `relleno`, añadir **`--bloque 1`** o **`--bloque 7`** para centrarse en B1 o B7. Sin esa opción se muestran todos los bloques. En `bytes` y `blanqueo` se mantienen las parejas completas, incluidas las que cruzan de un bloque a otro; en `crc` se necesita todo el contenido para recalcular la comprobación.
+
+El script guarda los informes completos en **`output/lorawan-iq/traza/`**: `05_gray.txt`, `06_desentrelazado.txt`, `07_fec.txt`, `08_relleno.txt`, `09_bytes.txt`, `10_blanqueo.txt`, `11_crc.txt` y `12_phypayload.txt`. La tabla filtrada por bloque se guarda además con un sufijo, por ejemplo, **`06_desentrelazado_B1.txt`**. El recorrido completo queda en `04_cuerpo.txt` y sus valores en `traza.json`.
+
+#### 3.5.1. Los 245 bits en 35 filas de siete bits
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa gray
+```
+
+Se imprimen las 35 filas en siete tablas B1–B7. Sus columnas permiten seguir `índice → u → u >> 1 → g`, como en la figura. Para mostrar solo las cinco filas de B1, añadir `--bloque 1`.
+
+Después de los ocho símbolos de cabecera quedan **$301-56=245$ posiciones binarias**, correspondientes a los símbolos **S09–S43**. Cada fila representa un índice de chirp escrito con siete bits. Primero restamos uno y aplicamos Gray:
+
+```text
+u = (indice - 1) % 128
+g = u ^ (u >> 1)
+```
+
+En el cuerpo de esta muestra **no se divide entre cuatro**: la optimización de baja tasa de datos, **LDRO**, está desactivada para estos parámetros, y la reducción se aplica solo al primer bloque de cabecera. Por ejemplo, en S09:
+
+```text
+Índice: 0011110 = 30
+u:      0011101 = 29
+u >> 1: 0001110
+Gray:   0011101 XOR 0001110 = 0010011
+```
+
+![Las 35 filas completas S09–S43 agrupadas en siete bloques. Para cada fila se muestra el índice recibido, el índice menos uno y los siete bits después de Gray.](figures/cuerpo-35-filas.svg)
+**Las 35 filas se muestran completas.** B1–B7 identifican los grupos de cinco símbolos que procesaremos por separado.
+
+!!! note "Una fila de símbolo de siete bits no es una palabra FEC de siete bits"
+
+    **SF7** determina los siete bits de la etiqueta de un símbolo. La **tasa 4/5** determina otra estructura: una palabra FEC de **cuatro bits de datos y uno de paridad**. El entrelazador reorganiza esas palabras para formar los símbolos. El receptor invierte esa reorganización. Por eso no se pasa de un código de siete bits a otro de cinco: se cambia la distribución de los mismos bits entre filas.
+
+#### 3.5.2. Desentrelazar cinco filas de siete bits en siete palabras de cinco bits
+
+Para acompañar el ejemplo B1, ejecutar:
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa desentrelazado --bloque 1
+```
+
+La primera tabla muestra la matriz de entrada; la segunda indica, para **cada una de las siete palabras**, las columnas seleccionadas en las cinco filas, los bits leídos y la palabra de salida. Quitar `--bloque 1` para repetir el proceso con B1–B7; cambiarlo por `--bloque 7` para estudiar el último bloque.
+
+Una palabra FEC del cuerpo tiene cinco bits. El transmisor distribuye esos cinco bits entre **cinco símbolos**. Por eso el receptor toma cinco filas por bloque y deshace la permutación:
+
+$$
+\underbrace{5\text{ filas}\times7\text{ bits}}_{35\text{ bits tras Gray}}
+=\underbrace{7\text{ palabras}\times5\text{ bits}}_{35\text{ bits FEC}}.
+$$
+
+**No se añaden ni se eliminan bits al desentrelazar.** Se reparten los 35 bits de la matriz de entrada en siete filas nuevas de cinco bits. La cabecera y el cuerpo usan dimensiones distintas:
+
+| Región | Entrada al desentrelazador | Salida del desentrelazador |
+|---|---|---|
+| Cabecera SF7 | 8 filas de 5 bits | 5 palabras FEC de 8 bits |
+| Cada bloque del cuerpo SF7, tasa 4/5 | 5 filas de 7 bits | 7 palabras FEC de 5 bits |
+
+Como en la cabecera, se sigue una regla fija. Para la **primera palabra de cada bloque**, con filas locales $r=1,\ldots,5$ y columnas $c=1,\ldots,7$:
+
+$$
+c(r)=\big((r-2)\bmod7\big)+1.
+$$
+
+El módulo ahora es **7** porque hay siete columnas. Se seleccionan las columnas **7, 1, 2, 3, 4**. En B1:
+
+| Fila | Siete bits tras Gray | Columna seleccionada | Bit leído |
+|---|---|---:|---:|
+| S09 | `0010011` | 7 | 1 |
+| S10 | `1110111` | 1 | 1 |
+| S11 | `1110000` | 2 | 1 |
+| S12 | `0011100` | 3 | 1 |
+| S13 | `1110101` | 4 | 0 |
+
+La primera palabra es **P01 = `11110`**. Para obtener las otras seis palabras se seleccionan otras diagonales de la misma matriz. En el código, con índices locales desde cero, se usa `palabras[(i-j-1) % 7][i] = filas[i][j]`. Los índices locales se reinician en cada bloque. [Permutación del desentrelazador](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/deinterleaver_impl.cc#L89-L118).
+
+**Ahora sí se decodifica cada palabra a tasa 4/5.** Se comprueba el bit de paridad haciendo XOR de los cuatro bits de datos y se restaura su orden, igual que en la cabecera. La diferencia es que aquí hay **una paridad**, no cuatro:
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa fec --bloque 1
+```
+
+Las columnas separan la palabra FEC, sus cuatro datos, la paridad recibida `p RX`, la recalculada `p XOR` y el nibble en orden original. Quitar `--bloque 1` para mostrar las 49 palabras de los siete bloques, incluido el relleno que se clasificará en la subsección siguiente.
+
+```text
+P01: 1111 | 0 → 1 XOR 1 XOR 1 XOR 1 = 0 → datos en orden original: 1111
+P02: 1110 | 1 → 1 XOR 1 XOR 1 XOR 0 = 1 → datos en orden original: 0111
+      datos  p
+```
+
+En esta muestra las paridades coinciden. La primera palabra entrega el nibble `1111` y la segunda, `0111`. Cada palabra conserva cuatro bits de datos y deja de transportar su bit de comprobación. La tasa 4/5 aporta una comprobación de paridad; por sí sola no permite localizar y corregir cualquier error de un bit. [Codificación 4/5](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/hamming_enc_impl.cc#L108-L111).
+
+![Bloque B1: las cinco filas S09–S13 se reorganizan en siete palabras P01–P07 de cinco bits y se decodifican en siete nibbles de cuatro bits.](figures/cuerpo-bloque-1.svg)
+**B1 completo.** Las casillas amarillas forman P01. Los cinco bits de una fila se repartían entre palabras en la cabecera; aquí los siete bits de una fila se reparten entre **siete** palabras.
+
+#### 3.5.3. Los siete bloques y el origen de las cinco palabras de relleno
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa relleno
+```
+
+Se muestran las decisiones `CONSERVAR` o `EXCLUIR` para cada palabra, agrupadas en B1–B7. Para centrarse en las cinco palabras de relleno del último bloque:
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa relleno --bloque 7
+```
+
+Hay 35 símbolos y se procesan de cinco en cinco:
+
+$$
+35/5=7\text{ bloques};\qquad7\text{ bloques}\times7\text{ palabras}=49\text{ palabras}.
+$$
+
+La cabecera indica 20 bytes y CRC presente. Cada byte corresponde a dos nibbles de cuatro bits; cada nibble necesita una palabra FEC:
+
+- **Contenido:** $20\times2=40$ palabras, P01–P40.
+- **CRC físico:** $2\times2=4$ palabras, P41–P44.
+- **Total necesario:** $40+4=44$ palabras.
+
+El último bloque tiene siete posiciones de palabras, pero solo quedan dos nibbles de CRC por transportar. El transmisor completa las otras cinco posiciones con palabras de ceros. **De aquí salen las cinco palabras de relleno:** $49-44=5$. Cada una ocupa cinco bits codificados, de modo que el relleno ocupa **$5\times5=25$ bits**. [Relleno de posiciones vacías en el transmisor](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/interleaver_impl.cc#L159-L170).
+
+| Bloque | Símbolos | Palabras obtenidas | Uso de sus palabras |
+|---|---|---|---|
+| B1 | S09–S13 | P01–P07 | 7 de contenido |
+| B2 | S14–S18 | P08–P14 | 7 de contenido |
+| B3 | S19–S23 | P15–P21 | 7 de contenido |
+| B4 | S24–S28 | P22–P28 | 7 de contenido |
+| B5 | S29–S33 | P29–P35 | 7 de contenido |
+| B6 | S34–S38 | P36–P42 | 5 de contenido y 2 de CRC |
+| B7 | S39–S43 | P43–P49 | 2 de CRC y **5 de relleno** |
+
+Se pueden inspeccionar **todos** los bloques restantes. Cada figura muestra sus cinco filas, sus siete palabras y sus siete nibbles. Los rótulos distinguen contenido, CRC y relleno:
+
+??? example "B2 completo · S14–S18 y P08–P14"
+
+    ![Bloque B2 completo, con sus cinco filas de siete bits, siete palabras FEC y siete nibbles de contenido.](figures/cuerpo-bloque-2.svg)
+
+??? example "B3 completo · S19–S23 y P15–P21"
+
+    ![Bloque B3 completo, con sus cinco filas de siete bits, siete palabras FEC y siete nibbles de contenido.](figures/cuerpo-bloque-3.svg)
+
+??? example "B4 completo · S24–S28 y P22–P28"
+
+    ![Bloque B4 completo, con sus cinco filas de siete bits, siete palabras FEC y siete nibbles de contenido.](figures/cuerpo-bloque-4.svg)
+
+??? example "B5 completo · S29–S33 y P29–P35"
+
+    ![Bloque B5 completo, con sus cinco filas de siete bits, siete palabras FEC y siete nibbles de contenido.](figures/cuerpo-bloque-5.svg)
+
+??? example "B6 completo · Final del contenido y comienzo del CRC"
+
+    ![Bloque B6 completo: cinco palabras de contenido P36–P40 y dos palabras de CRC P41–P42.](figures/cuerpo-bloque-6.svg)
+
+![Bloque B7 completo: P43 y P44 llevan los últimos nibbles del CRC y P45–P49 son las cinco palabras 00000 de relleno.](figures/cuerpo-bloque-7.svg)
+**B7 completo: el relleno es visible.** P43 y P44 pertenecen al CRC. P45, P46, P47, P48 y P49 son `00000` y se excluyen por su posición y por la longitud anunciada. Un `00000` dentro de P01–P44 es un dato válido; **no se elimina una palabra solo porque tenga ceros**.
+
+Después de excluir esas cinco palabras quedan **44 palabras de cinco bits = 220 bits codificados**, equivalentes a **44 nibbles de cuatro bits = 176 bits** al decodificar. En el comando `fec` se mostraron provisionalmente los 49 nibbles, incluido el relleno: $49\times4=196$ bits. Este comando excluye los cinco nibbles de relleno: $196-5\times4=176$. Contar antes o después de FEC lleva al mismo resultado útil: **160 bits de contenido y 16 de CRC**.
+
+#### 3.5.4. Agrupar los 44 nibbles en 22 bytes
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa bytes
+```
+
+Las columnas presentan el byte, el bloque o bloques de origen, el nibble bajo, el alto y el byte reagrupado en binario y hexadecimal. Cada pareja se muestra en el grupo de su nibble bajo; la columna **Origen**, por ejemplo `B1/B2`, señala que sus nibbles vienen de bloques distintos. Así se muestran las 22 parejas una sola vez, sin perder las que cruzan un límite de bloque.
+
+El receptor conserva los nibbles P01–P44 en orden. En el contenido y en el CRC, llega **primero el nibble bajo y luego el alto**. Para construir cada byte se escribe `alto | bajo`:
+
+```text
+P01 = 1111 (bajo)     P02 = 0111 (alto)
+Byte 1 = 0111|1111 = 01111111 = 7f
+
+P03 = 0010 (bajo)     P04 = 0010 (alto)
+Byte 2 = 0010|0010 = 00100010 = 22
+```
+
+La expresión de Python es `byte = (nibble_alto << 4) | nibble_bajo`. Se repite con P05/P06 y así hasta P43/P44. Las parejas pueden atravesar el límite entre dos bloques: por ejemplo, P07 está en B1 y P08 en B2, y juntas forman el cuarto byte. Los bloques organizan el entrelazado, no los límites de los bytes.
+
+Los **22 bytes antes de deshacer el blanqueo** son:
+
+```text
+Contenido, aún blanqueado (20 bytes):
+7f 22 a1 1e f1 71 c6 85 0a cc da fa 5f 6a c8 33 95 ac 72 4f
+
+CRC físico (2 bytes, sin blanqueo):
+50 a2
+```
+
+La cantidad de bits se conserva al reagrupar: **$44\times4=22\times8=176$**. [Reagrupación de nibbles en bytes](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/dewhitening_impl.cc#L82-L95).
+
+#### 3.5.5. Revertir el blanqueo: de 7f a 80 en el primer byte
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa blanqueo
+```
+
+Se muestran por bloque los bytes de entrada, las máscaras y los bytes de salida, en columnas de ocho bits. Los bytes del CRC aparecen con **`sin XOR`**. La columna hexadecimal permite comparar cada salida con la figura.
+
+Antes de codificar, el transmisor mezcló cada byte de contenido con una **máscara conocida**, mediante XOR. El receptor aplica la misma máscara para recuperar el byte original, porque `(dato XOR mascara) XOR mascara = dato`. No necesita conocer previamente los bytes del mensaje.
+
+La secuencia de máscaras empieza en **`ff fe fc f8 f0 e1 …`**. Se genera con un registro de ocho bits, estado inicial `ff` y polinomio $x^8+x^6+x^5+x^4+1$. Es una regla de la capa física; no es una clave criptográfica ni se deduce de los 20 bytes conocidos de la muestra. [Secuencia usada en `gr-lora_sdr`](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/tables.h#L4-L7).
+
+Para el primer byte:
+
+```text
+Byte reagrupado:      01111111 = 7f
+Máscara conocida:    11111111 = ff
+                     --------
+XOR, byte original:  10000000 = 80
+```
+
+Los siguientes dan `22 XOR fe = dc` y `a1 XOR fc = 5d`. La figura muestra **las 22 parejas**, con el nibble bajo y el alto, el byte reagrupado, la máscara y el resultado:
+
+![Las 22 parejas de nibbles, sus bytes reagrupados, las máscaras de blanqueo y los bytes recuperados. Las dos últimas filas de CRC se reagrupan sin aplicar XOR.](figures/cuerpo-bytes-blanqueo.svg)
+
+Los dos bytes de CRC se reagrupan **sin aplicar blanqueo**, como indican sus filas. Los 20 bytes de contenido ya quedan recuperados. Esto no descifra el mensaje de aplicación LoRaWAN: el FRMPayload sigue cifrado. [Desblanqueo en el receptor](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/dewhitening_impl.cc#L82-L95).
+
+??? example "Generar las máscaras sin conocer el mensaje"
+
+    Esta es la función `secuencia_blanqueo` del script. La máscara de cada byte depende solo del estado del registro:
+
+    ```python
+    estado = 0xff
+    mascaras = []
+    for _ in range(20):
+        mascaras.append(estado)
+        nuevo = ((estado >> 7) ^ (estado >> 5) ^
+                 (estado >> 4) ^ (estado >> 3)) & 1
+        estado = ((estado << 1) & 0xff) | nuevo
+    print(bytes(mascaras).hex(' '))
+    ```
+
+    ```text
+    ff fe fc f8 f0 e1 c2 85 0b 17 2f 5e bc 78 f1 e3 c6 8d 1a 34
+    ```
+
+#### 3.5.6. Comprobar los dos bytes de CRC y separarlos
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa crc
+```
+
+Primero se presentan las cuatro palabras de CRC en sus bloques B6 y B7, y las parejas que forman los dos bytes recibidos. Después, una tabla sigue el **estado del CRC antes y después de cada uno de los primeros 18 bytes de contenido**. La última tabla muestra el XOR con los dos últimos bytes del contenido y la comparación final con el CRC recibido.
+
+La longitud anunciada es de 20 bytes y el indicador CRC vale uno. Por eso, después de esos 20 bytes, se esperan **dos bytes de CRC físico**. Sus nibbles proceden de las últimas cuatro palabras útiles:
+
+| Palabras | Nibble bajo | Nibble alto | Byte reagrupado |
+|---|---|---|---|
+| P41 / P42 | `0000` | `0101` | `01010000` = **50** |
+| P43 / P44 | `0010` | `1010` | `10100010` = **a2** |
+
+El receptor **recalcula** el CRC a partir de los bytes de contenido recuperados y lo compara con esos dos bytes recibidos. La convención de LoRa usa el polinomio **`0x1021`**, estado inicial **`0x0000`**, sobre los primeros **N−2 bytes**; al resultado le aplica XOR con los dos últimos bytes de contenido, colocando el penúltimo en la parte alta. En esta muestra, $N=20$:
+
+```text
+CRC-16 sobre los primeros 18 bytes:             ca2b
+Últimos dos bytes del contenido:               68 7b
+XOR final:                         ca2b XOR 687b = a250
+
+CRC recibido: bytes 50 a2, primero el de menor peso → a250
+Comparación: a250 = a250 → CRC físico válido
+```
+
+Se separan los bytes `50 a2` y se conservan los **20 bytes = 160 bits de PHYPayload**. El MIC de LoRaWAN sigue dentro de esos 20 bytes; es otra comprobación y no se elimina aquí. [Cálculo y comparación del CRC físico](https://github.com/tapparelj/gr-lora_sdr/blob/a8143cb/lib/crc_verif_impl.cc#L100-L133).
+
+??? example "Reproducir el cálculo del CRC en Python"
+
+    El script implementa esta operación en `crc_lora`. `contenido` es la secuencia de 20 bytes ya desblanqueados:
+
+    ```python
+    crc = 0
+    for byte in contenido[:-2]:
+        crc ^= byte << 8
+        for _ in range(8):
+            if crc & 0x8000:
+                crc = ((crc << 1) ^ 0x1021) & 0xffff
+            else:
+                crc = (crc << 1) & 0xffff
+    crc ^= (contenido[-2] << 8) ^ contenido[-1]
+    print(f'{crc:04x}')       # a250
+    print(crc.to_bytes(2, 'little').hex(' '))  # 50 a2
+    ```
+
+#### 3.5.7. Resultado: los 160 bits de la Figura 6
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa phypayload
+```
+
+La salida presenta los 20 bytes en columnas de posición, origen, binario y hexadecimal. Solo aparecen los bytes de contenido; los dos bytes de CRC físico ya se separaron. Como algunos bytes atraviesan bloques, se conserva la misma columna **Origen** que en las transiciones anteriores.
+
+Los bits recuperados, agrupados en los 20 bytes finales, son:
+
+```text
+10000000 11011100 01011101 11100110 00000001 10010000 00000100 00000000 00000001 11011011
+11110101 10100100 11100011 00010010 00111001 11010000 01010011 00100001 01101000 01111011
+```
+
+En hexadecimal:
+
+```text
+80 dc 5d e6 01 90 04 00 01 db f5 a4 e3 12 39 d0 53 21 68 7b
+```
+
+El script los guarda en **`output/lorawan-iq/traza/03_phypayload.bin`**. No se obtuvieron cortando 160 posiciones del bloque original: se siguieron sus 35 símbolos, sus siete bloques, las 49 palabras, los 44 nibbles útiles y los 22 bytes, hasta separar el CRC físico. Ahora se pueden interpretar sus campos LoRaWAN en la Figura 6.
+
+### 3.6. Volver a las marcas 8 + 25 + 5 + 5 de la Figura 4
+
+Ahora se puede justificar la división anotada. Con SF7 y tasa 4/5, cada bloque de cuerpo reorganiza **siete palabras de cinco bits en cinco símbolos de siete bits**. Sus siete palabras representan $7\times4=28$ bits antes de codificar. Como $160=5\times28+20$:
+
+| Símbolos desde el final del preámbulo | Cantidad | Qué se recupera |
+|---|---:|---|
+| 1–8 | 8 | Cabecera física. |
+| 9–33 | 25 | Cinco bloques: $5\times28=140$ bits de contenido. |
+| 34–38 | 5 | 20 bits restantes del contenido y ocho del CRC. |
+| 39–43 | 5 | Ocho bits restantes del CRC y relleno. |
+
+El conteo **43** se mide en la señal; la longitud **20 bytes** se lee en la cabecera. La separación detallada del cuerpo se obtiene después de decodificar. Otras longitudes, como 21 o 22 bytes, también pueden ocupar 43 símbolos porque requieren menos relleno.
+
+En la sección 4 aplicaremos la **especificación LoRaWAN** a los 20 bytes recuperados para identificar dirección, contador, mensaje cifrado y MIC. La cabecera física informa cómo recuperar esos bytes; sus campos internos se interpretan con el formato LoRaWAN.
+
+## 4. Campos de la trama LoRaWAN
+
+La sección 3 recuperó los 20 bytes y comprobó el CRC físico. Ahora aplicaremos la **especificación LoRaWAN 1.0.4** para ubicar sus campos y extraer el mensaje cifrado. El origen conocido de la muestra identifica su contenido como LoRaWAN; un CRC físico válido por sí solo no identifica el protocolo que transporta LoRa.
+
+### La especificación que permite interpretar los bytes
+
+La sección 4 de **LoRaWAN L2 1.0.4 (TS001-1.0.4)** define la organización de las tramas. El primer byte, `MHDR`, informa el tipo de trama. En nuestra secuencia vale `80`, o `10000000` en binario: los tres bits superiores son `100`, que la especificación asigna a una **trama de datos ascendente que solicita confirmación**. Por ello se aplica el formato de datos de las secciones 4.1 a 4.3. El valor `00` de los dos bits inferiores indica la versión mayor R1; esos dos bits no identifican por sí solos la revisión 1.0.4. [Formato y tipos de trama, LoRaWAN 1.0.4, §§4.1–4.3](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=15).
+
+Para una **trama de datos**, las reglas son:
+
+```text
+PHYPayload = MHDR (1 byte) + MACPayload (variable) + MIC (4 bytes)
+MACPayload = FHDR + FPort (si está presente) + FRMPayload (si está presente)
+FHDR       = DevAddr (4 bytes) + FCtrl (1 byte) + FCnt (2 bytes) + FOpts (0 a 15 bytes)
+```
+
+`FPort` ocupa un byte cuando está presente. Los cuatro bits inferiores de `FCtrl` contienen `FOptsLen`, la cantidad de bytes de `FOpts`. Así, la longitud de `FHDR` es $4+1+2+FOptsLen=7+FOptsLen$ bytes. Una trama de datos puede tener `FHDR` sin `FPort` ni `FRMPayload`; en nuestro ejemplo están presentes los dos últimos campos. [Campos de datos y cabecera de trama, LoRaWAN 1.0.4, §4.3](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=17).
+
+### Aplicar el formato a la muestra: Figura 6
+
+Numerar los bytes desde 1. Después de `MHDR`, la dirección ocupa los bytes 2–5; `FCtrl` es el byte 6 y `FCnt` ocupa 7–8. Como `FCtrl = 90` y $0x90\ \&\ 0x0F=0$, no hay `FOpts`: `FHDR` termina en el byte 8 y `FPort` está en el 9. Reservar los cuatro últimos bytes para el `MIC`, posiciones 17–20; quedan los bytes 10–16 para `FRMPayload`. **La Figura 6 representa el resultado de aplicar estas reglas a la secuencia recuperada.**
 
 ![Los 20 bytes recuperados, numerados del 1 al 20 y agrupados por campo. El mensaje cifrado aparece en morado entre FPort y MIC.](figures/anatomia-trama-lorawan.png)
-**Figura 6.** Campos de la trama LoRaWAN recuperada de la muestra de la práctica.
+**Figura 6.** Interpretación de la trama recuperada según el formato de datos LoRaWAN.
 
 [Ver figura ampliada](figures/anatomia-trama-lorawan.png).
 
 - Los números inferiores indican la posición de cada byte. La cuenta empieza en 1.
 - Las marcas superiores muestran qué bytes forman el `PHYPayload`, el `MACPayload` y la cabecera de trama `FHDR`.
 - Aquí `FOptsLen = 0`. La cabecera `FHDR` termina en `FCnt` y el byte siguiente es `FPort`. La [sección 9](#9-reto-de-ubicacion-del-mensaje-cifrado-con-fopts) muestra el caso con opciones.
-- El tramo morado contiene el mensaje cifrado. El tramo verde contiene el código de integridad.
+- El tramo morado contiene el mensaje cifrado. El tramo verde contiene el código de integridad. Identificar la posición del `MIC` no equivale a verificar su valor; esa comprobación se distingue del CRC físico en la sección 5.
 
-### Cómo obtener los 20 bytes de la señal
-
-En Inspectrum, localizar el preámbulo de la señal que se abrió en la sección 3. Para pasar de los chirps a los bytes, `LoRa Rx` en GNU Radio sincroniza, demodula y decodifica el paquete. [Herramientas de Inspectrum](https://github.com/miek/inspectrum#features) · [Cadena receptora LoRa, Tapparel y Burg, §3](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=4).
-
-`gr-lora_sdr` es un módulo de código abierto para GNU Radio desarrollado en la EPFL. Implementa la capa física propietaria LoRa. Sus autores publicaron el diseño del receptor y documentaron pruebas de transmisión y recepción entre equipos SDR y radios comerciales con chips Semtech SX1276 y SX1262. Esas pruebas sustentan la compatibilidad con esos equipos. En la práctica, `lora_sdr.lora_sdr_lora_rx(...)` crea el bloque jerárquico `LoRa Rx`. El script lo conecta a `File Source` y `tb.run()` procesa las muestras para recuperar los bytes. [Diseño de la capa física LoRa](https://pubs.gnuradio.org/index.php/grcon/article/view/145) · [Pruebas de interoperabilidad de `gr-lora_sdr`](https://github.com/tapparelj/gr-lora_sdr#features).
-
-Desde la raíz de `sdr`, con Radioconda activo, ejecutar el comando. Así se leen las muestras con el bloque `LoRa Rx` que configura el script de la práctica.
-
-```bash
-python -c "import sys; from pathlib import Path; sys.path.insert(0, 'scripts'); from verificar_lorawan_iq import recibir; trama, = recibir(Path('output/lorawan-iq/correcto.sigmf-data')); print(bytes.fromhex(trama['payload_hex']).hex(' '))"
-```
-
-La terminal muestra esta línea. Cada par hexadecimal representa un byte.
-
-```text
-80 dc 5d e6 01 90 04 00 01 db f5 a4 e3 12 39 d0 53 21 68 7b
-```
+Si el formato fuese desconocido, una sola secuencia no bastaría para asignar de forma concluyente esos nombres a sus bytes. Habría que comparar múltiples tramas, variar entradas conocidas y comprobar hipótesis sobre longitudes, direcciones, contadores e integridad. En esta práctica se utiliza la especificación publicada para interpretar una muestra de origen conocido.
 
 ### Cómo leer los campos
 
@@ -262,35 +841,112 @@ La terminal muestra esta línea. Cada par hexadecimal representa un byte.
 
 Si `FOptsLen` cambia, también se mueve `FPort` cuando está presente. La longitud total fija dónde empiezan los cuatro bytes del `MIC`. [Opciones, puerto, cifrado e integridad, LoRaWAN 1.0.4, §4.3.1.6–4.4](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=23).
 
-## 5. Qué comprueban el CRC y el MIC
+## 5. Replay: ¿puede un mensaje auténtico introducir datos engañosos?
 
-El objetivo es explicar cómo un paquete LoRa puede pasar el CRC y aun así fallar la comprobación del MIC en LoRaWAN.
+Un investigador recupera una trama LoRaWAN válida y la guarda. Más tarde la reproduce **sin cambiar sus bytes**. ¿Puede conseguir que una aplicación IoT trate un dato antiguo como si fuera una medición actual? Este es el problema que estudiaremos mediante un ataque de **replay**, o repetición de una trama capturada.
 
-| Comprobación | Qué compara el receptor | Usa clave |
+### 5.1. Dónde se verifican el CRC, el MIC y FCnt
+
+En este enlace ascendente, la señal sigue el recorrido **dispositivo → gateway → Network Server → Application Server**. El **gateway** recibe y demodula la radio; el **Network Server** es el servidor de red, que verifica el MIC y controla el contador; el **Application Server** es el servidor de aplicación, que descifra e interpreta el dato. Son funciones diferentes, aunque puedan ejecutarse en una misma computadora. [Arquitectura LoRaWAN](https://www.thethingsnetwork.org/docs/lorawan/architecture/).
+
+| Operación | Dónde se realiza en este recorrido | Qué necesita y qué aporta |
 |---|---|---|
-| **CRC de LoRa** | Calcula el CRC a partir de los 20 bytes recuperados y lo compara con los dos bytes de CRC del paquete. Una diferencia indica un error detectado en la capa física. | No |
-| **MIC de LoRaWAN 1.0.4** | Calcula el MIC a partir de los bytes 1–16 y del contexto de la trama. Compara el resultado con los cuatro bytes recibidos en las posiciones 17–20. | Sí. Usa la clave de sesión de red (`NwkSKey`). |
+| **Comprobar el CRC físico de LoRa** | **Gateway**, durante la recepción de radio. | Compara el CRC de los bytes recibidos con el CRC del paquete para detectar errores accidentales. No necesita una clave. |
+| **Verificar el MIC de LoRaWAN** | **Network Server**. | Usa `NwkSKey`, los campos de la trama y su contexto para verificar integridad y autenticidad. |
+| **Controlar `FCnt`** | **Network Server**. | Compara con el último contador válido conservado para el dispositivo, la sesión y el sentido. Evita reenviar a la aplicación datos antiguos o repetidos. |
+| **Descifrar `FRMPayload`, con `FPort=1`** | **Application Server**. | Usa `AppSKey` y después interpreta la lectura, por ejemplo `temp=25`. |
 
-El contexto que usa el MIC incluye el sentido de transmisión, la dirección del dispositivo y el contador completo de trama. [CRC de LoRa, Tapparel y Burg, §2.3](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=2) · [MIC, LoRaWAN 1.0.4, §4.4](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=25).
+El gateway reenvía el PHYPayload al servidor de red. En este recorrido no verifica el MIC ni decide si un contador es nuevo. El Network Server puede verificar el MIC sin descifrar el dato de aplicación: utiliza `NwkSKey`, mientras el Application Server utiliza `AppSKey`. [Funciones de las claves, LoRaWAN 1.0.4, §§6.1.2–6.1.3](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=43).
 
-### Comparación de las dos muestras
+**Alcance sobre la Figura 6:** el CRC físico comprueba los **bytes 1–20**, incluido el MIC. El MIC se calcula sobre los **bytes 1–16** (`MHDR + FHDR + FPort + FRMPayload` cifrado) y el contexto; sus cuatro bytes de resultado ocupan las posiciones **17–20**. Ninguno de los dos cifra el contenido: el cifrado del `FRMPayload` es una operación diferente. El MIC autentica el valor de `FCnt`; el historial del Network Server permite decidir si ese valor es nuevo.
 
-![Los siete bytes cifrados de las dos tramas. El primer byte cambia de db a da en la posición 10.](figures/comparacion-crc-mic.png)
-**Figura 7.** El byte 10 cambia de `db` a `da` en la trama de prueba.
+**«Vulnerable» y «con control de FCnt» describen dos versiones simuladas del Network Server.** La diferencia del experimento está en ese componente. Cada camino tiene su propia aplicación para comparar el resultado; la clase `Receptor` del script agrupa la comprobación del gateway, las decisiones del servidor de red y el estado del servidor de aplicación. No son dos gateways físicos ni dos políticas de descifrado distintas.
 
-- La fila superior muestra los siete bytes del `FRMPayload` recuperados de `correcto.sigmf-data`.
-- La fila inferior muestra las mismas posiciones en `contenido_alterado.sigmf-data`. El cambio de `db` a `da` afecta un bit. Ambas tramas conservan el MIC `53 21 68 7b`.
+**Una copia exacta conserva un CRC y un MIC válidos.** El MIC cubre el contador, pero no sabe qué tramas recibió antes el Network Server: esa memoria pertenece al estado de la sesión. Autenticar un mensaje y reconocer que es nuevo son comprobaciones diferentes. [MIC, LoRaWAN 1.0.4, §4.4](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=25).
 
-La segunda muestra se generó con el byte ya modificado. El transmisor LoRa calculó el CRC para los bytes de cada muestra. En la recepción, `LoRa Rx` recupera los 20 bytes y obtiene un CRC válido en ambos casos.
+En la Figura 6, `04 00` ocupa los bytes 7–8 y representa `FCnt = 4` cuando los 16 bits superiores son cero. El contador completo tiene **32 bits**, aunque solo sus 16 bits inferiores viajan en `FHDR`. En una red real, el Network Server reconstruye el valor completo del uplink a partir de su estado. Nuestro experimento usa los valores 4 y 5, sin cambios de la parte alta. [Contadores, §4.3.1.5](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=22).
 
-| Muestra | CRC en `LoRa Rx` | MIC recibido | MIC calculado | Resultado del MIC |
-|---|---|---|---|---|
-| `correcto.sigmf-data` | Válido | `53 21 68 7b` | `53 21 68 7b` | Válido |
-| `contenido_alterado.sigmf-data` | Válido | `53 21 68 7b` | `d2 88 82 14` | Inválido |
+### 5.2. Preparar dos lecturas y repetir la primera
 
-En la segunda muestra, el CRC coincide con el paquete generado para la prueba. El MIC recibido corresponde a la trama original. Al verificarlo con la clave de sesión y el byte modificado, el resultado cambia.
+Usaremos el mismo formato, dirección y claves públicas del ejemplo, pero generaremos **dos lecturas didácticas nuevas**. No son mensajes extraídos de la captura de Brno ni sustituyen los 20 bytes de la Figura 6.
 
-Los valores del MIC de esta tabla son resultados de referencia de `python scripts/verificar_lorawan_iq.py --salida output/lorawan-iq`, guardados en `verificacion.json`. Ese programa verifica el MIC con las claves públicas de la sesión original. **`LoRa Rx` y `Tag Debug` solo comprueban y muestran el CRC físico**; su etiqueta `crc_valid` no acredita un MIC válido. Para la entrega basta distinguir esas dos comprobaciones, sin implementar la verificación criptográfica.
+| Entrada | Quién la produce | `FCnt` | Dato de aplicación antes del cifrado |
+|---|---|---:|---|
+| A: lectura normal | Emisor legítimo simulado | 4 | `temp=25` |
+| B: lectura de alarma | Emisor legítimo simulado | 5 | `temp=80` |
+| Replay de A | Atacante: copia íntegra de A | 4 | El mismo contenido cifrado de A |
+
+Las dos lecturas tienen siete caracteres ASCII. Cada trama ocupa **20 bytes de PHYPayload**, con `FPort = 1`; el CRC físico tiene dos bytes adicionales. El emisor simulado cifra cada lectura y calcula su MIC y CRC. **La función del atacante solo copia A: no recibe las claves, no descifra y no calcula un MIC nuevo.**
+
+Desde la raíz del repositorio, con Radioconda activo:
+
+```bash
+python scripts/sesion08_lora/simular_replay.py --etapa tramas
+```
+
+El comando muestra las lecturas, los contadores, el MIC, el CRC y los 20 bytes de cada trama en columnas numeradas. Comparar `A_normal` con `A_replay`: deben coincidir todos sus bytes. El contenido se muestra en claro únicamente para observar qué recibe la aplicación del laboratorio; por radio viajaría cifrado.
+
+![Tres llegadas por el gateway a dos Network Servers. Ambos verifican MIC, pero solo uno controla FCnt. Sus Application Servers muestran estados distintos al repetirse la primera trama.](figures/replay-secuencia.svg)
+**Figura 7a.** Del gateway al servidor de red y al de aplicación. El replay alcanza de nuevo la aplicación únicamente por el camino cuyo Network Server omite el control de FCnt.
+
+### 5.3. Comparar el Network Server vulnerable con el que verifica FCnt
+
+```bash
+python scripts/sesion08_lora/simular_replay.py --etapa replay
+```
+
+El script procesa A, después B y finalmente la copia de A. Compara dos caminos independientes con las mismas entradas. El CRC representa la comprobación del gateway; la verificación del MIC y la decisión de reenvío corresponden al Network Server; el dato descifrado y su estado corresponden al Application Server:
+
+| Llegada | CRC y MIC | Network Server vulnerable → su Application Server | Network Server con FCnt → su Application Server |
+|---|---|---|---|
+| A, `FCnt=4` | Válidos | Reenvía; la aplicación muestra `temp=25`. | Guarda contador 4 y reenvía; la aplicación muestra `temp=25`. |
+| B, `FCnt=5` | Válidos | Reenvía; la aplicación muestra `temp=80`. | Guarda contador 5 y reenvía; la aplicación muestra `temp=80`. |
+| Replay de A, `FCnt=4` | Válidos | Reenvía otra vez; la aplicación vuelve a `temp=25`. | No reenvía: `4 ≤ 5`; conserva contador 5 y la aplicación mantiene `temp=80`. |
+
+El fallo del Network Server vulnerable es reenviar una trama antigua. Su Application Server guarda como estado actual el **último dato entregado**, y por eso vuelve a mostrar `temp=25`. En el escenario didáctico, la lectura antigua puede ocultar la alarma. No se ha fabricado una temperatura arbitraria ni se ha roto el cifrado: se ha reutilizado un mensaje auténtico fuera de su contexto temporal.
+
+![El gateway comprueba CRC y reenvía; ambos Network Servers verifican MIC, pero solo uno consulta FCnt antes de reenviar al Application Server, que descifra con AppSKey.](figures/replay-verificacion.svg)
+**Figura 7b.** Ubicación de las decisiones. El Network Server controla MIC y FCnt; el Application Server solo actualiza su lectura cuando recibe un dato reenviado. Un mensaje rechazado no actualiza el contador ni la lectura.
+
+La regla del Network Server con control es: **después de verificar el MIC**, si ya existe un contador para la sesión y el dispositivo, reenviar a la aplicación únicamente cuando `FCnt_recibido > FCnt_último`. La primera trama se acepta si pasa las comprobaciones. La copia queda identificada como `FCNT_ANTIGUO_O_REPETIDO`.
+
+En LoRaWAN existen retransmisiones legítimas de uplinks que conservan el contador. La red puede gestionarlas y responder según el protocolo, pero debe **entregar una sola instancia del dato a la aplicación**. En este script, «descartar» significa impedir una nueva entrega; no se simulan los ACK ni `NbTrans`. [Retransmisiones y contadores, §§4.3.1.3 y 4.3.1.5](https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf#page=21).
+
+### 5.4. ¿Por qué el atacante no cambia el contador a 6?
+
+```bash
+python scripts/sesion08_lora/simular_replay.py --etapa controles
+```
+
+El script ejecuta dos controles sobre una copia de A: cambia un bit del contenido cifrado o cambia `FCnt` de 4 a 6. En ambos casos conserva el MIC original y recalcula el CRC físico.
+
+| Prueba | CRC | MIC | Resultado en ambos Network Servers |
+|---|---|---|---|
+| Repetir A sin modificarla | Válido | Válido | El control del contador decide si se entrega. |
+| Alterar el contenido y recalcular solo el CRC | Válido | Inválido | No se entrega. |
+| Cambiar el contador a 6 y recalcular solo el CRC | Válido | Inválido | No se entrega ni se actualiza el contador. |
+
+**El replay explota la falta de control del estado; la alteración de campos se enfrenta al MIC.** Para explicar el resultado, el alumno debe relacionar qué campos autentica el MIC con la información que conserva el receptor.
+
+Para ejecutar todas las etapas de una vez:
+
+```bash
+python scripts/sesion08_lora/simular_replay.py
+```
+
+Cada comando ejecuta el experimento completo desde un estado vacío y muestra la etapa elegida. Guarda tres archivos de **PHYPayload de 20 bytes** (`A_normal.bin`, `B_alarma.bin` y `A_replay.bin`), `replay.json` con todas las decisiones y un informe de texto en `output/lorawan-replay/`. Los dos bytes de CRC se registran por separado en el JSON; no se añaden a esos `.bin`. Para consultar las opciones:
+
+```bash
+python scripts/sesion08_lora/simular_replay.py --help
+```
+
+??? question "Investigación: qué debe conservar el Network Server"
+
+    Localizar en la especificación **§4.3.1.5** la obligación de conservar los contadores en dispositivos ABP y la prohibición de reutilizarlos con las mismas claves para mensajes nuevos. Explicar qué podría ocurrir si se pierde el historial del Network Server mientras siguen vigentes la dirección y las claves de la sesión. Distinguir ese fallo de reiniciar el dispositivo cuando el servidor todavía conserva correctamente su estado.
+
+    Examinar `Receptor.recibir()` en `scripts/sesion08_lora/simular_replay.py`: identificar la comprobación del MIC, la comparación del contador y el punto en que se actualiza la memoria. Explicar por qué un paquete con MIC inválido no debe avanzar el contador.
+
+El experimento es una **simulación local sobre bytes**, sin transmitir RF ni conectarse a una red. La clase `Receptor` agrupa las funciones indicadas para mostrar el efecto del replay; no implementa una pila LoRaWAN completa ni demuestra una vulnerabilidad de la captura original. Puede ejecutarse sin generar antes el I/Q. La entrega de la sección 10 conserva sus archivos y requisitos; no se añade implementación criptográfica a cargo del alumno. En GNU Radio, `LoRa Rx` y `Tag Debug` siguen comprobando únicamente el CRC físico: `crc_valid` no acredita MIC válido ni protección contra replay.
 
 ## 6. Análisis en Inspectrum
 
@@ -332,17 +988,26 @@ BW\,T_s \approx 125\,000 \times 0.001024 = 128 = 2^7,
 \qquad SF = \log_2(BW\,T_s) \approx 7.
 $$
 
-Registrar el **BW**, el **Symbol period** y el **SF** obtenido. Para configurar `LoRa Rx` se usará el ancho de banda nominal de **125 kHz**. [Relación entre ancho de banda, duración del símbolo y SF](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=3).
+Registrar el **BW**, el **Symbol period** y el **SF** obtenido. El receptor del inspector usa el ancho de banda nominal de **125 kHz** y **SF7**; las medidas permiten comprobar esos parámetros. [Relación entre ancho de banda, duración del símbolo y SF](https://pubs.gnuradio.org/index.php/grcon/article/download/145/123/390#page=3).
 
-## 7. Recuperación de la trama en GNU Radio
+## 7. Recuperación de la trama en GNU Radio Companion (opcional)
 
-El objetivo es recuperar los **20 bytes** de `correcto.sigmf-data` y comprobar el **CRC físico de LoRa**. Usar la tasa de muestreo de la sección 3 y los valores de ancho de banda y SF de la sección 6.
+La sección 3 ya recuperó los **20 bytes** y comprobó el **CRC físico de LoRa** con el inspector. Se puede **continuar directamente a la sección 8**. Los pasos siguientes son una alternativa opcional para reproducir el resultado construyendo un flujograma en GNU Radio Companion; no son un requisito previo para la extracción ni para la entrega.
+
+Si se elige esta alternativa, usar la tasa de muestreo de la sección 3 y los valores de ancho de banda y SF de la sección 6.
 
 El repositorio incluye el grafo de referencia en `gnuradio/flowgraphs/lora_recuperar_trama.grc`. Los pasos siguientes permiten armarlo en GRC.
 
 ### 7.1. Crear el grafo y leer la muestra
 
-1. Abrir GNU Radio Companion desde el entorno de Radioconda que tiene instalado `gr-lora_sdr`.
+1. Abrir GNU Radio Companion desde el entorno de Radioconda que tiene instalado `gr-lora_sdr`. En Linux, volver a activar el entorno después del análisis en Inspectrum:
+
+    ```bash
+    conda activate base
+    gnuradio-companion
+    ```
+
+    En Windows, usar **Radioconda Prompt** o el acceso a GNU Radio Companion del menú Inicio.
 2. Crear un grafo nuevo y guardarlo como `gnuradio/flowgraphs/lora_recuperar_trama.grc`, desde la raíz de `sdr`.
 3. Abrir el bloque `Options` y configurarlo con estos valores.
 
@@ -454,7 +1119,7 @@ Con `Implicit header = No`, `LoRa Rx` lee la longitud, la tasa de codificación 
 
 ## 8. Extracción del mensaje cifrado
 
-El objetivo es ubicar el campo `FRMPayload` en `trama_recibida.bin` y guardar sus siete bytes tal como se recibieron. Usar el archivo de 20 bytes que generó `File Sink` en la sección 7. La Figura 6 permite comprobar las posiciones.
+El objetivo es ubicar el campo `FRMPayload` y guardar sus siete bytes tal como se recibieron. El recorrido principal parte de **`output/lorawan-iq/traza/03_phypayload.bin`**, generado por el inspector en la sección 3.5.7. La Figura 6 permite comprobar las posiciones. No hace falta ejecutar el flujograma opcional de la sección 7.
 
 ### 8.1. Encontrar el inicio y el final
 
@@ -464,49 +1129,38 @@ El objetivo es ubicar el campo `FRMPayload` en `trama_recibida.bin` y guardar su
 
 ### 8.2. Extraer los siete bytes
 
-Guardar el siguiente código como `extraer_mensaje.py` en la raíz de `sdr`. Python numera los bytes desde cero. Por eso `FCtrl` está en el índice `5`. El corte `trama[inicio:fin]` incluye el índice inicial y excluye `fin`.
+El repositorio incluye **`scripts/sesion08_lora/extraer_mensaje.py`**. Desde la raíz de `sdr`, con Radioconda activo, ejecutar:
+
+```bash
+python scripts/sesion08_lora/inspeccionar_lora.py --etapa phypayload
+python scripts/sesion08_lora/extraer_mensaje.py
+```
+
+El primer comando permite regenerar los 20 bytes si fuera necesario. El segundo lee ese resultado, guarda una copia como **`output/lorawan-iq/trama_recibida.bin`** y extrae **`output/lorawan-iq/mensaje_cifrado.bin`**. Así se conservan los nombres de los archivos que se entregan.
+
+Python numera los bytes desde cero. Por eso `FCtrl` está en el índice `5`; el cálculo que realiza el extractor es:
 
 ```python
-from pathlib import Path
-
-carpeta = Path("output/lorawan-iq")
-trama = (carpeta / "trama_recibida.bin").read_bytes()
-if len(trama) != 20:
-    raise SystemExit("Se esperaban 20 bytes. Revisar la salida de la sección 7.")
-
 longitud_opciones = trama[5] & 0x0F
 indice_puerto = 8 + longitud_opciones
 inicio = indice_puerto + 1
 fin = len(trama) - 4
-if inicio >= fin:
-    raise SystemExit("La trama no contiene un FRMPayload en el intervalo esperado.")
-
-puerto = trama[indice_puerto]
 mensaje_cifrado = trama[inicio:fin]
-(carpeta / "mensaje_cifrado.bin").write_bytes(mensaje_cifrado)
-
-print(f"FOptsLen = {longitud_opciones}")
-print(f"FPort = {puerto} (byte {indice_puerto + 1})")
-print(f"FRMPayload (bytes {inicio + 1} a {fin}) = {mensaje_cifrado.hex(' ')}")
-print(f"Guardados {len(mensaje_cifrado)} bytes en output/lorawan-iq/mensaje_cifrado.bin")
 ```
 
-Desde esa carpeta, ejecutar el archivo con Radioconda activo.
-
-```bash
-python extraer_mensaje.py
-```
-
-La terminal debe mostrar este resultado.
+El corte incluye `inicio` y excluye `fin`. Los cuatro bytes finales del MIC quedan fuera del mensaje extraído. La terminal muestra:
 
 ```text
 FOptsLen = 0
 FPort = 1 (byte 9)
 FRMPayload (bytes 10 a 16) = db f5 a4 e3 12 39 d0
 Guardados 7 bytes en output/lorawan-iq/mensaje_cifrado.bin
+Guardados 20 bytes en output/lorawan-iq/trama_recibida.bin
 ```
 
 El archivo de salida contiene los siete bytes cifrados en binario. La línea hexadecimal muestra esos mismos bytes para poder compararlos con la Figura 6.
+
+Si se usó el flujograma opcional, se puede indicar su archivo como entrada con `--entrada output/lorawan-iq/trama_recibida.bin`. Este script localiza y copia campos; no verifica el MIC ni descifra el mensaje.
 
 ## 9. Reto de ubicación del mensaje cifrado con `FOpts`
 
@@ -536,7 +1190,7 @@ El estándar describe la longitud de `FOpts` y el orden de los campos que le sig
 
 ## 10. Entrega del informe y del reto
 
-Entregar **un informe en PDF del Laboratorio #5** con la práctica, el reto y la respuesta de cierre. Adjuntar `trama_recibida.bin` (**20 bytes**) y `mensaje_cifrado.bin` (**7 bytes cifrados**), generados con `correcto.sigmf-data` en las secciones 7 y 8. El reto de la sección 9 se resuelve únicamente en el PDF. Las pruebas complementarias de la sección 11 no forman parte de la entrega.
+Entregar **un informe en PDF del Laboratorio #5** con la práctica, el reto y la respuesta de cierre. Adjuntar `trama_recibida.bin` (**20 bytes**) y `mensaje_cifrado.bin` (**7 bytes cifrados**), obtenidos de `correcto.sigmf-data` mediante el inspector de la sección 3 y el extractor de la sección 8. La sección 7 ofrece una alternativa opcional mediante GRC. El reto de la sección 9 se resuelve únicamente en el PDF. Las pruebas complementarias de la sección 11 no forman parte de la entrega.
 
 - **Fecha límite** — domingo 15 de noviembre de 2026 a las **23:59**, hora de Lima.
 - **Nombre del PDF** — `[codigo_uni].pdf`.
@@ -549,7 +1203,7 @@ Reemplazar `[codigo_uni]` por el código UNI, sin corchetes. Adjuntar el PDF y l
 
 1. **Paquete completo en Inspectrum.** Marcar el final de los chirps descendentes del preámbulo y el inicio y fin de la cabecera. Marcar también los tramos de contenido, contenido con CRC, y CRC con relleno. Indicar cuántos símbolos se cuentan desde el final del preámbulo hasta el final del paquete.
 2. **Medición del preámbulo en Inspectrum.** Mostrar los cursores sobre cuatro símbolos consecutivos y los dos límites de frecuencia del barrido. Dejar visibles los ejes y la lectura de **Symbol period**. Se pueden usar dos capturas si las lecturas se ven mejor por separado.
-3. **Comprobación del CRC en GNU Radio.** Capturar la salida de `Tag Debug` con la etiqueta `frame_info`. Deben verse `pay_len`, `crc` y `crc_valid`.
+3. **Comprobación del CRC en la terminal.** Ejecutar `python scripts/sesion08_lora/inspeccionar_lora.py --etapa crc` y capturar la comparación final: CRC calculado `a250`, recibido `a250` y resultado **VÁLIDO**. Si se eligió el flujograma opcional de la sección 7, también es válida la captura de `Tag Debug` con `pay_len`, `crc` y `crc_valid`.
 
 La captura del espectro y del *waterfall* de la sección 7.5 es opcional.
 
@@ -557,7 +1211,7 @@ La captura del espectro y del *waterfall* de la sección 7.5 es opcional.
 
 1. Anotar el período medido de los cuatro símbolos, la duración $T_s$ de un símbolo y las frecuencias inferior y superior del barrido. Mostrar cómo esas medidas dan el ancho de banda $BW$ y el factor de expansión $SF$.
 2. Escribir los 20 bytes de `trama_recibida.bin` en hexadecimal. Presentar una tabla con el nombre, las posiciones y el valor de cada campo de la Figura 6. Numerar los bytes desde 1 e indicar si hay opciones en `FOpts`.
-3. Indicar qué comprobación respalda `crc_valid` y qué queda por verificar con el MIC.
+3. Explicar qué comprueba el **CRC físico válido** mostrado por el inspector —o por `crc_valid` si se usó GRC— y qué queda por verificar con el MIC.
 4. Mostrar los siete bytes extraídos en hexadecimal e indicar la posición del primer y último byte dentro de la trama. Explicar cómo `FOptsLen` y la posición del MIC permiten fijar esos límites.
 
 ### 10.3. Resultado del reto
@@ -590,8 +1244,8 @@ Los procedimientos de descarga, procedencia y resultados están en los README de
 Después de descargar los datos indicados en cada README, desde la raíz del curso y con Radioconda activo:
 
 ```bash
-python scripts/verificar_lorawan_brno.py --salida output/verificacion-lorawan/brno.json
-python scripts/verificar_lora_915.py gnuradio/samples/lorawan-stu/lorawan_samples.sigmf-data --frecuencia-central-hz 868100000 --salida output/verificacion-lorawan/stu.json
+python scripts/sesion08_lora/verificar_lorawan_brno.py --salida output/verificacion-lorawan/brno.json
+python scripts/sesion08_lora/verificar_lora_915.py gnuradio/samples/lorawan-stu/lorawan_samples.sigmf-data --frecuencia-central-hz 868100000 --salida output/verificacion-lorawan/stu.json
 ```
 
-El primer programa conserva la lectura del PCAP y la validación de OTAA. Para el MIC de datos y el descifrado utiliza el mismo verificador `scripts/verificar_lorawan.py` que el ejemplo generado. Así ambas comprobaciones comparten las reglas de interpretación de las tramas de datos LoRaWAN 1.0.x.
+El primer programa conserva la lectura del PCAP y la validación de OTAA. Para el MIC de datos y el descifrado utiliza el mismo verificador `scripts/sesion08_lora/verificar_lorawan.py` que el ejemplo generado. Así ambas comprobaciones comparten las reglas de interpretación de las tramas de datos LoRaWAN 1.0.x.

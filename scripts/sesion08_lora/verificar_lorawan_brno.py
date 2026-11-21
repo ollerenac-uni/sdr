@@ -23,7 +23,7 @@ else:
     from verificar_lorawan import aes128, analizar_trama, cmac128
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 CARPETA = ROOT / "gnuradio/samples/lorawan-brno"
 DEV_EUI = "70b3d5cee0000042"
 DEV_ADDR = "01e65ddc"
