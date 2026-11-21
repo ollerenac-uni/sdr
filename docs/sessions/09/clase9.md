@@ -13,6 +13,16 @@ Una aeronave equipada con **ADS-B** difunde por radio datos obtenidos a bordo, c
 ![Un avión difunde mensajes ADS-B a 1090 MHz; una antena en la torre los recibe y el software muestra en un mapa el indicativo, la dirección ICAO, la posición, la altitud y la velocidad.](figures/00-adsb-avion-torre.svg)
 **Vista general.** El avión transmite sin una interrogación previa. La estación representa datos recibidos; no obtiene la posición midiendo el eco como un radar. La pantalla reúne mensajes de distintos tipos con el mismo ICAO. El **indicativo de vuelo** mostrado, `EJU46DN`, no es un nombre del modelo de avión ni una matrícula.
 
+??? info "Para comenzar: RenderMan y los aviones fantasma — DEF CON 20 (2012)"
+
+    Brad **“RenderMan” Haines** presentó *Hacker + Airplanes = No Good Can Come Of This*. Expuso la falta de autenticación en los mensajes ADS-B y una demostración desarrollada con Nick Foster: **FlightGear → GNU Radio → receptor ADS-B real**, que visualiza datos de una aeronave virtual. [Proyecto y demostración publicados por el autor](https://renderlab.net/projects/ADS-B/).
+
+    <iframe src="https://www.youtube-nocookie.com/embed/mY2uiLfXmaI" title="DEF CON 20: RenderMan — Hacker + Airplanes = No Good Can Come Of This" width="100%" height="420" style="border:0" loading="lazy" allow="encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+    [Ver la charla en el canal oficial de DEF CON](https://www.youtube.com/watch?v=mY2uiLfXmaI) · [Demo corta enlazada por el autor](https://www.youtube.com/watch?v=NSLqRXyxiBo) · [Diapositivas: demostración, páginas 41–46](https://renderlab.net/projects/ADS-B/Hackers-Airplanes-Defcon20-RenderMan.pdf#page=41).
+
+    El material documenta una prueba con un receptor real. **No acredita una intrusión en un radar o sistema operativo de un aeropuerto.** Se utiliza como antecedente histórico para plantear una pregunta que acompañará la sesión: **si un mensaje se decodifica y su CRC es válido, ¿qué permite afirmar sobre su emisor?**
+
 El objetivo es seguir una transmisión real de **1090 MHz** desde sus muestras complejas hasta las coordenadas de una aeronave. Primero observaremos los pulsos; después usaremos la descripción del protocolo para asignarles significado. Cada comando conserva los resultados intermedios para compararlos con las figuras.
 
 ![Recorrido desde I/Q a potencia, sincronismo, símbolos PPM, campos con CRC y posición CPR.](figures/01-recorrido.svg)
@@ -478,3 +488,5 @@ python scripts/sesion09_adsb/generar_figuras.py
 ```
 
 El segundo comando requiere Matplotlib, además del entorno de recepción; actualiza las figuras y la copia del mapa que usa MkDocs. Las referencias físicas, las reglas de campos y los algoritmos CPR están enlazados junto a cada explicación para poder contrastar las hipótesis con la documentación.
+
+Aplicación evaluada: **[Laboratorio #6 — Radar bajo sospecha: del archivo I/Q al mapa](laboratorio-adsb.md)**. Utiliza otro recorte real, una función de extracción de campos que completa el alumno y un caso local para distinguir CRC de autenticidad.

@@ -1,0 +1,25 @@
+{
+  "archivo": "adsb-laboratorio-14s-27s.sigmf-data",
+  "formato": "cf32_le",
+  "fs": 2400000,
+  "fc": 1090000000,
+  "fuente": "https://www.sdrangel.org/iq-files/",
+  "descarga": {
+    "url": "https://www.sdrangel.org/iq/adsb.zip",
+    "tipo": "zip_prefijo",
+    "miembro": "adsb.2021-11-26T15_03_30_573.wav",
+    "prefijo_bytes": 268435456,
+    "sha256_prefijo": "4c9cb0ed5f49af98cf470448d248ee37ef5820ddbfcdf422957092e2a69a7313",
+    "bytes_miembro_completo": 980041944,
+    "miembro_completo": false,
+    "conversion": "wav_iq_16"
+  },
+  "inicio_muestra_original": 33600000,
+  "inicio_archivo_original_s": 14.0,
+  "fin_archivo_original_s": 27.0,
+  "muestras": 31200000,
+  "duracion_archivo_s": 13.0,
+  "bytes": 249600000,
+  "sha256": "7638cfa9f6922516df993d079ee63526888fc55c578132bee086353938006ed4",
+  "nota": "Recorte I/Q real del intervalo 14–27 s del WAV de SDRangel de 2021, sin solapamiento con la muestra de la leccion. No se sintetizan ni remodulan mensajes. Los tiempos son relativos al recorte; la cadencia original no se usa para calcular velocidades."
+}

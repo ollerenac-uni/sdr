@@ -1,0 +1,21 @@
+{
+  "uso": "Caso de integridad completamente local: datos binarios, sin forma de onda ni transmisión RF.",
+  "advertencia_metodologica": "La procedencia declarada es contexto externo; no se deduce del CRC. Una trama capturada tampoco autentica la identidad de su emisor.",
+  "casos": [
+    {
+      "id": "A",
+      "hex": "8d49328b5955725a2ff16ae43ec2",
+      "procedencia_declarada": "Mensaje recuperado del I/Q real del laboratorio."
+    },
+    {
+      "id": "B",
+      "hex": "8d49328b59d5725a2ff16ae43ec2",
+      "procedencia_declarada": "Copia de A con el bit global 41 invertido y el CRC recibido sin actualizar."
+    },
+    {
+      "id": "C",
+      "hex": "8df0c00620055301c3682065c84c",
+      "procedencia_declarada": "Vector sintético local de identificación TC4, indicativo AULA06 y dirección ficticia de prueba F0C006; nunca se ha modulado ni emitido."
+    }
+  ]
+}

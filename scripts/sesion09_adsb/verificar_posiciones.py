@@ -15,8 +15,10 @@ import sys
 
 if __package__:
     from .receptor import ROOT, crear_potencia, recuperar_tramas, recuperar_posiciones, resumen, mode_s_residue, sha256
+    from .muestras import cargar_muestra, CATALOGOS
 else:
     from receptor import ROOT, crear_potencia, recuperar_tramas, recuperar_posiciones, resumen, mode_s_residue, sha256
+    from muestras import cargar_muestra, CATALOGOS
 
 import numpy as np
 
@@ -50,7 +52,7 @@ def guardar_resultados(r, salida):
     claves = ["icao", "callsign", "tiempo_s", "latitud", "longitud", "altitud_ft", "velocidad_kt", "rumbo_deg",
               "hex_par", "hex_impar", "tiempo_par_s", "tiempo_impar_s", "separacion_s", "metodo"]
     with (salida / "posiciones.csv").open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=claves)
+        w = csv.DictWriter(f, fieldnames=claves, lineterminator="\n")
         w.writeheader()
         w.writerows(r["posiciones"])
     geo = {"type": "FeatureCollection", "features": [{"type": "Feature",
@@ -70,14 +72,16 @@ def guardar_resultados(r, salida):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--salida", type=Path, default=ROOT / "output/adsb-posiciones")
+    parser.add_argument("--salida", type=Path)
+    parser.add_argument("--muestra", choices=CATALOGOS, default="leccion")
     parser.add_argument("--pymodes-dir", type=Path, help="Carpeta de pyModeS para comprobación independiente")
     args = parser.parse_args()
-    carpeta = ROOT / "gnuradio/samples/adsb-posiciones"
-    origen = json.loads((carpeta / "origen.json").read_text())
+    carpeta, origen = cargar_muestra(args.muestra)
+    if args.salida is None:
+        args.salida = ROOT / ("output/adsb-posiciones" if args.muestra=="leccion" else "output/adsb-laboratorio-referencia")
     archivo = carpeta / origen["archivo"]
     if not archivo.exists():
-        parser.error("Falta la muestra: ejecutar scripts/sesion09_adsb/descargar_muestra.py")
+        parser.error(f"Falta la muestra: ejecutar python scripts/sesion09_adsb/descargar_muestra.py --muestra {args.muestra}")
     hash_entrada = sha256(archivo)
     if hash_entrada != origen["sha256"]:
         parser.error("La captura no coincide con el SHA-256 de origen.json")

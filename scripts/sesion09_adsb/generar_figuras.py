@@ -149,6 +149,26 @@ def recorrido():
     f.guardar("01-recorrido.svg")
 
 
+def flujo_laboratorio():
+    f=Figura(340,"Laboratorio 6: del recorte real al mapa con evidencia")
+    pasos=[("Muestras I/Q","Recorte 14–27 s","2.4 Msps"),
+           ("Recepción","PPM + CRC","Facilitada"),
+           ("112 bits / trama","extraer_campos","Código del alumno"),
+           ("CPR global","Par + impar","Facilitado"),
+           ("Mapa","Tres aeronaves","Con evidencias")]
+    for i,(a,b,c) in enumerate(pasos):
+        x=25+220*i
+        f.caja(x,90,195,130,COLORES[3] if i==2 else COLORES[2 if i==4 else 0])
+        for j,texto in enumerate((a,b,c)):
+            f.texto(x+97,124+j*31,texto,17 if j else 19,
+                    peso="bold" if j==0 else "normal",ancla="middle",mono=i==2 and j==1)
+        if i<4:
+            f.flecha(x+196,155,x+216,155)
+    f.texto(30,264,"La función del alumno entrega los campos que se utilizan para calcular las coordenadas.",20)
+    f.texto(30,303,"Los tres casos de CRC se estudian aparte: no se mezclan con la captura I/Q del mapa.",20,peso="bold")
+    f.guardar("09-flujo-laboratorio.svg")
+
+
 def senales(t):
     carpeta=ROOT/"output/adsb-posiciones"
     p=np.memmap(carpeta/"potencia8.f32",dtype="<f4",mode="r")
@@ -322,7 +342,7 @@ def animacion(t):
 def main():
     DESTINO.mkdir(parents=True,exist_ok=True)
     t=json.loads((TRAZA/"traza.json").read_text())
-    avion_y_torre(t);recorrido();senales(t);ppm(t);bloques(t);campos(t);crc(t);cpr(t);animacion(t)
+    avion_y_torre(t);recorrido();flujo_laboratorio();senales(t);ppm(t);bloques(t);campos(t);crc(t);cpr(t);animacion(t)
     # Copias generadas para que el mapa y sus descargas funcionen en MkDocs.
     for origen,nombre in [("mapa.html","mapa-adsb.html"),("posiciones.csv","posiciones.csv"),
                           ("posiciones.geojson","posiciones.geojson"),("verificacion.json","verificacion.json")]:

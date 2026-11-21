@@ -20,6 +20,10 @@ python scripts/sesion09_adsb/verificar_posiciones.py
 | `inspeccionar_adsb.py` | Exponer muestras, medias PPM, bits, campos, pasos CRC y cálculos CPR de una trama real |
 | `generar_figuras.py` | Regenerar las figuras, el explorador PPM y la copia del mapa de la sesión 9 |
 | `ppm-interactivo.html` | Plantilla del explorador de medias de potencia y decisiones binarias |
+| `muestras.py` | Catálogos de la lección y del recorte real del laboratorio 6 |
+| `preparar_laboratorio.py` | Preparar mensajes, evidencias PPM y casos de CRC conservando el código del alumno |
+| `plantilla_analisis.py` | Función de extracción de campos por completar y punto de entrada del alumno |
+| `laboratorio.py` | Conectar los campos propios con CPR, validar resultados y generar el mapa |
 | `vendor/leaflet-1.9.4/` | Leaflet con licencia BSD, fuente y hashes registrados en `origen.json` |
 
 La salida se guarda en `output/adsb-posiciones/`. La carpeta de salida y los
@@ -52,3 +56,37 @@ Después de `--etapa todas` sobre la trama predeterminada, se pueden regenerar
 las figuras con `python scripts/sesion09_adsb/generar_figuras.py` (requiere
 Matplotlib). Ese comando actualiza los archivos generados de
 `docs/sessions/09/figures/` y `docs/sessions/09/animaciones/`.
+
+## Laboratorio 6
+
+El laboratorio usa otro tramo del mismo WAV original, 14–27 s, sin
+solapamiento con la lección. La guía y la rúbrica están en
+[`laboratorio-adsb.md`](../../docs/sessions/09/laboratorio-adsb.md).
+
+```bash
+python scripts/sesion09_adsb/descargar_muestra.py --muestra laboratorio
+python scripts/sesion09_adsb/preparar_laboratorio.py
+python scripts/sesion09_adsb/preparar_laboratorio.py --inspeccionar 1 --etapa ppm --bloque 1
+python scripts/sesion09_adsb/preparar_laboratorio.py --casos-crc
+```
+
+El alumno completa `extraer_campos(bits)` en la copia
+`output/adsb-laboratorio/mi_analisis.py`. El soporte valida sus campos y
+los utiliza para CPR y el mapa. No se completa automáticamente la función.
+Repetir la preparación conserva el archivo del alumno; `--reprocesar` solo
+regenera la recepción y sus datos.
+
+La verificación de referencia es independiente de la carpeta del alumno:
+
+```bash
+python scripts/sesion09_adsb/verificar_posiciones.py --muestra laboratorio
+```
+
+Guarda la referencia en `output/adsb-laboratorio-referencia/`. Puede usarse con
+`inspeccionar_adsb.py --directorio output/adsb-laboratorio-referencia`.
+Los parámetros y resultados del nuevo recorte están en
+[`adsb-laboratorio/`](../../gnuradio/samples/adsb-laboratorio/README.md).
+
+```bash
+python -m pytest tests/test_adsb_posiciones.py tests/test_adsb_laboratorio.py -q
+```

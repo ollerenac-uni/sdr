@@ -62,7 +62,7 @@ def archive_prefix(config):
         return data
 
 
-def wav_iq(data, expected_rate, expected_center):
+def wav_iq(data, expected_rate, expected_center, start_sample=0, sample_count=None):
     if data[:4] != b"RIFF" or data[8:12] != b"WAVE":
         raise ValueError("La entrada no es RIFF/WAVE")
     pos = 12
@@ -82,7 +82,11 @@ def wav_iq(data, expected_rate, expected_center):
                 raise ValueError(f"No coincide PCM16 I/Q, tasa o frecuencia: {fmt}, {center}")
             # A prefix may end in the middle of a sample; keep complete I/Q pairs.
             available = min(size, len(data)-pos)
-            raw = np.frombuffer(data[pos:pos+available//4*4], "<i2")
+            total = available//4
+            count = total-start_sample if sample_count is None else sample_count
+            if start_sample < 0 or count < 0 or start_sample+count > total:
+                raise ValueError("El recorte I/Q solicitado no está completo en el prefijo WAV")
+            raw = np.frombuffer(data, "<i2", count=count*2, offset=pos+start_sample*4)
             values = raw.astype(np.float32).reshape(-1, 2)
             return ((values[:, 0] + 1j*values[:, 1])/32768).astype("<c8").tobytes()
         pos += size + size % 2

@@ -1,0 +1,17 @@
+{
+  "global": {
+    "core:datatype": "cf32_le",
+    "core:sample_rate": 2400000,
+    "core:version": "1.0.0",
+    "core:dataset": "adsb-laboratorio-14s-27s.sigmf-data",
+    "core:description": "Recorte I/Q real del intervalo 14–27 s del WAV de SDRangel de 2021, sin solapamiento con la muestra de la leccion. No se sintetizan ni remodulan mensajes. Los tiempos son relativos al recorte; la cadencia original no se usa para calcular velocidades.",
+    "core:recorder": "https://www.sdrangel.org/iq-files/"
+  },
+  "captures": [
+    {
+      "core:sample_start": 0,
+      "core:frequency": 1090000000
+    }
+  ],
+  "annotations": []
+}

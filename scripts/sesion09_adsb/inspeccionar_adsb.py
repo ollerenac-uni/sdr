@@ -13,8 +13,10 @@ import numpy as np
 
 if __package__:
     from .receptor import ROOT, FS, mode_s_residue, nl, sha256
+    from .muestras import ruta_captura
 else:
     from receptor import ROOT, FS, mode_s_residue, nl, sha256
+    from muestras import ruta_captura
 
 
 def tabla(cabeceras, filas):
@@ -62,7 +64,8 @@ def detallar_cpr(par, impar):
 def construir_traza(informe, potencia, hexadecimal=None):
     por_hex = {f["hex"]: f for f in informe["tramas"]}
     if hexadecimal is None:
-        hexadecimal = informe["posiciones"][0]["hex_par"]
+        hexadecimal = (informe["posiciones"][0]["hex_par"] if informe["posiciones"]
+                       else informe["tramas"][0]["hex"])
     if hexadecimal not in por_hex:
         raise ValueError("El hexadecimal no aparece entre las tramas recuperadas de esta captura.")
     frame = por_hex[hexadecimal]
@@ -116,7 +119,7 @@ def preparar_ventana(informe, traza, destino):
     else:
         from receptor import recuperar_tramas
     origen = informe["origen"]
-    archivo = ROOT / "gnuradio/samples/adsb-posiciones" / origen["archivo"]
+    archivo = ruta_captura(origen)
     entrada = np.memmap(archivo, dtype="<c8", mode="r")
     inicio = max(0, math.floor((traza["trama"]["tiempo_s"]-.0001)*origen["fs"]))
     ventana = entrada[inicio:inicio+math.ceil(.0004*origen["fs"])]
@@ -239,7 +242,7 @@ def main():
         informe = json.loads((args.directorio / "verificacion.json").read_text())
         potencia = args.directorio / "potencia8.f32"
         origen = informe["origen"]
-        archivo = ROOT / "gnuradio/samples/adsb-posiciones" / origen["archivo"]
+        archivo = ruta_captura(origen)
         if sha256(archivo) != origen["sha256"]:
             raise ValueError("La captura no coincide con su hash verificado.")
         if args.listar:
