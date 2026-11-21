@@ -1,0 +1,2174 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Curso de pregrado en radio definida por software (SDR) — señales IQ, GNU Radio, modulación y sistemas reales">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/04/diagnostico-rds/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Recepción FM en vivo: diagnóstico de RDS - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/sdr-mixer.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#recepcion-fm-en-vivo-diagnostico-de-rds" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Recepción FM en vivo: diagnóstico de RDS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01-introduccion-sdr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción a SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 — Introducción a SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-introduccion-sdr/laboratorio-muestreo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #1: muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../02-tiempo-frecuencia-iq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03–05 — Señales y espectro en SDR
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03–05 — Señales y espectro en SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/mezcla-interactiva/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demostración: mezcla compleja
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/laboratorio-receptor-fm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #2: demodulador FM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../03-sistemas-filtros-digitales/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 — Laboratorio de enlace digital
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    06 — Laboratorio de enlace digital
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/tarea-laboratorio-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tarea del laboratorio 3
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/clase-enlace-digital/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapa visual de los 24 pasos
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 — Recepción FM y decodificación RDS en GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 — Recepción FM y decodificación RDS en GNU Radio
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clase4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lección 4: recepción FM y RDS
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../laboratorio-fm-rds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #4: adaptación y diagnóstico
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06/clase6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 — Señales LoRa
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/laboratorio-filtrado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Práctica complementaria: filtros FIR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-proposito-y-criterios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Propósito y criterios
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-banda-fm-y-procedimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Banda FM y procedimiento
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-mejoras-ensayadas-en-la-version-inicial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Mejoras ensayadas en la versión inicial
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Mejoras ensayadas en la versión inicial">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-normalizar-amplitud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. Normalizar amplitud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-reiniciar-adquisicion-al-resintonizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. Reiniciar adquisición al resintonizar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-corregir-las-unidades-del-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3. Corregir las unidades del panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-falla-reproducida-en-la-presentacion-del-nombre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Falla reproducida en la presentación del nombre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-resultados-medidos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Resultados medidos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Resultados medidos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-barrido-continuo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1. Barrido continuo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-confirmaciones-y-adquisicion-lenta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2. Confirmaciones y adquisición lenta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-puede-verse-una-componente-en-57-khz-sin-recuperar-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3. ¿Puede verse una componente en 57 kHz sin recuperar datos?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-repetir-las-mismas-muestras-con-bloques-nuevos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4. Repetir las mismas muestras con bloques nuevos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-confirmar-la-deteccion-debil-de-1011-mhz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5. Confirmar la detección débil de 101.1 MHz
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-que-se-detecto-y-que-solucion-corresponde" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6. Qué se detectó y qué solución corresponde
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-repetir-las-comprobaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Repetir las comprobaciones
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-como-interpretar-una-pausa-del-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Cómo interpretar una pausa del panel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-variante-sin-python-snippet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Variante sin Python Snippet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Variante sin Python Snippet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-comprobacion-con-el-rtl-sdr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1. Comprobación con el RTL-SDR
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-limites-del-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2. Límites del panel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-repetir-la-prueba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3. Repetir la prueba
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="recepcion-fm-en-vivo-diagnostico-de-rds">Recepción FM en vivo: diagnóstico de RDS</h1>
+<p>Este informe acompaña la <a href="../clase4/">lección 4</a>.
+Documenta la revisión de <code>gnuradio/flowgraphs/fm.grc</code> y las pruebas de resintonía con el RTL-SDR del profesor.
+La recepción se realizó en <strong>Lima, el 7 de noviembre de 2026</strong>.</p>
+<p>El <code>fm.grc</code> vigente corresponde a la versión <strong>sin Python Snippet</strong>, descrita en la sección 8.
+Las secciones 3–5 conservan el diagnóstico y las mediciones de la versión inicial con snippet.
+Los dos archivos anteriores están respaldados en <code>gnuradio/flowgraphs/respaldos/2026-11-07-sin-snippet/</code>.</p>
+<h2 id="1-proposito-y-criterios">1. Propósito y criterios</h2>
+<p>El problema observado es un panel RDS que deja de cambiar mientras continúan el audio y los espectros.
+La comprobación separa cuatro observaciones:</p>
+<ol>
+<li>El receptor entrega muestras del multiplex FM.</li>
+<li>La rama RDS entrega bits a <code>RDS Decoder</code>.</li>
+<li><code>RDS Decoder</code> publica grupos completos que superan las comprobaciones.</li>
+<li><code>RDS Parser</code> publica campos y <code>RDS Panel</code> los presenta.</li>
+</ol>
+<p><strong>Un pico alrededor de 57 kHz no sustituye la validación de los grupos.</strong>
+La energía puede contener señal útil, ruido o interferencia.
+El protocolo RDS necesita sincronización, decisiones binarias correctas y las comprobaciones de sus cuatro bloques.</p>
+<h2 id="2-banda-fm-y-procedimiento">2. Banda FM y procedimiento</h2>
+<p>La <a href="https://busquedas.elperuano.pe/dispositivo/NL/2336511-1">Resolución Ministerial 610-2024-MTC/01.03</a> define la banda peruana de radiodifusión FM entre <strong>88 y 108 MHz</strong>.
+El barrido incluye <strong>87–108 MHz</strong>, por solicitud del profesor; el tramo 87–88 MHz es un margen de exploración.</p>
+<p>El barrido recorre 211 puntos, separados por 100 kHz.
+El mismo flowgraph permanece ejecutándose al cambiar de frecuencia.
+Cada punto reserva 0.8 s de asentamiento y 2.2 s de observación.
+Una segunda prueba dedica más tiempo a las frecuencias seleccionadas.
+La observación corta no permite descartar una transmisión RDS débil ni garantiza reunir un PS completo.</p>
+<p>El programa compila <code>fm.grc</code> mediante <code>grcc</code>.
+Durante la medición reemplaza únicamente <code>Audio Sink</code> por <code>Null Sink</code> para evitar reproducción física.
+<code>RTL-SDR Source</code> sigue regulando la adquisición.
+Los bloques de sintonía y de decodificación son los del <code>.grc</code> compilado.</p>
+<p>El registro incluye frecuencia, bits consumidos, grupos válidos, PI, PS, RadioText y medidas espectrales del multiplex.
+Los cocientes espectrales son medidas relativas. No son una SNR calibrada ni una prueba independiente de transmisión RDS.
+Las frecuencias cercanas pueden recibir el mismo servicio; un punto de sintonía no equivale necesariamente a una emisora distinta.</p>
+<h2 id="3-mejoras-ensayadas-en-la-version-inicial">3. Mejoras ensayadas en la versión inicial</h2>
+<p>Esta sección describe el ensayo con snippet, conservado como <code>fm.grc.bak</code> en la carpeta de respaldos.
+El grafo vigente conserva AGC y el reinicio nativo del Parser; elimina el snippet y su indicador.</p>
+<table>
+<thead>
+<tr>
+<th>Cambio</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Frecuencia de la emisora (MHz)</code>, con rango 87–108.</td>
+<td>Hacer explícita la unidad del control y cubrir el barrido.</td>
+</tr>
+<tr>
+<td><code>frecuencia_emisora_hz = frecuencia_emisora * M</code>.</td>
+<td>Utilizar Hz en el hardware y en los cálculos del rotador.</td>
+</tr>
+<tr>
+<td><code>frecuencia_central</code> y <code>desplazamiento_sintonia</code>, en Hz.</td>
+<td>Permitir sintonía directa o un desplazamiento controlado, sin mezclar MHz con Hz.</td>
+</tr>
+<tr>
+<td>Control <code>Ganancia RF (dB)</code>, inicialmente 29.7 dB.</td>
+<td>Ajustar la recepción sin editar <code>RTL-SDR Source</code>.</td>
+</tr>
+<tr>
+<td><code>AGC</code> (<code>normalizar_rds</code>) antes de <code>Costas Loop</code>.</td>
+<td>Normalizar la amplitud que recibe el detector de fase.</td>
+</tr>
+<tr>
+<td><code>RDS Parser.Reset = frecuencia_emisora</code>.</td>
+<td>Limpiar el estado de reconstrucción al cambiar la sintonía.</td>
+</tr>
+<tr>
+<td><code>Python Snippet</code> (<code>control_resintonia_rds</code>).</td>
+<td>Reiniciar adquisición y actualizar el diagnóstico desde el hilo Qt.</td>
+</tr>
+<tr>
+<td><code>QT GUI Label</code> (<code>estado_rds</code>).</td>
+<td>Mostrar flujo de bits, contador de grupos válidos y tiempo desde el último grupo.</td>
+</tr>
+<tr>
+<td>Salidas de observación hacia <code>Message Debug.store</code>.</td>
+<td>Contar grupos y campos sin imprimir cada mensaje durante el barrido.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="31-normalizar-amplitud">3.1. Normalizar amplitud</h3>
+<p>Se conserva <code>Multiply Const</code> (<code>ganancia_rds</code>) y se añade el bloque estándar <code>AGC</code> (<code>normalizar_rds</code>).
+La <a href="https://github.com/bastibl/gr-rds/blob/maint-3.10/examples/rds_rx.grc">referencia de gr-rds</a> también utiliza control automático de ganancia.</p>
+<table>
+<thead>
+<tr>
+<th>Campo de <code>AGC</code></th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Type</code></td>
+<td><code>Complex</code></td>
+</tr>
+<tr>
+<td><code>Rate</code></td>
+<td><code>2e-3</code></td>
+</tr>
+<tr>
+<td><code>Reference</code></td>
+<td><code>0.7</code></td>
+</tr>
+<tr>
+<td><code>Gain</code></td>
+<td><code>1.0</code></td>
+</tr>
+<tr>
+<td><code>Max Gain</code></td>
+<td><code>100</code></td>
+</tr>
+</tbody>
+</table>
+<p>El AGC controla la amplitud. No aumenta la SNR ni reconstruye datos perdidos.
+Una saturación producida antes del AGC requiere corregir la ganancia RF o la recepción.
+La comparación con muestras idénticas mostró una mejora pequeña en Onda Cero; no recuperó grupos en varias frecuencias restantes.</p>
+<h3 id="32-reiniciar-adquisicion-al-resintonizar">3.2. Reiniciar adquisición al resintonizar</h3>
+<p>El <code>Python Snippet</code> instala un temporizador Qt que detecta cambios del control de frecuencia.
+Al detectar un cambio realiza estas operaciones:</p>
+<ol>
+<li>Suspende temporalmente el flujo mediante <code>lock()</code>.</li>
+<li>Lleva la fase y la frecuencia estimadas de <code>Costas Loop</code> a cero.</li>
+<li>Invoca <code>Symbol Sync.set_sps()</code> con el período nominal.</li>
+<li>Restablece la ganancia inicial del AGC y llama a <code>RDS Parser.reset()</code>.</li>
+<li>Reanuda el flujo mediante <code>unlock()</code> y reinicia la observación del panel.</li>
+</ol>
+<p>La <a href="https://github.com/gnuradio/gnuradio/blob/v3.10.12.0/gr-digital/lib/symbol_sync_cc_impl.cc#L124-L150">implementación de <code>Symbol Sync.set_sps()</code></a> reinicia el reloj y el interpolador.
+<code>RDS Decoder</code> conserva su mecanismo propio de búsqueda y recuperación de sincronización.
+El cambio no garantiza decodificar cualquier señal visible alrededor de 57 kHz.</p>
+<h3 id="33-corregir-las-unidades-del-panel">3.3. Corregir las unidades del panel</h3>
+<p>La versión instalada de <code>RDS Panel</code> divide por un millón la frecuencia recibida en su constructor.
+Su método <code>set_frequency()</code> presenta directamente el argumento recibido.
+La <a href="https://github.com/bastibl/gr-rds/blob/maint-3.10/python/rdspanel.py">implementación</a> utiliza, por tanto, convenciones diferentes en esas dos entradas.</p>
+<p>El parámetro del panel sigue el control en MHz para que su callback funcione al resintonizar.
+El snippet corrige la etiqueta inicial mediante <code>set_frequency(frecuencia_emisora)</code>.
+El hardware recibe <code>frecuencia_central</code> en Hz.</p>
+<h2 id="4-falla-reproducida-en-la-presentacion-del-nombre">4. Falla reproducida en la presentación del nombre</h2>
+<p>Se inyectaron cuatro grupos ya estructurados en <code>RDS Parser</code>, con el mismo PI y el nombre de prueba <code>PRUEBAFM</code>.
+Esta prueba verifica mensajes y presentación. No simula una recepción RF ni comprueba CRC por radio.</p>
+<table>
+<thead>
+<tr>
+<th>Paso</th>
+<th>Resultado del panel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Recibir los cuatro segmentos de PS.</td>
+<td><code>PRUEBAFM</code>.</td>
+</tr>
+<tr>
+<td>Limpiar el panel y repetir los mismos grupos sin reiniciar el Parser.</td>
+<td>El nombre permanece vacío.</td>
+</tr>
+<tr>
+<td>Reiniciar el Parser y repetir los cuatro grupos.</td>
+<td><code>PRUEBAFM</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>El <a href="https://github.com/bastibl/gr-rds/blob/maint-3.10/lib/parser_impl.cc#L96-L116">Parser conserva las marcas de segmentos recibidos</a>.
+Si el segmento se repite sin cambios, no vuelve a publicar el mismo PS.
+El Parser también se reinicia cuando detecta otro PI.
+Por eso el caso reproducido afecta especialmente al regreso al mismo servicio después de una sintonía sin grupos válidos intermedios.</p>
+<p>La prueba automática compila el <code>.grc</code>, sustituye el hardware por una fuente de prueba y verifica el regreso al mismo servicio.
+También comprueba la correspondencia MHz/Hz y la sintonía con desplazamiento.</p>
+<h2 id="5-resultados-medidos">5. Resultados medidos</h2>
+<h3 id="51-barrido-continuo">5.1. Barrido continuo</h3>
+<p>El barrido recorrió <strong>211 puntos entre 87 y 108 MHz</strong>, sin reiniciar el receptor entre puntos.
+En todos los puntos aumentó el contador de bits consumidos por <code>RDS Decoder</code>.
+La observación corta recuperó grupos válidos en estas frecuencias:</p>
+<table>
+<thead>
+<tr>
+<th>Frecuencia seleccionada</th>
+<th>Grupos válidos en unos 2.2 s</th>
+<th>PI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>88.9 MHz</td>
+<td>25</td>
+<td><code>F030</code></td>
+</tr>
+<tr>
+<td>98.1 MHz</td>
+<td>2</td>
+<td><code>3F3F</code></td>
+</tr>
+<tr>
+<td>101.1 MHz</td>
+<td>1</td>
+<td><code>22FF</code></td>
+</tr>
+<tr>
+<td>102.1 MHz</td>
+<td>4</td>
+<td><code>F026</code></td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Barrido medido de 87 a 108 MHz con grupos RDS válidos arriba y bits consumidos por el decoder abajo." src="../figures/19-barrido-rds.png" />
+<strong>Figura 1.</strong> El decoder consume bits durante todo el barrido, aunque solo algunas sintonías producen grupos válidos.</p>
+<ul>
+<li><strong>Panel superior:</strong> el eje horizontal indica frecuencia RF; el vertical indica grupos válidos por segundo observado.
+  Los puntos con cero grupos no prueban que la emisora carezca de RDS.</li>
+<li><strong>Panel inferior:</strong> el eje horizontal repite la frecuencia RF; el vertical cuenta bits consumidos durante cada ventana.
+  Los contadores avanzan por lotes, de modo que las ventanas cortas no producen cuentas idénticas.</li>
+<li>La franja gris identifica 87–88 MHz, fuera de la banda FM definida por la norma citada.
+  La persistencia del contador de bits permite descartar una detención del stream durante este barrido.</li>
+</ul>
+<h3 id="52-confirmaciones-y-adquisicion-lenta">5.2. Confirmaciones y adquisición lenta</h3>
+<p>La segunda pasada utilizó ventanas de ocho segundos, después de un segundo de asentamiento.
+Volvió a las emisoras iniciales después de recorrer otras frecuencias.</p>
+<table>
+<thead>
+<tr>
+<th>Frecuencia</th>
+<th>Resultado de la pasada prolongada</th>
+<th>Identificación obtenida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>88.9 MHz</td>
+<td>90 grupos; 82 al regresar.</td>
+<td>PI <code>F030</code>, PS variable con segmentos de <code>FELICIDAD</code>.</td>
+</tr>
+<tr>
+<td>98.1 MHz</td>
+<td>13 grupos; 11 al regresar.</td>
+<td>PI <code>3F3F</code>; esas ventanas no completaron el PS.</td>
+</tr>
+<tr>
+<td>102.1 MHz</td>
+<td>17 grupos.</td>
+<td>PI <code>F026</code>, PS <code>OXIGENO</code>.</td>
+</tr>
+<tr>
+<td>101.1 MHz</td>
+<td>Cero grupos en esa ventana.</td>
+<td>La detección corta quedó como intermitente.</td>
+</tr>
+</tbody>
+</table>
+<p>Al utilizar un desplazamiento de sintonía de <strong>250 kHz</strong>, 98.1 MHz produjo 17 grupos y completó <code>ONDACERO</code>.
+En esa misma prueba, 102.1 MHz produjo solo dos grupos.
+El desplazamiento se conserva como opción; esta comparación no demuestra una mejora universal ni identifica DC como causa.
+En 101.1 MHz reapareció un grupo con PI <code>22FF</code>, sin PS completo.
+La observación posterior de veinte segundos confirmó ese servicio, como explica la sección 5.5.</p>
+<p>RPP 89.7, Exitosa 95.5, Nacional 103.9 y PBO 91.9 MHz no produjeron grupos válidos en sus ventanas prolongadas.
+El resultado describe estas muestras y la recepción disponible en Lima.
+No demuestra ausencia de transmisión RDS ni cubre todos los transmisores del Perú.</p>
+<h3 id="53-puede-verse-una-componente-en-57-khz-sin-recuperar-datos">5.3. ¿Puede verse una componente en 57 kHz sin recuperar datos?</h3>
+<p><img alt="Espectros de dos multiplex recibidos, con la región alrededor de 57 kHz resaltada y los grupos válidos de cada observación." src="../figures/20-espectros-rds.png" />
+<strong>Figura 2.</strong> La inspección del multiplex debe acompañarse de la comprobación de los grupos RDS.</p>
+<ul>
+<li><strong>Panel superior, 88.9 MHz:</strong> la curva azul muestra la densidad espectral del multiplex.
+  Aparecen dos elevaciones alrededor de 57 kHz y un valle cerca del centro.
+  El decoder recuperó 25 grupos válidos durante la observación correspondiente.</li>
+<li><strong>Panel inferior, 88.3 MHz:</strong> la curva no muestra una elevación comparable alrededor de 57 kHz en esa ventana.
+  El decoder no recuperó grupos válidos.</li>
+<li>Ambos paneles muestran 50–65 kHz del multiplex; la línea discontinua marca 57 kHz.
+  Cada curva se normaliza respecto de su propio máximo. No se comparan potencias RF absolutas entre paneles.</li>
+<li>El espectro utiliza los últimos 0.5 s de cada observación.
+  Las cuentas de grupos corresponden a la ventana completa de unos 2.2 s.</li>
+</ul>
+<p>Un pico estrecho, una banda aparente o un audio audible no certifican datos RDS válidos.
+Identificar el origen de una componente concreta requiere medir la captura correspondiente; este informe no atribuye automáticamente los picos a DC o a armónicos.</p>
+<h3 id="54-repetir-las-mismas-muestras-con-bloques-nuevos">5.4. Repetir las mismas muestras con bloques nuevos</h3>
+<p>Se guardó el multiplex completo de cada ventana prolongada.
+Después se construyeron instancias nuevas de todos los bloques de la rama RDS para procesar cada grabación.
+Se conservaron las tasas, los filtros, el AGC y los parámetros de sincronización del grafo mejorado.</p>
+<table>
+<thead>
+<tr>
+<th>Sintonía</th>
+<th>Grupos durante recepción en vivo</th>
+<th>Grupos al repetir con estado nuevo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>88.9 MHz, primera visita</td>
+<td>90</td>
+<td>88</td>
+</tr>
+<tr>
+<td>98.1 MHz, primera visita</td>
+<td>13</td>
+<td>11</td>
+</tr>
+<tr>
+<td>102.1 MHz</td>
+<td>17</td>
+<td>16</td>
+</tr>
+<tr>
+<td>88.9 MHz, regreso</td>
+<td>82</td>
+<td>86</td>
+</tr>
+<tr>
+<td>98.1 MHz, regreso</td>
+<td>11</td>
+<td>13</td>
+</tr>
+</tbody>
+</table>
+<p>En 97.3, 88.3, 89.7, 90.5, 95.5, 100.1, 101.1, 103.9 y 91.9 MHz, ambas comprobaciones produjeron cero grupos.
+Para esas grabaciones, el estado dejado por la emisora anterior <strong>no explica por sí solo</strong> la falta de grupos.
+Las diferencias pequeñas en las cuentas positivas incluyen adquisición, límites de las ventanas y procesamiento por lotes.
+La repetición comienza con estado nuevo y no reproduce exactamente las condiciones del inicio de la ventana en vivo.</p>
+<h3 id="55-confirmar-la-deteccion-debil-de-1011-mhz">5.5. Confirmar la detección débil de 101.1 MHz</h3>
+<p>Una observación posterior de veinte segundos produjo 84 grupos con PI <code>22FF</code> y PS variables <code>PANAMERI</code> y <code>....CANA</code>.
+La <a href="https://www.radiopanamericana.com/100-anos-de-la-radio-en-el-peru-por-que-la-radio-sigue-viva-en-tiempos-de-tiktok/">frecuencia publicada por Radio Panamericana</a> es 101.1 MHz.
+La identificación es consistente con esos segmentos recibidos.</p>
+<p>Se repitió la observación durante veinte segundos por configuración, con instancias nuevas del receptor al iniciar cada prueba:</p>
+<table>
+<thead>
+<tr>
+<th>Configuración</th>
+<th>Grupos válidos</th>
+<th>PS observado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sintonía directa, centro del RTL-SDR igual a 101.1 MHz.</td>
+<td>83</td>
+<td>Incluye <code>PANAMERI</code> y <code>....CANA</code>.</td>
+</tr>
+<tr>
+<td>Centro del RTL-SDR 400 kHz por encima; rotación digital de +400 kHz.</td>
+<td>50</td>
+<td><code>PA..CANA</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>La sintonía directa también recuperó datos.
+El desplazamiento no fue una condición necesaria y estos resultados no demuestran que DC causara la dificultad.
+Las pruebas se realizaron en instantes distintos; el número de grupos refleja también la variabilidad de la recepción.</p>
+<p>Al repetir la grabación que produjo 84 grupos, con bloques RDS nuevos, se recuperaron 81 y segmentos coherentes de PS.
+La grabación de 97.3 MHz siguió produciendo cero grupos en esa comprobación.
+Una captura anterior de 97.3 MHz, preparada para el laboratorio, había producido grupos con PI <code>956B</code>.
+La falta de recuperación posterior no invalida esa detección anterior ni demuestra ausencia de RDS.</p>
+<p>También se procesaron prefijos de la <strong>misma grabación directa de veinte segundos</strong>, con estado nuevo en cada ejecución:</p>
+<table>
+<thead>
+<tr>
+<th>Prefijo procesado</th>
+<th>Grupos válidos</th>
+<th>PS publicado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 s</td>
+<td>5</td>
+<td>Ninguno.</td>
+</tr>
+<tr>
+<td>4 s</td>
+<td>12</td>
+<td>Ninguno.</td>
+</tr>
+<tr>
+<td>8 s</td>
+<td>31</td>
+<td><code>....CANA</code>.</td>
+</tr>
+<tr>
+<td>12 s</td>
+<td>44</td>
+<td><code>....CANA</code>.</td>
+</tr>
+<tr>
+<td>20 s</td>
+<td>86</td>
+<td>Incluye <code>PANAMERI</code> y otras variantes.</td>
+</tr>
+</tbody>
+</table>
+<p>Esta prueba demuestra que pueden fluir grupos válidos antes de que aparezca un nombre reconocible en el panel.
+Los veinte segundos no son un umbral universal de RDS.
+La calidad recibida, la adquisición y los segmentos transmitidos afectan el resultado.</p>
+<h3 id="56-que-se-detecto-y-que-solucion-corresponde">5.6. Qué se detectó y qué solución corresponde</h3>
+<ul>
+<li><strong>Falla reproducida:</strong> limpiar el panel sin reiniciar el Parser puede impedir la republicación del mismo PS.
+  Se corrigió la dependencia de reinicio y se añadió una prueba de regresión.</li>
+<li><strong>Bloqueo general al resintonizar:</strong> no se reprodujo en este barrido.
+  El receptor consumió bits y volvió a recuperar grupos después de muchas sintonías sin grupos.</li>
+<li><strong>Adquisición e interpretación:</strong> las ventanas cortas pueden entregar pocos grupos y todavía no completar nombre o radiotexto.
+  Se añadió observación separada de bits, grupos y tiempo sin grupos.</li>
+<li><strong>Señales débiles o interferidas:</strong> reiniciar bloques no garantiza recuperar sus datos.
+  Se proponen observaciones más largas y comparaciones de ganancia RF y ubicación de antena, cambiando una condición cada vez.</li>
+<li><strong>Desplazamiento de sintonía:</strong> queda disponible para ensayos controlados.
+  No se exige para todas las emisoras ni se presenta como corrección demostrada de DC.</li>
+</ul>
+<p>Las comparaciones iniciales en vivo usaron instantes y ganancias RF distintos.
+Por eso sus diferencias de cuenta no se atribuyen a un solo ajuste del receptor.
+Los <a href="../figures/diagnostico-rds-datos.json">datos del informe</a> conservan las observaciones y las limitaciones.</p>
+<h2 id="6-repetir-las-comprobaciones">6. Repetir las comprobaciones</h2>
+<p>Desde la raíz del repositorio, con Radioconda y <code>gr-cbs33m</code> instalados:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>scripts/barrer_fm_rds.py<span class="w"> </span>--inicio<span class="w"> </span><span class="m">87</span><span class="w"> </span>--fin<span class="w"> </span><span class="m">108</span><span class="w"> </span>--paso<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span>--espera<span class="w"> </span><span class="m">0</span>.8<span class="w"> </span>--tiempo<span class="w"> </span><span class="m">2</span>.2<span class="w"> </span>--salida<span class="w"> </span>output/barrido-fm-rds
+</code></pre></div>
+<p>El RTL-SDR debe estar libre antes de iniciar el programa.
+La opción <code>--frecuencias</code> permite repetir una secuencia específica, incluida la vuelta a una emisora anterior.
+El programa guarda <code>barrido.json</code> y segmentos del multiplex en el directorio indicado.
+Las grabaciones de trabajo permanecen fuera de Git.</p>
+<h2 id="7-como-interpretar-una-pausa-del-panel">7. Cómo interpretar una pausa del panel</h2>
+<table>
+<thead>
+<tr>
+<th>Observación</th>
+<th>Interpretación y siguiente comprobación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Continúan los bits y los grupos válidos.</td>
+<td>Revisar campos publicados; el texto puede repetirse.</td>
+</tr>
+<tr>
+<td>Continúan los bits, pero faltan grupos válidos.</td>
+<td>Revisar señal recibida, adquisición y comprobaciones de los bloques.</td>
+</tr>
+<tr>
+<td>Aparece un PI nuevo, pero falta PS o RadioText.</td>
+<td>Esperar sus segmentos; comprobar los tipos de grupo recibidos.</td>
+</tr>
+<tr>
+<td>Se detienen los bits, el audio y los visores.</td>
+<td>Investigar el funcionamiento general del flowgraph.</td>
+</tr>
+</tbody>
+</table>
+<p>El indicador de la versión inicial permitía separar esas situaciones.
+El grafo vigente imprime grupos con <code>Message Debug.print</code>; el banco de medida registra contadores cuando se necesita un diagnóstico detallado.
+La potencia visible en el espectro y el volumen del audio no certifican recuperación de datos RDS.</p>
+<h2 id="8-variante-sin-python-snippet">8. Variante sin Python Snippet</h2>
+<p>La variante probada como <code>fm_sin_snippet.grc</code> pasó a ser <strong><code>gnuradio/flowgraphs/fm.grc</code></strong>, con <code>Options.ID = fm</code>.
+El cambio de nombre e ID no altera sus bloques de procesamiento.
+Las copias exactas anteriores se conservan como <code>fm.grc.bak</code> y <code>fm_sin_snippet.grc.bak</code> en la carpeta de respaldos.
+Su <code>manifest.json</code> permite verificar los hashes SHA-256.</p>
+<p>La variante introduce estos cambios respecto del grafo mejorado:</p>
+<ul>
+<li>Elimina <code>Python Snippet</code> (<code>control_resintonia_rds</code>) y <code>QT GUI Label</code> (<code>estado_rds</code>).</li>
+<li>Conserva <code>AGC</code> (<code>normalizar_rds</code>) y <code>RDS Parser.Reset = frecuencia_emisora</code>.</li>
+<li>Conecta <code>RDS Decoder.out</code> a <code>Message Debug.print</code> (<code>grupos_rds</code>) para observar los grupos recibidos.</li>
+<li>Deja que <code>Costas Loop</code> y <code>Symbol Sync</code> sigan la nueva señal sin un reinicio coordinado adicional.</li>
+</ul>
+<p>No se trasladó el controlador a otro bloque.
+El Python generado no contiene funciones <code>snippets_*</code> ni el temporizador del indicador.
+El reinicio del Parser utiliza el callback nativo de su parámetro <code>Reset</code>.</p>
+<h3 id="81-comprobacion-con-el-rtl-sdr">8.1. Comprobación con el RTL-SDR</h3>
+<p>La prueba mantuvo el mismo receptor ejecutándose durante seis sintonías.
+Cada sintonía utilizó un segundo de asentamiento y veinte segundos de observación.
+La ganancia RF fue 29.7 dB, sin desplazamiento de sintonía.</p>
+<table>
+<thead>
+<tr>
+<th>Orden</th>
+<th>Frecuencia</th>
+<th>Grupos válidos en 20 s</th>
+<th>PI</th>
+<th>PS publicado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>88.9 MHz</td>
+<td>219</td>
+<td><code>F030</code></td>
+<td>Segmentos de <code>FELICIDAD</code>.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>98.1 MHz</td>
+<td>70</td>
+<td><code>3F3F</code></td>
+<td><code>ONDACERO</code>.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>101.1 MHz</td>
+<td>180</td>
+<td><code>22FF</code></td>
+<td><code>PANAMERI</code> y <code>....CANA</code>.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>102.1 MHz</td>
+<td>46</td>
+<td><code>F026</code></td>
+<td><code>OXIGENO</code>.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>88.9 MHz, regreso</td>
+<td>221</td>
+<td><code>F030</code></td>
+<td>Segmentos de <code>FELICIDAD</code>.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>98.1 MHz, regreso</td>
+<td>119</td>
+<td><code>3F3F</code></td>
+<td><code>ONDACERO</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>La variante recuperó grupos en las seis observaciones, incluidos los regresos a servicios anteriores.
+El snippet <strong>no fue necesario para decodificar RDS en estas pruebas</strong>.
+Las cuentas no permiten comparar rendimiento con otras pruebas realizadas en instantes distintos.
+El banco de medida sustituyó <code>Audio Sink</code> por <code>Null Sink</code>; estas cuentas no verifican reproducción audible.</p>
+<p>Las pruebas automáticas también verifican la republicación del mismo PS tras volver a una emisora.
+Una prueba con entrada nula comprueba que la variante conserva la frecuencia interna de <code>Costas Loop</code> al resintonizar.
+Así se comprueba que no existe otro reinicio automático equivalente al eliminado.</p>
+<h3 id="82-limites-del-panel">8.2. Límites del panel</h3>
+<ul>
+<li><strong>Etiqueta inicial:</strong> <code>RDS Panel</code> muestra <code>0.0</code> al arrancar por la diferencia de unidades descrita en la sección 3.3.
+  El RTL-SDR sí inicia en 88.9 MHz. Cambiar de frecuencia actualiza la etiqueta en MHz.</li>
+<li><strong>RadioText conservado:</strong> en las dos visitas a 98.1 MHz, el panel mostró texto procedente de 88.9 MHz.
+  Durante esas ventanas de observación, el Parser no publicó un RadioText nuevo, aunque sí publicó <code>ONDACERO</code>.
+  Un RadioText visible no debe atribuirse a la sintonía actual sin comprobar sus nuevas publicaciones.</li>
+<li><strong>Indicador eliminado:</strong> la variante imprime los grupos, pero no muestra el contador ni el tiempo desde el último grupo.</li>
+</ul>
+<p>Estas observaciones distinguen la decodificación de grupos y la presentación de campos.
+La variante conserva las limitaciones indicadas; no añade código adicional para ocultarlas.</p>
+<h3 id="83-repetir-la-prueba">8.3. Repetir la prueba</h3>
+<p>Desde la raíz del repositorio, con el RTL-SDR libre:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>scripts/barrer_fm_rds.py<span class="w"> </span>--grafo<span class="w"> </span>gnuradio/flowgraphs/fm.grc<span class="w"> </span>--frecuencias<span class="w"> </span><span class="m">88</span>.9,98.1,101.1,102.1,88.9,98.1<span class="w"> </span>--espera<span class="w"> </span><span class="m">1</span><span class="w"> </span>--tiempo<span class="w"> </span><span class="m">20</span><span class="w"> </span>--guardar-mpx-completo<span class="w"> </span>--salida<span class="w"> </span>output/fm-actual-sin-snippet
+</code></pre></div>
+<p>El registro de esta prueba está incluido en los <a href="../figures/diagnostico-rds-datos.json">datos del informe</a>, bajo <code>variante_sin_snippet</code>.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/details-links.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer-model.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
