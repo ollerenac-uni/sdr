@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rotador propio: fase entre lotes y módulo 2π</title>
+<link rel="stylesheet" href="../../../stylesheets/enlace-animaciones.css">
+<link rel="stylesheet" href="../../../stylesheets/clase4-animaciones.css">
+<link rel="stylesheet" href="../../../stylesheets/rotador-propio.css">
+</head>
+<body>
+<main id="rotador-animation">
+<h1>Rotador propio: una señal, varios lotes</h1>
+<p class="scope">Ejemplo didáctico: Δφ = 60° · 4 muestras por llamada · entrada x[n] = 1+j0</p>
+<nav aria-label="Controles de la animación"><button type="button" id="play">Reproducir</button><button type="button" id="prev">Anterior</button><button type="button" id="next">Siguiente</button><span id="count"></span></nav>
+<h2 id="stage-title"></h2>
+<div id="visual"></div>
+<div class="rot-batches" aria-label="Fases por llamada a work">
+<div><div class="rot-label">Llamada 1 · índices globales 0–3</div><div id="batch-one" class="rot-cells"></div></div>
+<div><div class="rot-label">Llamada 2 · índices globales 4–7</div><div id="batch-two" class="rot-cells"></div></div>
+</div>
+<div class="rot-state" id="state" aria-live="polite"></div>
+<div class="progress" aria-hidden="true"><div id="progress"></div></div>
+<pre id="code"></pre><p id="explain"></p><p id="detail" class="detail"></p>
+<a href="../clase4/#74-seguir-la-logica-de-work" target="_top">Volver a la continuidad de fase en la clase</a>
+</main>
+<script src="../../../javascripts/rotador-propio.js"></script>
+</body></html>

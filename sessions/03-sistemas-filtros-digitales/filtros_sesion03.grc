@@ -1,0 +1,156 @@
+options:
+  parameters:
+    author: ollerenac-uni
+    catch_exceptions: 'True'
+    description: Compara un moving average y un low-pass con dos tonos I/Q, sin hardware.
+    generate_options: qt_gui
+    id: filtros_sesion03
+    output_language: python
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    title: 'Laboratorio #3 - Filtros FIR'
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+blocks:
+- name: import_scipy
+  id: import
+  parameters:
+    imports: from scipy import signal as dsp_signal
+  states:
+    coordinate: [224, 8]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    value: '24000'
+  states:
+    coordinate: [8, 112]
+    rotation: 0
+    state: enabled
+- name: modo_filtro
+  id: variable
+  parameters:
+    comment: '0: moving average de tres taps. 1: low-pass preparado de 65 taps. Detener, cambiar y ejecutar.'
+    value: '0'
+  states:
+    coordinate: [168, 112]
+    rotation: 0
+    state: enabled
+- name: taps
+  id: variable
+  parameters:
+    value: '[1/3, 1/3, 1/3] if modo_filtro == 0 else dsp_signal.firwin(65, 3000, fs=samp_rate).tolist()'
+  states:
+    coordinate: [328, 112]
+    rotation: 0
+    state: enabled
+- name: tono_util
+  id: analog_sig_source_x
+  parameters:
+    amp: '1.0'
+    freq: '1000'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    coordinate: [8, 264]
+    rotation: 0
+    state: enabled
+- name: tono_no_deseado
+  id: analog_sig_source_x
+  parameters:
+    amp: '0.6'
+    freq: '9000'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    coordinate: [8, 472]
+    rotation: 0
+    state: enabled
+- name: suma_tonos
+  id: blocks_add_xx
+  parameters:
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    coordinate: [248, 360]
+    rotation: 0
+    state: enabled
+- name: ritmo
+  id: blocks_throttle2
+  parameters:
+    comment: Pacing de un stream complejo generado en software; no modifica sus valores ni su sampling rate.
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    coordinate: [392, 360]
+    rotation: 0
+    state: enabled
+- name: fir
+  id: fir_filter_xxx
+  parameters:
+    comment: Entradas y salidas complejas, taps reales, sin decimación.
+    decim: '1'
+    samp_delay: '0'
+    taps: taps
+    type: ccf
+  states:
+    coordinate: [600, 456]
+    rotation: 0
+    state: enabled
+- name: espectros
+  id: qtgui_freq_sink_x
+  parameters:
+    autoscale: 'False'
+    average: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '"blue"'
+    color2: '"red"'
+    fc: '0'
+    fftsize: '2048'
+    freqhalf: 'True'
+    grid: 'True'
+    label: Nivel relativo
+    label1: Entrada
+    label2: Salida
+    legend: 'True'
+    name: '"Entrada y salida del FIR"'
+    nconnections: '2'
+    norm_window: 'False'
+    type: complex
+    units: dB
+    update_time: '0.10'
+    width1: '2'
+    width2: '2'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-100'
+  states:
+    coordinate: [848, 344]
+    rotation: 0
+    state: enabled
+connections:
+- [tono_util, '0', suma_tonos, '0']
+- [tono_no_deseado, '0', suma_tonos, '1']
+- [suma_tonos, '0', ritmo, '0']
+- [ritmo, '0', fir, '0']
+- [ritmo, '0', espectros, '0']
+- [fir, '0', espectros, '1']
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0

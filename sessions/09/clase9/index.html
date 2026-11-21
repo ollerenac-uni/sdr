@@ -1,0 +1,2894 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="De una captura I/Q real a pulsos PPM, bits, tramas ADS-B, posiciones CPR y un mapa interactivo.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/09/clase9/">
+      
+      
+        <link rel="prev" href="../../06/clase6/">
+      
+      
+        <link rel="next" href="../laboratorio-adsb/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Sesión 9 — Reverse Engineering a ADS-B - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/sdr-mixer.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sesion-9-reverse-engineering-a-ads-b" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sesión 9 — Reverse Engineering a ADS-B
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01-introduccion-sdr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción a SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 — Introducción a SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-introduccion-sdr/laboratorio-muestreo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #1: muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../02-tiempo-frecuencia-iq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03–05 — Señales y espectro en SDR
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03–05 — Señales y espectro en SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/mezcla-interactiva/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demostración: mezcla compleja
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/laboratorio-receptor-fm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #2: demodulador FM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../03-sistemas-filtros-digitales/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 — Laboratorio de enlace digital
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    06 — Laboratorio de enlace digital
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/tarea-laboratorio-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tarea del laboratorio 3
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/clase-enlace-digital/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapa visual de los 24 pasos
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 — Recepción FM y decodificación RDS en GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 — Recepción FM y decodificación RDS en GNU Radio
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04/clase4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lección 4: recepción FM y RDS
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04/laboratorio-fm-rds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #4: adaptación y diagnóstico
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06/clase6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 — Señales LoRa
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 — Reverse Engineering a ADS-B
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    09 — Reverse Engineering a ADS-B
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lección 9: Reverse Engineering a ADS-B
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lección 9: Reverse Engineering a ADS-B
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-que-transmite-ads-b-y-que-intentamos-descubrir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Qué transmite ADS-B y qué intentamos descubrir
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-preparar-la-captura-y-explorar-la-senal-en-inspectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Preparar la captura y explorar la señal en Inspectrum
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Preparar la captura y explorar la señal en Inspectrum">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-descargar-y-comprobar-los-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1. Descargar y comprobar los datos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-del-espectrograma-a-la-envolvente-de-potencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2. Del espectrograma a la envolvente de potencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-abrir-una-ventana-corta-con-la-trama-seleccionada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3. Abrir una ventana corta con la trama seleccionada
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-sincronismo-encontrar-el-inicio-de-la-trama" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Sincronismo: encontrar el inicio de la trama
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Sincronismo: encontrar el inicio de la trama">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-reconocer-el-preambulo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. Reconocer el preámbulo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-que-sincroniza-el-receptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. Qué sincroniza el receptor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-demodulacion-ppm-de-cada-simbolo-a-un-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Demodulación PPM: de cada símbolo a un bit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Demodulación PPM: de cada símbolo a un bit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-que-representa-0-y-que-representa-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Qué representa 0 y qué representa 1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-ver-las-decisiones-en-columnas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2. Ver las decisiones en columnas
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-recuperar-los-112-bits-y-agruparlos-en-bytes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Recuperar los 112 bits y agruparlos en bytes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Recuperar los 112 bits y agruparlos en bytes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-mantener-las-cuentas-entre-representaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1. Mantener las cuentas entre representaciones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-que-transformaciones-necesita-esta-trama" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2. Qué transformaciones necesita esta trama
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-leer-los-campos-formato-aeronave-y-contenido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Leer los campos: formato, aeronave y contenido
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Leer los campos: formato, aeronave y contenido">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-separar-df17-sin-perder-bits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1. Separar DF17 sin perder bits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-interpretar-me-cuando-tc11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2. Interpretar ME cuando TC=11
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-identificar-la-aeronave-con-otros-mensajes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3. Identificar la aeronave con otros mensajes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-comprobar-integridad-con-crc-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Comprobar integridad con CRC-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Comprobar integridad con CRC-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-comparar-el-crc-calculado-y-el-recibido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1. Comparar el CRC calculado y el recibido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-seguir-el-registro-sin-ocultar-los-pasos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2. Seguir el registro sin ocultar los pasos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-cpr-pasar-de-los-campos-binarios-a-coordenadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. CPR: pasar de los campos binarios a coordenadas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. CPR: pasar de los campos binarios a coordenadas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-por-que-un-entero-de-17-bits-no-es-una-coordenada-directa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1. Por qué un entero de 17 bits no es una coordenada directa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-obtener-la-latitud-paso-a-paso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2. Obtener la latitud, paso a paso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-contrastar-con-una-implementacion-independiente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3. Contrastar con una implementación independiente
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reunir-las-aeronaves-y-mostrarlas-en-un-mapa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reunir las aeronaves y mostrarlas en un mapa
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-seguir-la-cadena-y-revisar-los-resultados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Seguir la cadena y revisar los resultados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Seguir la cadena y revisar los resultados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-archivos-y-comandos-por-transicion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1. Archivos y comandos por transición
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-comprobaciones-para-discutir-en-clase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2. Comprobaciones para discutir en clase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-codigo-que-produce-los-resultados-y-las-figuras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3. Código que produce los resultados y las figuras
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../laboratorio-adsb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #6: Radar bajo sospecha
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/laboratorio-filtrado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Práctica complementaria: filtros FIR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-que-transmite-ads-b-y-que-intentamos-descubrir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Qué transmite ADS-B y qué intentamos descubrir
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-preparar-la-captura-y-explorar-la-senal-en-inspectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Preparar la captura y explorar la señal en Inspectrum
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Preparar la captura y explorar la señal en Inspectrum">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-descargar-y-comprobar-los-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1. Descargar y comprobar los datos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-del-espectrograma-a-la-envolvente-de-potencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2. Del espectrograma a la envolvente de potencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-abrir-una-ventana-corta-con-la-trama-seleccionada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3. Abrir una ventana corta con la trama seleccionada
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-sincronismo-encontrar-el-inicio-de-la-trama" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Sincronismo: encontrar el inicio de la trama
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Sincronismo: encontrar el inicio de la trama">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-reconocer-el-preambulo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. Reconocer el preámbulo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-que-sincroniza-el-receptor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. Qué sincroniza el receptor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-demodulacion-ppm-de-cada-simbolo-a-un-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Demodulación PPM: de cada símbolo a un bit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Demodulación PPM: de cada símbolo a un bit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-que-representa-0-y-que-representa-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Qué representa 0 y qué representa 1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-ver-las-decisiones-en-columnas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2. Ver las decisiones en columnas
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-recuperar-los-112-bits-y-agruparlos-en-bytes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Recuperar los 112 bits y agruparlos en bytes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Recuperar los 112 bits y agruparlos en bytes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-mantener-las-cuentas-entre-representaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1. Mantener las cuentas entre representaciones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-que-transformaciones-necesita-esta-trama" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2. Qué transformaciones necesita esta trama
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-leer-los-campos-formato-aeronave-y-contenido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Leer los campos: formato, aeronave y contenido
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Leer los campos: formato, aeronave y contenido">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-separar-df17-sin-perder-bits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1. Separar DF17 sin perder bits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-interpretar-me-cuando-tc11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2. Interpretar ME cuando TC=11
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-identificar-la-aeronave-con-otros-mensajes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3. Identificar la aeronave con otros mensajes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-comprobar-integridad-con-crc-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Comprobar integridad con CRC-24
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Comprobar integridad con CRC-24">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-comparar-el-crc-calculado-y-el-recibido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1. Comparar el CRC calculado y el recibido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-seguir-el-registro-sin-ocultar-los-pasos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2. Seguir el registro sin ocultar los pasos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-cpr-pasar-de-los-campos-binarios-a-coordenadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. CPR: pasar de los campos binarios a coordenadas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. CPR: pasar de los campos binarios a coordenadas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-por-que-un-entero-de-17-bits-no-es-una-coordenada-directa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1. Por qué un entero de 17 bits no es una coordenada directa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-obtener-la-latitud-paso-a-paso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2. Obtener la latitud, paso a paso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-contrastar-con-una-implementacion-independiente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3. Contrastar con una implementación independiente
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reunir-las-aeronaves-y-mostrarlas-en-un-mapa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reunir las aeronaves y mostrarlas en un mapa
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-seguir-la-cadena-y-revisar-los-resultados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Seguir la cadena y revisar los resultados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Seguir la cadena y revisar los resultados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-archivos-y-comandos-por-transicion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1. Archivos y comandos por transición
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-comprobaciones-para-discutir-en-clase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2. Comprobaciones para discutir en clase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-codigo-que-produce-los-resultados-y-las-figuras" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3. Código que produce los resultados y las figuras
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="sesion-9-reverse-engineering-a-ads-b">Sesión 9 — Reverse Engineering a ADS-B</h1>
+<p>Una aeronave equipada con <strong>ADS-B</strong> difunde por radio datos obtenidos a bordo, como su <strong>posición, altitud, velocidad e indicativo de vuelo</strong>. Una estación en tierra recibe los mensajes y un sistema de visualización los reúne para mostrar dónde está la aeronave y qué información declara. ADS-B significa <em>Automatic Dependent Surveillance–Broadcast</em>. <a href="https://www.faa.gov/air_traffic/technology/adsb/faq">Introducción de la FAA a ADS-B</a>.</p>
+<p><img alt="Un avión difunde mensajes ADS-B a 1090 MHz; una antena en la torre los recibe y el software muestra en un mapa el indicativo, la dirección ICAO, la posición, la altitud y la velocidad." src="../figures/00-adsb-avion-torre.svg" />
+<strong>Vista general.</strong> El avión transmite sin una interrogación previa. La estación representa datos recibidos; no obtiene la posición midiendo el eco como un radar. La pantalla reúne mensajes de distintos tipos con el mismo ICAO. El <strong>indicativo de vuelo</strong> mostrado, <code>EJU46DN</code>, no es un nombre del modelo de avión ni una matrícula.</p>
+<details class="info">
+<summary>Para comenzar: RenderMan y los aviones fantasma — DEF CON 20 (2012)</summary>
+<p>Brad <strong>“RenderMan” Haines</strong> presentó <em>Hacker + Airplanes = No Good Can Come Of This</em>. Expuso la falta de autenticación en los mensajes ADS-B y una demostración desarrollada con Nick Foster: <strong>FlightGear → GNU Radio → receptor ADS-B real</strong>, que visualiza datos de una aeronave virtual. <a href="https://renderlab.net/projects/ADS-B/">Proyecto y demostración publicados por el autor</a>.</p>
+<p><iframe src="https://www.youtube-nocookie.com/embed/mY2uiLfXmaI" title="DEF CON 20: RenderMan — Hacker + Airplanes = No Good Can Come Of This" width="100%" height="420" style="border:0" loading="lazy" allow="encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></p>
+<p><a href="https://www.youtube.com/watch?v=mY2uiLfXmaI">Ver la charla en el canal oficial de DEF CON</a> · <a href="https://www.youtube.com/watch?v=NSLqRXyxiBo">Demo corta enlazada por el autor</a> · <a href="https://renderlab.net/projects/ADS-B/Hackers-Airplanes-Defcon20-RenderMan.pdf#page=41">Diapositivas: demostración, páginas 41–46</a>.</p>
+<p>El material documenta una prueba con un receptor real. <strong>No acredita una intrusión en un radar o sistema operativo de un aeropuerto.</strong> Se utiliza como antecedente histórico para plantear una pregunta que acompañará la sesión: <strong>si un mensaje se decodifica y su CRC es válido, ¿qué permite afirmar sobre su emisor?</strong></p>
+</details>
+<p>El objetivo es seguir una transmisión real de <strong>1090 MHz</strong> desde sus muestras complejas hasta las coordenadas de una aeronave. Primero observaremos los pulsos; después usaremos la descripción del protocolo para asignarles significado. Cada comando conserva los resultados intermedios para compararlos con las figuras.</p>
+<p><img alt="Recorrido desde I/Q a potencia, sincronismo, símbolos PPM, campos con CRC y posición CPR." src="../figures/01-recorrido.svg" />
+<strong>Figura 1.</strong> Etapas del receptor. La detección del preámbulo alinea la cuadrícula que usaremos para demodular.</p>
+<div class="admonition note">
+<p class="admonition-title">Una captura real y un ejemplo que se conserva durante la explicación</p>
+<p>Usamos muestras I/Q publicadas por <a href="https://www.sdrangel.org/iq-files/">SDRangel</a>, correspondientes a una grabación de noviembre de 2021. Se verificaron <strong>134 tramas DF17 con CRC válido y 26 posiciones de nueve aeronaves</strong>. Las figuras y los scripts siguen la misma trama de posición, <code>8d4402f258b9f270bbcdb62b2397</code>. El programa la selecciona entre los mensajes recuperados de las muestras; no la introduce como sustituto de la demodulación. El mapa muestra posiciones históricas.</p>
+</div>
+<h2 id="1-que-transmite-ads-b-y-que-intentamos-descubrir">1. Qué transmite ADS-B y qué intentamos descubrir</h2>
+<p><strong>ADS-B</strong> significa <em>Automatic Dependent Surveillance–Broadcast</em>. La aeronave difunde información como su identificación, posición y velocidad. En esta sesión estudiaremos el enlace <strong>1090ES</strong>, <em>1090 MHz Extended Squitter</em>, y en particular el formato <strong>DF17</strong>. Existen otros formatos Mode S y otros enlaces ADS-B; la cadena preparada aquí selecciona DF17.</p>
+<p>Los mensajes se reciben como ráfagas de pulsos. Un mensaje de identificación no tiene la misma estructura interna que uno de posición: habrá que leer su <strong>Type Code</strong>, o <code>TC</code>. La dirección <strong>ICAO de 24 bits</strong> permitirá relacionar mensajes de una misma aeronave. <a href="https://mode-s.org/1090mhz/content/ads-b/1-basics.html">Descripción de 1090ES y estructura de mensajes, Junzi Sun</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Pregunta del investigador</th>
+<th>Evidencia que obtendremos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>¿Dónde empieza una transmisión?</td>
+<td>Un patrón de cuatro pulsos que precede a los datos</td>
+</tr>
+<tr>
+<td>¿Qué magnitud representa el dato?</td>
+<td>La posición temporal del pulso dentro de un intervalo</td>
+</tr>
+<tr>
+<td>¿Cuántos bits hay y en qué orden se leen?</td>
+<td>112 decisiones binarias, MSB primero, para DF17</td>
+</tr>
+<tr>
+<td>¿Cómo se comprueba la recuperación?</td>
+<td>CRC-24 y un control con un bit alterado</td>
+</tr>
+<tr>
+<td>¿Qué significan los campos?</td>
+<td>Formato DF17, Type Code y estructura ME</td>
+</tr>
+<tr>
+<td>¿Se pueden obtener coordenadas?</td>
+<td>Dos mensajes CPR compatibles, sin introducir una ubicación conocida</td>
+</tr>
+</tbody>
+</table>
+<p>No deducimos los nombres de los campos mirando únicamente el espectrograma: la señal permite medir y formular hipótesis; la documentación del protocolo permite interpretarlas; el CRC y otra implementación permiten contrastarlas.</p>
+<h2 id="2-preparar-la-captura-y-explorar-la-senal-en-inspectrum">2. Preparar la captura y explorar la señal en Inspectrum</h2>
+<h3 id="21-descargar-y-comprobar-los-datos">2.1. Descargar y comprobar los datos</h3>
+<p>Todos los comandos parten de la raíz de <code>sdr</code>, donde está <code>mkdocs.yml</code>. Para los programas Python, usar <strong>Radioconda activo</strong> o sustituir <code>python</code> por <code>~/radioconda/bin/python</code> en Linux.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/descargar_muestra.py
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>scripts/sesion09_adsb/verificar_posiciones.py
+</code></pre></div>
+<p>El primer comando descarga un prefijo fijado por SHA-256 del archivo original y prepara muestras <strong><code>cf32_le</code></strong>, sin sintetizar ni remodular los mensajes. El segundo procesa esas muestras con GNU Radio y Python. No se necesitan <code>gr-adsb</code>, hardware SDR ni Throttle.</p>
+<table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I/Q</td>
+<td><code>gnuradio/samples/adsb-posiciones/adsb-sdrangel-posiciones.sigmf-data</code></td>
+</tr>
+<tr>
+<td>Metadatos</td>
+<td>Mismo nombre, extensión <code>.sigmf-meta</code></td>
+</tr>
+<tr>
+<td>Frecuencia central</td>
+<td>1090 MHz</td>
+</tr>
+<tr>
+<td>Tasa original</td>
+<td>2.4 millones de muestras complejas/s</td>
+</tr>
+<tr>
+<td>Formato preparado</td>
+<td>I y Q como float32 little-endian: ocho bytes por muestra compleja</td>
+</tr>
+<tr>
+<td>Duración según muestras/tasa</td>
+<td>Aproximadamente 13.981 s</td>
+</tr>
+<tr>
+<td>Resultados</td>
+<td><code>output/adsb-posiciones/</code></td>
+</tr>
+</tbody>
+</table>
+<p>El binario I/Q no se guarda en Git; por eso cada computadora debe ejecutar la descarga. La procedencia y los hashes se documentan en <code>gnuradio/samples/adsb-posiciones/origen.json</code>.</p>
+<h3 id="22-del-espectrograma-a-la-envolvente-de-potencia">2.2. Del espectrograma a la envolvente de potencia</h3>
+<p><img alt="Espectrograma y potencia de una ventana I/Q real, y ampliación de los 120 microsegundos de la transmisión seleccionada." src="../figures/02-senal-real.png" />
+<strong>Figura 2.</strong> La misma señal en tres escalas. La potencia hace más visible la posición de los pulsos que el espectrograma.</p>
+<p>La entrada contiene muestras <span class="arithmatex">\(x[n]=I[n]+jQ[n]\)</span>. Calculamos:</p>
+<div class="arithmatex">\[
+p[n]=|x[n]|^2=I[n]^2+Q[n]^2.
+\]</div>
+<p>Un pulso eleva la potencia. La fase compleja deja de ser necesaria para esta decisión: buscaremos <strong>cuándo</strong> aparece la energía. La gráfica representa potencia relativa de las muestras, sin calibración en vatios o dBm.</p>
+<p>La cadena remuestrea primero de 2.4 a <strong>8 Msps</strong>, con interpolación 10 y decimación 3. A 8 Msps cada muestra está separada 0.125 µs; un intervalo de 0.5 µs corresponde a cuatro muestras y uno de 1 µs a ocho. Esto facilita la cuadrícula del receptor. <strong>El remuestreo no añade información ni mejora por sí solo la resolución de la captura original.</strong></p>
+<h3 id="23-abrir-una-ventana-corta-con-la-trama-seleccionada">2.3. Abrir una ventana corta con la trama seleccionada</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>senal
+</code></pre></div>
+<p>El script recorta una ventana I/Q real, la remuestrea a 8 Msps y verifica otra vez la trama por PPM y CRC. Guarda juntos <code>ventana-8msps.sigmf-data</code> y sus metadatos en <code>output/adsb-posiciones/traza/</code>. La ventana es corta para poder ampliar los pulsos sin navegar por todo el archivo.</p>
+<details class="tip">
+<summary>Abrir la ventana en Inspectrum</summary>
+<p>En Linux, usar <strong>Inspectrum del sistema</strong>, como en la sesión 8. En una terminal nueva desde la raíz del repositorio:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>conda<span class="w"> </span>deactivate
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>/usr/bin/inspectrum<span class="w"> </span>--rate<span class="w"> </span><span class="m">8000000</span><span class="w"> </span>--format<span class="w"> </span>cf32<span class="w"> </span>output/adsb-posiciones/traza/ventana-8msps.sigmf-data
+</code></pre></div>
+<p>Si hay varios entornos Conda apilados, desactivarlos hasta salir de Conda. Esto evita la compilación de Inspectrum/libliquid de Radioconda que en esta máquina produjo <code>Instrucción ilegal</code>. Ver <a href="../../../setup/instalacion/#inspectrum-en-linux">instalación de Inspectrum</a>.</p>
+<p>En Windows, mantener Radioconda activo:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>inspectrum --rate 8000000 --format cf32 output/adsb-posiciones/traza/ventana-8msps.sigmf-data
+</code></pre></div>
+<p>Añadir una gráfica <strong>Amplitude</strong> y, si está disponible, <strong>Amplitude squared</strong>. Activar escalas y cursores. Ampliar hasta distinguir intervalos de 0.5 y 1 µs. La amplitud y su cuadrado conservan la ubicación temporal de los pulsos, aunque sus alturas sean distintas. <a href="https://github.com/miek/inspectrum#features">Gráficas y cursores de Inspectrum</a>.</p>
+<p>En la ventana predeterminada, el primer pulso comienza aproximadamente en <strong>100 µs</strong> (<code>0.000100 s</code>); los datos, en <strong>108 µs</strong>; el mensaje termina en <strong>220 µs</strong>. Confirmar los valores que imprime el programa: los tiempos son locales a este recorte. En las figuras siguientes el primer pulso se toma como tiempo cero.</p>
+</details>
+<p>Para los siguientes comandos Python, volver a activar Radioconda en otra terminal. No usar el Python del sistema si no tiene GNU Radio.</p>
+<h2 id="3-sincronismo-encontrar-el-inicio-de-la-trama">3. Sincronismo: encontrar el inicio de la trama</h2>
+<h3 id="31-reconocer-el-preambulo">3.1. Reconocer el preámbulo</h3>
+<p><img alt="Potencia real del preámbulo con cuatro pulsos y de los primeros dieciséis símbolos PPM." src="../figures/03-preambulo-ppm.png" />
+<strong>Figura 3.</strong> Arriba: patrón que alinea la recepción. Abajo: decisiones sobre una cuadrícula de 1 µs. La franja verde indica la mitad con mayor potencia media.</p>
+<p>El preámbulo tiene <strong>cuatro pulsos nominales de 0.5 µs</strong>. Sus comienzos, respecto al primer pulso, son:</p>
+<table>
+<thead>
+<tr>
+<th>Pulso</th>
+<th style="text-align: right;">Inicio</th>
+<th style="text-align: right;">Fin nominal</th>
+<th style="text-align: right;">Inicio a 8 Msps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td style="text-align: right;">0 µs</td>
+<td style="text-align: right;">0.5 µs</td>
+<td style="text-align: right;">muestra 0</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">1 µs</td>
+<td style="text-align: right;">1.5 µs</td>
+<td style="text-align: right;">muestra 8</td>
+</tr>
+<tr>
+<td>3</td>
+<td style="text-align: right;">3.5 µs</td>
+<td style="text-align: right;">4 µs</td>
+<td style="text-align: right;">muestra 28</td>
+</tr>
+<tr>
+<td>4</td>
+<td style="text-align: right;">4.5 µs</td>
+<td style="text-align: right;">5 µs</td>
+<td style="text-align: right;">muestra 36</td>
+</tr>
+</tbody>
+</table>
+<p>Los datos comienzan <strong>8 µs después del primer pulso</strong>, no inmediatamente después del cuarto pulso. La forma física y las separaciones se describen en <strong>FAA Order 6365.1A, apéndice 1, §§2.3.5.2.1–2.3.5.2.2</strong>, <a href="https://www.faa.gov/documentLibrary/media/Order/6365.1A.pdf#page=20">página 20 del PDF</a>. Es una referencia del formato físico Mode S; la interpretación de los campos ADS-B se consulta por separado.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>preambulo
+</code></pre></div>
+<h3 id="32-que-sincroniza-el-receptor">3.2. Qué sincroniza el receptor</h3>
+<p>El programa prueba posiciones candidatas en la señal de potencia y compara los cuatro intervalos de pulso con intervalos donde espera menor energía. En esta captura exige potencia de pulso mayor que <code>0.0005</code> y contraste mínimo de <code>1.5</code> respecto a los huecos. Son parámetros del <strong>detector implementado para esta muestra</strong>, no valores normativos universales.</p>
+<p>Si el primer pulso se ubica en la muestra <span class="arithmatex">\(n_0\)</span>, el primer símbolo empieza en <span class="arithmatex">\(n_0+64\)</span>. A partir de allí, cada ocho muestras comienza un símbolo nuevo. Así se adquiere la alineación temporal <strong>antes de decidir sus bits</strong>. El CRC descartará muchas detecciones falsas que podrían parecer un preámbulo.</p>
+<p>No necesitamos un Costas Loop para recuperar fase de portadora: la decisión PPM usa potencia. Sí necesitamos sincronismo de trama y de la cuadrícula de símbolos. Este receptor de archivos prueba todas las fases de muestra y conserva solapamiento entre bloques; no implementa un lazo continuo de recuperación de reloj.</p>
+<h2 id="4-demodulacion-ppm-de-cada-simbolo-a-un-bit">4. Demodulación PPM: de cada símbolo a un bit</h2>
+<h3 id="41-que-representa-0-y-que-representa-1">4.1. Qué representa 0 y qué representa 1</h3>
+<p><strong>PPM</strong>, <em>Pulse Position Modulation</em>, usa dos posiciones posibles de un pulso dentro de un símbolo de <strong>1 µs</strong>:</p>
+<ul>
+<li>Pulso en la <strong>primera mitad</strong>: bit <strong>1</strong>.</li>
+<li>Pulso en la <strong>segunda mitad</strong>: bit <strong>0</strong>.</li>
+</ul>
+<p>Ambos valores llevan un pulso; la información está en su posición. La correspondencia está documentada en <strong>FAA Order 6365.1A, apéndice 1, §3.1.2</strong>, <a href="https://www.faa.gov/documentLibrary/media/Order/6365.1A.pdf#page=22">página 22 del PDF</a>.</p>
+<p><img alt="Dos símbolos PPM ideales y medias de potencia observadas sobre los primeros símbolos reales." src="../figures/04-decision-ppm.svg" />
+<strong>Figura 4.</strong> El esquema superior es ideal; los valores inferiores se midieron en la captura.</p>
+<p>Para cada símbolo, el receptor calcula las medias de sus dos mitades:</p>
+<div class="arithmatex">\[
+P_1=\frac{1}{4}\sum_{k=0}^{3}p[n+k],\qquad
+P_2=\frac{1}{4}\sum_{k=4}^{7}p[n+k].
+\]</div>
+<p>Decide <code>1</code> si <span class="arithmatex">\(P_1&gt;P_2\)</span> y <code>0</code> en otro caso. Una igualdad exacta también produciría <code>0</code> en este prototipo, pero no garantiza una decisión fiable; el CRC valida después la trama completa. Los pulsos reales se deforman por el canal, los filtros y el muestreo: no hay que exigir que cada una de las ocho muestras sea exactamente alta o baja.</p>
+<h3 id="42-ver-las-decisiones-en-columnas">4.2. Ver las decisiones en columnas</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>ppm<span class="w"> </span>--bloque<span class="w"> </span><span class="m">1</span>
+</code></pre></div>
+<p>Se muestran <strong>S001–S016</strong>, su muestra de inicio, el tiempo relativo, las dos medias, su diferencia y el bit elegido. Para consultar las 112 decisiones, quitar <code>--bloque 1</code>. Para el último grupo, usar <code>--bloque 7</code>.</p>
+<p>En esta trama, S001 aporta <code>1</code> y S002 aporta <code>0</code>. La demodulación no interpreta aún si esos bits representan un identificador o una coordenada.</p>
+<details class="example">
+<summary>Recorrer gráficamente los 112 símbolos y sus decisiones</summary>
+<p><iframe src="../animaciones/ppm.html" title="Decisiones PPM de los 112 símbolos ADS-B" width="100%" height="1060" style="border:0" loading="lazy"></iframe></p>
+<p><a href="../animaciones/ppm.html" rel="noopener" target="_blank">Abrir explorador PPM en otra pestaña</a></p>
+<p>Cambiar de símbolo o pulsar un bit del bloque. Observar las medias H1/H2, el resultado de la comparación, el campo al que pertenece el bit y el byte que ayuda a formar. Las barras representan medias medidas, no una señal sintetizada.</p>
+</details>
+<h2 id="5-recuperar-los-112-bits-y-agruparlos-en-bytes">5. Recuperar los 112 bits y agruparlos en bytes</h2>
+<h3 id="51-mantener-las-cuentas-entre-representaciones">5.1. Mantener las cuentas entre representaciones</h3>
+<p>Para DF17, después del preámbulo hay <strong>112 símbolos de 1 µs</strong>. Cada símbolo aporta <strong>un bit</strong>, por tanto:</p>
+<div class="arithmatex">\[
+112\text{ símbolos}\times1\text{ bit/símbolo}=112\text{ bits}=14\text{ bytes}.
+\]</div>
+<p>La transmisión completa dura nominalmente <strong>8 + 112 = 120 µs</strong>. A 8 Msps representa 960 muestras de señal: 64 de preámbulo y 896 de datos. <strong>896 muestras no son 896 bits.</strong></p>
+<p>El preámbulo no informa por sí solo de la longitud. Mode S tiene mensajes de 56 y de 112 bits; un receptor general usa el formato <code>DF</code> para decidirla. Nuestro prototipo ensaya 112 bits y conserva solamente candidatos con <strong>DF=17</strong> y CRC válido.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>bits
+</code></pre></div>
+<p><img alt="Los ciento doce bits reales coloreados por campo, en siete filas de dieciséis bits, con sus bytes hexadecimales." src="../figures/05-bloque-112-bits.svg" />
+<strong>Figura 5.</strong> El bit de mayor peso se lee primero. B1–B7 son grupos para presentar resultados, no bloques definidos por el protocolo.</p>
+<p>Los 14 bytes recuperados son:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>8d 44 02 f2 58 b9 f2 70 bb cd b6 2b 23 97
+</code></pre></div>
+<p>Por ejemplo, los primeros ocho bits <code>10001101</code> forman <code>0x8D</code>. Los siguientes ocho forman <code>0x44</code>. El archivo <code>output/adsb-posiciones/traza/112_bits.txt</code> conserva la secuencia completa en una línea, sin espacios.</p>
+<h3 id="52-que-transformaciones-necesita-esta-trama">5.2. Qué transformaciones necesita esta trama</h3>
+<p>La decisión PPM entrega directamente los bits que forman los bytes DF17. <strong>En esta cadena no se aplica Gray, desentrelazado, desblanqueo ni decodificación Hamming.</strong> El CRC es redundancia para comprobar errores; en la configuración elegida no se utiliza para corregirlos.</p>
+<p>La diferencia con LoRa está en la codificación del enlace. No se debe trasladar automáticamente a ADS-B una transformación que fue necesaria en la sesión 8. Tampoco hay que invertir los bits de cada byte: las figuras y el programa trabajan <strong>MSB primero</strong>.</p>
+<h2 id="6-leer-los-campos-formato-aeronave-y-contenido">6. Leer los campos: formato, aeronave y contenido</h2>
+<h3 id="61-separar-df17-sin-perder-bits">6.1. Separar DF17 sin perder bits</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>campos
+</code></pre></div>
+<p><img alt="Segmentación de DF17 y ampliación del campo ME de posición aérea, con los valores extraídos de los bits." src="../figures/06-campos-trama.svg" />
+<strong>Figura 6.</strong> Se conservan los mismos 112 bits; ahora se separan según el formato del mensaje.</p>
+<p>La documentación de <a href="https://mode-s.org/1090mhz/content/ads-b/1-basics.html#message-structure">ADS-B Basics, apartado Message structure</a> describe esta partición. Numeramos los bits <strong>desde 1</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th style="text-align: right;">Bits globales</th>
+<th style="text-align: right;">Ancho</th>
+<th>Valor en la muestra</th>
+<th>Interpretación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DF</td>
+<td style="text-align: right;">1–5</td>
+<td style="text-align: right;">5</td>
+<td><code>10001</code> = 17</td>
+<td>Formato que seleccionamos</td>
+</tr>
+<tr>
+<td>CA</td>
+<td style="text-align: right;">6–8</td>
+<td style="text-align: right;">3</td>
+<td><code>101</code> = 5</td>
+<td>Campo de capacidad del transpondedor</td>
+</tr>
+<tr>
+<td>ICAO</td>
+<td style="text-align: right;">9–32</td>
+<td style="text-align: right;">24</td>
+<td><code>4402f2</code></td>
+<td>Dirección usada para asociar mensajes</td>
+</tr>
+<tr>
+<td>ME</td>
+<td style="text-align: right;">33–88</td>
+<td style="text-align: right;">56</td>
+<td><code>58b9f270bbcdb6</code></td>
+<td>Contenido ADS-B, interpretado según TC</td>
+</tr>
+<tr>
+<td>CRC</td>
+<td style="text-align: right;">89–112</td>
+<td style="text-align: right;">24</td>
+<td><code>2b2397</code></td>
+<td>Comprobación de los 88 bits anteriores</td>
+</tr>
+</tbody>
+</table>
+<p><strong>5 + 3 + 24 + 56 + 24 = 112.</strong> El primer byte mezcla dos campos: <code>10001 | 101</code> es <code>DF | CA</code>. El límite de campo no siempre coincide con un límite de byte.</p>
+<p>En Python, las posiciones empiezan en cero. Por eso el programa extrae TC con <code>campo(h, 32, 5)</code>, aunque en la tabla sus bits sean 33–37. <code>campo</code> desplaza y enmascara el entero de 112 bits; no reordena los bits.</p>
+<h3 id="62-interpretar-me-cuando-tc11">6.2. Interpretar ME cuando TC=11</h3>
+<p>Los primeros cinco bits de ME son <code>01011</code>, es decir, <strong>TC=11</strong>. Ese tipo corresponde a posición aérea con altitud barométrica. Su estructura se explica en <a href="https://mode-s.org/1090mhz/content/ads-b/3-airborne-position.html">Airborne position, tabla de campos ME</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th style="text-align: right;">Bits globales</th>
+<th style="text-align: right;">Ancho</th>
+<th>Qué aporta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TC</td>
+<td style="text-align: right;">33–37</td>
+<td style="text-align: right;">5</td>
+<td>Tipo de mensaje</td>
+</tr>
+<tr>
+<td>SS</td>
+<td style="text-align: right;">38–39</td>
+<td style="text-align: right;">2</td>
+<td>Estado de vigilancia</td>
+</tr>
+<tr>
+<td>SAF/NICsb</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">1</td>
+<td>Significado dependiente de la versión ADS-B; no se usa aquí para calcular la posición</td>
+</tr>
+<tr>
+<td>ALT</td>
+<td style="text-align: right;">41–52</td>
+<td style="text-align: right;">12</td>
+<td>Altitud codificada</td>
+</tr>
+<tr>
+<td>T</td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">1</td>
+<td>Indicador temporal del protocolo; no contiene una fecha UTC completa</td>
+</tr>
+<tr>
+<td>F</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">1</td>
+<td>Formato CPR: 0 par, 1 impar</td>
+</tr>
+<tr>
+<td>LAT-CPR</td>
+<td style="text-align: right;">55–71</td>
+<td style="text-align: right;">17</td>
+<td>Fracción codificada para latitud</td>
+</tr>
+<tr>
+<td>LON-CPR</td>
+<td style="text-align: right;">72–88</td>
+<td style="text-align: right;">17</td>
+<td>Fracción codificada para longitud</td>
+</tr>
+</tbody>
+</table>
+<p>Los anchos suman <strong>56 bits</strong>. Para esta trama, <code>F=0</code>, <code>LAT-CPR=79965</code> y <code>LON-CPR=118198</code>. No son latitud y longitud en grados: todavía falta CPR.</p>
+<p>En ALT, el indicador <code>Q=1</code> selecciona pasos de 25 ft. Se elimina ese indicador y se juntan los once bits restantes para obtener <span class="arithmatex">\(N=1487\)</span>. La altitud de <strong>esta trama par</strong> es <span class="arithmatex">\(25N-1000=36175\)</span> ft. Esta fórmula no debe aplicarse al modo <code>Q=0</code>. <a href="https://mode-s.org/1090mhz/content/ads-b/3-airborne-position.html#barometric-altitude">Altitud barométrica y bit Q</a>.</p>
+<details class="example">
+<summary>Localizar Q y reconstruir el entero de altitud</summary>
+<p>Dentro de los doce bits de ALT, Q es el <strong>quinto bit contado desde la derecha</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ALT recibido:       1011100 | 1 | 1111
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>                     datos   Q   datos
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>Sin Q, concatenar:  1011100     1111 = 10111001111
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>Entero N:           1487
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>Altitud:            25 × 1487 − 1000 = 36175 ft
+</code></pre></div>
+<p>Se elimina únicamente Q. No se invierte el orden ni se descarta otro bit.</p>
+</details>
+<h3 id="63-identificar-la-aeronave-con-otros-mensajes">6.3. Identificar la aeronave con otros mensajes</h3>
+<p>Una trama de posición no contiene el nombre del vuelo. Para localizar los mensajes disponibles:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--listar
+</code></pre></div>
+<p>El mensaje <code>8d4402f22314a574d843a066668e</code>, presente en la captura, tiene el mismo ICAO y <strong>TC=4</strong>. Inspeccionarlo con:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>campos<span class="w"> </span>--hex<span class="w"> </span>8d4402f22314a574d843a066668e
+</code></pre></div>
+<p>El programa separa sus ocho códigos de seis bits y recupera <strong><code>EJU46DN</code></strong>. Estos códigos usan la tabla de caracteres ADS-B, no ASCII. El indicativo identifica el vuelo declarado; no se está consultando una base de matrículas ni autenticando al transmisor. <a href="https://mode-s.org/1090mhz/content/ads-b/2-identification.html">Aircraft identification</a>.</p>
+<h2 id="7-comprobar-integridad-con-crc-24">7. Comprobar integridad con CRC-24</h2>
+<h3 id="71-comparar-el-crc-calculado-y-el-recibido">7.1. Comparar el CRC calculado y el recibido</h3>
+<p><img alt="Los primeros ochenta y ocho bits alimentan el cálculo del CRC; el resultado se compara con los últimos veinticuatro bits." src="../figures/07-crc.svg" />
+<strong>Figura 7.</strong> Dos formas equivalentes de verificar esta trama DF17.</p>
+<p>El CRC usa el polinomio generador <code>0x1FFF409</code>, de grado 24. El bit superior representa <span class="arithmatex">\(x^{24}\)</span>; el registro del programa tiene 24 posiciones y usa los términos restantes, <code>0xFFF409</code>, al realizar XOR.</p>
+<ol>
+<li>Tomar los <strong>primeros 88 bits</strong>, añadir <strong>24 ceros</strong> y calcular el resto de la división binaria por el polinomio. Los ceros son parte del cálculo, no bits adicionales transmitidos.</li>
+<li>Comparar el resultado con los <strong>24 bits recibidos</strong> al final de la trama. Aquí ambos son <code>0x2B2397</code>.</li>
+<li>Como comprobación equivalente, dividir los <strong>112 bits recibidos</strong>: el resto debe ser cero.</li>
+</ol>
+<p>La división usa XOR, sin llevadas ni préstamos. Este tratamiento corresponde a DF17; otros formatos Mode S pueden superponer información a la paridad. <a href="https://mode-s.org/1090mhz/content/ads-b/8-error-control.html">Error control in ADS-B, polinomio y comprobación</a>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>crc
+</code></pre></div>
+<h3 id="72-seguir-el-registro-sin-ocultar-los-pasos">7.2. Seguir el registro sin ocultar los pasos</h3>
+<p>La salida muestra, para cada uno de los 112 bits, el estado anterior del registro, el bit de entrada, si se aplica XOR con <code>0xFFF409</code> y el estado posterior. Se empieza con estado cero. Para leer solo los primeros 16 pasos:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>crc<span class="w"> </span>--bloque<span class="w"> </span><span class="m">1</span>
+</code></pre></div>
+<p>La operación de cada paso está en <code>pasos_crc</code>, dentro de <code>scripts/sesion09_adsb/inspeccionar_adsb.py</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">alto</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">estado</span> <span class="o">&amp;</span> <span class="mh">0x800000</span><span class="p">)</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">estado</span> <span class="o">=</span> <span class="p">((</span><span class="n">estado</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="n">bit</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffffff</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="k">if</span> <span class="n">alto</span><span class="p">:</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>    <span class="n">estado</span> <span class="o">^=</span> <span class="mh">0xfff409</span>
+</code></pre></div>
+<p>Primero se recuerda el bit que va a salir del registro; después se desplaza, entra el bit recibido y se aplica XOR cuando corresponde. La máscara conserva 24 posiciones. Tras el bit 112, el estado es <code>000000</code>.</p>
+<p>El script también invierte <strong>solo el bit 41</strong>, manteniendo el CRC recibido. El resto pasa a <code>91c77f</code>: el mensaje alterado se rechaza. <strong>CRC válido no equivale a autenticidad</strong>: no hay una clave secreta en esta comprobación y no se cifra el contenido.</p>
+<h2 id="8-cpr-pasar-de-los-campos-binarios-a-coordenadas">8. CPR: pasar de los campos binarios a coordenadas</h2>
+<h3 id="81-por-que-un-entero-de-17-bits-no-es-una-coordenada-directa">8.1. Por qué un entero de 17 bits no es una coordenada directa</h3>
+<p><strong>CPR</strong>, <em>Compact Position Reporting</em>, representa fracciones dentro de rejillas geográficas. El formato par e impar utiliza divisiones ligeramente distintas. Una sola fracción admite varias posiciones globales; una pareja compatible permite resolver la ambigüedad sin introducir una ubicación conocida del receptor. Esto es <strong>CPR global</strong>. Existe también CPR local con una referencia, que aquí no usamos.</p>
+<p><img alt="Dos mensajes CPR del mismo ICAO, sus campos y la combinación de rejillas que produce una posición." src="../figures/08-cpr-global.svg" />
+<strong>Figura 8.</strong> Se combinan campos de dos mensajes, sin concatenar sus bits ni promediar sus latitudes.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>cpr
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Mensaje</th>
+<th style="text-align: right;">Paridad F</th>
+<th style="text-align: right;">LAT-CPR</th>
+<th style="text-align: right;">LON-CPR</th>
+<th style="text-align: right;">Tiempo de archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>8d4402f258b9f270bbcdb62b2397</code></td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">79965</td>
+<td style="text-align: right;">118198</td>
+<td style="text-align: right;">0.91411750 s</td>
+</tr>
+<tr>
+<td><code>8d4402f258bb25dcdbcf62e6e969</code></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">61037</td>
+<td style="text-align: right;">118626</td>
+<td style="text-align: right;">2.17346625 s</td>
+</tr>
+</tbody>
+</table>
+<p>El programa exige mismo ICAO, CRC válidos, paridades opuestas y separación de hasta 10 s. También comprueba que ambas latitudes correspondan al mismo número de zonas de longitud. <a href="https://mode-s.org/1090mhz/content/ads-b/3-airborne-position.html#globally-unambiguous-position-decoding">CPR global y condiciones de la pareja</a>.</p>
+<h3 id="82-obtener-la-latitud-paso-a-paso">8.2. Obtener la latitud, paso a paso</h3>
+<p>Normalizamos los campos dividiendo por <span class="arithmatex">\(2^{17}=131072\)</span>:</p>
+<div class="arithmatex">\[
+y_e=\frac{79965}{131072}=0.610084533691,\qquad
+y_o=\frac{61037}{131072}=0.465675354004.
+\]</div>
+<p>Las rejillas par e impar tienen pasos de <strong>360/60 = 6°</strong> y <strong>360/59°</strong>, respectivamente. Calculamos el índice que relaciona ambas:</p>
+<div class="arithmatex">\[
+j=\lfloor59y_e-60y_o+0.5\rfloor=8.
+\]</div>
+<p>Las latitudes candidatas son:</p>
+<div class="arithmatex">\[
+\varphi_e=6\big((j\bmod60)+y_e\big)=51.660507202148^\circ,
+\]</div>
+<div class="arithmatex">\[
+\varphi_o=\frac{360}{59}\big((j\bmod59)+y_o\big)=51.654968261719^\circ.
+\]</div>
+<p>El mensaje más reciente es <strong>impar</strong>; elegimos <span class="arithmatex">\(\varphi_o\)</span>. Las dos candidatas son posiciones asociadas a mensajes distintos, no dos medidas que se deban promediar. El algoritmo general también ajusta las soluciones al hemisferio correspondiente; en este ejemplo ambas ya quedan en latitudes norte válidas.</p>
+<details class="info">
+<summary>Qué significa NL y cómo se obtiene la longitud</summary>
+<p><code>NL(latitud)</code> indica cuántas zonas longitudinales corresponden a esa latitud. Las zonas se adaptan a la geometría de la Tierra. El programa usa la fórmula y los casos polares descritos en <a href="https://mode-s.org/1090mhz/content/ads-b/3-airborne-position.html#core-functions-and-parameters">Core functions and parameters</a>; no elige el valor mirando el mapa.</p>
+<p>En las dos candidatas resulta <code>NL=37</code>. Normalizamos también la longitud:</p>
+<div class="arithmatex">\[
+x_e=\frac{118198}{131072}=0.901779174805,\qquad
+x_o=\frac{118626}{131072}=0.905044555664.
+\]</div>
+<p>Como elegimos la trama impar, <span class="arithmatex">\(n_i=\max(37-1,1)=36\)</span>. Entonces:</p>
+<div class="arithmatex">\[
+m=\lfloor x_e(37-1)-x_o37+0.5\rfloor=-1,
+\]</div>
+<div class="arithmatex">\[
+\lambda=\frac{360}{36}\big((m\bmod36)+x_o\big)=359.050445556641^\circ.
+\]</div>
+<p>Para expresarla entre −180° y 180°, restamos 360°: <strong>−0.949554443359°</strong>. El módulo usado aquí entrega un residuo no negativo: <code>-1 % 36 = 35</code>.</p>
+</details>
+<p>La posición final es <strong>51.654968°, −0.949554°</strong>, correspondiente a la trama impar. Su altitud es <strong>36 250 ft</strong>; la trama par anterior tenía <strong>36 175 ft</strong>. El programa imprime los valores de ambas para no atribuir al mensaje par los datos del impar.</p>
+<h3 id="83-contrastar-con-una-implementacion-independiente">8.3. Contrastar con una implementación independiente</h3>
+<p>La verificación inicial se contrastó con <strong>pyModeS 2.22.0</strong>: coinciden los 134 CRC y las 26 posiciones, con tolerancia de <code>1e-9</code> grados para las coordenadas. Puede repetirse sin instalar la dependencia globalmente:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--target<span class="w"> </span>tmp/adsb-posiciones/deps<span class="w"> </span>--no-deps<span class="w"> </span><span class="s1">'pyModeS==2.22.0'</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>python<span class="w"> </span>scripts/sesion09_adsb/verificar_posiciones.py<span class="w"> </span>--pymodes-dir<span class="w"> </span>tmp/adsb-posiciones/deps
+</code></pre></div>
+<p>La comparación verifica nuestra implementación frente a <a href="https://github.com/junzis/pyModeS/tree/v2.22.0">pyModeS</a>. No es una comprobación externa contra radar o una trayectoria certificada.</p>
+<h2 id="9-reunir-las-aeronaves-y-mostrarlas-en-un-mapa">9. Reunir las aeronaves y mostrarlas en un mapa</h2>
+<p>El programa de verificación guarda <code>posiciones.csv</code>, <code>posiciones.geojson</code> y <code>mapa.html</code> en <code>output/adsb-posiciones/</code>. Cada posición conserva <strong>ICAO, latitud, longitud, tiempo relativo y los dos mensajes CPR de origen</strong>. Los indicativos y la velocidad se incorporan cuando se reciben mensajes de esos tipos con el mismo ICAO.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>mapa
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>python<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8012</span><span class="w"> </span>--bind<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--directory<span class="w"> </span>output/adsb-posiciones
+</code></pre></div>
+<p>Visitar <a href="http://127.0.0.1:8012/mapa.html">el mapa local</a>. Si el puerto 8012 ya está en uso por el mapa abierto anteriormente, usar ese servidor existente. El HTML también se puede abrir directamente con el navegador. El fondo de OpenStreetMap necesita Internet; las posiciones, los controles y Leaflet están incluidos en el archivo.</p>
+<details class="example">
+<summary>Mapa de referencia: nueve aeronaves con posiciones recuperadas</summary>
+<p><iframe src="../animaciones/mapa-adsb.html" title="Mapa histórico de coordenadas ADS-B verificadas" width="100%" height="780" style="border:0" loading="lazy"></iframe></p>
+<p><a href="../animaciones/mapa-adsb.html" rel="noopener" target="_blank">Abrir mapa de referencia en otra pestaña</a> · <a href="../animaciones/posiciones.csv">Coordenadas CSV</a> · <a href="../animaciones/posiciones.geojson">GeoJSON</a> · <a href="../animaciones/verificacion.json">Informe completo</a></p>
+<p>Esta copia permite revisar el resultado desde la página del curso. El mapa de <code>output/</code> corresponde a la ejecución local del alumno. Seleccionar una aeronave, mover el control temporal y pulsar un punto para consultar las tramas par/impar. Las líneas unen puntos observados; no generan posiciones intermedias.</p>
+</details>
+<div class="admonition note">
+<p class="admonition-title">Cómo interpretar los tiempos y el mapa</p>
+<p>La fecha original procede del nombre del archivo y no incluye zona horaria. Los tiempos mostrados se calculan por índice de muestra, incluyen el retardo del remuestreador y no son UTC original. No se ha validado la cadencia temporal entre ráfagas: desplazamiento dividido entre tiempo de archivo no concuerda suficientemente con la velocidad declarada en TC19. Por ello se muestran <strong>posiciones observadas y velocidad TC19</strong>, sin deducir velocidad o continuidad de vuelo a partir del mapa. El control temporal recorre el archivo, no reproduce un reloj de vuelo validado.</p>
+</div>
+<h2 id="10-seguir-la-cadena-y-revisar-los-resultados">10. Seguir la cadena y revisar los resultados</h2>
+<h3 id="101-archivos-y-comandos-por-transicion">10.1. Archivos y comandos por transición</h3>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Comando después de <code>python scripts/sesion09_adsb/inspeccionar_adsb.py</code></th>
+<th>Resultado que se inspecciona</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Señal</td>
+<td><code>--etapa senal</code></td>
+<td>Ventana I/Q verificable en Inspectrum</td>
+</tr>
+<tr>
+<td>Alineación</td>
+<td><code>--etapa preambulo</code></td>
+<td>Cuatro pulsos y comienzo de los datos</td>
+</tr>
+<tr>
+<td>Demodulación</td>
+<td><code>--etapa ppm --bloque 1</code></td>
+<td>Muestras, medias y decisiones de 16 símbolos</td>
+</tr>
+<tr>
+<td>Bits y bytes</td>
+<td><code>--etapa bits</code></td>
+<td>Siete grupos, 112 bits y 14 bytes</td>
+</tr>
+<tr>
+<td>Interpretación</td>
+<td><code>--etapa campos</code></td>
+<td>Rangos, bits y valores de DF17 y ME</td>
+</tr>
+<tr>
+<td>Integridad</td>
+<td><code>--etapa crc</code></td>
+<td>Registro por bit, CRC calculado y control negativo</td>
+</tr>
+<tr>
+<td>Posición</td>
+<td><code>--etapa cpr</code></td>
+<td>Pareja real, normalización y coordenadas</td>
+</tr>
+<tr>
+<td>Representación</td>
+<td><code>--etapa mapa</code></td>
+<td>Ubicación del mapa y cantidad de posiciones</td>
+</tr>
+</tbody>
+</table>
+<p>Para ejecutar todas las etapas sobre la trama predeterminada:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>todas
+</code></pre></div>
+<p>Los resultados se guardan en <strong><code>output/adsb-posiciones/traza/</code></strong>: <code>traza.json</code>, <code>112_bits.txt</code> y un <code>.txt</code> por etapa. <code>--hex</code> selecciona otra trama <strong>presente en el informe</strong>; <code>--listar</code> permite encontrarla. La etapa CPR necesita que esa trama tenga una pareja compatible. Al cambiar de trama, los archivos de esa carpeta se actualizan; guardar una copia antes si se quieren comparar ejecuciones.</p>
+<h3 id="102-comprobaciones-para-discutir-en-clase">10.2. Comprobaciones para discutir en clase</h3>
+<ul>
+<li>Medir los 8 µs del preámbulo y localizar el primer intervalo de datos; explicar por qué hacen falta ambos pasos.</li>
+<li>Elegir un símbolo que represente 0 y otro que represente 1; justificar cada decisión usando las dos medias.</li>
+<li>Reconstruir un byte de la Figura 5 y comprobar su valor hexadecimal sin invertir sus bits.</li>
+<li>Identificar los 88 bits protegidos por el CRC y los 24 que contienen la comprobación.</li>
+<li>Justificar por qué <code>79965</code> no es una latitud en grados y qué información aporta el segundo mensaje CPR.</li>
+<li>Elegir un punto del mapa y localizar sus dos mensajes de origen en el informe, sin mezclar ICAO distintos.</li>
+</ul>
+<h3 id="103-codigo-que-produce-los-resultados-y-las-figuras">10.3. Código que produce los resultados y las figuras</h3>
+<p>Los programas se organizan en <code>scripts/sesion09_adsb/</code>: <code>receptor.py</code> implementa la cadena, <code>verificar_posiciones.py</code> guarda los resultados e <code>inspeccionar_adsb.py</code> presenta las transiciones. Las figuras y el explorador se regeneran desde esos resultados, no desde valores escritos manualmente:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/inspeccionar_adsb.py<span class="w"> </span>--etapa<span class="w"> </span>todas
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>python<span class="w"> </span>scripts/sesion09_adsb/generar_figuras.py
+</code></pre></div>
+<p>El segundo comando requiere Matplotlib, además del entorno de recepción; actualiza las figuras y la copia del mapa que usa MkDocs. Las referencias físicas, las reglas de campos y los algoritmos CPR están enlazados junto a cada explicación para poder contrastar las hipótesis con la documentación.</p>
+<p>Aplicación evaluada: <strong><a href="../laboratorio-adsb/">Laboratorio #6 — Radar bajo sospecha: del archivo I/Q al mapa</a></strong>. Utiliza otro recorte real, una función de extracción de campos que completa el alumno y un caso local para distinguir CRC de autenticidad.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/details-links.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer-model.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2014 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construir una estación de análisis ADS-B con evidencia desde los pulsos hasta las coordenadas y distinguir integridad de autenticidad.">
+      
+      
+        <meta name="author" content="ollerenac-uni">
+      
+      
+        <link rel="canonical" href="https://ollerenac-uni.github.io/sdr/sessions/09/laboratorio-adsb/">
+      
+      
+        <link rel="prev" href="../clase9/">
+      
+      
+        <link rel="next" href="../../../setup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Laboratorio #6 — Radar bajo sospecha: del archivo I/Q al mapa - Radio Definida por Software</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/sdr-mixer.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#laboratorio-6-radar-bajo-sospecha-del-archivo-iq-al-mapa" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../../.." title="Radio Definida por Software" class="md-header__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Radio Definida por Software
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Laboratorio #6 — Radar bajo sospecha: del archivo I/Q al mapa
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo oscuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo oscuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Cambiar a modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Cambiar a modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Pestañas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Inicio
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sesiones
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guías
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../exams/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Exámenes
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Radio Definida por Software" class="md-nav__button md-logo" aria-label="Radio Definida por Software" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Radio Definida por Software
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ollerenac-uni/sdr" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ollerenac-uni/sdr
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sesiones
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sesiones
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01-introduccion-sdr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 — Introducción a SDR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    01 — Introducción a SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-introduccion-sdr/laboratorio-muestreo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #1: muestreo
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../02-tiempo-frecuencia-iq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03–05 — Señales y espectro en SDR
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    03–05 — Señales y espectro en SDR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/mezcla-interactiva/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demostración: mezcla compleja
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-tiempo-frecuencia-iq/laboratorio-receptor-fm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #2: demodulador FM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../03-sistemas-filtros-digitales/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 — Laboratorio de enlace digital
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    06 — Laboratorio de enlace digital
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/tarea-laboratorio-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tarea del laboratorio 3
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/clase-enlace-digital/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapa visual de los 24 pasos
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 — Recepción FM y decodificación RDS en GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    07 — Recepción FM y decodificación RDS en GNU Radio
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04/clase4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lección 4: recepción FM y RDS
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04/laboratorio-fm-rds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #4: adaptación y diagnóstico
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06/clase6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 — Señales LoRa
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 — Reverse Engineering a ADS-B
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    09 — Reverse Engineering a ADS-B
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../clase9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lección 9: Reverse Engineering a ADS-B
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #6: Radar bajo sospecha
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Laboratorio #6: Radar bajo sospecha
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-material-de-la-mision-y-alcance-del-trabajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Material de la misión y alcance del trabajo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-preparar-el-entorno-y-los-archivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Preparar el entorno y los archivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-checkpoint-1-demostrar-que-los-bits-proceden-de-la-senal-4-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Checkpoint 1 — Demostrar que los bits proceden de la señal — 4 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-checkpoint-2-programar-la-extraccion-de-campos-4-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Checkpoint 2 — Programar la extracción de campos — 4 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-checkpoint-3-separar-integridad-de-autenticidad-4-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Checkpoint 3 — Separar integridad de autenticidad — 4 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-checkpoint-4-construir-el-mapa-y-sus-fichas-de-evidencia-5-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Checkpoint 4 — Construir el mapa y sus fichas de evidencia — 5 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-checkpoint-5-defender-que-se-puede-confiar-3-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Checkpoint 5 — Defender qué se puede confiar — 3 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-entrega-y-rubrica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Entrega y rúbrica
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../setup/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guías
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guías
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/instalacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalar GNU Radio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../setup/rtl-sdr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configurar el RTL-SDR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-sistemas-filtros-digitales/laboratorio-filtrado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Práctica complementaria: filtros FIR
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft" title="En desarrollo">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../exams/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exámenes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exámenes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-material-de-la-mision-y-alcance-del-trabajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Material de la misión y alcance del trabajo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-preparar-el-entorno-y-los-archivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Preparar el entorno y los archivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-checkpoint-1-demostrar-que-los-bits-proceden-de-la-senal-4-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Checkpoint 1 — Demostrar que los bits proceden de la señal — 4 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-checkpoint-2-programar-la-extraccion-de-campos-4-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Checkpoint 2 — Programar la extracción de campos — 4 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-checkpoint-3-separar-integridad-de-autenticidad-4-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Checkpoint 3 — Separar integridad de autenticidad — 4 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-checkpoint-4-construir-el-mapa-y-sus-fichas-de-evidencia-5-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Checkpoint 4 — Construir el mapa y sus fichas de evidencia — 5 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-checkpoint-5-defender-que-se-puede-confiar-3-puntos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Checkpoint 5 — Defender qué se puede confiar — 3 puntos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-entrega-y-rubrica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Entrega y rúbrica
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+  
+
+
+
+  
+  
+
+
+<h1 id="laboratorio-6-radar-bajo-sospecha-del-archivo-iq-al-mapa">Laboratorio #6 — Radar bajo sospecha: del archivo I/Q al mapa</h1>
+<p><strong>Trabajo en parejas · Nivel intermedio · Calificación sobre 20 puntos.</strong> La fecha de entrega se comunicará en clase.</p>
+<div class="admonition question">
+<p class="admonition-title">La misión</p>
+<p>El equipo recibe una grabación I/Q de 1090 MHz y debe convertirla en una pequeña estación de análisis. Cada avión que aparezca en el mapa tendrá una ficha y una cadena de evidencias: <strong>pulsos → bits → campos → CRC → pareja CPR → coordenadas</strong>. Al final deberá responder si una observación con CRC válido demuestra que el avión anunciado existe.</p>
+</div>
+<p>El nombre “radar” se refiere aquí al panel de visualización: el equipo reconstruye posiciones declaradas por ADS-B, no mide ecos. La <a href="../clase9/">sesión 9</a> proporciona las explicaciones y los bloques de recepción que se pueden reutilizar.</p>
+<h2 id="1-material-de-la-mision-y-alcance-del-trabajo">1. Material de la misión y alcance del trabajo</h2>
+<p>La muestra del laboratorio es un <strong>recorte real distinto del usado en la lección</strong>: segundos 14–27 del WAV I/Q de SDRangel de 2021. No se solapa con la muestra de 0–13.981 s del ejemplo. Su formato y tasa están documentados; la tarea consiste en analizar el enlace, no en adivinar el tipo de archivo.</p>
+<table>
+<thead>
+<tr>
+<th>Propiedad</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Muestra</td>
+<td><code>gnuradio/samples/adsb-laboratorio/adsb-laboratorio-14s-27s.sigmf-data</code></td>
+</tr>
+<tr>
+<td>Formato</td>
+<td><code>cf32_le</code>: I y Q como float32 little-endian</td>
+</tr>
+<tr>
+<td>Frecuencia central</td>
+<td>1090 MHz</td>
+</tr>
+<tr>
+<td>Tasa y duración del recorte</td>
+<td>2.4 Msps; 13 s</td>
+</tr>
+<tr>
+<td>Tamaño</td>
+<td>249 600 000 bytes</td>
+</tr>
+<tr>
+<td>Metadatos y procedencia</td>
+<td><code>.sigmf-meta</code> y <code>origen.json</code> junto a la muestra</td>
+</tr>
+<tr>
+<td>Fuente</td>
+<td><a href="https://www.sdrangel.org/iq-files/">SDRangel, IQ Files</a></td>
+</tr>
+</tbody>
+</table>
+<p>El equipo puede reutilizar el lector I/Q, el remuestreador, el receptor PPM, el comprobador CRC, CPR y la plantilla del mapa. <strong>Debe programar su propia función <code>extraer_campos(bits)</code></strong>, que se utilizará realmente para calcular las coordenadas del mapa. La identificación de vuelo y la velocidad TC19 se facilitan como campos complementarios.</p>
+<p><img alt="Flujo del laboratorio desde las muestras I/Q hasta el mapa. La extracción de campos es el componente que programa el alumno; recepción, CRC y CPR se facilitan." src="../figures/09-flujo-laboratorio.svg" />
+<strong>Flujo de trabajo.</strong> Los campos obtenidos por el equipo se utilizan para producir las coordenadas del mapa.</p>
+<p>El análisis se ejecuta con archivos y software local. Los mensajes sintéticos del caso de integridad se estudian aparte de las muestras reales, sin generar ni emitir RF.</p>
+<h2 id="2-preparar-el-entorno-y-los-archivos">2. Preparar el entorno y los archivos</h2>
+<p>Desde la raíz del repositorio, con <strong>Radioconda activo</strong>, ejecutar:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/descargar_muestra.py<span class="w"> </span>--muestra<span class="w"> </span>laboratorio
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>scripts/sesion09_adsb/preparar_laboratorio.py
+</code></pre></div>
+<p>En Linux se puede sustituir <code>python</code> por <code>~/radioconda/bin/python</code>. La descarga y la preparación son independientes de la muestra de la lección. No se necesita SDR ni instalar otro módulo OOT.</p>
+<p>La preparación verifica el SHA-256, ejecuta la recepción y crea:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>output/adsb-laboratorio/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── mensajes.json              # Hexadecimal e índices de muestra recuperados
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├── potencia8.f32              # Potencia a 8 Msps para inspeccionar símbolos
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├── mi_analisis.py             # Copia de la plantilla: completar esta función
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>└── casos_integridad.json      # Tres mensajes del caso local, separados de I/Q
+</code></pre></div>
+<p><code>mensajes.json</code> conserva el número de mensaje y la muestra de comienzo de su preámbulo. Los registros incluyen el hexadecimal recuperado, no una lista de coordenadas. Al repetir la preparación, <strong><code>mi_analisis.py</code> se conserva si ya existe</strong>. El archivo original de la plantilla está en <code>scripts/sesion09_adsb/plantilla_analisis.py</code>.</p>
+<p>Para regenerar la recepción por algún cambio de archivos, usar <code>--reprocesar</code>. La potencia intermedia ocupa unos 416 MB; no se incluye en la entrega.</p>
+<h2 id="3-checkpoint-1-demostrar-que-los-bits-proceden-de-la-senal-4-puntos">3. Checkpoint 1 — Demostrar que los bits proceden de la señal — 4 puntos</h2>
+<p>Elegir un mensaje real y registrar su <strong>número, hexadecimal e índice de comienzo</strong>. Por ejemplo, estos comandos inspeccionan el número 1; el equipo puede elegir otro:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/preparar_laboratorio.py<span class="w"> </span>--inspeccionar<span class="w"> </span><span class="m">1</span><span class="w"> </span>--etapa<span class="w"> </span>preambulo
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python<span class="w"> </span>scripts/sesion09_adsb/preparar_laboratorio.py<span class="w"> </span>--inspeccionar<span class="w"> </span><span class="m">1</span><span class="w"> </span>--etapa<span class="w"> </span>ppm<span class="w"> </span>--bloque<span class="w"> </span><span class="m">1</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>python<span class="w"> </span>scripts/sesion09_adsb/preparar_laboratorio.py<span class="w"> </span>--inspeccionar<span class="w"> </span><span class="m">1</span><span class="w"> </span>--etapa<span class="w"> </span>bits
+</code></pre></div>
+<p>Las tablas se guardan en <code>output/adsb-laboratorio/evidencias/</code>. <code>--bloque 1</code> muestra S001–S016; quitarlo muestra las 112 decisiones. B1–B7 son grupos visuales de dieciséis bits, no bloques FEC.</p>
+<p>Cada inspección guarda también <strong><code>mensaje_001_potencia.svg</code></strong> —con el número elegido—, que se abre en el navegador: arriba muestra la potencia real del preámbulo y abajo los primeros dieciséis símbolos. Las franjas marcan los intervalos de referencia y las mitades seleccionadas; la curva procede de las muestras recibidas. Se genera sin instalar una biblioteca de gráficos adicional.</p>
+<p>El equipo presenta:</p>
+<ol>
+<li>La gráfica del preámbulo, su ubicación, sus cuatro pulsos nominales y el comienzo de datos en <span class="arithmatex">\(n_0+64\)</span> muestras a 8 Msps. El índice <span class="arithmatex">\(n_0\)</span> corresponde al recorte del laboratorio.</li>
+<li>Una tabla de <strong>16 símbolos consecutivos</strong> con medias H1/H2 y decisiones. Explica al menos un 0 y un 1; puede usar otro grupo si hace falta.</li>
+<li>El bloque completo de <strong>112 bits</strong>, agrupado en 14 bytes, y la correspondencia de uno de esos bytes con el hexadecimal recibido.</li>
+</ol>
+<p>Los resultados se obtienen de la potencia de la muestra del laboratorio. Las figuras de la lección ayudan a interpretar la cuadrícula; sus tiempos y valores pertenecen a otra trama. <a href="../clase9/#3-sincronismo-encontrar-el-inicio-de-la-trama">Sincronismo y PPM en la sesión</a>.</p>
+<h2 id="4-checkpoint-2-programar-la-extraccion-de-campos-4-puntos">4. Checkpoint 2 — Programar la extracción de campos — 4 puntos</h2>
+<p>Abrir <strong><code>output/adsb-laboratorio/mi_analisis.py</code></strong> y completar únicamente <code>extraer_campos(bits)</code> al comenzar. La función recibe una cadena de <strong>112 caracteres</strong>, MSB primero, y devuelve:</p>
+<table>
+<thead>
+<tr>
+<th>Clave</th>
+<th>Tipo y contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>df</code></td>
+<td>Entero: formato de mensaje</td>
+</tr>
+<tr>
+<td><code>ca</code></td>
+<td>Entero: capacidad</td>
+</tr>
+<tr>
+<td><code>icao</code></td>
+<td>Cadena hexadecimal de seis dígitos, conservando ceros iniciales</td>
+</tr>
+<tr>
+<td><code>tc</code></td>
+<td>Entero: Type Code</td>
+</tr>
+<tr>
+<td><code>cpr_impar</code></td>
+<td>Para TC9–18: entero 0 o 1, campo F</td>
+</tr>
+<tr>
+<td><code>cpr_lat</code></td>
+<td>Para TC9–18: entero de 17 bits</td>
+</tr>
+<tr>
+<td><code>cpr_lon</code></td>
+<td>Para TC9–18: entero de 17 bits</td>
+</tr>
+<tr>
+<td><code>altitud_ft</code></td>
+<td>Para TC9–18: entero en pies si Q=1; <code>None</code> si Q=0</td>
+</tr>
+</tbody>
+</table>
+<p>Las claves generales se devuelven para todos los mensajes. Las cuatro últimas son necesarias cuando TC está entre 9 y 18. La <a href="../clase9/#6-leer-los-campos-formato-aeronave-y-contenido">sección 6 de la sesión</a> define los rangos y el cálculo de altitud.</p>
+<p>El código puede utilizar cortes de cadenas, conversión binaria o desplazamientos y máscaras. Se evalúan esos cálculos propios: llamar a <code>interpretar</code> o <code>campo</code> del curso dentro de <code>extraer_campos</code> no sustituye este trabajo. El soporte ya facilita los campos complementarios de indicativo y velocidad; el equipo puede ampliar su decodificación si lo desea.</p>
+<p>La plantilla se detiene inicialmente con el mensaje <strong>“Completar extraer_campos”</strong>; es el punto de partida previsto. Una vez completada la función:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>output/adsb-laboratorio/mi_analisis.py
+</code></pre></div>
+<p>El soporte contrasta los campos devueltos con los bits de entrada. Si encuentra una diferencia, indica el campo y el mensaje que se debe revisar; no sustituye silenciosamente el resultado por el correcto.</p>
+<p>El equipo contrasta en el informe <strong>dos mensajes distintos</strong>, incluyendo uno de posición: indica rangos de bits, bits extraídos y valores. La función debe procesar los mensajes de entrada; escribir valores constantes de una trama no resuelve la tarea.</p>
+<h2 id="5-checkpoint-3-separar-integridad-de-autenticidad-4-puntos">5. Checkpoint 3 — Separar integridad de autenticidad — 4 puntos</h2>
+<p>El archivo <code>casos_integridad.json</code> contiene tres casos con procedencia declarada:</p>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>Cómo se preparó</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>Mensaje recuperado de la captura real del laboratorio</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Copia de A con el bit global 41 invertido, conservando el CRC recibido</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Mensaje sintético local de identificación, TC4, indicativo <code>AULA06</code> y dirección de prueba <code>F0C006</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>La procedencia declarada es contexto externo al mensaje.</strong> El caso C es un vector binario preparado para esta comparación: no se ha convertido en muestras I/Q ni transmitido. Al ser de identificación, tampoco aporta por sí solo una posición CPR. Estos tres casos no se mezclan con el conjunto de mensajes reales que alimenta el mapa.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/preparar_laboratorio.py<span class="w"> </span>--casos-crc
+</code></pre></div>
+<p>El programa guarda <code>resultado_casos_crc.json</code> con CRC recibido, CRC calculado, resto y decisión. Para ver la división por bit en un mensaje de la captura:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python<span class="w"> </span>scripts/sesion09_adsb/preparar_laboratorio.py<span class="w"> </span>--inspeccionar<span class="w"> </span><span class="m">1</span><span class="w"> </span>--etapa<span class="w"> </span>crc
+</code></pre></div>
+<p>El equipo presenta una tabla comparativa de los tres casos y responde:</p>
+<ol>
+<li>¿Qué prueba la comparación del CRC en A y qué detecta en B?</li>
+<li>¿Qué permite observar C sobre la relación entre un mensaje sintético y un CRC válido?</li>
+<li>Si se retiraran las etiquetas de procedencia, ¿el CRC permitiría identificar el origen? Justificar usando el cálculo observado, no solo una definición.</li>
+</ol>
+<h2 id="6-checkpoint-4-construir-el-mapa-y-sus-fichas-de-evidencia-5-puntos">6. Checkpoint 4 — Construir el mapa y sus fichas de evidencia — 5 puntos</h2>
+<p>Con la función del alumno, el programa agrupa mensajes por ICAO y aplica CPR global a parejas compatibles. Guarda los resultados en <code>output/adsb-laboratorio/resultado/</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>resultado/
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── mapa.html
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>├── posiciones.csv
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>├── posiciones.geojson
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>├── tramas.avr
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>└── verificacion.json
+</code></pre></div>
+<p>Para revisarlos en el navegador:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8013</span><span class="w"> </span>--bind<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--directory<span class="w"> </span>output/adsb-laboratorio/resultado
+</code></pre></div>
+<p>Abrir <a href="http://127.0.0.1:8013/mapa.html">el mapa del laboratorio</a>. También puede abrirse el HTML directamente. Leaflet y los datos están incluidos; el fondo de OpenStreetMap requiere Internet.</p>
+<p>El equipo selecciona <strong>al menos tres aeronaves con posición</strong> y, para una posición de cada una, documenta:</p>
+<ul>
+<li>Dirección ICAO y latitud/longitud obtenidas.</li>
+<li>Altitud barométrica y, cuando se hayan recibido, indicativo y velocidad TC19. Los campos ausentes se indican como <strong>“no disponible”</strong>.</li>
+<li>Los dos mensajes par/impar, sus CRC y los valores de <code>F</code>, <code>LAT-CPR</code> y <code>LON-CPR</code> que utilizó.</li>
+<li>Por qué esa pareja es compatible: mismo ICAO, paridades opuestas, separación de archivo de hasta 10 s y comprobación de zonas NL.</li>
+</ul>
+<p>Cada punto del mapa permite consultar sus dos mensajes de origen. La ficha y la tabla del informe deben coincidir con esos mensajes y con el resultado de la función del alumno. Se puede reutilizar la interfaz del curso.</p>
+<div class="admonition note">
+<p class="admonition-title">Alcance de las observaciones</p>
+<p>Las posiciones son históricas. Los tiempos son relativos al recorte e incluyen el retardo del remuestreador; no constituyen marcas UTC originales. <strong>La velocidad se toma de TC19</strong>, porque no se ha validado la cadencia original para deducirla por distancia/tiempo del archivo. Las líneas del mapa unen puntos observados, sin introducir posiciones intermedias. Se evalúan la evidencia y la corrección del proceso para las tres aeronaves seleccionadas.</p>
+</div>
+<h2 id="7-checkpoint-5-defender-que-se-puede-confiar-3-puntos">7. Checkpoint 5 — Defender qué se puede confiar — 3 puntos</h2>
+<p>Revisar la <a href="../clase9/#sesion-9-reverse-engineering-a-ads-b">charla y demostración de RenderMan</a>, enlazadas al inicio de la sesión. El equipo cierra el informe con una explicación breve que conecte el caso local con estas preguntas:</p>
+<ul>
+<li>¿En qué se diferencia detectar errores de autenticar la identidad del emisor?</li>
+<li>¿Qué evidencia adicional permitiría contrastar una posición declarada? Proponer una fuente o mecanismo y explicar qué comprobaría y qué limitación tendría.</li>
+<li>¿Qué mostró la demostración con un receptor ADS-B real y qué conclusión sobre un aeropuerto operativo no está acreditada por esas fuentes?</li>
+</ul>
+<p>Puede discutirse, por ejemplo, una observación física independiente o una comparación con otro sistema de vigilancia, citando una fuente. Una sospecha o un dato repetido no constituyen por sí solos prueba de suplantación.</p>
+<h2 id="8-entrega-y-rubrica">8. Entrega y rúbrica</h2>
+<p>Entregar <strong>un ZIP por pareja</strong>, con el nombre <code>lab06_codigoUNI1_codigoUNI2.zip</code>. El informe identifica integrantes y códigos.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>lab06_codigoUNI1_codigoUNI2/
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>├── informe.pdf                # Informe breve, orientativamente 2–3 páginas
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>├── mi_analisis.py             # Código completado por el equipo
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>├── mensajes.json              # Entrada realmente utilizada
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>├── resultado/                 # HTML, CSV, GeoJSON, AVR y JSON generados
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>├── evidencias/                # Tablas PPM, 112 bits y cálculo CRC
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>└── resultado_casos_crc.json
+</code></pre></div>
+<p>El informe incluye el comando para reproducir el análisis desde la raíz del repositorio y el SHA-256 de la captura, disponible en <code>origen.json</code>. Las tablas extensas pueden ir como archivos de evidencia. Los binarios I/Q y la potencia se recuperan con los comandos de preparación y no se incorporan al ZIP.</p>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th>Evidencia evaluada</th>
+<th style="text-align: right;">Puntos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Señal y demodulación</td>
+<td>Alineación del preámbulo (1), 16 decisiones PPM justificadas (2), correspondencia 112 bits/14 bytes (1)</td>
+<td style="text-align: right;"><strong>4</strong></td>
+</tr>
+<tr>
+<td>2. Extracción propia</td>
+<td>Campos generales en código y contraste (2), campos de posición y altitud con Q (2)</td>
+<td style="text-align: right;"><strong>4</strong></td>
+</tr>
+<tr>
+<td>3. Integridad</td>
+<td>Comparación CRC de A/B/C (3), explicación del control de un bit alterado (1)</td>
+<td style="text-align: right;"><strong>4</strong></td>
+</tr>
+<tr>
+<td>4. Coordenadas y mapa</td>
+<td>Parejas compatibles (1), tres aeronaves con coordenadas sustentadas (2), fichas y campos ausentes bien tratados (1), reproducción de resultados (1)</td>
+<td style="text-align: right;"><strong>5</strong></td>
+</tr>
+<tr>
+<td>5. Análisis de confianza</td>
+<td>Integridad frente a autenticidad, conectada con los casos (1), contraste adicional con fuente y limitación (1), alcance correcto de la demo de RenderMan (1)</td>
+<td style="text-align: right;"><strong>3</strong></td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td style="text-align: right;"><strong>20</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Los resultados deben proceder del análisis ejecutado por el equipo. Se aceptan implementaciones alternativas que produzcan campos correctos y evidencias verificables. El recorte y los casos locales son comunes; cada equipo elige sus mensajes y las tres aeronaves que documenta.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.breadcrumbs", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../../javascripts/details-links.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer-model.js"></script>
+      
+        <script src="../../../javascripts/sdr-mixer.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
